@@ -140,3 +140,81 @@ compatibility.
 - [x] Generic data-provider fields are additive and WRDS compatibility remains.
 - [x] No new WRDS or finance behavior was added to core runtime when a protocol
       or capability boundary could express it.
+
+# ExecPlan: PheroOS Kernel/Protocol Identity
+
+## User-visible goal
+
+Open a new branch and turn the public repository presentation from "Local Agent
+Platform" into a PheroOS-first AI-as-OS kernel/protocol project, with visible
+kernel ABI, machine-readable schemas, conformance entry points, driver model
+contracts, and PIP governance process.
+
+## Current architecture facts
+
+- The current branch was created from `main` after the initial public import to
+  `Ju1se/PheroOS`.
+- `README.md` already describes protocol-governed runtime behavior but still
+  begins with "Local Agent Platform".
+- `pyproject.toml` still uses `local-agent-platform` package identity and keeps
+  WRDS in core package keywords.
+- Protocol docs exist under `docs/protocol/`, but kernel ABI docs,
+  conformance docs, schemas, and PIP process docs are not yet first-class.
+- Runtime protocol implementation currently lives under `runtime/swarm/*`;
+  a clean public `pheroos/protocol` package boundary is not yet exposed.
+
+## Files to inspect
+
+- `README.md`
+- `pyproject.toml`
+- `CONTRIBUTING.md`
+- `docs/architecture.md`
+- `docs/protocol/overview.md`
+- `runtime/swarm/protocol_loader.py`
+- `runtime/swarm/protocol_manifest.py`
+- `runtime/swarm/protocol_validation.py`
+- `tests/test_protocol_manifest.py`
+- `tests/test_architecture_boundaries.py`
+
+## Milestones
+
+1. Create branch and record migration plan.
+2. Update public project identity and package metadata to PheroOS.
+3. Add kernel ABI docs, schema files, PIP process, and conformance docs.
+4. Add minimal `pheroos` package with protocol boundary, driver contracts, and
+   CLI validation/conformance commands.
+5. Add focused conformance tests and run existing suites.
+
+## Tests to run
+
+- `.venv/bin/pytest tests/conformance tests/test_protocol_manifest.py tests/test_architecture_boundaries.py`
+- `.venv/bin/pytest`
+
+## Migration and compatibility notes
+
+- Do not rename `runtime/` or existing import paths in this slice.
+- Keep WRDS and value investing as reference capabilities and compatibility
+  surfaces, not package identity.
+- `pheroos/protocol` should wrap existing protocol loader/validation without
+  importing FastAPI, LangGraph, WRDS tools, or provider SDKs.
+- CLI should validate manifests using existing runtime loaders rather than
+  inventing parallel behavior.
+
+## Progress log
+
+- 2026-06-09: Created branch `pheroos-kernel-protocol-identity` and started
+  PheroOS identity/kernel ABI slice.
+- 2026-06-09: Updated public identity, package metadata, README, architecture
+  docs, kernel ABI docs, schemas, driver contracts, conformance CLI/tests, and
+  PIP process docs.
+- 2026-06-09: Focused and full pytest suites pass on the branch.
+
+## Final validation checklist
+
+- [x] README and package metadata present PheroOS as the public identity.
+- [x] Kernel ABI docs exist under `docs/kernel/`.
+- [x] Machine-readable schema files exist under `schemas/`.
+- [x] `pheroos/protocol` and driver contract modules exist without forbidden
+      runtime/provider imports.
+- [x] Conformance docs/tests and PIP process are present.
+- [x] Focused and full test suites pass, or failures are documented.

@@ -1,14 +1,31 @@
 # Architecture
 
-Local Agent Platform is organized around ports and adapters. The goal is to let
-contributors replace model providers, tools, skills, and API shells without
-rewriting the LangGraph workflow.
+PheroOS is organized as a protocol-governed AI-as-OS kernel plus a reference
+runtime. The goal is to let contributors replace model providers, tools, data
+providers, skills, capabilities, API shells, and runtime hosts without editing
+protocol authority or kernel governance.
+
+The public architecture separates:
+
+- **PheroOS Protocol**: manifest, schemas, targets, candidates, evidence,
+  quorum, recovery, output, and trace contracts.
+- **PheroOS Kernel**: OS planning, permissioning, runtime materialization,
+  connection handles, tool exposure, and validation.
+- **PheroOS Driver Model**: model, tool, data provider, storage, and secret
+  store adapters.
+- **PheroOS Reference Runtime**: the current FastAPI/LangGraph/dashboard host.
+- **Capabilities**: domain or workflow modules mounted by protocol, not core
+  assumptions.
 
 ## Layers
 
 ```text
 app/
-  FastAPI routes and static frontend
+  FastAPI routes and static frontend for the reference runtime
+
+pheroos/
+  protocol/           public protocol ABI wrappers
+  drivers/            public driver contract models and helpers
 
 runtime/
   graph.py              LangGraph workflow and node policy
@@ -26,8 +43,8 @@ runtime/
   swarm/                typed pheromone field, stop-signals, quorum trace
   tool_registry.py      tool dispatch boundary
   skill_loader.py       SKILL.md registry
-  data_gate.py          deterministic WRDS-only data policy
-  wrds_planner.py       data package planning
+  data_gate.py          deterministic data policy and output permissions
+  wrds_planner.py       legacy/reference WRDS data package planning
 
 capabilities/
   */capability.json     reviewed local capability manifests
@@ -40,7 +57,7 @@ capabilities/
 tools/
   safe_tools.py         workspace-safe file/test tools
   web_tools.py          public web search/fetch adapter
-  wrds_tools.py         WRDS read-only adapter
+  wrds_tools.py         WRDS read-only reference data-provider driver
 
 skills/
   */SKILL.md            agent-readable capability instructions
@@ -80,8 +97,6 @@ analysis, document writing, or data analysis directly. It maps task taxonomy to
 capability requirements, including `portfolio_review`, `document_writing`, and
 `data_analysis`, then lets RuntimeMaterializer and AgentRuntime execute through
 enabled capabilities and tools.
-analysis, fetch data, call models, or write the final report. It decides which
-capabilities may be mounted into the next runtime context.
 
 General tasks stay lightweight:
 

@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.pheroos.dev/pheroos.trace.v0.1.schema.json",
+  "title": "PheroOS Trace Event",
+  "type": "object",
+  "required": ["event_type", "run_id", "timestamp"],
+  "additionalProperties": true,
+  "properties": {
+    "event_type": {"type": "string"},
+    "run_id": {"type": "string"},
+    "tenant_id": {"type": "string"},
+    "timestamp": {"type": "string"},
+    "protocol_id": {"type": "string"},
+    "protocol_version": {"type": "string"},
+    "protocol_source": {"type": "string"},
+    "target": {"type": "string"},
+    "rule_id": {"type": "string"},
+    "decision": {"type": "string"},
+    "supporting_evidence": {"type": "array", "items": {"type": "string"}},
+    "challenging_evidence": {"type": "array", "items": {"type": "string"}},
+    "provider_id": {"type": "string"},
+    "tool_name": {"type": "string"},
+    "details": {"type": "object"}
+  }
+}
