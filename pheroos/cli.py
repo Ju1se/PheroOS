@@ -7,6 +7,7 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from pheroos.minimal import init_minimal_project, latest_minimal_trace, run_minimal_task
 from pheroos.protocol.capability_manifest import load_public_capability_manifest
 from pheroos.protocol.manifest import load_capability_protocol
 from pheroos.protocol.validation import protocol_errors, protocol_warnings
@@ -365,6 +366,21 @@ def main(argv: list[str] | None = None) -> int:
     conformance_parser = subparsers.add_parser("conformance", help="Run basic PheroOS conformance checks")
     conformance_parser.add_argument("path")
 
+    init_parser = subparsers.add_parser("init", help="Initialize a PheroOS distro workspace")
+    init_subparsers = init_parser.add_subparsers(dest="template", required=True)
+    init_minimal_parser = init_subparsers.add_parser("minimal", help="Initialize the no-key minimal distro")
+    init_minimal_parser.add_argument("path", nargs="?", default=".")
+
+    run_parser = subparsers.add_parser("run", help="Run a task through a PheroOS distro")
+    run_parser.add_argument("task")
+    run_parser.add_argument("--distro", choices=["minimal"], default="minimal")
+    run_parser.add_argument("--workspace", default=".")
+
+    trace_parser = subparsers.add_parser("trace", help="Inspect local PheroOS traces")
+    trace_subparsers = trace_parser.add_subparsers(dest="trace_command", required=True)
+    trace_latest_parser = trace_subparsers.add_parser("latest", help="Show the latest local trace")
+    trace_latest_parser.add_argument("--workspace", default=".")
+
     args = parser.parse_args(argv)
     if args.command == "validate":
         report = validate_capability_path(args.path)
@@ -378,6 +394,12 @@ def main(argv: list[str] | None = None) -> int:
         }
     elif args.command == "conformance":
         report = conformance_report(args.path)
+    elif args.command == "init" and args.template == "minimal":
+        report = init_minimal_project(args.path)
+    elif args.command == "run":
+        report = run_minimal_task(args.task, workspace=args.workspace)
+    elif args.command == "trace" and args.trace_command == "latest":
+        report = latest_minimal_trace(workspace=args.workspace)
     else:
         parser.error(f"unknown command: {args.command}")
 
