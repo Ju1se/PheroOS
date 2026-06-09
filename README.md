@@ -35,6 +35,7 @@ conformance suite 和可审计兼容层。
 - PheroOS Protocol spec v0.1：[docs/protocol/protocol-spec-v0.1.md](docs/protocol/protocol-spec-v0.1.md)
 - Protocol examples：[docs/examples/open-multi-agent-protocol-examples.md](docs/examples/open-multi-agent-protocol-examples.md)
 - 架构说明：[docs/architecture.md](docs/architecture.md)
+- Kernel/User/Driver 边界：[docs/architecture/kernel-user-driver-boundaries.md](docs/architecture/kernel-user-driver-boundaries.md)
 - 当前状态：[docs/architecture/current-state.md](docs/architecture/current-state.md)
 - 扩展指南：[docs/extensions.md](docs/extensions.md)
 - Capability authoring：[docs/capability-authoring.md](docs/capability-authoring.md)
