@@ -1,434 +1,395 @@
 # PheroOS
 
 PheroOS is an open AI-as-OS protocol and reference kernel for governed
-multi-agent runtimes. It defines stable boundaries for capability loading,
-permissioning, signal governance, tool arbitration, evidence contracts, quorum
-commitment, recovery, and traceable publication.
+multi-agent runtimes. It is a kernel/protocol system for governed agent
+societies: capabilities declare what may be possible, the kernel decides what is
+available, governance decides what is allowed, and traces explain why.
 
-Product positioning: this repo is **PheroOS Kernel + PheroOS Protocol +
-PheroOS Reference Runtime + Capability/Driver ecosystem**, not a prompt chain,
-agent framework, or single-provider financial app. Capabilities declare what is
-possible, OSKernel decides what is available, RuntimeMaterializer builds what is
-executable, PheroOS governs what is allowed, Quorum commits what is justified,
-Writer expresses what is permitted, FinalJudge verifies what can be published,
-and TraceStore explains why.
+Agents are not authority. Protocol is authority.
 
-当前仓库包含 PheroOS Reference Runtime：
+Agents propose. Protocol validates. Kernel materializes. Governance blocks or
+commits. Writer expresses only what is permitted. TraceStore explains why.
 
-```text
-FastAPI API
-  -> LangGraph Runtime
-  -> SKILL.md Skill Loader
-  -> LiteLLM/OpenAI-compatible Model Gateway
-  -> Ollama / LM Studio / vLLM / OpenAI
-```
+PheroOS is not a prompt chain, not an agent chat app, and not a finance-specific
+workflow. WRDS, value investing, web research, and code development live here as
+reference capabilities or adapters; they are not kernel concepts.
 
-核心原则：Codex 用来开发这个 runtime；产品运行时不依赖 Codex。PheroOS
-的公开目标是稳定内核边界、协议 ABI、driver model、capability ABI、
-conformance suite 和可审计兼容层。
+Public framing: PheroOS Kernel + PheroOS Protocol + PheroOS Reference Runtime +
+Capability/Driver ecosystem.
 
-## OSS 结构
+## What Is PheroOS?
 
-- PheroOS Protocol：[docs/protocol/overview.md](docs/protocol/overview.md)
-- PheroOS Kernel ABI：[docs/kernel/kernel-overview.md](docs/kernel/kernel-overview.md)
-- PheroOS conformance：[docs/conformance/conformance-suite.md](docs/conformance/conformance-suite.md)
-- PheroOS Protocol spec v0.1：[docs/protocol/protocol-spec-v0.1.md](docs/protocol/protocol-spec-v0.1.md)
-- Protocol examples：[docs/examples/open-multi-agent-protocol-examples.md](docs/examples/open-multi-agent-protocol-examples.md)
-- 架构说明：[docs/architecture.md](docs/architecture.md)
-- Kernel/User/Driver 边界：[docs/architecture/kernel-user-driver-boundaries.md](docs/architecture/kernel-user-driver-boundaries.md)
-- 当前状态：[docs/architecture/current-state.md](docs/architecture/current-state.md)
-- 扩展指南：[docs/extensions.md](docs/extensions.md)
-- Capability authoring：[docs/capability-authoring.md](docs/capability-authoring.md)
-- Agent authoring：[docs/agent-authoring.md](docs/agent-authoring.md)
-- Connection control plane：[docs/connection-control-plane.md](docs/connection-control-plane.md)
-- OS Kernel：[docs/os-kernel.md](docs/os-kernel.md)
-- Runtime Materializer：[docs/runtime-materializer.md](docs/runtime-materializer.md)
-- Investment workflow：[docs/investment-research-workflow.md](docs/investment-research-workflow.md)
-- Security and permissions：[docs/security-and-permissions.md](docs/security-and-permissions.md)
-- Capability security roadmap：[docs/security/capability-security-roadmap.md](docs/security/capability-security-roadmap.md)
-- Dashboard：[docs/dashboard.md](docs/dashboard.md)
-- PheroOS signal spec：[docs/swarm_signal_spec.md](docs/swarm_signal_spec.md)
-- Known gaps：[docs/known-gaps.md](docs/known-gaps.md)
-- Living plan：[PLANS.md](PLANS.md)
-- 贡献指南：[CONTRIBUTING.md](CONTRIBUTING.md)
-- 安全策略：[SECURITY.md](SECURITY.md)
-- 许可证：[LICENSE](LICENSE)
+PheroOS defines protocol-governed infrastructure for running multi-agent
+systems where tools, models, data, evidence, recovery, quorum, and publication
+are controlled by explicit contracts. The repository contains:
 
-主要扩展点：
+- PheroOS Protocol: versioned contracts for capabilities, evidence, tools,
+  quorum, recovery, output, and trace.
+- PheroOS Kernel: reference authority layer for planning, permissions,
+  capability loading, runtime materialization, and governance boundaries.
+- PheroOS Reference Runtime: local implementation used to exercise the protocol
+  and compatibility layer.
+- PheroOS Driver Model: adapter boundary for model, tool, data, storage, and
+  sandbox providers.
+- PheroOS Conformance Suite: CLI and tests for protocol/capability compatibility.
 
-- `capabilities/*/capability.json`：AI OS Capability 插件声明，是模型、工具、数据源、skills 的统一扩展单元
-- `capabilities/*/agents/*.json`：可插拔 Agent 声明，投资委员会成员由这里装配
-- `runtime.capability_registry.CapabilityRegistry`：扫描本地已审核 capabilities
-- `runtime.agent_registry.AgentRegistry`：扫描 capability 内的 agent manifests
-- `runtime.os_kernel.OSKernel`：根据用户需求规划能力缺口、自动启用低风险 capability、生成下一轮 runtime plan
-- `runtime.permission_policy`：集中控制 capability 权限和确认策略
-- `runtime.ports.ChatModelClient`：替换模型网关
-- `runtime.ports.ToolExecutor`：替换或包装工具执行
-- `runtime.ports.SkillRegistry`：替换 skill registry
-- `runtime.factory.build_runtime`：组装运行时
-- `ToolRegistry(extra_tools=..., extra_tool_manifest=...)`：注册外部工具
-- `/platform/config`：Dashboard-managed BYOK/BYOD connection registry
-- `/platform/connections/*`：AI-as-OS connection control plane，负责 key 识别、连接测试、能力发现、确认激活和热生效
+## Core Principle
 
-## 当前已实现
+Agents can propose observations, plans, evidence, tool calls, risks, recovery
+actions, and drafts. They cannot directly create verified facts, hard blockers,
+committed candidates, publication permission, or final authority.
 
-- `GET /health`
-- `POST /agents/run`
-- `GET /skills`
-- `GET /skills/{name}`
-- `GET /tools`
-- `GET /platform/config`
-- `POST /platform/connections/infer`
-- `POST /platform/connections/confirm`
-- `GET /platform/connections`
-- `POST /platform/connections/{id}/test`
-- `POST /platform/connections/{id}/discover`
-- `GET /platform/capabilities`
-- `GET /platform/agents`
-- `GET /platform/capability-catalog`
-- `POST /platform/capabilities/resolve`
-- `POST /platform/capabilities/enable`
-- `POST /platform/capabilities/{id}/disable`
-- `GET /platform/capabilities/active`
-- `POST /platform/os/plan`
-- `PUT /platform/model-providers/{id}`
-- `PUT /platform/data-sources/{id}`
-- `GET /wrds/status`
-- `GET /wrds/libraries`
-- `POST /wrds/tables`
-- `POST /wrds/describe`
-- `POST /wrds/query`
-- `POST /wrds/company/search`
-- `POST /wrds/company/financials`
-- LangGraph 日常节点：orchestrator -> memory_agent -> executor -> research_agent -> quant_agent -> domain_expert -> critic -> writer -> final_judge
-- 投资委员会节点：orchestrator -> executor -> research_agent -> quant_agent -> committee_opening -> committee_discussion -> investment_committee -> critic -> writer -> final_judge
-- 投资委员会席位升级为 Jane Street 风格八席：CIO、Data Auditor、Fundamental Analyst、Quant Researcher、Industry Strategist、Market Execution、Risk Manager、Red Team
-- PheroOS governance caste 已插件化并可视化：Swarm Scheduler、Receiver Normalizer、Evidence Steward、Quorum Marshal、Social Immunity、Protocol Police、Tool Health Sentinel、Outcome Memory Steward、Capability Sandbox Auditor、Independent Scout
-- Governance caste 不作为普通分析委员消耗 token；它们在 LangGraph 安全边界以确定性 actor 运行，负责接收/归一化、证据链接、工具健康、capability 沙箱、社会免疫、worker policing、quorum commit 和 outcome learning
-- 委员会 opening 阶段 Data Auditor 先出数据/来源审计包，后续委员会收到已有委员输出作为上下文；Data Auditor 和 Risk Manager 均有 hard veto 权限
-- 日常 multi-agent 分工：总控拆解和控成本，Memory 只取上下文，Executor 只跑工具，Research 只抽证据，Quant 只算数据，Domain Expert/投资委员会做专业判断，Critic 反驳验证，Writer 负责成稿，Final Judge 做 GLM 事实/逻辑把关
-- LiteLLM/OpenAI-compatible 客户端：`runtime/llm.py`
-- `skills/*/SKILL.md` loader 和 keyword matching
-- 安全工具层：`list_files`、`read_file`、`write_file`、`run_pytest`
-- 联网工具层：`provider_web_search`、`web_search`、`fetch_url`
-- executor 会执行 Orchestrator plan 中的 `tool_calls`；没有 `tool_calls` 时会让 Executor Agent 选择受控工具
-- 示例 skill：`skills/fastapi-api/SKILL.md`
-- 联网 skill：`skills/web-research/SKILL.md`
-- 价值投资研究 skill：`skills/value-investing-research/SKILL.md`
-- WRDS 专业数据 skill：`skills/wrds-data/SKILL.md`
-- AI OS Kernel：用户输入需求后自动规划需要的模型、金融数据、工具、skills capability；低风险本地 capability 自动启用，高风险 capability 需要确认
-- 通用任务 taxonomy：`investment_analysis`、`portfolio_review`、`financial_data_retrieval`、`web_research`、`code_development`、`document_writing`、`data_analysis`、`general_chat`
-- Capability 插件目录：`capabilities/*/capability.json`，已内置 `ai-model-provider`、`wrds-financial-data`、`value-investing-research`、`web-research`、`fastapi-api`
-- Agent 插件目录：`capabilities/*/agents/*.json`，Dashboard 的 `Agent Plugins` 面板会展示这些 agent，用户可用 `AI choose` / `Core` / `All` 或手动勾选来组成投资委员会，并通过 `metadata.committee_member_ids` 热生效到下一轮 run
-- Dashboard 的 `Agent Plugins` 现在区分可选投资委员会席位和 OS-level Governance Actors；后者由 PheroOS 协议自动运行，不被用户误选为 analyst
-- WRDS Agent：单独负责从 WRDS/Compustat/CRSP/IBES 等专业数据库获取只读数据，不参与投资判断或最终建议
-- 公司名/股票名输入会自动触发 WRDS 公司解析和 Compustat 年度财务数据预取；投资分析默认 `WRDS_ONLY`，不会调用 `provider_web_search` / `web_search` / `fetch_url`
-- Metric Registry 会把 CRSP、IBES、Compustat Segment 和 peer comparison 等 WRDS 数据包转换成确定性 `street_eps`、`segment_*`、`peer_*` 指标；Data Gate 会分别控制 forward valuation、segment claims、peer valuation 是否允许进入正式报告
-- 联网研究默认保留用户原始语言，不再强制英文翻译或英文来源
-- 非投资联网研究默认优先使用 GLM/Z.AI 原生 Web Search（经 LiteLLM 透传 `tools: [{"type":"web_search"}]`），失败时自动回退到本地 `web_search`
-- 已知公司/股票输入会自动进入 WRDS-only 投资路径；只有显式选择 `web-research` 且不是投资分析时才走联网资料
-- 代理为可选配置；默认直连公网，不再强制使用 Misty/V2Ray 端口
-- 网页抓取会优先提取正文内容，并支持 PDF 年报/演示稿文本抽取
-- web research 搜索后会自动抓取候选来源正文；没有抓到正文时 Critic 会降级为 `needs_sources`
-- 运行审计日志：默认写入 `logs/agent_runs.jsonl`，记录 run_id、每个 agent 的模型/耗时/失败原因、工具调用摘要、Research/Quant/Committee/Domain/Critic 输出；写入前会递归 redaction，避免 secret-like 内容落盘
-- First-class run trace：`GET /runs/{run_id}/trace?tenant_id=...` 会在 tenant 校验后聚合 redacted audit summary、PheroOS timeline、pheromone snapshot、quorum、Evidence Graph、agent allocation、tool events 和 permission events
-- PheroOS 全局视图也按 tenant 过滤：`/platform/swarm/signals`、`/platform/swarm/events`、`/platform/swarm/agent-profiles` 支持 `tenant_id`，旧本地记录默认归属 `default`
-- 前端 Agent Trace 展示 `Agent Metrics`，可直接查看每个 agent 的耗时、模型名、是否实际调用模型和失败原因
-- Multi-agent 分工审计清单：`docs/multi-agent-audit-checklist.md`
-- pytest 覆盖：skill loader、safe tools、API、mocked graph run
+Those decisions belong to protocol and kernel-mode governance.
 
-## 模型路由
-
-默认使用 GLM + MiniMax：
-
-- `glm-5.1`：Orchestrator、Memory、Research、Quant、CIO、Data Auditor、Fundamental Analyst、Quant Researcher、Industry Strategist、Risk Manager、Investment Committee、Domain Expert、Final Judge
-- `minimax-m2.7`：Executor、Market Execution、Red Team、Committee Discussion、Critic、Writer
-- GLM 与 MiniMax 都支持多级自动 fallback：GLM 角色默认先试 `glm-5.1-standard` 再切 `minimax-m2.7`；MiniMax 角色遇到上下文窗口、限流、余额/资源包、超时或临时上游错误时会切到 `glm-5.1-standard` / `glm-5.1`
-- Research / Quant / Committee / Critic / Writer / Final Judge 等模型节点统一走 fallback-aware chat path，避免单个 provider 短暂失败中断整次 run
-- Python/工具层：真实执行和可追踪操作
-
-`configs/litellm.yaml` 已配置：
-
-- `glm-5.1` -> 智谱 CN Coding Plan endpoint `https://open.bigmodel.cn/api/coding/paas/v4`，上游模型名 `GLM-5.1`
-- `glm-5.1-standard` -> 智谱 CN standard endpoint `https://open.bigmodel.cn/api/paas/v4`，上游模型名 `glm-5.1`
-- `glm-5.1-coding` -> 同 `glm-5.1`，显式 coding alias
-- `minimax-m2.7` -> MiniMax CN OpenAI-compatible endpoint `https://api.minimaxi.com/v1`，上游模型名 `MiniMax-M2.7`
-
-MiniMax 国际 Token Plan key 通常使用 `https://api.minimax.io/v1`；你当前本地配置使用的是 MiniMax 中国开放平台 key，因此走 `https://api.minimaxi.com/v1`。
-
-可用环境变量调整全局 fallback 顺序：
-
-```bash
-GLM_FALLBACK_MODELS=glm-5.1-standard,minimax-m2.7
-MINIMAX_FALLBACK_MODELS=glm-5.1-standard,glm-5.1
-DEFAULT_FALLBACK_MODELS=
-MODEL_GATEWAY_INTERNAL_FALLBACK=false
-```
-
-默认由 LangGraph 节点层执行 fallback，这样 Agent Metrics 会记录 `fallback from ...`。`MODEL_GATEWAY_INTERNAL_FALLBACK=true` 只建议给非 graph 的低层模型调用使用。
-
-开发模式仍可把密钥放在本地 `.env.local`：
-
-```bash
-ZHIPU_API_KEY="..."
-MINIMAX_API_KEY="..."
-WRDS_USERNAME="..."
-WRDS_PASSWORD="..."
-```
-
-`.env.local` 已加入 `.gitignore`，不要把真实 key 写进 README、代码或测试。
-
-产品模式推荐通过 Dashboard 粘贴 key/凭据：
+## Architecture At A Glance
 
 ```text
-User intent + raw credential
--> provider inference
--> connection test / capability discovery
--> user confirmation
--> active connection + enabled capability
--> next /agents/run hot materializes RuntimeContext
+User Request
+  -> InputEnvelope
+  -> OSKernel
+  -> RuntimeMaterializer
+  -> Capability Loader
+  -> Driver Registry / ToolRegistry
+  -> PheroOS Governance Loop
+  -> EvidenceGraph
+  -> StopSignal / Recovery / Quorum
+  -> Writer Contract
+  -> FinalJudge Contract
+  -> Final Output + Trace
 ```
 
-原始 secret 不进入 agent prompt、日志或前端响应；API 只返回 provider、configured、last4 和 capability 摘要。
+AI-as-OS handles resources, permissions, connections, capabilities, tools,
+agents, and runtime context.
 
-产品路径推荐从 Dashboard 粘贴 key，让 AI-as-OS 控制平面自动识别、测试、确认并热生效。默认 OSS/self-host 模式会把确认后的 secret 写入 `.local/secrets.json` 并用本地 secret key 加密；生产可设置 `PLATFORM_SECRET_STORE_BACKEND=vault`，通过 Vault KV-v2 adapter 只在本地连接记录里保存 `vault:*` secret handle。
+PheroOS handles signals, target pressure, evidence, stop signals, quorum,
+recovery, output contracts, and trace/debugger explanations.
 
-AI-as-OS 现在会根据用户提供的模型 key 自动配置路由和 fallback：
+## Public Surfaces
 
-- GLM/Zhipu key：判断、研究、估值、Final Judge 优先 GLM，并自动配置 MiniMax/OpenAI/Claude 等可用 provider 作为 fallback
-- MiniMax key：执行、写作、Critic 优先 MiniMax；如果只提供 MiniMax，所有角色自动降级到 MiniMax
-- OpenAI key：自动识别为 OpenAI provider，默认模型族从 `/models` 发现，无法发现时使用内置 GPT 候选；所有 agent 自动路由到 OpenAI
-- Claude/Anthropic key：自动识别为 Anthropic provider，支持 native `/messages` 调用；所有 agent 自动路由到 Claude，或与 OpenAI/MiniMax/GLM 组成 fallback 链
-- 多 provider 同时存在时：OS Kernel / Runtime Materializer 每次 run 热生成 tenant-scoped `ModelConfig`，不需要用户手写 `.env` 或重启服务
+| Surface | Purpose |
+| --- | --- |
+| PheroOS Protocol | Versioned protocol contracts for governed multi-agent runtime behavior. |
+| PheroOS Kernel | Authority layer for validation, permissioning, materialization, and governance. |
+| PheroOS Governance | Signal, evidence, stop-signal, quorum, recovery, output, and trace subsystems. |
+| Capability ABI | Manifest and entrypoint contract for third-party capabilities. |
+| Driver Model | Adapter boundary for model, tool, data, storage, and sandbox providers. |
+| Conformance Suite | Checks that capabilities and runtime surfaces obey protocol/kernel rules. |
+| Reference Runtime | Local implementation used to run and test PheroOS-compatible capabilities. |
 
-## 本机模型 fallback
+## AI-as-OS Vs PheroOS
 
-已检测到的 Ollama 模型：
+AI-as-OS is the operating-system layer for resources and execution. It plans
+capability availability, grants permissions, resolves connections, exposes
+tools, selects agents, and materializes a tenant-scoped runtime context.
 
-- `gemma4:e4b`
-- `gemma4:26b`
-- `bge-m3:latest`
+PheroOS is the governance layer. It decides which signals count, which targets
+are pressured, which evidence is usable, which stop signals block execution,
+which candidate can be committed, which recovery path is allowed, which output
+mode is permitted, and which trace explains the result.
 
-`configs/litellm.yaml` 默认把：
+## PheroOS As An AI Operating-System Kernel
 
-- `local-fast` 指向 `ollama/gemma4:e4b`
-- `local-coder` 指向 `ollama/gemma4:e4b`
-- `local-reviewer` 指向 `ollama/gemma4:26b`
+PheroOS separates user-mode proposals, kernel-mode authority, and driver-mode
+capability.
 
-## 安装
+| Mode | Examples | Authority |
+| --- | --- | --- |
+| User mode | agents, capability workflows, model-generated plans, model-generated evidence proposals, model-generated drafts | Can propose. |
+| Kernel mode | protocol validation, permission grants, tool exposure, signal verification, stop-signal resolution, evidence checks, quorum commit, recovery outcome, output authorization, trace explanation | Can verify, block, commit, recover, publish, and explain. |
+| Driver mode | model providers, tool providers, data providers, storage providers, sandbox providers | Can return structured capability; cannot author final conclusions. |
+
+User-mode agents can propose. Kernel-mode services verify, block, commit,
+recover, publish, and explain. Driver-mode adapters return structured
+capability, but do not author final conclusions.
+
+## Protocol ABI
+
+PheroOS-compatible capabilities declare behavior through versioned protocol
+manifests. A manifest may declare:
+
+- intents
+- required capability types
+- permissions
+- connections
+- agent roles
+- tool contracts
+- data-provider contracts
+- evidence policy
+- signal lifecycle
+- canonical targets
+- stop-signal policy
+- candidate set
+- quorum policy
+- recovery protocols
+- output contract
+- trace requirements
+
+Illustrative generic protocol fragment:
+
+```json
+{
+  "protocol_version": "pheroos.protocol.v0.1",
+  "id": "example.review",
+  "targets": [
+    {"id": "decision:review"}
+  ],
+  "candidates": [
+    {"id": "candidate:approve"},
+    {"id": "candidate:reject"},
+    {"id": "candidate:insufficient_evidence", "safe_fallback": true}
+  ],
+  "quorum_policy": {
+    "target": "decision:review",
+    "fallback_candidate": "candidate:insufficient_evidence"
+  }
+}
+```
+
+A candidate cannot be committed unless it is declared by the active protocol.
+
+Protocol docs:
+
+- [Protocol overview](docs/protocol/overview.md)
+- [Protocol spec v0.1](docs/protocol/protocol-spec-v0.1.md)
+- [Capability manifest](docs/protocol/capability-manifest.md)
+- [Evidence contract](docs/protocol/evidence-contract.md)
+- [Quorum contract](docs/protocol/quorum-contract.md)
+- [Recovery contract](docs/protocol/recovery-contract.md)
+- [Output contract](docs/protocol/output-contract.md)
+- [Trace contract](docs/protocol/trace-contract.md)
+
+## Capability ABI
+
+Third-party capabilities should be addable without editing kernel/runtime
+governance files. The expected shape is:
+
+```text
+capabilities/my-capability/
+  capability.json
+  workflow.py
+  data_contract.py
+  evidence_adapter.py
+  runtime_nodes.py
+  agents/*.json
+```
+
+Capability authors should not need to edit:
+
+- `runtime/graph.py`
+- `runtime/swarm/quorum.py`
+- `runtime/swarm/recovery_engine.py`
+- `runtime/writer_guardrails.py`
+- `runtime/final_judge_guardrails.py`
+
+See [capability authoring](docs/capability-authoring.md) and
+[capability manifest docs](docs/protocol/capability-manifest.md).
+
+## Driver Model
+
+Drivers provide capability. Protocol provides authority.
+
+| Driver | Purpose |
+| --- | --- |
+| ModelDriver | Model provider access through the configured model gateway boundary. |
+| ToolDriver | Controlled tool execution through explicit registry contracts. |
+| DataProviderDriver | Structured data with provenance, freshness, license, and adapter metadata. |
+| StorageDriver | Trace and artifact persistence. |
+| SandboxDriver | Restricted third-party execution. Planned beyond the current local runtime. |
+
+See [driver model](docs/drivers/driver-model.md).
+
+## Governance Subsystems
+
+| Subsystem | Responsibility |
+| --- | --- |
+| Signal Protocol | Proposal, verification, contamination, and resolution. |
+| Target Pressure | Runtime scheduling pressure for unresolved targets. |
+| Stop Signals | Block tools, candidates, output, or publication. |
+| Evidence Graph | Provenance, support/challenge links, contradictions, and evidence gaps. |
+| Quorum | Commit only protocol-declared candidates. |
+| Recovery | Recover by protocol-declared roles, tags, and tools. |
+| Output Contract | Restrict Writer and FinalJudge behavior. |
+| TraceStore | Explain why something happened. |
+
+Governance docs:
+
+- [Kernel/User/Driver boundaries](docs/architecture/kernel-user-driver-boundaries.md)
+- [Swarm governance](docs/swarm-governance.md)
+- [Signal spec](docs/swarm_signal_spec.md)
+- [Evidence contract](docs/protocol/evidence-contract.md)
+- [Output contract](docs/protocol/output-contract.md)
+- [Trace contract](docs/protocol/trace-contract.md)
+
+## Minimal Quickstart
+
+The current reference runtime includes a no-key minimal distro. It uses the
+`toy-review` protocol, deterministic mock model/tool drivers, local JSONL trace
+storage, no network access, and no secrets.
 
 ```bash
-cd /Users/scottxie/Desktop/multi-agent
+git clone https://github.com/Ju1se/PheroOS.git
+cd PheroOS
 python3 -m venv .venv
-.venv/bin/pip install -e ".[dev]"
+. .venv/bin/activate
+pip install -e ".[dev]"
+
+pheroos init minimal ./minimal-workspace
+pheroos run "review this claim: SQLite is an embedded database" --distro minimal --workspace ./minimal-workspace
+pheroos trace latest --workspace ./minimal-workspace
 ```
 
-如果要在本机启动 LiteLLM Proxy：
-
-```bash
-.venv/bin/pip install -e ".[proxy]"
-export LITELLM_MASTER_KEY="sk-local-master-key"
-export ZAI_API_KEY="你的智谱 CN API Key"
-export MINIMAX_API_KEY="你的 MiniMax API Key"
-export NO_PROXY="127.0.0.1,localhost"
-export no_proxy="127.0.0.1,localhost"
-.venv/bin/litellm --config configs/litellm.yaml --port 4000
-```
-
-也可以直接用脚本：
+Reference runtime setup for provider-backed local development:
 
 ```bash
 scripts/start_litellm.sh
-```
-
-## 启动 API
-
-```bash
-export LITELLM_BASE_URL="http://127.0.0.1:4000/v1"
-export LITELLM_MASTER_KEY="sk-local-master-key"
-export NO_PROXY="127.0.0.1,localhost"
-export no_proxy="127.0.0.1,localhost"
-# 可选：需要代理时再设置 WEB_PROXY_URL / WEB_PROXY_REQUIRED
-export WEB_PROXY_REQUIRED="false"
-export WEB_SEARCH_ENGLISH_ONLY="false"
-.venv/bin/uvicorn app.main:app --reload --port 8000
-```
-
-也可以直接用脚本：
-
-```bash
 scripts/start_api.sh
 ```
 
-打开前端：
+Provider configuration lives in [configs/litellm.yaml](configs/litellm.yaml).
+Connection activation and secret handling are described in
+[connection control plane](docs/connection-control-plane.md) and
+[security and permissions](docs/security-and-permissions.md).
+
+## Conformance
+
+The initial conformance CLI is implemented for manifest/protocol compatibility:
+
+```bash
+pheroos validate capabilities/toy-review/capability.json
+pheroos conformance capabilities/toy-review
+pheroos-conformance capabilities/toy-review
+```
+
+Current checks include:
+
+- manifest schema
+- protocol validation
+- candidate declarations
+- quorum fallback
+- recovery protocol
+- tool contracts
+- output contract
+- trace contract
+- domain-neutral public ABI guard
+- domain-neutral core runtime governance guard
+
+See [conformance suite](docs/conformance/conformance-suite.md) and
+[tests/conformance](tests/conformance).
+
+## Reference Capabilities
+
+| Capability | Role |
+| --- | --- |
+| `toy-review` | Minimal no-key protocol/conformance example. |
+| `web-research` | Evidence-gathering example for sourced public-web answers. |
+| `code-development` | Tool-assisted coding example with test, security, and patch gates. |
+| `wrds-financial-data` | Reference `DataProviderDriver` for licensed financial data. |
+| `value-investing-research` | Reference decision protocol for governed investment analysis. |
+
+WRDS and value investing are examples. They are not PheroOS kernel concepts.
+
+Reference examples:
+
+- [Open multi-agent protocol examples](docs/examples/open-multi-agent-protocol-examples.md)
+- [Generic research protocol](docs/protocol/examples/generic-research-protocol.md)
+- [Minimal toy protocol](docs/protocol/examples/minimal-toy-protocol.md)
+- [WRDS provider adapter](docs/protocol/examples/wrds-provider-adapter.md)
+- [Value investing reference](docs/protocol/examples/value-investing-reference.md)
+
+## Security Model
+
+Current local controls:
+
+- manifest validation
+- permission declarations
+- ToolRegistry boundary
+- model gateway boundary
+- secret redaction
+- connection-scoped runtime materialization
+- trace redaction
+- capability diagnostics
+
+Planned controls:
+
+- signed capabilities
+- capability provenance
+- revocation metadata
+- sandboxed third-party drivers
+- network/filesystem allowlists with runtime enforcement
+- WASM host-call boundary
+
+Signed capabilities, sandboxed third-party execution, and network/filesystem
+policy enforcement are not claimed as implemented in the current local runtime.
+
+See [security and permissions](docs/security-and-permissions.md) and
+[capability security roadmap](docs/security/capability-security-roadmap.md).
+
+## Documentation Map
+
+| Area | Links |
+| --- | --- |
+| Protocol docs | [overview](docs/protocol/overview.md), [spec v0.1](docs/protocol/protocol-spec-v0.1.md), [migration](docs/protocol/migration-from-current-pheroos.md) |
+| Kernel docs | [kernel overview](docs/kernel/kernel-overview.md), [kernel syscalls](docs/kernel/kernel-syscalls.md), [OS plan contract](docs/kernel/os-plan-contract.md), [runtime context contract](docs/kernel/runtime-context-contract.md), [kernel/user/driver boundaries](docs/architecture/kernel-user-driver-boundaries.md) |
+| Capability docs | [capability authoring](docs/capability-authoring.md), [capability runtime](docs/capability_runtime.md), [capability agent roadmap](docs/capability-agent-roadmap.md) |
+| Driver docs | [driver model](docs/drivers/driver-model.md) |
+| Security docs | [security and permissions](docs/security-and-permissions.md), [capability security roadmap](docs/security/capability-security-roadmap.md), [security policy](SECURITY.md) |
+| Conformance docs | [conformance suite](docs/conformance/conformance-suite.md), [conformance tests](tests/conformance) |
+| Examples | [examples](docs/examples/open-multi-agent-protocol-examples.md), [protocol examples](docs/protocol/examples), [minimal distro](distros/minimal/README.md) |
+| Development docs | [contributing](CONTRIBUTING.md), [known gaps](docs/known-gaps.md), [acceptance audit](docs/pheroos-acceptance-audit.md) |
+
+## Repository Map
 
 ```text
-http://127.0.0.1:8000
+runtime/           Reference runtime, OS kernel, materialization, graph bridge.
+runtime/swarm/     PheroOS governance subsystems and compatibility policies.
+capabilities/      Capability manifests, protocol blocks, workflows, adapters.
+tools/             Tool/provider adapters behind controlled execution boundaries.
+pheroos/           Public CLI, protocol helpers, minimal distro, driver ABI modules.
+distros/           Reference distro manifests and docs.
+schemas/           Draft PheroOS protocol/capability/evidence/signal/trace schemas.
+docs/protocol/     Public protocol contracts and examples.
+docs/kernel/       Kernel ABI and runtime materialization contracts.
+docs/examples/     Reference multi-agent protocol examples.
+tests/conformance/ PheroOS public ABI and conformance tests.
+pips/              Draft PheroOS Improvement Proposal process and ABI proposals.
 ```
 
-API 文档：
+## Project Status
 
-```text
-http://127.0.0.1:8000/docs
-```
+Status labels: `implemented` means present in the reference runtime, not stable
+public API; `draft` means present but still evolving; `experimental` means
+usable for local/reference testing; `planned` means not implemented here yet.
 
-健康检查：
+| Area | Status | Notes |
+| --- | --- | --- |
+| Protocol manifest v0.1 | draft | Schemas, loader, and docs exist; compatibility is still evolving. |
+| Reference runtime | experimental | Local FastAPI/LangGraph-backed runtime and compatibility bridge. |
+| Capability loading | implemented | Capability manifests are discovered and validated by the runtime. |
+| OSKernel planning | experimental | Plans capabilities, permissions, connections, and readiness. |
+| Runtime materialization | experimental | Builds tenant-scoped runtime context from kernel plans. |
+| ToolRegistry boundary | implemented | Tools are registered and invoked through controlled boundaries. |
+| PheroOS governance loop | experimental | Signal, target, recovery, quorum, and output governance exist in `runtime/swarm`. |
+| Evidence graph | experimental | Evidence graph and contracts exist; public ABI is still draft. |
+| Stop signals | experimental | Stop-signal policies and runtime enforcement paths exist. |
+| Quorum | experimental | Protocol-declared candidates are the intended authority boundary. |
+| Recovery | experimental | Recovery policies are moving toward protocol-declared roles/tools. |
+| Writer / FinalJudge contracts | experimental | Guardrails exist; protocol-first enforcement remains under active hardening. |
+| Minimal distro | draft | No-key `init` / `run` / `trace` path is implemented; distro ABI is still evolving. |
+| Conformance suite | draft | CLI checks and conformance tests exist; deeper levels are planned. |
+| Signed capabilities | planned | Roadmap only. |
+| Sandboxed capabilities | planned | Roadmap only. |
+| Stable public ABI | draft | PIPs and schemas exist; do not treat the ABI as final. |
 
-```bash
-curl http://127.0.0.1:8000/health
-```
+See [known gaps](docs/known-gaps.md) for current limitations.
 
-查看 skills：
+## Contributing
 
-```bash
-curl http://127.0.0.1:8000/skills
-```
+Protocol, kernel ABI, driver model, security model, trace contract, and
+conformance changes should go through the PheroOS Improvement Proposal process.
+The PIP process exists as a draft in [PIP-0001](pips/PIP-0001-process.md).
 
-查看 tools：
+For general contribution guidance, see [CONTRIBUTING.md](CONTRIBUTING.md).
 
-```bash
-curl http://127.0.0.1:8000/tools
-```
+## License
 
-检查 WRDS 配置：
-
-```bash
-curl "http://127.0.0.1:8000/wrds/status?check_connection=true"
-```
-
-列出 WRDS libraries/schemas：
-
-```bash
-curl "http://127.0.0.1:8000/wrds/libraries?pattern=comp&max_results=20"
-```
-
-执行只读 WRDS SQL：
-
-```bash
-curl http://127.0.0.1:8000/wrds/query \
-  -H "Content-Type: application/json" \
-  -d '{
-    "sql": "select gvkey, datadate, fyear, tic, conm, at, sale, ni from comp.funda where tic = '\''AAPL'\'' order by datadate desc",
-    "max_rows": 5
-  }'
-```
-
-按公司名/代码自动解析并取 Compustat 财务数据：
-
-```bash
-curl http://127.0.0.1:8000/wrds/company/financials \
-  -H "Content-Type: application/json" \
-  -d '{
-    "query": "沪电股份",
-    "max_years": 5
-  }'
-```
-
-输入公司名时，Orchestrator 会把 WRDS 预取插入计划第一步：
-
-```text
-wrds_company_financials -> data_gate -> deterministic research/quant -> investment committee
-```
-
-通过 Agent 调用 WRDS：
-
-```bash
-curl http://127.0.0.1:8000/agents/run \
-  -H "Content-Type: application/json" \
-  -d '{
-    "task": "用 WRDS 查询 Compustat 中 AAPL 最近 5 条年度财务数据",
-    "skill_names": ["wrds-data"]
-  }'
-```
-
-WRDS Agent 安全边界：
-
-```text
-只允许 SELECT/WITH 查询
-拒绝多语句和写入/删除/修改类 SQL
-默认限制返回行数，最高 500 行
-不会在日志、前端或报告中输出 WRDS 账号密码
-```
-
-联网 research 示例：
-
-```bash
-curl http://127.0.0.1:8000/agents/run \
-  -H "Content-Type: application/json" \
-  -d '{
-    "task": "分析药明康德",
-    "skill_names": ["web-research"]
-  }'
-```
-
-默认联网策略：
-
-```text
-用户原始问题 -> Orchestrator 选择搜索 query -> provider_web_search
-provider_web_search 通过 LiteLLM 调用 GLM/Z.AI 原生 Web Search
-provider_web_search 失败 -> 自动 fallback 到本地 web_search
-web_search/fetch_url 默认直连公网；仅在 WEB_PROXY_URL 配置后使用代理
-过滤词典页、低相关结果、内网/localhost/private IP
-```
-
-Provider-native web search 可用环境变量：
-
-```bash
-PROVIDER_WEB_SEARCH_ENABLED=true
-PROVIDER_WEB_SEARCH_MODEL=glm-5.1-standard
-PROVIDER_WEB_SEARCH_ENGINE=search-prime
-PROVIDER_WEB_SEARCH_RECENCY_FILTER=noLimit
-PROVIDER_WEB_SEARCH_CONTENT_SIZE=medium
-PROVIDER_WEB_SEARCH_MAX_RESULTS=5
-```
-
-运行 agent：
-
-```bash
-curl http://127.0.0.1:8000/agents/run \
-  -H "Content-Type: application/json" \
-  -d '{
-    "task": "Build a FastAPI file upload endpoint with tests.",
-    "skill_names": ["fastapi-api"]
-  }'
-```
-
-## 测试
-
-```bash
-.venv/bin/pytest
-```
-
-浏览器级 dashboard 视觉回归测试：
-
-```bash
-npm install
-npx playwright install chromium
-npm run test:visual
-```
-
-这组测试会启动本地 FastAPI、用 Chromium 覆盖 desktop/mobile 视口、mock
-后端 API，并校验首页 compose、OS setup / agent 插件面板、Research Trace /
-Swarm Governance 面板的布局契约。截图工件写入
-`output/playwright/visual-regression/`。
-
-当前验证结果：
-
-```text
-167 pytest passed
-6 Playwright visual tests passed
-```
-
-## 可选：直连 Ollama Wrapper
-
-`server.py` 是前一步创建的零依赖 Ollama OpenAI-compatible wrapper。它可以单独启动：
-
-```bash
-python3 server.py
-```
-
-这个文件适合临时把 Ollama 暴露成 `http://127.0.0.1:8000/v1`，但正式 runtime 路径应该通过 LiteLLM：
-
-```text
-runtime/llm.py -> LiteLLM Proxy -> Ollama/LM Studio/vLLM/OpenAI
-```
+PheroOS is distributed under the terms in [LICENSE](LICENSE).
