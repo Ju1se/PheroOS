@@ -15,7 +15,7 @@ from app.routes.wrds import router as wrds_router
 
 
 def create_app() -> FastAPI:
-    app = FastAPI(title="Local Agent Platform", version="0.1.0")
+    app = FastAPI(title="PheroOS", version="0.1.0")
     app.mount("/static", StaticFiles(directory=STATIC_ROOT), name="static")
     app.include_router(frontend_router)
     app.include_router(health_router)

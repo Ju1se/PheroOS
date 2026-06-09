@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.pheroos.dev/pheroos.protocol.v0.1.schema.json",
+  "title": "PheroOS Protocol Manifest",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "version": {"type": "string"},
+    "intents": {"type": "array", "items": {"type": "string"}},
+    "intent_keywords": {
+      "type": "object",
+      "additionalProperties": {"type": "array", "items": {"type": "string"}}
+    },
+    "required_capability_types": {"type": "array", "items": {"type": "string"}},
+    "required_capability_types_by_intent": {
+      "type": "object",
+      "additionalProperties": {"type": "array", "items": {"type": "string"}}
+    },
+    "targets": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/target"}
+    },
+    "candidates": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/candidate"}
+    },
+    "quorum_policy": {"type": "object"},
+    "stop_signal_policy": {"type": "object"},
+    "recovery_protocols": {
+      "type": "array",
+      "items": {"type": "object"}
+    },
+    "evidence_policy": {"type": "object"},
+    "tool_policy": {"type": "object"},
+    "output_policy": {"type": "object"},
+    "swarm_loop_policy": {"type": "object"}
+  },
+  "$defs": {
+    "target": {
+      "type": "object",
+      "required": ["target"],
+      "additionalProperties": true,
+      "properties": {
+        "target": {"type": "string", "minLength": 1},
+        "target_type": {"type": "string"},
+        "aliases": {"type": "array", "items": {"type": "string"}},
+        "compatible_intents": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "candidate": {
+      "type": "object",
+      "required": ["candidate"],
+      "additionalProperties": true,
+      "properties": {
+        "candidate": {"type": "string", "minLength": 1},
+        "label": {"type": "string"},
+        "target": {"type": "string"},
+        "safe_fallback": {"type": "boolean"},
+        "blocked_by_targets": {"type": "array", "items": {"type": "string"}},
+        "required_evidence_targets": {"type": "array", "items": {"type": "string"}}
+      }
+    }
+  }
+}

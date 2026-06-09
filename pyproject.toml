@@ -3,13 +3,21 @@ requires = ["setuptools>=69"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "local-agent-platform"
+name = "pheroos"
 version = "0.1.0"
-description = "Local multi-agent runtime with FastAPI, LangGraph, LiteLLM, and SKILL.md skills."
+description = "Protocol-governed AI-as-OS kernel and reference multi-agent runtime."
 readme = "README.md"
 requires-python = ">=3.12,<3.15"
 license = { file = "LICENSE" }
-keywords = ["agents", "multi-agent", "langgraph", "litellm", "wrds", "fastapi"]
+keywords = [
+  "ai-os",
+  "multi-agent",
+  "agent-protocol",
+  "governance",
+  "capability-runtime",
+  "agent-kernel",
+  "pheroos",
+]
 dependencies = [
   "fastapi>=0.116.0",
   "httpx>=0.28.0",
@@ -20,9 +28,9 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/local-agent-platform/local-agent-platform"
-Documentation = "https://github.com/local-agent-platform/local-agent-platform/tree/main/docs"
-Issues = "https://github.com/local-agent-platform/local-agent-platform/issues"
+Homepage = "https://github.com/Ju1se/PheroOS"
+Documentation = "https://github.com/Ju1se/PheroOS/tree/main/docs"
+Issues = "https://github.com/Ju1se/PheroOS/issues"
 
 [project.optional-dependencies]
 dev = [
@@ -32,8 +40,12 @@ proxy = [
   "litellm>=1.70.0",
 ]
 
+[project.scripts]
+pheroos = "pheroos.cli:main"
+pheroos-conformance = "pheroos.cli:conformance_main"
+
 [tool.setuptools.packages.find]
-include = ["app*", "runtime*", "tools*"]
+include = ["app*", "runtime*", "tools*", "pheroos*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

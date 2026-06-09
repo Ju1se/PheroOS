@@ -1,7 +1,9 @@
-# Open Multi-Agent Protocol
+# PheroOS Protocol
 
-Open Multi-Agent Protocol is the public protocol boundary for this runtime.
-The runtime is not a prompt chain and agents are not final authority:
+PheroOS Protocol is the public ABI for governed AI-as-OS runtimes. It is the
+contract between capabilities, drivers, the kernel, governance services, and
+reference runtimes. The runtime is not a prompt chain and agents are not final
+authority:
 
 ```text
 Capability declares what is possible.
@@ -14,13 +16,22 @@ FinalJudge verifies what can be published.
 TraceStore explains why.
 ```
 
-The core runtime must stay domain-neutral. WRDS, value investing, web
-research, code development, document writing, data analysis, and compliance are
-capabilities or reference examples. A third party should add a new capability
-by editing a capability manifest and capability-owned adapters, not by editing
-`runtime/graph.py`, `runtime/swarm/quorum.py`,
+The core kernel and protocol must stay domain-neutral. WRDS, value investing,
+web research, code development, document writing, data analysis, and compliance
+are capabilities, drivers, or reference examples. A third party should add a
+new capability by editing a capability manifest and capability-owned adapters,
+not by editing `runtime/graph.py`, `runtime/swarm/quorum.py`,
 `runtime/swarm/recovery_engine.py`, `runtime/writer_guardrails.py`, or
 `runtime/final_judge_guardrails.py`.
+
+## Public Surfaces
+
+- **PheroOS Protocol**: machine-readable schema and manifest contracts.
+- **PheroOS Kernel ABI**: stable planning/materialization/syscall contracts.
+- **PheroOS Driver Model**: provider boundaries for model, tool, data,
+  storage, and secret-store integrations.
+- **PheroOS Conformance Suite**: tests and CLI checks proving a capability can
+  mount without kernel edits.
 
 ## Contract Map
 

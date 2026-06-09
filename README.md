@@ -1,18 +1,19 @@
-# Local Agent Platform
+# PheroOS
 
-Local Agent Platform is an OSS-friendly, protocol-governed local multi-agent
-runtime. It is built around replaceable components: model gateway, tools,
-skills, data providers, governance protocol, API shell, and frontend can evolve
-independently.
+PheroOS is an open AI-as-OS protocol and reference kernel for governed
+multi-agent runtimes. It defines stable boundaries for capability loading,
+permissioning, signal governance, tool arbitration, evidence contracts, quorum
+commitment, recovery, and traceable publication.
 
-Product positioning: this repo is an **Open Multi-Agent Protocol runtime**, not
-a prompt chain or single-provider financial app. Capabilities declare what is
+Product positioning: this repo is **PheroOS Kernel + PheroOS Protocol +
+PheroOS Reference Runtime + Capability/Driver ecosystem**, not a prompt chain,
+agent framework, or single-provider financial app. Capabilities declare what is
 possible, OSKernel decides what is available, RuntimeMaterializer builds what is
-executable, governance decides what is allowed, quorum commits what is
-justified, Writer expresses what is permitted, FinalJudge verifies what can be
-published, and TraceStore explains why.
+executable, PheroOS governs what is allowed, Quorum commits what is justified,
+Writer expresses what is permitted, FinalJudge verifies what can be published,
+and TraceStore explains why.
 
-这是一个本地 multi-agent runtime：
+当前仓库包含 PheroOS Reference Runtime：
 
 ```text
 FastAPI API
@@ -22,12 +23,16 @@ FastAPI API
   -> Ollama / LM Studio / vLLM / OpenAI
 ```
 
-核心原则：Codex 用来开发这个 runtime；产品运行时不依赖 Codex。项目正在按 OSS 方式组织，目标是内部高内聚、对外低耦合。
+核心原则：Codex 用来开发这个 runtime；产品运行时不依赖 Codex。PheroOS
+的公开目标是稳定内核边界、协议 ABI、driver model、capability ABI、
+conformance suite 和可审计兼容层。
 
 ## OSS 结构
 
-- Open Multi-Agent Protocol：[docs/protocol/overview.md](docs/protocol/overview.md)
-- Protocol spec v0.1：[docs/protocol/protocol-spec-v0.1.md](docs/protocol/protocol-spec-v0.1.md)
+- PheroOS Protocol：[docs/protocol/overview.md](docs/protocol/overview.md)
+- PheroOS Kernel ABI：[docs/kernel/kernel-overview.md](docs/kernel/kernel-overview.md)
+- PheroOS conformance：[docs/conformance/conformance-suite.md](docs/conformance/conformance-suite.md)
+- PheroOS Protocol spec v0.1：[docs/protocol/protocol-spec-v0.1.md](docs/protocol/protocol-spec-v0.1.md)
 - Protocol examples：[docs/examples/open-multi-agent-protocol-examples.md](docs/examples/open-multi-agent-protocol-examples.md)
 - 架构说明：[docs/architecture.md](docs/architecture.md)
 - 当前状态：[docs/architecture/current-state.md](docs/architecture/current-state.md)

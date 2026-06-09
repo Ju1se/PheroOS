@@ -21,7 +21,7 @@ FRED_OBSERVATIONS_URL = "https://api.stlouisfed.org/fred/series/observations"
 STOOQ_DAILY_URL = "https://stooq.com/q/d/l/"
 KENNETH_FRENCH_ZIP_URL = "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/{dataset}_CSV.zip"
 
-DEFAULT_SEC_USER_AGENT = "local-agent-platform/0.1 (configure SEC_EDGAR_USER_AGENT for production contact)"
+DEFAULT_SEC_USER_AGENT = "pheroos/0.1 (configure SEC_EDGAR_USER_AGENT for production contact)"
 DEFAULT_TIMEOUT_SECONDS = 20
 
 

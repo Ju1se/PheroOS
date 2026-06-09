@@ -1,5 +1,5 @@
 {
-  "name": "local-agent-platform-dashboard",
+  "name": "pheroos-dashboard",
   "private": true,
   "type": "module",
   "scripts": {
