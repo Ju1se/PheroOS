@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "local-agent-platform"
+version = "0.1.0"
+description = "Local multi-agent runtime with FastAPI, LangGraph, LiteLLM, and SKILL.md skills."
+readme = "README.md"
+requires-python = ">=3.12,<3.15"
+license = { file = "LICENSE" }
+keywords = ["agents", "multi-agent", "langgraph", "litellm", "wrds", "fastapi"]
+dependencies = [
+  "fastapi>=0.116.0",
+  "httpx>=0.28.0",
+  "langgraph>=0.2.0",
+  "psycopg2-binary>=2.9.9",
+  "pypdf>=5.0.0",
+  "uvicorn[standard]>=0.35.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/local-agent-platform/local-agent-platform"
+Documentation = "https://github.com/local-agent-platform/local-agent-platform/tree/main/docs"
+Issues = "https://github.com/local-agent-platform/local-agent-platform/issues"
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.0.0",
+]
+proxy = [
+  "litellm>=1.70.0",
+]
+
+[tool.setuptools.packages.find]
+include = ["app*", "runtime*", "tools*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

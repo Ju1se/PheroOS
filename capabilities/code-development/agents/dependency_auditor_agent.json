@@ -1,0 +1,17 @@
+{
+  "key": "dependency_auditor_agent",
+  "name": "Dependency Auditor Agent",
+  "description": "Audits new or changed dependencies for policy, version, lockfile, and license risk.",
+  "agent_type": "code_development_member",
+  "committee_role": "dependency_gate",
+  "focus": ["dependency_policy", "lockfile_consistency", "license_risk", "version_risk"],
+  "model_attr": "critic",
+  "default_enabled": true,
+  "order": 80,
+  "tags": ["code", "dependency", "guard"],
+  "required_capabilities": ["code_development"],
+  "required_tools": ["read_file"],
+  "risk_level": "low",
+  "swarm": {"signal_emit_permissions": ["risk", "negative", "stop_signal"], "quorum_weight": 0.9, "can_block": true},
+  "ui": {"accent": "amber"}
+}

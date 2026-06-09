@@ -1,0 +1,134 @@
+{
+  "id": "toy-review",
+  "name": "Toy Review",
+  "version": "0.1.0",
+  "description": "Minimal proof capability for generic PheroOS protocol routing, recovery, quorum, and output policy.",
+  "capability_types": ["toy.review", "skill:toy-review"],
+  "permissions": ["skill:read", "data:read", "tool:deterministic-read"],
+  "risk_level": "low",
+  "trust_level": "first_party_reviewed",
+  "sandbox": {
+    "network": "deny_by_default",
+    "filesystem": "read_only",
+    "secrets": "no_direct_access",
+    "model_calls": "gateway_only",
+    "tools": "registry_only"
+  },
+  "allowed_imports": [],
+  "network_allowlist": [],
+  "signature": {"status": "unsigned"},
+  "requires_confirmation": false,
+  "connections": [],
+  "required_connections": [],
+  "tools": [],
+  "skills": [],
+  "data_packages": ["toy_evidence_packet", "toy_review_decision"],
+  "agents_path": "agents",
+  "entrypoints": {
+    "workflow": "workflow.py:build_workflow_descriptor"
+  },
+  "protocol": {
+    "intents": ["toy_review"],
+    "targets": [
+      {
+        "target": "gate:toy_evidence_gate",
+        "default_pressure": 0.91,
+        "keywords": ["toy", "evidence", "gate"],
+        "description": "Verify toy evidence before publication."
+      },
+      {
+        "target": "decision:toy_publish",
+        "default_pressure": 0.87,
+        "keywords": ["toy", "publish", "approve"],
+        "description": "Decide whether the toy review can be published."
+      }
+    ],
+    "candidates": [
+      {
+        "candidate": "candidate:toy:approve",
+        "label": "Approve",
+        "target": "decision:toy_publish",
+        "blocked_by_targets": ["gate:toy_evidence_gate"]
+      },
+      {
+        "candidate": "candidate:toy:reject",
+        "label": "Reject",
+        "target": "decision:toy_publish"
+      },
+      {
+        "candidate": "candidate:toy:insufficient_evidence",
+        "label": "Insufficient evidence",
+        "target": "decision:toy_publish",
+        "safe_fallback": true
+      }
+    ],
+    "quorum_policy": {
+      "candidate_type": "toy_review_decision",
+      "candidates": [
+        "candidate:toy:approve",
+        "candidate:toy:reject",
+        "candidate:toy:insufficient_evidence"
+      ],
+      "candidate_fallback": "candidate:toy:insufficient_evidence",
+      "max_swarm_rounds": 2
+    },
+    "stop_signal_policy": {
+      "authority_level_required": 3,
+      "blocking_lifetime": "until_resolved",
+      "rules": [
+        {
+          "id": "toy_evidence_gate_blocks_publish",
+          "trigger_targets": ["gate:toy_evidence_gate"],
+          "blocked_actions": ["writer:publish_toy_review", "final_judge:publish_toy_review"]
+        }
+      ],
+      "resolution_policy": {
+        "rules": [
+          {
+            "targets": ["gate:toy_evidence_gate"],
+            "resolution_authority": ["toy_evidence_recovery"],
+            "resolution_condition": {"path": "toy_review.evidence_gate_passed", "equals": true},
+            "reason": "Toy evidence gate passed."
+          }
+        ]
+      }
+    },
+    "recovery_protocols": [
+      {
+        "id": "toy_evidence_recovery",
+        "targets": [{"target": "gate:toy_evidence_gate", "demand_strength": 0.92}],
+        "max_rounds": 2,
+        "allowed_agent_roles": ["toy_scout"],
+        "allowed_capability_tags": ["toy-evidence", "toy-review"],
+        "recovery_success_condition": "context.full_text_count > 0",
+        "recovery_failure_candidate": "candidate:toy:insufficient_evidence"
+      }
+    ],
+    "agent_selection_policy": {
+      "required_roles": ["toy_scout"],
+      "optional_roles": ["toy_evidence", "toy_reviewer"],
+      "target_affinity_weights": {"gate:toy_evidence_gate": 0.2},
+      "fallback_strategy": "protocol_only"
+    },
+    "evidence_policy": {
+      "claim_types": ["toy_claim"],
+      "evidence_node_types": ["toy_evidence"],
+      "required_evidence_for_final_claims": ["toy_evidence"],
+      "allow_caveated_claim_without_evidence": true,
+      "raw_data_allowed_in_final": false,
+      "unsupported_claim_action": "block"
+    },
+    "output_policy": {
+      "allowed_output_modes": ["toy_review_summary", "defect_memo"],
+      "blocked_phrases": ["unsupported toy claim"],
+      "required_caveats": ["Toy evidence is limited."],
+      "defect_memo_markers": ["Toy Defect Memo", "Toy evidence blocked"],
+      "writer_can_create_facts": false,
+      "final_judge_required_checks": ["committed_candidate", "required_caveats"]
+    }
+  },
+  "ui": {
+    "icon": "test-tube",
+    "accent": "lime"
+  }
+}

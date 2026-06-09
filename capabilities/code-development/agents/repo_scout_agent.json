@@ -1,0 +1,17 @@
+{
+  "key": "repo_scout_agent",
+  "name": "Repo Scout Agent",
+  "description": "Inspects repository structure, project conventions, test commands, and relevant files without editing code.",
+  "agent_type": "code_development_member",
+  "committee_role": "scout",
+  "focus": ["repo_structure", "framework_detection", "test_system", "relevant_files"],
+  "model_attr": "research_agent",
+  "default_enabled": true,
+  "order": 10,
+  "tags": ["code", "scout", "read-only"],
+  "required_capabilities": ["code_development", "repo_analysis"],
+  "required_tools": ["list_files", "read_file"],
+  "risk_level": "low",
+  "swarm": {"signal_emit_permissions": ["evidence", "risk"], "quorum_weight": 0.5, "can_block": false},
+  "ui": {"accent": "blue"}
+}

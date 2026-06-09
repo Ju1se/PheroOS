@@ -1,0 +1,24 @@
+litellm:
+  base_url: http://127.0.0.1:4000/v1
+  api_key_env: LITELLM_MASTER_KEY
+
+models:
+  orchestrator: glm-5.1
+  memory_agent: glm-5.1
+  executor: minimax-m2.7
+  research_agent: glm-5.1
+  quant_agent: glm-5.1
+  domain_expert: glm-5.1
+  cio_agent: glm-5.1
+  data_auditor_agent: glm-5.1
+  fundamental_analyst_agent: glm-5.1
+  quant_research_agent: glm-5.1
+  industry_strategy_agent: glm-5.1
+  market_execution_agent: minimax-m2.7
+  risk_manager_agent: glm-5.1
+  red_team_agent: minimax-m2.7
+  committee_challenge: minimax-m2.7
+  investment_committee: glm-5.1
+  critic: minimax-m2.7
+  writer: minimax-m2.7
+  final_judge: glm-5.1

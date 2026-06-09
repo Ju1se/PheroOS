@@ -1,0 +1,190 @@
+{
+  "id": "code-development",
+  "name": "Controlled Code Development",
+  "version": "0.1.0",
+  "description": "Perform constrained repo edits through scout, architecture mapping, patch planning, coding, tests, interface guards, security review, and regression judgment.",
+  "capability_types": [
+    "code_development",
+    "skill:code-development",
+    "repo_analysis",
+    "patch_planning",
+    "test_gate",
+    "interface_guard"
+  ],
+  "permissions": [
+    "skill:read",
+    "data:read",
+    "tool:deterministic-read",
+    "filesystem:write",
+    "shell:execute"
+  ],
+  "risk_level": "medium",
+  "trust_level": "first_party_reviewed",
+  "sandbox": {
+    "network": "deny_by_default",
+    "filesystem": "workspace_write",
+    "secrets": "no_direct_access",
+    "model_calls": "gateway_only",
+    "tools": "registry_only"
+  },
+  "allowed_imports": [],
+  "network_allowlist": [],
+  "signature": {"status": "unsigned"},
+  "requires_confirmation": true,
+  "connections": ["model_provider"],
+  "required_connections": ["model_provider"],
+  "tools": ["list_files", "read_file", "write_file", "run_pytest"],
+  "skills": ["code-development"],
+  "data_packages": [
+    "repo_manifest",
+    "architecture_map",
+    "patch_plan",
+    "diff_summary",
+    "test_results",
+    "interface_snapshot",
+    "security_findings",
+    "dependency_audit"
+  ],
+  "agents_path": "agents",
+  "entrypoints": {
+    "workflow": "workflow.py:build_workflow_descriptor",
+    "data_contract": "data_contract.py:build_data_contract_descriptor",
+    "evidence_adapter": "evidence_adapter.py:build_evidence_adapter_descriptor",
+    "ui_schema": "ui.schema.json"
+  },
+  "protocol": {
+    "version": "1.0.0",
+    "intents": ["code_development"],
+    "intent_keywords": {
+      "code_development": [
+        "code",
+        "source code",
+        "repo",
+        "repository",
+        "patch",
+        "endpoint",
+        "debug",
+        "test",
+        "pytest",
+        "regression",
+        "fastapi",
+        "api",
+        "代码",
+        "实现",
+        "测试",
+        "重构",
+        "修复"
+      ]
+    },
+    "required_capability_types": ["code_development", "skill:code-development"],
+    "required_protocols": ["test_gate", "diff_gate", "stop_signal", "quorum"],
+    "allowed_signal_types": ["evidence", "risk", "negative", "quorum", "stop_signal", "policing"],
+    "targets": [
+      {"target": "constraint:code_public_api", "aliases": ["code:public_api", "code_public_api", "public api", "public_api_changed"], "demand_strength": 0.84, "keywords": ["public api", "interface", "exports", "compatibility"], "summary": "Public API changes must be reviewed before patch acceptance."},
+      {"target": "constraint:code_forbidden_path", "aliases": ["code:forbidden_path", "forbidden_file", "forbidden path"], "demand_strength": 0.86, "keywords": ["forbidden path", "protected file", "sandbox"], "summary": "Protected or forbidden paths must not be changed."},
+      {"target": "gate:code_test_gate", "aliases": ["code:test_gate", "test_gate", "tests_failed"], "demand_strength": 0.9, "keywords": ["test", "pytest", "regression"], "summary": "Tests must pass before patch acceptance."},
+      {"target": "gate:code_security_gate", "aliases": ["code:security", "security_gate"], "demand_strength": 0.82, "keywords": ["security", "secret", "risk"], "summary": "Scan for security and secret risks."},
+      {"target": "gate:code_dependency_gate", "aliases": ["code:dependency_policy", "dependency_gate"], "demand_strength": 0.72, "keywords": ["dependency", "interface", "compatibility"], "summary": "Check dependencies and interfaces."},
+      {"target": "decision:code_patch_acceptance", "aliases": ["patch_acceptance", "accept_patch"], "demand_strength": 0.88, "keywords": ["patch", "accept", "regression"], "summary": "Commit or reject patch candidate."}
+    ],
+    "candidates": [
+      {
+        "candidate": "candidate:code:accept_patch",
+        "label": "Accept patch",
+        "target": "decision:code_patch_acceptance",
+        "blocked_by_targets": ["gate:code_test_gate", "gate:code_security_gate", "gate:code_dependency_gate"],
+        "required_evidence_targets": ["gate:code_test_gate", "gate:code_security_gate"]
+      },
+      {
+        "candidate": "candidate:code:revise_patch",
+        "label": "Revise patch",
+        "target": "decision:code_patch_acceptance",
+        "safe_fallback": true
+      },
+      {
+        "candidate": "candidate:code:reject_patch",
+        "label": "Reject patch",
+        "target": "decision:code_patch_acceptance"
+      }
+    ],
+    "quorum_policy": {
+      "candidate_type": "code_patch",
+      "candidates": [
+        "candidate:code:accept_patch",
+        "candidate:code:revise_patch",
+        "candidate:code:reject_patch"
+      ],
+      "candidate_fallback": "candidate:code:revise_patch",
+      "test_gate_weight": 0.45,
+      "security_weight": 0.25,
+      "interface_weight": 0.2,
+      "max_swarm_rounds": 3
+    },
+    "evidence_policy": {
+      "claim_types": ["patch_claim", "test_result_claim", "security_finding", "interface_finding"],
+      "evidence_node_types": ["diff_summary", "test_results", "security_findings", "interface_snapshot", "dependency_audit"],
+      "required_evidence_for_final_claims": ["gate:code_test_gate", "gate:code_security_gate", "gate:code_dependency_gate"],
+      "allow_caveated_claim_without_evidence": false,
+      "source_independence_required": false,
+      "citation_required": false,
+      "raw_data_allowed_in_final": false,
+      "unsupported_claim_action": "block"
+    },
+    "tool_policy": {
+      "allowed_tool_targets": ["tool:list_files", "tool:read_file", "tool:write_file", "tool:run_pytest"],
+      "required_permissions": [
+        "skill:read",
+        "data:read",
+        "tool:deterministic-read",
+        "filesystem:write",
+        "shell:execute"
+      ],
+      "required_connections": ["model_provider"],
+      "risk_level": "medium",
+      "quarantine_external_outputs": true,
+      "tool_failure_recovery": {
+        "run_pytest": "test_gate_blocks_patch_acceptance_claims"
+      }
+    },
+    "output_policy": {
+      "allowed_output_modes": ["patch_summary", "revision_request", "rejection_notice"],
+      "required_caveats": ["Do not claim tests passed unless the test gate reports passing evidence."],
+      "final_claim_evidence_required": true,
+      "defect_memo_on_block": true,
+      "writer_can_create_facts": false,
+      "final_judge_required_checks": ["test_gate", "security_gate", "dependency_gate"]
+    },
+    "agent_selection_policy": {
+      "required_roles": ["scout", "patch_planner", "patch_executor", "test_gate"],
+      "optional_roles": ["architecture_guard", "interface_gate", "security_gate", "dependency_gate", "reviewer", "documentation", "final_patch_judge"],
+      "activation_threshold": 0.5,
+      "fallback_strategy": "protocol_then_legacy"
+    },
+    "stop_signal_policy": {
+      "authority_level_required": 3,
+      "blocking_lifetime": "until_resolved",
+      "blocked_actions": ["writer:claim_tests_passed", "final_judge:accept_patch"],
+      "action_markers": [
+        {
+          "action": "writer:claim_tests_passed",
+          "phrases": ["完成", "已修复", "通过测试", "tests passed", "successfully fixed", "accepted patch"]
+        },
+        {
+          "action": "final_judge:accept_patch",
+          "phrases": ["accept patch", "accepted patch", "patch accepted", "tests passed"]
+        }
+      ],
+      "rules": [
+        {
+          "id": "test_gate_blocks_patch_acceptance_claims",
+          "trigger_targets": ["gate:code_test_gate", "gate:code_security_gate", "decision:code_patch_acceptance"],
+          "blocked_actions": ["writer:claim_tests_passed", "final_judge:accept_patch"]
+        }
+      ]
+    }
+  },
+  "ui": {
+    "icon": "code",
+    "accent": "blue"
+  }
+}

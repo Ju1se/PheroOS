@@ -1,0 +1,23 @@
+{
+  "key": "red_team_agent",
+  "name": "Red Team / Skeptic Agent",
+  "agent_type": "investment_committee_member",
+  "description": "Attacks the thesis and looks for confirmation bias, priced-in assumptions, data bias, and stronger alternatives.",
+  "focus": "反方辩手：攻击投资 thesis，寻找逻辑漏洞、数据偏差、共识陷阱、过度乐观假设、priced-in 风险、竞争替代和把周期误判为成长的错误。",
+  "model_attr": "red_team_agent",
+  "default_enabled": true,
+  "order": 70,
+  "tags": ["red-team", "skeptic", "bear-case"],
+  "accent": "red",
+  "short": "RED",
+  "swarm": {
+    "initial_thresholds": {
+      "adversarial_review": 0.35,
+      "consensus_challenge": 0.3,
+      "valuation_review": 0.6
+    },
+    "signal_emit_permissions": ["risk", "negative", "stop_signal", "quorum"],
+    "quorum_weight": 0.8,
+    "can_block": true
+  }
+}

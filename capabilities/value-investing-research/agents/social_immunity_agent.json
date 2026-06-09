@@ -1,0 +1,26 @@
+{
+  "key": "social_immunity_agent",
+  "name": "Social Immunity Agent",
+  "agent_type": "security_governance",
+  "description": "Detects and quarantines prompt injection, contaminated artifacts, fake evidence, secret-like text, and unsafe external material.",
+  "focus": "社会免疫：扫描外部内容、tool output、committee artifact 和最终上下文，识别 prompt injection、secret-like text、污染证据和不安全内容，并生成 contamination/quarantine signals。",
+  "model_attr": null,
+  "default_enabled": true,
+  "order": 20,
+  "tags": ["security", "quarantine", "social-immunity"],
+  "accent": "rose",
+  "short": "IMM",
+  "swarm": {
+    "initial_thresholds": {
+      "external_content_review": 0.1,
+      "contamination_detection": 0.1,
+      "prompt_injection_risk": 0.1
+    },
+    "signal_emit_permissions": ["contamination", "quarantine", "risk", "negative", "stop_signal"],
+    "quorum_weight": 0.35,
+    "can_block": true,
+    "allowed_lanes": ["inspection", "verification", "control"],
+    "trust_level": "core_system"
+  },
+  "risk_level": "medium"
+}

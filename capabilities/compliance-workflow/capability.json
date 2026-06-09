@@ -1,0 +1,187 @@
+{
+  "id": "compliance-workflow",
+  "name": "Compliance Workflow",
+  "version": "0.1.0",
+  "description": "Interpret policy, extract obligations, audit sensitive data, evaluate access control, coordinate approvals, and produce evidence-linked compliance memos.",
+  "capability_types": [
+    "compliance.workflow",
+    "skill:compliance-workflow",
+    "policy_interpretation",
+    "privacy_audit",
+    "rbac",
+    "approval_workflow"
+  ],
+  "permissions": ["skill:read", "data:read", "tool:deterministic-read", "model:chat"],
+  "risk_level": "low",
+  "trust_level": "first_party_reviewed",
+  "sandbox": {
+    "network": "deny_by_default",
+    "filesystem": "read_only",
+    "secrets": "no_direct_access",
+    "model_calls": "gateway_only",
+    "tools": "registry_only"
+  },
+  "allowed_imports": [],
+  "network_allowlist": [],
+  "signature": {"status": "unsigned"},
+  "requires_confirmation": false,
+  "connections": ["model_provider"],
+  "required_connections": ["model_provider"],
+  "tools": ["read_file"],
+  "skills": ["compliance-workflow"],
+  "data_packages": [
+    "policy_contract",
+    "obligation_map",
+    "dlp_findings",
+    "rbac_decision",
+    "approval_request",
+    "case_evidence_map",
+    "retention_decision"
+  ],
+  "agents_path": "agents",
+  "entrypoints": {
+    "workflow": "workflow.py:build_workflow_descriptor",
+    "data_contract": "policy_contract.py:build_policy_contract_descriptor",
+    "evidence_adapter": "evidence_adapter.py:build_evidence_adapter_descriptor",
+    "ui_schema": "ui.schema.json"
+  },
+  "protocol": {
+    "version": "1.0.0",
+    "intents": ["compliance_workflow"],
+    "intent_keywords": {
+      "compliance_workflow": [
+        "compliance",
+        "policy",
+        "privacy",
+        "pii",
+        "rbac",
+        "approval",
+        "audit",
+        "retention",
+        "dlp",
+        "least privilege",
+        "access control",
+        "sensitive data",
+        "data export",
+        "external action",
+        "合规",
+        "政策",
+        "隐私",
+        "审批",
+        "审计",
+        "留存",
+        "权限",
+        "访问控制",
+        "敏感信息",
+        "数据泄露"
+      ]
+    },
+    "required_capability_types": ["compliance.workflow", "skill:compliance-workflow"],
+    "required_protocols": ["dlp", "rbac", "approval", "stop_signal", "quorum"],
+    "allowed_signal_types": ["evidence", "risk", "negative", "quorum", "stop_signal", "policing"],
+    "targets": [
+      {"target": "compliance:policy_interpretation", "demand_strength": 0.78, "keywords": ["policy", "scope", "obligation", "control"], "summary": "Interpret policy scope and concrete obligations."},
+      {"target": "constraint:compliance_pii", "aliases": ["compliance:pii", "pii", "sensitive_spans"], "demand_strength": 0.86, "keywords": ["pii", "privacy", "dlp", "sensitive"], "summary": "Audit PII and sensitive data exposure."},
+      {"target": "constraint:compliance_rbac", "aliases": ["compliance:rbac", "rbac", "access_control"], "demand_strength": 0.76, "keywords": ["rbac", "access", "permission"], "summary": "Evaluate access-control constraints."},
+      {"target": "decision:compliance_approval", "aliases": ["compliance:approval_required", "approval_required", "human_approval"], "demand_strength": 0.82, "keywords": ["approval", "human", "external_action"], "summary": "Route required approvals."},
+      {"target": "constraint:compliance_external_action", "aliases": ["compliance:external_action", "external_action", "email_send", "data_export"], "demand_strength": 0.82, "keywords": ["external_action", "email", "export", "send"], "summary": "Block external actions until approval and policy evidence are satisfied."},
+      {"target": "constraint:compliance_retention", "aliases": ["compliance:retention", "records_retention"], "demand_strength": 0.68, "keywords": ["retention", "records", "audit"], "summary": "Check records-retention obligations."}
+    ],
+    "candidates": [
+      {
+        "candidate": "candidate:compliance:allow",
+        "label": "Allow",
+        "target": "decision:compliance_approval",
+        "blocked_by_targets": ["constraint:compliance_pii", "constraint:compliance_rbac"]
+      },
+      {
+        "candidate": "candidate:compliance:mask_or_restrict",
+        "label": "Mask or restrict",
+        "target": "constraint:compliance_pii"
+      },
+      {
+        "candidate": "candidate:compliance:requires_approval",
+        "label": "Requires approval",
+        "target": "decision:compliance_approval"
+      },
+      {
+        "candidate": "candidate:compliance:block",
+        "label": "Block",
+        "target": "decision:compliance_approval",
+        "safe_fallback": true
+      }
+    ],
+    "quorum_policy": {
+      "candidate_type": "compliance_decision",
+      "candidates": [
+        "candidate:compliance:allow",
+        "candidate:compliance:mask_or_restrict",
+        "candidate:compliance:requires_approval",
+        "candidate:compliance:block"
+      ],
+      "candidate_fallback": "candidate:compliance:block",
+      "risk_weight": 0.4,
+      "approval_weight": 0.3,
+      "evidence_coverage_weight": 0.2,
+      "max_swarm_rounds": 3
+    },
+    "evidence_policy": {
+      "claim_types": ["policy_obligation", "privacy_finding", "access_control_finding", "approval_requirement"],
+      "evidence_node_types": ["policy_contract", "obligation_map", "dlp_findings", "rbac_decision", "approval_request"],
+      "required_evidence_for_final_claims": ["compliance:policy_interpretation", "constraint:compliance_pii", "constraint:compliance_rbac"],
+      "allow_caveated_claim_without_evidence": false,
+      "source_independence_required": false,
+      "citation_required": false,
+      "raw_data_allowed_in_final": false,
+      "unsupported_claim_action": "block"
+    },
+    "tool_policy": {
+      "allowed_tool_targets": ["tool:read_file"],
+      "required_permissions": ["skill:read", "data:read", "tool:deterministic-read", "model:chat"],
+      "required_connections": ["model_provider"],
+      "risk_level": "low",
+      "quarantine_external_outputs": true
+    },
+    "output_policy": {
+      "allowed_output_modes": ["compliance_memo", "approval_request", "block_notice"],
+      "required_caveats": ["State approval requirements before any external action."],
+      "final_claim_evidence_required": true,
+      "defect_memo_on_block": true,
+      "writer_can_create_facts": false,
+      "final_judge_required_checks": ["dlp", "rbac", "approval"]
+    },
+    "agent_selection_policy": {
+      "required_roles": ["policy_interpreter", "obligation_extractor", "privacy_auditor", "access_control"],
+      "optional_roles": ["approval_coordinator", "human_approval_gate", "case_evidence_steward", "records_retention", "risk_escalation"],
+      "activation_threshold": 0.5,
+      "fallback_strategy": "protocol_then_legacy"
+    },
+    "stop_signal_policy": {
+      "blocked_targets": ["decision:compliance_approval", "constraint:compliance_external_action"],
+      "authority_level_required": 3,
+      "blocking_lifetime": "until_resolved",
+      "blocked_actions": ["tool:email_send", "writer:approval_claim", "final_judge:external_action"],
+      "action_markers": [
+        {
+          "action": "writer:approval_claim",
+          "phrases": ["可以发送", "已发送", "可以导出", "已导出", "send the email", "email sent", "export the data", "data exported"]
+        },
+        {
+          "action": "final_judge:external_action",
+          "phrases": ["send the email", "email sent", "export the data", "data exported", "approve external send"]
+        }
+      ],
+      "rules": [
+        {
+          "id": "approval_blocks_external_action",
+          "trigger_targets": ["decision:compliance_approval", "constraint:compliance_external_action"],
+          "blocked_actions": ["tool:email_send", "writer:approval_claim", "final_judge:external_action"]
+        }
+      ]
+    }
+  },
+  "ui": {
+    "icon": "shield-check",
+    "accent": "rose"
+  }
+}

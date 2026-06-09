@@ -1,0 +1,23 @@
+{
+  "key": "data_auditor_agent",
+  "name": "Data Engineer / Source Auditor Agent",
+  "agent_type": "investment_committee_member",
+  "description": "Audits data quality, source freshness, period consistency, and accounting basis before opinions are formed.",
+  "focus": "数据与资料审计：最新财报、收入、毛利率、净利率、ROE/ROIC、EPS、FCF、负债、估值、同业对比、来源日期和口径一致性；不做买卖建议。数据质量过低可以 hard veto。",
+  "model_attr": "data_auditor_agent",
+  "default_enabled": true,
+  "order": 10,
+  "tags": ["data", "audit", "gatekeeper"],
+  "accent": "green",
+  "short": "DAT",
+  "swarm": {
+    "initial_thresholds": {
+      "data_audit": 0.15,
+      "evidence_verification": 0.2,
+      "valuation_review": 0.65
+    },
+    "signal_emit_permissions": ["evidence", "data_contract", "risk", "stop_signal"],
+    "quorum_weight": 0.9,
+    "can_block": true
+  }
+}

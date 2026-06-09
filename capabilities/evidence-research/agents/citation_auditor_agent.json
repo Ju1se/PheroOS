@@ -1,0 +1,17 @@
+{
+  "key": "citation_auditor_agent",
+  "name": "Citation Auditor Agent",
+  "description": "Verifies that every citation supports the exact claim it is attached to and blocks unsupported citation use.",
+  "agent_type": "evidence_research_member",
+  "committee_role": "citation_auditor",
+  "focus": ["citation_support", "quote_integrity", "unsupported_claims", "source_mismatch"],
+  "model_attr": "critic_agent",
+  "default_enabled": true,
+  "order": 50,
+  "tags": ["research", "citations", "guardrail"],
+  "required_capabilities": ["evidence.research", "citation_audit"],
+  "required_tools": ["approved_source_fetch"],
+  "risk_level": "low",
+  "swarm": {"signal_emit_permissions": ["risk", "stop_signal", "negative"], "quorum_weight": 1.0, "can_block": true},
+  "ui": {"accent": "rose"}
+}

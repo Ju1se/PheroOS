@@ -1,0 +1,17 @@
+{
+  "key": "test_runner_agent",
+  "name": "Test Runner Agent",
+  "description": "Runs deterministic test commands, captures failures, and emits blocking evidence when verification fails.",
+  "agent_type": "code_development_member",
+  "committee_role": "test_gate",
+  "focus": ["pytest", "test_evidence", "failure_logs", "build_gate"],
+  "model_attr": "executor",
+  "default_enabled": true,
+  "order": 50,
+  "tags": ["code", "tests", "deterministic"],
+  "required_capabilities": ["code_development", "test_gate"],
+  "required_tools": ["run_pytest"],
+  "risk_level": "medium",
+  "swarm": {"signal_emit_permissions": ["evidence", "negative", "stop_signal"], "quorum_weight": 1.0, "can_block": true},
+  "ui": {"accent": "green"}
+}

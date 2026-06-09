@@ -1,0 +1,23 @@
+{
+  "key": "quant_research_agent",
+  "name": "Quant Research Agent",
+  "agent_type": "investment_committee_member",
+  "description": "Uses deterministic metric registry outputs to assess valuation, historical percentiles, trends, and factor evidence.",
+  "focus": "量化研究：历史估值分位、PE/PB/PS/EV/EBITDA、EPS/毛利率/ROE 趋势、同业 valuation spread、回撤、波动率、风险收益比和数据支持的 alpha。",
+  "model_attr": "quant_research_agent",
+  "default_enabled": true,
+  "order": 30,
+  "tags": ["quant", "valuation", "metrics"],
+  "accent": "orange",
+  "short": "QNT",
+  "swarm": {
+    "initial_thresholds": {
+      "valuation_review": 0.45,
+      "metric_validation": 0.35,
+      "scenario_analysis": 0.55
+    },
+    "signal_emit_permissions": ["evidence", "risk", "quorum"],
+    "quorum_weight": 0.75,
+    "can_block": false
+  }
+}

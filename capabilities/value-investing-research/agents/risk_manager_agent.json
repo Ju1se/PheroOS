@@ -1,0 +1,24 @@
+{
+  "key": "risk_manager_agent",
+  "name": "Risk Manager Agent",
+  "agent_type": "investment_committee_member",
+  "description": "Finds downside, accounting, leverage, regulatory, liquidity, macro, and valuation-compression risks; can hard veto.",
+  "focus": "风险官：最大下行情景、会计/应收/存货/负债/政策/地缘/汇率/流动性/估值压缩风险；可以降低仓位或 hard veto。",
+  "model_attr": "risk_manager_agent",
+  "default_enabled": true,
+  "order": 60,
+  "tags": ["risk", "veto", "downside"],
+  "accent": "red",
+  "short": "RSK",
+  "swarm": {
+    "initial_thresholds": {
+      "risk_review": 0.25,
+      "valuation_review": 0.55,
+      "data_audit": 0.7
+    },
+    "signal_emit_permissions": ["risk", "negative", "stop_signal", "quorum"],
+    "quorum_weight": 0.85,
+    "risk_tolerance": 0.2,
+    "can_block": true
+  }
+}

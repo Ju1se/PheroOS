@@ -1,0 +1,17 @@
+{
+  "key": "contradiction_mapper_agent",
+  "name": "Contradiction Mapper Agent",
+  "description": "Finds source conflicts, stale facts, opposing evidence, and unresolved contradictions before synthesis.",
+  "agent_type": "evidence_research_member",
+  "committee_role": "contradiction_mapper",
+  "focus": ["contradictions", "stale_facts", "counterevidence", "residual_uncertainty"],
+  "model_attr": "critic_agent",
+  "default_enabled": true,
+  "order": 60,
+  "tags": ["research", "contradictions", "critic"],
+  "required_capabilities": ["evidence.research", "source_quality"],
+  "required_tools": ["provider_web_search", "approved_source_fetch"],
+  "risk_level": "low",
+  "swarm": {"signal_emit_permissions": ["risk", "negative", "quorum"], "quorum_weight": 0.9, "can_block": false},
+  "ui": {"accent": "purple"}
+}

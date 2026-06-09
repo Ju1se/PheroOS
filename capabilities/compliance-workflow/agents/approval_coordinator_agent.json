@@ -1,0 +1,17 @@
+{
+  "key": "approval_coordinator_agent",
+  "name": "Approval Coordinator Agent",
+  "description": "Determines whether a request needs human approval, which approver role is required, and what evidence must be attached.",
+  "agent_type": "compliance_workflow_member",
+  "committee_role": "approval_coordinator",
+  "focus": ["approval_required", "approver_role", "evidence_package", "pending_action"],
+  "model_attr": "executor_agent",
+  "default_enabled": true,
+  "order": 50,
+  "tags": ["compliance", "approval", "human-in-loop"],
+  "required_capabilities": ["compliance.workflow", "approval_workflow"],
+  "required_tools": ["read_file"],
+  "risk_level": "low",
+  "swarm": {"signal_emit_permissions": ["evidence", "risk", "quorum"], "quorum_weight": 0.7, "can_block": false},
+  "ui": {"accent": "orange"}
+}

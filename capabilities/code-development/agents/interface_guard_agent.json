@@ -1,0 +1,17 @@
+{
+  "key": "interface_guard_agent",
+  "name": "Interface Guard Agent",
+  "description": "Checks public API, function signatures, exported symbols, and forbidden path changes before a patch can be accepted.",
+  "agent_type": "code_development_member",
+  "committee_role": "interface_gate",
+  "focus": ["public_api", "backward_compatibility", "forbidden_paths", "exports"],
+  "model_attr": "critic",
+  "default_enabled": true,
+  "order": 60,
+  "tags": ["code", "interface", "guard"],
+  "required_capabilities": ["code_development", "interface_guard"],
+  "required_tools": ["read_file"],
+  "risk_level": "low",
+  "swarm": {"signal_emit_permissions": ["risk", "negative", "stop_signal"], "quorum_weight": 1.0, "can_block": true},
+  "ui": {"accent": "orange"}
+}

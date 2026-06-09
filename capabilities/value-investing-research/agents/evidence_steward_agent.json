@@ -1,0 +1,27 @@
+{
+  "key": "evidence_steward_agent",
+  "name": "Evidence Steward Agent",
+  "agent_type": "governance_verifier",
+  "description": "Links claims to metric registry and evidence graph nodes, flags unsupported or blocked claims, and constrains writer inputs.",
+  "focus": "证据管家：把 committee claim 连接到 verified evidence / metric registry / data contract，标记 unsupported、contested、blocked claim，防止 Writer 使用无证据结论。",
+  "model_attr": null,
+  "default_enabled": true,
+  "order": 35,
+  "tags": ["evidence", "verification", "governance"],
+  "accent": "emerald",
+  "short": "EVD",
+  "swarm": {
+    "initial_thresholds": {
+      "evidence_verification": 0.15,
+      "claim_linking": 0.2,
+      "unsupported_claim_detection": 0.15
+    },
+    "signal_emit_permissions": ["evidence", "risk", "artifact_cue", "negative"],
+    "quorum_weight": 0.55,
+    "can_block": false,
+    "allowed_lanes": ["verification"],
+    "trust_level": "trusted_first_party"
+  },
+  "required_tools": ["evidence_graph", "metric_registry"],
+  "risk_level": "low"
+}

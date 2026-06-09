@@ -1,0 +1,17 @@
+{
+  "key": "literature_evidence_steward_agent",
+  "name": "Literature Evidence Steward Agent",
+  "description": "Maintains the claim-evidence graph and separates verified evidence, weak support, contradictions, and missing evidence.",
+  "agent_type": "evidence_research_member",
+  "committee_role": "evidence_steward",
+  "focus": ["claim_evidence_graph", "support_strength", "evidence_gaps", "verified_sources"],
+  "model_attr": "research_agent",
+  "default_enabled": true,
+  "order": 40,
+  "tags": ["research", "evidence-graph", "audit"],
+  "required_capabilities": ["evidence.research", "claim_evidence_graph"],
+  "required_tools": ["approved_source_fetch"],
+  "risk_level": "low",
+  "swarm": {"signal_emit_permissions": ["evidence", "risk", "quorum"], "quorum_weight": 1.0, "can_block": false},
+  "ui": {"accent": "cyan"}
+}

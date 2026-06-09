@@ -1,0 +1,17 @@
+{
+  "key": "regression_judge_agent",
+  "name": "Regression Judge Agent",
+  "description": "Synthesizes diff, test, interface, security, dependency, and review evidence to accept, revise, reject, or mark insufficient context.",
+  "agent_type": "code_development_member",
+  "committee_role": "final_patch_judge",
+  "focus": ["accept_patch", "revise_patch", "reject_patch", "insufficient_context"],
+  "model_attr": "final_judge",
+  "default_enabled": true,
+  "order": 100,
+  "tags": ["code", "judge", "quorum"],
+  "required_capabilities": ["code_development"],
+  "required_tools": [],
+  "risk_level": "low",
+  "swarm": {"signal_emit_permissions": ["quorum", "stop_signal"], "quorum_weight": 1.0, "can_block": true},
+  "ui": {"accent": "emerald"}
+}

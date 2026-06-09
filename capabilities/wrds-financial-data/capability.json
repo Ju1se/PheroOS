@@ -1,0 +1,102 @@
+{
+  "id": "wrds-financial-data",
+  "name": "WRDS Financial Data",
+  "version": "0.1.0",
+  "description": "Retrieve professional financial data from WRDS through read-only Compustat, CRSP, IBES, segment, and capability discovery tools.",
+  "capability_types": [
+    "financial_fundamentals",
+    "market_prices",
+    "estimates",
+    "segments",
+    "professional_financial_database"
+  ],
+  "permissions": ["network:wrds", "secret:wrds", "data:read", "tool:deterministic-read"],
+  "risk_level": "low",
+  "trust_level": "first_party_reviewed",
+  "sandbox": {
+    "network": "wrds_only",
+    "filesystem": "read_only",
+    "secrets": "no_direct_access",
+    "model_calls": "gateway_only",
+    "tools": "registry_only"
+  },
+  "allowed_imports": [],
+  "network_allowlist": ["wrds.wharton.upenn.edu"],
+  "signature": {"status": "unsigned"},
+  "requires_confirmation": false,
+  "required_connections": ["wrds"],
+  "connections": ["wrds"],
+  "tools": [
+    "wrds_status",
+    "wrds_capability_discovery",
+    "wrds_company_search",
+    "wrds_company_financials"
+  ],
+  "skills": ["wrds-data"],
+  "data_packages": [
+    "company_identity",
+    "annual_financials_10y",
+    "quarterly_financials_16q",
+    "cash_flow_capex",
+    "balance_sheet_debt",
+    "inventory_working_capital",
+    "valuation_snapshot"
+  ],
+  "data_sources": [
+    {
+      "provider_id": "wrds",
+      "source_kind": "professional_database",
+      "dataset_kind": "financial_fundamentals",
+      "coverage": {
+        "scope": "Provider-visible WRDS libraries such as Compustat, CRSP, IBES, and segment datasets.",
+        "tenant_dependent": true
+      },
+      "freshness": {
+        "policy": "provider_controlled",
+        "reported_by_adapter": true
+      },
+      "license": {
+        "kind": "restricted",
+        "name": "WRDS institutional license",
+        "raw_data_publication": "prohibited_by_runtime_output_policy"
+      },
+      "reliability_level": "licensed_provider",
+      "adapter_entrypoint": "runtime_nodes.py:build_data_provider_descriptor",
+      "required_connections": ["wrds"],
+      "required_permissions": ["network:wrds", "secret:wrds", "data:read", "tool:deterministic-read"],
+      "tools": [
+        "wrds_status",
+        "wrds_capability_discovery",
+        "wrds_company_search",
+        "wrds_company_financials"
+      ],
+      "data_packages": [
+        "company_identity",
+        "annual_financials_10y",
+        "quarterly_financials_16q",
+        "cash_flow_capex",
+        "balance_sheet_debt",
+        "inventory_working_capital",
+        "valuation_snapshot"
+      ],
+      "provenance_policy": {
+        "include_tool_name": true,
+        "include_table_names": true,
+        "include_row_counts": true,
+        "exclude_raw_rows_from_public_results": true
+      },
+      "adapter_metadata": {
+        "legacy_alias": "wrds_result",
+        "adapter_boundary": "capability_runtime_node"
+      }
+    }
+  ],
+  "entrypoints": {
+    "data_provider": "runtime_nodes.py:build_data_provider_descriptor",
+    "runtime_nodes": "runtime_nodes.py:build_runtime_node_descriptor"
+  },
+  "ui": {
+    "icon": "database",
+    "accent": "green"
+  }
+}

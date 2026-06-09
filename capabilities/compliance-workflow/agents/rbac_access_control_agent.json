@@ -1,0 +1,17 @@
+{
+  "key": "rbac_access_control_agent",
+  "name": "RBAC Access Control Agent",
+  "description": "Checks whether a requested action is consistent with role, permission, least-privilege, and segregation-of-duties constraints.",
+  "agent_type": "compliance_workflow_member",
+  "committee_role": "access_control",
+  "focus": ["rbac", "least_privilege", "segregation_of_duties", "permission_gap"],
+  "model_attr": "critic_agent",
+  "default_enabled": true,
+  "order": 40,
+  "tags": ["compliance", "rbac", "approval"],
+  "required_capabilities": ["compliance.workflow", "rbac"],
+  "required_tools": ["read_file"],
+  "risk_level": "low",
+  "swarm": {"signal_emit_permissions": ["evidence", "risk", "stop_signal"], "quorum_weight": 1.0, "can_block": true},
+  "ui": {"accent": "amber"}
+}

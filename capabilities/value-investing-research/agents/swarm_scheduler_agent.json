@@ -1,0 +1,26 @@
+{
+  "key": "swarm_scheduler_agent",
+  "name": "Swarm Scheduler Agent",
+  "agent_type": "deterministic_scheduler",
+  "description": "Allocates committee work using response thresholds, encounter rate, bottlenecks, lanes, homeostasis, and crowding pressure.",
+  "focus": "群体交通调度：根据 response threshold、bottleneck、encounter rate、homeostasis 和 lane assignment 动态招募、抑制或分流 agent；不做投资判断。",
+  "model_attr": null,
+  "default_enabled": true,
+  "order": 5,
+  "tags": ["scheduler", "traffic", "response-threshold", "governance"],
+  "accent": "slate",
+  "short": "SCH",
+  "swarm": {
+    "initial_thresholds": {
+      "agent_allocation": 0.1,
+      "bottleneck_recruitment": 0.1,
+      "crowding_control": 0.1
+    },
+    "signal_emit_permissions": ["demand", "lane_assignment", "bottleneck", "encounter_rate", "homeostasis", "crowding"],
+    "quorum_weight": 0.0,
+    "can_block": false,
+    "allowed_lanes": ["control"],
+    "trust_level": "core_system"
+  },
+  "risk_level": "low"
+}

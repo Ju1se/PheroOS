@@ -1,0 +1,17 @@
+{
+  "key": "policy_interpreter_agent",
+  "name": "Policy Interpreter Agent",
+  "description": "Interprets internal policies, contracts, and procedure text into concrete compliance constraints without giving legal advice.",
+  "agent_type": "compliance_workflow_member",
+  "committee_role": "policy_interpreter",
+  "focus": ["policy_scope", "control_requirements", "allowed_actions", "ambiguity"],
+  "model_attr": "research_agent",
+  "default_enabled": true,
+  "order": 10,
+  "tags": ["compliance", "policy", "read-only"],
+  "required_capabilities": ["compliance.workflow", "policy_interpretation"],
+  "required_tools": ["read_file"],
+  "risk_level": "low",
+  "swarm": {"signal_emit_permissions": ["evidence", "risk"], "quorum_weight": 0.8, "can_block": false},
+  "ui": {"accent": "violet"}
+}

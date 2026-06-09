@@ -1,0 +1,17 @@
+{
+  "key": "records_retention_agent",
+  "name": "Records Retention Agent",
+  "description": "Checks retention, deletion, audit log, and records hold requirements before a compliance workflow is closed.",
+  "agent_type": "compliance_workflow_member",
+  "committee_role": "records_retention",
+  "focus": ["retention", "deletion_policy", "records_hold", "audit_log"],
+  "model_attr": "research_agent",
+  "default_enabled": true,
+  "order": 80,
+  "tags": ["compliance", "records", "retention"],
+  "required_capabilities": ["compliance.workflow"],
+  "required_tools": ["read_file"],
+  "risk_level": "low",
+  "swarm": {"signal_emit_permissions": ["evidence", "risk"], "quorum_weight": 0.6, "can_block": false},
+  "ui": {"accent": "slate"}
+}

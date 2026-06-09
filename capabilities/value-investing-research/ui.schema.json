@@ -1,0 +1,21 @@
+{
+  "schema_version": "pheroos.ui_schema.v1",
+  "surfaces": {
+    "committee_picker": {
+      "title": "Investment Committee",
+      "layout": "agent_plugin_grid",
+      "default_filter": "default_enabled"
+    },
+    "decision_debugger": {
+      "title": "Decision Debugger",
+      "sections": [
+        "why_this_agent",
+        "why_blocked",
+        "evidence_graph",
+        "safety_events",
+        "permission_events",
+        "policing_events"
+      ]
+    }
+  }
+}

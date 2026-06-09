@@ -1,0 +1,26 @@
+{
+  "key": "quorum_marshal_agent",
+  "name": "Quorum Marshal Agent",
+  "agent_type": "deterministic_governance",
+  "description": "Commits or blocks investment decision candidates using quorum, stop-signals, evidence coverage, and independence adjustments.",
+  "focus": "Quorum 治理：汇总 Buy/Watch/Avoid/Sell/Insufficient Data 候选，计算支持、反对、风险、stop-signal、evidence coverage 和 source independence，并解释 why committed / why blocked。",
+  "model_attr": null,
+  "default_enabled": true,
+  "order": 80,
+  "tags": ["quorum", "decision", "governance"],
+  "accent": "blue",
+  "short": "QRM",
+  "swarm": {
+    "initial_thresholds": {
+      "candidate_commitment": 0.1,
+      "quorum_conflict_resolution": 0.1
+    },
+    "signal_emit_permissions": ["quorum", "independence", "risk", "negative"],
+    "quorum_weight": 0.0,
+    "can_block": true,
+    "allowed_lanes": ["control"],
+    "trust_level": "core_system"
+  },
+  "required_tools": ["pheromone_field", "evidence_graph"],
+  "risk_level": "medium"
+}

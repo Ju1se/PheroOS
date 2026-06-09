@@ -1,0 +1,31 @@
+{
+  "id": "ai-model-provider",
+  "name": "AI Model Provider",
+  "version": "0.1.0",
+  "description": "Use a user-provided OpenAI-compatible model provider for agent reasoning, writing, critique, and planning.",
+  "capability_types": ["chat_model"],
+  "permissions": ["model:chat", "secret:model-provider", "network:approved-provider"],
+  "risk_level": "low",
+  "trust_level": "first_party_reviewed",
+  "sandbox": {
+    "network": "approved_provider_only",
+    "filesystem": "read_only",
+    "secrets": "no_direct_access",
+    "model_calls": "gateway_only",
+    "tools": "registry_only"
+  },
+  "allowed_imports": [],
+  "network_allowlist": [],
+  "signature": {"status": "unsigned"},
+  "requires_confirmation": false,
+  "required_connections": ["model_provider"],
+  "connections": ["model_provider"],
+  "tools": [],
+  "skills": [],
+  "data_packages": [],
+  "entrypoints": {},
+  "ui": {
+    "icon": "brain",
+    "accent": "blue"
+  }
+}

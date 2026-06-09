@@ -1,0 +1,26 @@
+{
+  "key": "tool_health_sentinel_agent",
+  "name": "Tool Health Sentinel Agent",
+  "agent_type": "deterministic_monitor",
+  "description": "Monitors tool and model route health, including latency, empty results, schema failures, timeouts, non-200 responses, and degraded-mode triggers.",
+  "focus": "工具健康哨兵：监控 WRDS/model/web/file tool 成功率、延迟、空结果、schema mismatch、timeout、rate limit 和失败路由，并触发降级或阻断。",
+  "model_attr": null,
+  "default_enabled": true,
+  "order": 12,
+  "tags": ["tool-health", "monitoring", "degraded-mode"],
+  "accent": "amber",
+  "short": "TLS",
+  "swarm": {
+    "initial_thresholds": {
+      "tool_failure_rate": 0.15,
+      "latency_pressure": 0.35,
+      "empty_result_rate": 0.2
+    },
+    "signal_emit_permissions": ["tool_health", "negative", "risk", "bottleneck"],
+    "quorum_weight": 0.0,
+    "can_block": true,
+    "allowed_lanes": ["inspection", "control"],
+    "trust_level": "core_system"
+  },
+  "risk_level": "low"
+}

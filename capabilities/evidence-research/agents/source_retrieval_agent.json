@@ -1,0 +1,17 @@
+{
+  "key": "source_retrieval_agent",
+  "name": "Source Retrieval Agent",
+  "description": "Retrieves candidate sources through approved providers and returns source metadata rather than final conclusions.",
+  "agent_type": "evidence_research_member",
+  "committee_role": "source_retriever",
+  "focus": ["source_candidates", "provider_search", "recency", "coverage"],
+  "model_attr": "executor_agent",
+  "default_enabled": true,
+  "order": 20,
+  "tags": ["research", "retrieval", "sources"],
+  "required_capabilities": ["evidence.research"],
+  "required_tools": ["provider_web_search", "approved_source_fetch"],
+  "risk_level": "low",
+  "swarm": {"signal_emit_permissions": ["evidence", "risk"], "quorum_weight": 0.6, "can_block": false},
+  "ui": {"accent": "blue"}
+}
