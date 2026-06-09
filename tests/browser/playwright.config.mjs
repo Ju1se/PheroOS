@@ -1,4 +1,5 @@
 import { defineConfig, devices } from "@playwright/test";
+import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -6,6 +7,8 @@ const port = Number(process.env.VISUAL_TEST_PORT || 8765);
 const baseURL = process.env.VISUAL_BASE_URL || `http://127.0.0.1:${port}`;
 const externalServer = Boolean(process.env.VISUAL_BASE_URL);
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
+const localPython = path.join(repoRoot, ".venv/bin/python");
+const pythonCommand = process.env.PHEROOS_TEST_PYTHON || (fs.existsSync(localPython) ? localPython : "python");
 
 export default defineConfig({
   testDir: ".",
@@ -26,7 +29,7 @@ export default defineConfig({
   webServer: externalServer
     ? undefined
     : {
-        command: `.venv/bin/uvicorn app.main:app --host 127.0.0.1 --port ${port}`,
+        command: `${pythonCommand} -m uvicorn app.main:app --host 127.0.0.1 --port ${port}`,
         cwd: repoRoot,
         url: `${baseURL}/health`,
         reuseExistingServer: true,
