@@ -57,6 +57,89 @@ Describe the outcome in user-facing terms.
       capability boundary could express it.
 ```
 
+# ExecPlan: PheroOS Protocol-Core Destructive Migration
+
+## User-visible goal
+
+Complete `docs/architecture/pheroos-protocol-core-migration-goal.md` by turning
+this repository into a small protocol/kernel/conformance package and deleting
+the old local app/runtime/domain surfaces.
+
+## Current architecture facts
+
+- Current branch: `codex/protocol-core-migration`.
+- Baseline before destructive migration: `.venv/bin/pytest -q --maxfail=20`
+  reported 873 passed, 11 failed, and one upstream Pydantic/Python warning.
+- `pyproject.toml` still installs `app*`, `runtime*`, `tools*`, and `pheroos*`,
+  and still depends on FastAPI, LangGraph, uvicorn, psycopg2, and app-runtime
+  packages.
+- Existing `pheroos/` is partial and does not yet expose the full protocol,
+  kernel, governance, driver, conformance, and CLI package structure required
+  by the migration goal.
+- Old app/runtime/domain directories still exist and contain FastAPI,
+  LangGraph, provider routing, dashboard, WRDS, and value-investing behavior.
+
+## Files to inspect
+
+- `docs/architecture/pheroos-protocol-core-migration-goal.md`
+- `pyproject.toml`
+- `README.md`
+- `pheroos/`
+- `schemas/`
+- `examples/`
+- `tests/`
+- `.github/workflows/tests.yml`
+
+## Milestones
+
+1. Baseline and migration inventory.
+2. Rebuild the `pheroos/` protocol, kernel, governance, drivers, conformance,
+   and CLI package.
+3. Replace schemas, docs, README, and toy protocol example with protocol-core
+   versions.
+4. Delete old app/runtime/domain code, docs, examples, and tests.
+5. Add core invariant tests and run import/CLI/domain-neutrality/full pytest
+   validation.
+
+## Tests to run
+
+- `.venv/bin/pytest -q`
+- `.venv/bin/python -c "import pheroos; import pheroos.protocol; import pheroos.kernel; import pheroos.governance"`
+- `.venv/bin/pheroos validate examples/toy-protocol/capability.json`
+- `.venv/bin/pheroos conformance examples/toy-protocol`
+- `git diff --check`
+
+## Migration and compatibility notes
+
+- This migration intentionally does not preserve old app/API/runtime
+  compatibility.
+- Deleted app behavior should be documented only in `docs/removed-app-runtime.md`.
+- Core public files must remain domain-neutral and must not import old
+  app/runtime/tool/capability modules or provider frameworks.
+
+## Progress log
+
+- 2026-06-09: Started destructive migration on `codex/protocol-core-migration`;
+  recorded baseline test failures before deleting old app/runtime tests.
+- 2026-06-09: Added `docs/migration-inventory.md` with CORE_KEEP,
+  CORE_REWRITE, DELETE_APP, DELETE_DOMAIN, DELETE_DOCS, and DELETE_TESTS
+  classifications before continuing checkpoints.
+- 2026-06-09: Rebuilt protocol-core package, schemas, toy example, docs,
+  replacement tests, pyproject metadata, GitHub workflow, and CLI.
+- 2026-06-09: Validation passes: `.venv/bin/pytest -q` reports 18 passed;
+  core imports, `pheroos validate`, `pheroos conformance`, and
+  `git diff --check` pass.
+
+## Final validation checklist
+
+- [x] `pyproject.toml` installs only `pheroos*`.
+- [x] Core import boundary is clean.
+- [x] CLI validate/conformance works against `examples/toy-protocol`.
+- [x] Domain-neutrality guard passes for core files and docs.
+- [x] Old app/runtime/domain tests are deleted or replaced.
+- [x] Full pytest passes.
+- [x] README/docs present PheroOS as protocol/kernel, not app/runtime.
+
 # ExecPlan: Open Multi-Agent Protocol Refactor Finish
 
 ## User-visible goal
@@ -286,3 +369,97 @@ pull requests, starting with P0 conformance and domain leakage guardrails.
       breaking legacy compatibility paths.
 - [x] Focused tests pass.
 - [x] PR is opened for the first implementation slice.
+
+# ExecPlan: Remove Legacy Hardcoded Runtime Logic
+
+## User-visible goal
+
+Open a dedicated cleanup branch and remove legacy hardcoded runtime behavior,
+fallback routing, domain-specific compatibility logic, and documentation that
+describes those hardcoded paths as accepted architecture. The remaining core
+runtime should prefer protocol, capability, driver, and manifest declarations
+over hardcoded WRDS, value-investing, committee, candidate, agent, model, or
+tool assumptions.
+
+## Current architecture facts
+
+- Branch `codex/remove-legacy-hardcoding` was created from latest
+  `origin/main` on 2026-06-09.
+- Runtime contains many explicit legacy modules:
+  `runtime/legacy_*.py`, `runtime/swarm/legacy_*.py`, and
+  `runtime/workflows/legacy_*.py`.
+- `runtime/graph.py`, `runtime/audit_log.py`, `runtime/skill_loader.py`,
+  `runtime/web_research_planner.py`, `runtime/swarm/policing.py`, and
+  `app/routes/platform.py` import legacy helpers today.
+- Current tests intentionally cover legacy compatibility behavior, including
+  legacy WRDS routing fallback, legacy graph-mode fallback, legacy agent output
+  mirrors, and legacy committee naming. Those tests must be removed, rewritten,
+  or replaced with protocol/capability-first expectations.
+- Domain-specific behavior is allowed under capability/adapters/tests/examples,
+  but not as core runtime authority or fallback behavior.
+
+## Files to inspect
+
+- `runtime/legacy_*.py`
+- `runtime/swarm/legacy_*.py`
+- `runtime/workflows/legacy_*.py`
+- `runtime/graph.py`
+- `runtime/audit_log.py`
+- `runtime/skill_loader.py`
+- `runtime/web_research_planner.py`
+- `runtime/swarm/policing.py`
+- `runtime/runtime_context.py`
+- `runtime/capability_registry.py`
+- `runtime/os_kernel.py`
+- `app/routes/platform.py`
+- `capabilities/*/capability.json`
+- `docs/`
+- `tests/`
+
+## Milestones
+
+1. Audit legacy/hardcoded modules and import graph.
+2. Remove legacy helper modules that only encode hardcoded fallback/default
+   behavior.
+3. Replace necessary behavior with protocol/capability/driver declarations or
+   neutral helpers.
+4. Remove docs that bless legacy hardcoding as architecture; keep reference
+   capability docs only.
+5. Rewrite or delete tests that assert legacy behavior, and add guards proving
+   core runtime no longer imports legacy hardcoding.
+6. Run focused architecture/conformance/runtime tests and the full suite.
+
+## Tests to run
+
+- `.venv/bin/pytest tests/conformance tests/test_architecture_boundaries.py`
+- `.venv/bin/pytest tests/test_capability_runtime.py tests/test_graph.py`
+- `.venv/bin/pytest tests/test_runtime_materializer.py tests/test_os_kernel.py`
+- `.venv/bin/pytest`
+
+## Migration and compatibility notes
+
+- This cleanup intentionally removes legacy compatibility fallbacks when they
+  encode domain-specific authority in core runtime.
+- Keep domain-specific capability behavior in `capabilities/`, provider
+  adapters under `tools/`, and reference examples under `docs/protocol/examples/`.
+- If a public response field must remain for API shape compatibility, it should
+  be a generic mirror generated from protocol-governed state, not a legacy
+  authority path.
+- No model-provider, WRDS, investment-candidate, committee-role, or hardcoded
+  tool assumption should remain in core governance logic.
+
+## Progress log
+
+- 2026-06-09: Created cleanup branch and started legacy/hardcoding audit.
+
+## Final validation checklist
+
+- [ ] Core runtime no longer imports `runtime.legacy_*`,
+      `runtime/swarm/legacy_*`, or `runtime/workflows/legacy_*` modules.
+- [ ] Legacy helper modules that encode hardcoded fallback/default behavior are
+      deleted or replaced by neutral protocol/capability helpers.
+- [ ] Tests no longer assert legacy compatibility as desired runtime behavior.
+- [ ] Docs no longer describe hardcoded legacy paths as accepted architecture.
+- [ ] Focused architecture/conformance/runtime tests pass.
+- [ ] Full test suite passes, or remaining failures are documented with
+      concrete follow-up.

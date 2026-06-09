@@ -6,18 +6,48 @@ from typing import Any
 
 @dataclass(frozen=True)
 class DriverDescriptor:
-    driver_id: str
-    driver_kind: str
-    version: str = "0.1.0"
-    permissions: list[str] = field(default_factory=list)
-    safety_metadata: dict[str, Any] = field(default_factory=dict)
+    id: str
+    kind: str
+    version: str
+    capabilities: list[str] = field(default_factory=list)
 
-    def to_dict(self) -> dict[str, Any]:
-        return {
-            "schema_version": "pheroos.driver.v0.1",
-            "driver_id": self.driver_id,
-            "driver_kind": self.driver_kind,
-            "version": self.version,
-            "permissions": list(self.permissions),
-            "safety_metadata": dict(self.safety_metadata),
-        }
+
+@dataclass(frozen=True)
+class DriverRegistration:
+    descriptor: DriverDescriptor
+    registered: bool = True
+
+
+@dataclass(frozen=True)
+class DriverProbeResult:
+    driver_id: str
+    available: bool
+    detail: str = ""
+
+
+@dataclass(frozen=True)
+class DriverBinding:
+    driver_id: str
+    tenant_id: str
+    permissions: list[str] = field(default_factory=list)
+
+
+@dataclass(frozen=True)
+class DriverHandle:
+    binding: DriverBinding
+    exposed: bool = False
+
+
+@dataclass(frozen=True)
+class DriverHealth:
+    driver_id: str
+    healthy: bool
+    detail: str = ""
+
+
+@dataclass(frozen=True)
+class DriverResult:
+    driver_id: str
+    ok: bool
+    payload: dict[str, Any] = field(default_factory=dict)
+    provenance: str = ""

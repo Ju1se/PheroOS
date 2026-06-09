@@ -1,0 +1,72 @@
+{
+  "id": "toy-protocol",
+  "name": "Toy Protocol",
+  "version": "0.1.0",
+  "permissions": [],
+  "required_connections": [],
+  "drivers": [],
+  "protocol": {
+    "protocol_version": "pheroos.protocol.v1",
+    "id": "toy.review",
+    "targets": [
+      {
+        "id": "decision:review",
+        "description": "A simple declared review target."
+      }
+    ],
+    "signals": [
+      {
+        "type": "proposal",
+        "target": "decision:review",
+        "authority_required": "governance"
+      }
+    ],
+    "candidates": [
+      {
+        "id": "candidate:accept",
+        "target": "decision:review",
+        "label": "Accept"
+      },
+      {
+        "id": "candidate:return",
+        "target": "decision:review",
+        "label": "Return"
+      },
+      {
+        "id": "candidate:insufficient_evidence",
+        "target": "decision:review",
+        "label": "Insufficient Evidence",
+        "safe_fallback": true
+      }
+    ],
+    "quorum_policy": {
+      "target": "decision:review",
+      "fallback_candidate": "candidate:insufficient_evidence",
+      "commit_threshold": 1
+    },
+    "recovery_protocols": [
+      {
+        "id": "recovery:review_gap",
+        "trigger_targets": ["decision:review"],
+        "allowed_roles": ["reviewer"],
+        "allowed_tags": ["toy"],
+        "required_tools": [],
+        "failure_candidate": "candidate:insufficient_evidence"
+      }
+    ],
+    "evidence_policy": {
+      "require_provenance": true,
+      "allow_agent_fact_creation": false
+    },
+    "output_policy": {
+      "writer_may_create_facts": false,
+      "requires_committed_candidate": true,
+      "requires_evidence_contract": true,
+      "requires_stop_resolution": true,
+      "requires_publication_permission": true
+    },
+    "trace_policy": {
+      "required_events": ["block", "commit", "recovery", "output"]
+    }
+  }
+}

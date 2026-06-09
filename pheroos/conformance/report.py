@@ -1,0 +1,27 @@
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+from typing import Any
+
+
+@dataclass(frozen=True)
+class CheckResult:
+    name: str
+    ok: bool
+    detail: str = ""
+
+    def to_dict(self) -> dict[str, Any]:
+        return {"name": self.name, "ok": self.ok, "detail": self.detail}
+
+
+@dataclass(frozen=True)
+class ConformanceReport:
+    target: str
+    checks: list[CheckResult] = field(default_factory=list)
+
+    @property
+    def ok(self) -> bool:
+        return all(check.ok for check in self.checks)
+
+    def to_dict(self) -> dict[str, Any]:
+        return {"target": self.target, "ok": self.ok, "checks": [check.to_dict() for check in self.checks]}
