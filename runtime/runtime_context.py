@@ -16,6 +16,11 @@ from runtime.legacy_model_roles import (
     model_roles_for_provider_mix,
     model_roles_for_single_provider,
 )
+from runtime.legacy_runtime_connections import (
+    legacy_wrds_active_connection_keys,
+    legacy_wrds_capability_exposes_data_source,
+    legacy_wrds_connection_record,
+)
 from runtime.legacy_runtime_validation import (
     legacy_wrds_capability_enabled,
     legacy_wrds_missing_connection_issue,
@@ -160,15 +165,11 @@ class RuntimeMaterializer:
                 registry=self.capability_registry,
                 tenant_id=tenant_id,
             )
-            has_wrds_capability = any(
-                "wrds" in capability.get("connections", [])
-                or any(str(tool).startswith("wrds_") for tool in capability.get("tools", []))
-                for capability in active
-            )
+            has_wrds_capability = any(legacy_wrds_capability_exposes_data_source(capability) for capability in active)
             if not has_wrds_capability:
                 return None
         for record in self.control_plane.list_active_connections(tenant_id=tenant_id):
-            if record.get("kind") == "financial_data_source" and record.get("provider") == "wrds":
+            if legacy_wrds_connection_record(record):
                 return WRDSFinancialDataSource.from_connection(
                     control_plane=self.control_plane,
                     record=record,
@@ -543,8 +544,7 @@ def active_connection_keys(records: list[dict[str, Any]]) -> list[str]:
                 keys.add(value)
         if record.get("kind") == "model_provider":
             keys.update({"model-provider", "model_provider", "chat_model"})
-        if record.get("kind") == "financial_data_source" and record.get("provider") == "wrds":
-            keys.update({"wrds", "financial_data_source", "professional_financial_database"})
+        keys.update(legacy_wrds_active_connection_keys(record))
     return sorted(keys)
 
 
