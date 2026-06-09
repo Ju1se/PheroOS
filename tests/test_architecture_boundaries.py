@@ -240,6 +240,27 @@ def test_core_writer_and_policing_do_not_own_domain_workflow_fallback_bodies() -
     assert "def legacy_domain_workflow_policing_fallback_source(" in compatibility_text
 
 
+def test_public_boundary_doc_defines_kernel_user_driver_authority() -> None:
+    text = (ROOT / "docs/architecture/kernel-user-driver-boundaries.md").read_text(encoding="utf-8")
+    normalized = " ".join(text.split())
+
+    required = [
+        "# Kernel, User, and Driver Boundaries",
+        "Kernel-mode actors verify, block, commit, publish, and explain.",
+        "User-mode actors propose. They do not hold authority.",
+        "Driver-mode adapters expose structured provider capabilities to the kernel.",
+        "Governance actors are kernel services, not normal agents and not committee",
+        "`runtime/graph.py` remains a reference runtime shell and compatibility bridge.",
+        "run pheroos validate",
+        "run pheroos-conformance",
+    ]
+    for item in required:
+        assert item in text
+
+    assert "WRDS is a reference `DataProviderDriver`" in text
+    assert "WRDS is not a kernel concept" in normalized
+
+
 def test_domain_execution_bridge_does_not_own_legacy_graph_mode_maps() -> None:
     graph_text = (ROOT / "runtime/graph.py").read_text(encoding="utf-8")
     bridge_text = (ROOT / "runtime/workflows/domain_execution.py").read_text(encoding="utf-8")
