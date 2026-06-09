@@ -218,3 +218,71 @@ contracts, and PIP governance process.
       runtime/provider imports.
 - [x] Conformance docs/tests and PIP process are present.
 - [x] Focused and full test suites pass, or failures are documented.
+
+# ExecPlan: PheroOS Checklist Implementation PR Series
+
+## User-visible goal
+
+Implement the improvements from
+`docs/architecture/pheroos-kernel-protocol-execution-checklist.md` as staged
+pull requests, starting with P0 conformance and domain leakage guardrails.
+
+## Current architecture facts
+
+- PR #1 merged the PheroOS public identity, kernel docs, schemas, driver
+  contracts, PIP process, and basic `pheroos-conformance` CLI.
+- The mistaken docs-only PR #2 was closed; checklist items should be
+  implemented rather than submitted as a standalone artifact.
+- `pheroos/cli.py` already emits basic manifest/protocol conformance checks but
+  some checks are shallow or unconditional.
+- `tests/conformance/test_pheroos_public_abi.py` guards the public ABI surface,
+  but conformance fixtures do not yet cover invalid tool, recovery, output, or
+  trace policy cases.
+
+## Files to inspect
+
+- `pheroos/cli.py`
+- `pheroos/protocol/manifest.py`
+- `runtime/swarm/protocol_schema.py`
+- `runtime/swarm/protocol_validation.py`
+- `tests/conformance/test_pheroos_public_abi.py`
+- `docs/conformance/conformance-suite.md`
+
+## Milestones
+
+1. Close mistaken docs-only PR and start a real implementation branch.
+2. Strengthen P0 conformance checks and add positive/negative fixtures.
+3. Submit the conformance PR.
+4. Follow with separate PRs for boundary documentation, minimal distro, and
+   third-party capability security roadmap.
+
+## Tests to run
+
+- `.venv/bin/pytest tests/conformance tests/test_protocol_manifest.py tests/test_architecture_boundaries.py`
+- `.venv/bin/pytest`
+
+## Migration and compatibility notes
+
+- Keep CLI report fields additive and preserve existing `ok`, `checks`, and
+  `conformance_level` keys.
+- Do not alter runtime behavior in the first P0 conformance PR.
+- Domain-specific examples remain allowed in capabilities, tools adapters,
+  docs examples, tests fixtures, and explicit legacy compatibility paths.
+
+## Progress log
+
+- 2026-06-09: Closed mistaken PR #2 and started
+  `codex/pheroos-conformance-p0` for the first implementation PR.
+- 2026-06-09: Strengthened `pheroos-conformance` P0 checks, added positive
+  and negative conformance fixtures, updated conformance docs, and verified
+  focused plus full test suites.
+- 2026-06-09: Opened draft PR #3 for the first P0 conformance implementation
+  slice.
+
+## Final validation checklist
+
+- [x] P0 conformance checks are meaningful and tested.
+- [x] Domain leakage guard covers the intended public/core boundary without
+      breaking legacy compatibility paths.
+- [x] Focused tests pass.
+- [x] PR is opened for the first implementation slice.
