@@ -5,7 +5,7 @@ import json
 import pytest
 
 from runtime.capability_registry import CapabilityRegistry, CapabilityStateStore
-from runtime.capability_manifest_security import compute_capability_checksum
+from runtime.capability_manifest_security import capability_security_roadmap, compute_capability_checksum
 
 
 def write_manifest(root, folder: str, payload: dict) -> None:
@@ -123,6 +123,38 @@ def test_capability_registry_reports_security_policy_violations(tmp_path) -> Non
     assert "untrusted_blocking_signal" in codes
     assert "untrusted_unsigned_capability" in codes
     assert "dangerous_allowed_import" in codes
+
+
+def test_capability_security_report_exposes_roadmap_stages(tmp_path) -> None:
+    write_manifest(tmp_path, "demo", manifest_payload("demo-capability"))
+
+    catalog = CapabilityRegistry(tmp_path).catalog()
+    roadmap = catalog["capabilities"][0]["security_diagnostics"]["roadmap"]
+    stages = {item["stage"]: item for item in roadmap["stages"]}
+    local_controls = {item["id"]: item["status"] for item in stages["v0.1_local_trusted_capabilities"]["controls"]}
+    signed_controls = {item["id"]: item["status"] for item in stages["v0.2_signed_capabilities"]["controls"]}
+    sandbox_controls = {item["id"]: item["status"] for item in stages["v0.3_sandboxed_execution"]["controls"]}
+
+    assert roadmap["current_enforcement_stage"] == "v0.1_local_trusted_capabilities"
+    assert stages["v0.1_local_trusted_capabilities"]["status"] == "active"
+    assert stages["v0.2_signed_capabilities"]["status"] == "planned"
+    assert stages["v0.3_sandboxed_execution"]["status"] == "planned"
+    assert local_controls["permission_confirmation"] == "enforced"
+    assert local_controls["network_allowlist_declaration"] == "declared"
+    assert local_controls["quarantine_signal"] == "diagnostic"
+    assert signed_controls["capability_signing"] == "planned"
+    assert sandbox_controls["subprocess_isolation"] == "planned"
+
+
+def test_capability_security_roadmap_helper_is_stable() -> None:
+    roadmap = capability_security_roadmap()
+
+    assert roadmap["schema_version"] == "pheroos.capability_security_roadmap.v0.1"
+    assert [item["stage"] for item in roadmap["stages"]] == [
+        "v0.1_local_trusted_capabilities",
+        "v0.2_signed_capabilities",
+        "v0.3_sandboxed_execution",
+    ]
 
 
 def test_capability_checksum_detects_manifest_change(tmp_path) -> None:

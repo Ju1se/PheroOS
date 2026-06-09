@@ -70,6 +70,10 @@ cannot emit `stop_signal`, `quarantine`, or `trust_badge`, cannot use arbitrary
 network or filesystem write access, and cannot bypass ModelGateway,
 ToolRegistry, or SecretStore handles.
 
+The staged capability security roadmap is documented in
+[`docs/security/capability-security-roadmap.md`](security/capability-security-roadmap.md)
+and is exposed in each capability `security_diagnostics.roadmap` report.
+
 ## Secret Store Backends
 
 `runtime/secret_store.py` exposes a replaceable `SecretStore` interface.
