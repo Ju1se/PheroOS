@@ -44,6 +44,7 @@ conformance suite 和可审计兼容层。
 - Runtime Materializer：[docs/runtime-materializer.md](docs/runtime-materializer.md)
 - Investment workflow：[docs/investment-research-workflow.md](docs/investment-research-workflow.md)
 - Security and permissions：[docs/security-and-permissions.md](docs/security-and-permissions.md)
+- Capability security roadmap：[docs/security/capability-security-roadmap.md](docs/security/capability-security-roadmap.md)
 - Dashboard：[docs/dashboard.md](docs/dashboard.md)
 - PheroOS signal spec：[docs/swarm_signal_spec.md](docs/swarm_signal_spec.md)
 - Known gaps：[docs/known-gaps.md](docs/known-gaps.md)

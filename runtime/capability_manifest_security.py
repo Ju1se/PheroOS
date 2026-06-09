@@ -185,9 +185,56 @@ def build_manifest_security_report(payload: dict[str, Any], *, capability_dir: P
         "checksum": declared_checksum,
         "computed_checksum": computed_checksum,
         "signature_status": signature_status,
+        "roadmap": capability_security_roadmap(),
         "findings": findings,
         "high_risk_count": high_count,
         "medium_risk_count": medium_count,
+    }
+
+
+def capability_security_roadmap() -> dict[str, Any]:
+    return {
+        "schema_version": "pheroos.capability_security_roadmap.v0.1",
+        "current_enforcement_stage": "v0.1_local_trusted_capabilities",
+        "stages": [
+            {
+                "stage": "v0.1_local_trusted_capabilities",
+                "status": "active",
+                "controls": [
+                    {"id": "manifest_validation", "status": "enforced"},
+                    {"id": "checksum_display", "status": "diagnostic"},
+                    {"id": "network_allowlist_declaration", "status": "declared"},
+                    {"id": "permission_confirmation", "status": "enforced"},
+                    {"id": "quarantine_signal", "status": "diagnostic"},
+                    {"id": "model_gateway_boundary", "status": "enforced"},
+                    {"id": "tool_registry_boundary", "status": "enforced"},
+                    {"id": "secret_handle_boundary", "status": "enforced"},
+                ],
+            },
+            {
+                "stage": "v0.2_signed_capabilities",
+                "status": "planned",
+                "controls": [
+                    {"id": "capability_signing", "status": "planned"},
+                    {"id": "public_key_trust_store", "status": "planned"},
+                    {"id": "provenance_metadata", "status": "planned"},
+                    {"id": "revocation_list", "status": "planned"},
+                    {"id": "install_audit_log", "status": "planned"},
+                ],
+            },
+            {
+                "stage": "v0.3_sandboxed_execution",
+                "status": "planned",
+                "controls": [
+                    {"id": "restricted_imports", "status": "planned"},
+                    {"id": "subprocess_isolation", "status": "planned"},
+                    {"id": "network_policy_enforcement", "status": "planned"},
+                    {"id": "filesystem_mount_policy", "status": "planned"},
+                    {"id": "resource_limits", "status": "planned"},
+                    {"id": "deterministic_tool_boundary", "status": "planned"},
+                ],
+            },
+        ],
     }
 
 
