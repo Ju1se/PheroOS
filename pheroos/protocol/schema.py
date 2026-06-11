@@ -1,22 +1,36 @@
 from __future__ import annotations
 
-from pathlib import Path
+from typing import Any
 
 
-SCHEMA_DIR = Path(__file__).resolve().parents[2] / "schemas"
-
-PROTOCOL_SCHEMA = SCHEMA_DIR / "pheroos.protocol.v0.1.schema.json"
-CAPABILITY_SCHEMA = SCHEMA_DIR / "pheroos.capability.v0.1.schema.json"
-SIGNAL_SCHEMA = SCHEMA_DIR / "pheroos.signal.v0.1.schema.json"
-EVIDENCE_SCHEMA = SCHEMA_DIR / "pheroos.evidence.v0.1.schema.json"
-TRACE_SCHEMA = SCHEMA_DIR / "pheroos.trace.v0.1.schema.json"
-
-
-def schema_paths() -> dict[str, Path]:
+def protocol_schema() -> dict[str, Any]:
     return {
-        "protocol": PROTOCOL_SCHEMA,
-        "capability": CAPABILITY_SCHEMA,
-        "signal": SIGNAL_SCHEMA,
-        "evidence": EVIDENCE_SCHEMA,
-        "trace": TRACE_SCHEMA,
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "$id": "https://pheroos.dev/schemas/protocol.schema.json",
+        "type": "object",
+        "required": ["protocol_version", "id", "targets", "candidates", "quorum_policy", "output_policy", "trace_policy"],
+        "properties": {
+            "protocol_version": {"type": "string"},
+            "id": {"type": "string"},
+            "targets": {"type": "array", "items": {"type": "object", "required": ["id"]}},
+            "candidates": {"type": "array", "items": {"type": "object", "required": ["id", "target"]}},
+            "quorum_policy": {"type": "object", "required": ["target", "fallback_candidate"]},
+            "output_policy": {"type": "object"},
+            "trace_policy": {"type": "object"},
+        },
+    }
+
+
+def capability_schema() -> dict[str, Any]:
+    return {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "$id": "https://pheroos.dev/schemas/capability.schema.json",
+        "type": "object",
+        "required": ["id", "name", "version", "protocol"],
+        "properties": {
+            "id": {"type": "string"},
+            "name": {"type": "string"},
+            "version": {"type": "string"},
+            "protocol": protocol_schema(),
+        },
     }

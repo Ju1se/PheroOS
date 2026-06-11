@@ -1,11 +1,32 @@
-"""PheroOS Protocol ABI wrappers."""
-
-from pheroos.protocol.manifest import LoadedProtocol, load_capability_protocol
-from pheroos.protocol.validation import protocol_errors, protocol_warnings
+from pheroos.protocol.loader import load_capability_manifest
+from pheroos.protocol.models import (
+    CandidateSpec,
+    CapabilityManifest,
+    EvidencePolicy,
+    OutputPolicy,
+    ProtocolManifest,
+    QuorumPolicy,
+    RecoveryProtocol,
+    SignalSpec,
+    TargetSpec,
+    TracePolicy,
+    ValidationDiagnostic,
+)
+from pheroos.protocol.validation import validate_capability_manifest, validate_ok
 
 __all__ = [
-    "LoadedProtocol",
-    "load_capability_protocol",
-    "protocol_errors",
-    "protocol_warnings",
+    "CandidateSpec",
+    "CapabilityManifest",
+    "EvidencePolicy",
+    "OutputPolicy",
+    "ProtocolManifest",
+    "QuorumPolicy",
+    "RecoveryProtocol",
+    "SignalSpec",
+    "TargetSpec",
+    "TracePolicy",
+    "ValidationDiagnostic",
+    "load_capability_manifest",
+    "validate_capability_manifest",
+    "validate_ok",
 ]

@@ -5,27 +5,12 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "pheroos"
 version = "0.1.0"
-description = "Protocol-governed AI-as-OS kernel and reference multi-agent runtime."
+description = "Open AI-as-OS protocol and kernel for governed agent runtimes."
 readme = "README.md"
-requires-python = ">=3.12,<3.15"
+requires-python = ">=3.12"
 license = { file = "LICENSE" }
-keywords = [
-  "ai-os",
-  "multi-agent",
-  "agent-protocol",
-  "governance",
-  "capability-runtime",
-  "agent-kernel",
-  "pheroos",
-]
-dependencies = [
-  "fastapi>=0.116.0",
-  "httpx>=0.28.0",
-  "langgraph>=0.2.0",
-  "psycopg2-binary>=2.9.9",
-  "pypdf>=5.0.0",
-  "uvicorn[standard]>=0.35.0",
-]
+keywords = ["ai-os", "protocol", "kernel", "governance", "drivers", "conformance"]
+dependencies = []
 
 [project.urls]
 Homepage = "https://github.com/Ju1se/PheroOS"
@@ -36,16 +21,12 @@ Issues = "https://github.com/Ju1se/PheroOS/issues"
 dev = [
   "pytest>=8.0.0",
 ]
-proxy = [
-  "litellm>=1.70.0",
-]
 
 [project.scripts]
-pheroos = "pheroos.cli:main"
-pheroos-conformance = "pheroos.cli:conformance_main"
+pheroos = "pheroos.cli.main:main"
 
 [tool.setuptools.packages.find]
-include = ["app*", "runtime*", "tools*", "pheroos*"]
+include = ["pheroos*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
