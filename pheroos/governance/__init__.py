@@ -1,5 +1,16 @@
 from pheroos.governance.authority import AuthorityLevel, can_verify
 from pheroos.governance.candidate import Candidate, CandidateSet
+from pheroos.governance.collective import (
+    CollectiveDecisionState,
+    InhibitionSignal,
+    PheromonePolicy,
+    PheromoneTrail,
+    RecruitmentSignal,
+    ScoutReport,
+    evaporate_trails,
+    evaluate_collective_decision,
+    score_candidates,
+)
 from pheroos.governance.evidence import EvidenceEdge, EvidenceGraph, EvidenceNode
 from pheroos.governance.output import OutputContract, output_authorized
 from pheroos.governance.quorum import QuorumDecision, commit_candidate
@@ -14,12 +25,18 @@ __all__ = [
     "Candidate",
     "CandidateSet",
     "CanonicalTarget",
+    "CollectiveDecisionState",
     "EvidenceEdge",
     "EvidenceGraph",
     "EvidenceNode",
+    "InhibitionSignal",
     "OutputContract",
+    "PheromonePolicy",
+    "PheromoneTrail",
     "QuorumDecision",
+    "RecruitmentSignal",
     "RecoveryTrace",
+    "ScoutReport",
     "Signal",
     "SignalStatus",
     "StopResolution",
@@ -27,6 +44,9 @@ __all__ = [
     "TraceEvent",
     "can_verify",
     "commit_candidate",
+    "evaporate_trails",
+    "evaluate_collective_decision",
     "output_authorized",
     "resolve_stop_signal",
+    "score_candidates",
 ]

@@ -5,6 +5,7 @@ from typing import Any
 from pheroos.protocol.models import (
     CandidateSpec,
     CapabilityManifest,
+    CollectiveDecisionPolicy,
     EvidencePolicy,
     OutputPolicy,
     ProtocolManifest,
@@ -49,6 +50,7 @@ def protocol_manifest_from_dict(payload: dict[str, Any]) -> ProtocolManifest:
         trace_policy=TracePolicy(required_events=text_list(object_payload(payload.get("trace_policy"), default={}).get("required_events")) or ["block", "commit", "recovery", "output"]),
         evidence_policy=evidence_policy_from_dict(object_payload(payload.get("evidence_policy"), default={})),
         signals=[signal_from_dict(item) for item in payload.get("signals") or [] if isinstance(item, dict)],
+        collective_decision_policy=collective_decision_policy_from_dict(payload.get("collective_decision_policy")),
     )
 
 
@@ -70,6 +72,22 @@ def signal_from_dict(payload: dict[str, Any]) -> SignalSpec:
         type=required_text(payload, "type"),
         target=required_text(payload, "target"),
         authority_required=str(payload.get("authority_required") or "governance"),
+    )
+
+
+def collective_decision_policy_from_dict(value: Any) -> CollectiveDecisionPolicy | None:
+    if value is None:
+        return None
+    payload = object_payload(value)
+    return CollectiveDecisionPolicy(
+        mode=str(payload.get("mode") or "quorum"),
+        min_independent_scouts=positive_int_field(payload, "min_independent_scouts", default=1),
+        quorum_threshold=positive_int_field(payload, "quorum_threshold", default=1),
+        recruitment_enabled=bool(payload.get("recruitment_enabled", False)),
+        inhibition_enabled=bool(payload.get("inhibition_enabled", False)),
+        pheromone_enabled=bool(payload.get("pheromone_enabled", False)),
+        pheromone_evaporation_rate=float_field(payload, "pheromone_evaporation_rate", default=0.0),
+        fallback_candidate=str(payload.get("fallback_candidate") or ""),
     )
 
 
@@ -135,3 +153,21 @@ def positive_int(value: Any, *, default: int) -> int:
     except (TypeError, ValueError):
         return default
     return parsed if parsed > 0 else default
+
+
+def positive_int_field(payload: dict[str, Any], key: str, *, default: int) -> int:
+    if key not in payload:
+        return default
+    try:
+        return int(payload.get(key))
+    except (TypeError, ValueError):
+        return 0
+
+
+def float_field(payload: dict[str, Any], key: str, *, default: float) -> float:
+    if key not in payload:
+        return default
+    try:
+        return float(payload.get(key))
+    except (TypeError, ValueError):
+        return -1.0

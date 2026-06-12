@@ -7,13 +7,22 @@ from typing import Any, Iterable
 VALID_EVENT_TYPES = frozenset(
     {
         "plan",
+        "explore",
         "grant",
         "expose",
         "invoke",
         "evidence",
+        "scout_report",
         "signal",
+        "recruit",
+        "inhibit",
+        "pheromone_deposit",
+        "pheromone_evaporate",
+        "candidate_score",
+        "consensus_check",
         "block",
         "commit",
+        "fallback",
         "recovery",
         "output",
     }

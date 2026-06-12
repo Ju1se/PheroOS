@@ -1,0 +1,101 @@
+{
+  "id": "swarm-protocol",
+  "name": "Swarm Protocol",
+  "version": "0.1.0",
+  "permissions": [],
+  "required_connections": [],
+  "drivers": [],
+  "protocol": {
+    "protocol_version": "pheroos.protocol.v1",
+    "id": "swarm.collective",
+    "targets": [
+      {
+        "id": "decision:collective",
+        "description": "A provider-free collective decision target."
+      }
+    ],
+    "signals": [
+      {
+        "type": "recruitment",
+        "target": "decision:collective",
+        "authority_required": "governance"
+      },
+      {
+        "type": "inhibition",
+        "target": "decision:collective",
+        "authority_required": "governance"
+      }
+    ],
+    "candidates": [
+      {
+        "id": "candidate:alpha",
+        "target": "decision:collective",
+        "label": "Alpha"
+      },
+      {
+        "id": "candidate:beta",
+        "target": "decision:collective",
+        "label": "Beta"
+      },
+      {
+        "id": "candidate:safe_fallback",
+        "target": "decision:collective",
+        "label": "Safe Fallback",
+        "safe_fallback": true
+      }
+    ],
+    "quorum_policy": {
+      "target": "decision:collective",
+      "fallback_candidate": "candidate:safe_fallback",
+      "commit_threshold": 2
+    },
+    "collective_decision_policy": {
+      "mode": "hybrid",
+      "min_independent_scouts": 2,
+      "quorum_threshold": 3,
+      "recruitment_enabled": true,
+      "inhibition_enabled": true,
+      "pheromone_enabled": true,
+      "pheromone_evaporation_rate": 0.25,
+      "fallback_candidate": "candidate:safe_fallback"
+    },
+    "recovery_protocols": [
+      {
+        "id": "recovery:collective_gap",
+        "trigger_targets": ["decision:collective"],
+        "allowed_roles": ["reviewer"],
+        "allowed_tags": ["swarm"],
+        "required_tools": [],
+        "failure_candidate": "candidate:safe_fallback"
+      }
+    ],
+    "evidence_policy": {
+      "require_provenance": true,
+      "allow_agent_fact_creation": false
+    },
+    "output_policy": {
+      "writer_may_create_facts": false,
+      "requires_committed_candidate": true,
+      "requires_evidence_contract": true,
+      "requires_stop_resolution": true,
+      "requires_publication_permission": true
+    },
+    "trace_policy": {
+      "required_events": [
+        "explore",
+        "scout_report",
+        "recruit",
+        "inhibit",
+        "pheromone_deposit",
+        "pheromone_evaporate",
+        "candidate_score",
+        "consensus_check",
+        "block",
+        "commit",
+        "fallback",
+        "recovery",
+        "output"
+      ]
+    }
+  }
+}

@@ -7,13 +7,22 @@ def test_trace_store_appends_records_and_validates_required_events() -> None:
     store = InMemoryTraceStore()
     for event_type in [
         "plan",
+        "explore",
         "grant",
         "expose",
         "invoke",
         "evidence",
+        "scout_report",
         "signal",
+        "recruit",
+        "inhibit",
+        "pheromone_deposit",
+        "pheromone_evaporate",
+        "candidate_score",
+        "consensus_check",
         "block",
         "commit",
+        "fallback",
         "recovery",
         "output",
     ]:
@@ -26,7 +35,7 @@ def test_trace_store_appends_records_and_validates_required_events() -> None:
             )
         )
 
-    assert [record.sequence for record in store.records] == list(range(10))
+    assert [record.sequence for record in store.records] == list(range(19))
     assert store.require_events(["plan", "invoke", "output"]) == []
 
 
