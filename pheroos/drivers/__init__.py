@@ -8,7 +8,7 @@ from pheroos.drivers.base import (
     DriverResult,
 )
 from pheroos.drivers.data import DataProviderDriverDescriptor
-from pheroos.drivers.lifecycle import bind, declare, expose, probe, register, validate
+from pheroos.drivers.lifecycle import bind, declare, expose, invoke, probe, register, validate
 from pheroos.drivers.model import ModelDriverDescriptor
 from pheroos.drivers.registry import DriverRegistry
 from pheroos.drivers.sandbox import SandboxDriverDescriptor
@@ -32,6 +32,7 @@ __all__ = [
     "bind",
     "declare",
     "expose",
+    "invoke",
     "probe",
     "register",
     "validate",

@@ -1,6 +1,16 @@
 from __future__ import annotations
 
-from pheroos.drivers.base import DriverBinding, DriverDescriptor, DriverHandle, DriverProbeResult, DriverRegistration
+from typing import Any
+
+from pheroos.drivers.base import (
+    DriverBinding,
+    DriverDescriptor,
+    DriverHandle,
+    DriverProbeResult,
+    DriverRegistration,
+    DriverResult,
+)
+from pheroos.drivers.errors import DriverError
 
 
 def declare(descriptor: DriverDescriptor) -> DriverDescriptor:
@@ -25,3 +35,14 @@ def bind(registration: DriverRegistration, *, tenant_id: str, permissions: list[
 
 def expose(binding: DriverBinding) -> DriverHandle:
     return DriverHandle(binding=binding, exposed=bool(binding.permissions))
+
+
+def invoke(handle: DriverHandle, *, payload: dict[str, Any], provenance: str) -> DriverResult:
+    if not handle.exposed:
+        raise DriverError(f"driver handle is not exposed: {handle.binding.driver_id}")
+    return DriverResult(
+        driver_id=handle.binding.driver_id,
+        ok=True,
+        payload=dict(payload),
+        provenance=provenance,
+    )
