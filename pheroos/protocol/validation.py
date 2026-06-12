@@ -4,6 +4,8 @@ from pheroos.protocol.models import (
     SUPPORTED_COLLECTIVE_MODES,
     CapabilityManifest,
     ValidationDiagnostic,
+    collective_fallback_id,
+    is_swarm_policy,
     required_swarm_trace_events,
 )
 
@@ -41,13 +43,15 @@ def validate_capability_manifest(manifest: CapabilityManifest) -> list[Validatio
             diagnostics.append(error("collective_quorum_threshold_invalid", "quorum_threshold must be positive", "protocol.collective_decision_policy.quorum_threshold"))
         if not 0 <= collective_policy.pheromone_evaporation_rate <= 1:
             diagnostics.append(error("collective_pheromone_evaporation_invalid", "pheromone evaporation rate must be between 0 and 1", "protocol.collective_decision_policy.pheromone_evaporation_rate"))
-        if collective_policy.fallback_candidate not in candidate_ids:
+        fallback_candidate = collective_fallback_id(protocol)
+        if fallback_candidate not in candidate_ids:
             diagnostics.append(error("collective_fallback_missing", "collective fallback candidate must be declared", "protocol.collective_decision_policy.fallback_candidate"))
-        elif collective_policy.fallback_candidate not in safe_candidates:
+        elif fallback_candidate not in safe_candidates:
             diagnostics.append(error("collective_fallback_not_safe", "collective fallback candidate must be marked safe_fallback", "protocol.collective_decision_policy.fallback_candidate"))
-        swarm_missing_trace = sorted(required_swarm_trace_events(collective_policy) - set(protocol.trace_policy.required_events))
-        if swarm_missing_trace:
-            diagnostics.append(error("swarm_trace_lineage_incomplete", f"trace policy missing swarm events: {', '.join(swarm_missing_trace)}", "protocol.trace_policy"))
+        if is_swarm_policy(collective_policy):
+            swarm_missing_trace = sorted(required_swarm_trace_events(collective_policy) - set(protocol.trace_policy.required_events))
+            if swarm_missing_trace:
+                diagnostics.append(error("swarm_trace_lineage_incomplete", f"trace policy missing swarm events: {', '.join(swarm_missing_trace)}", "protocol.trace_policy"))
 
     for recovery in protocol.recovery_protocols:
         for target in recovery.trigger_targets:

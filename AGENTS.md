@@ -302,3 +302,135 @@ Driver lifecycle is:
 
 ```text
 declare -> validate -> register -> probe -> bind -> expose -> invoke -> trace
+```
+
+## Trace Rules
+
+Trace code owns provider-neutral lineage.
+
+Trace may define:
+
+- trace events
+- append-only records
+- in-memory trace stores for tests
+- required event validation
+- lineage helpers
+
+Trace must not become:
+
+- a database
+- an event bus
+- a queue
+- a logging framework
+- a runtime monitor daemon
+
+`pheroos.trace.TraceEvent` is the canonical Trace ABI. Other packages may re-export it as a compatibility alias, but should not define a second incompatible trace event object.
+
+## Conformance Rules
+
+Conformance proves ABI compatibility.
+
+Conformance may compose protocol, kernel, governance, drivers, and trace.
+
+Conformance checks should remain:
+
+- deterministic
+- provider-free
+- network-free
+- small
+- explicit about the invariant being checked
+
+Swarm-specific conformance checks apply only when a manifest declares swarm behavior.
+
+## Import Boundaries
+
+Maintain strict package boundaries.
+
+- `pheroos.protocol` must not import `pheroos.kernel`, `pheroos.governance`, `pheroos.drivers`, `pheroos.conformance`, CLI, examples, app/runtime modules, provider frameworks, or tools.
+- `pheroos.kernel` may import `pheroos.protocol` and `pheroos.drivers`.
+- `pheroos.kernel` should not import `pheroos.governance` directly. If governance decisions are needed, represent them through explicit contracts, dependency injection, or outer runtime/conformance composition.
+- `pheroos.governance` may import protocol concepts where practical, but should remain independent of kernel runtime machinery and provider frameworks.
+- `pheroos.drivers` should remain generic and must not depend on app/runtime/provider frameworks.
+- `pheroos.trace` should remain generic and must not depend on app/runtime/provider frameworks.
+- `pheroos.conformance` may import protocol, kernel, governance, drivers, and trace.
+- CLI code must stay thin and delegate to core packages.
+
+Do not weaken these boundaries to make a test pass. Fix the design instead.
+
+## Dependency Rules
+
+Keep dependencies minimal.
+
+Prefer the Python standard library.
+
+Do not add heavy dependencies for protocol, governance, trace, conformance, examples, or tests unless the dependency is essential to an ABI invariant and cannot be replaced by a small local dataclass or function.
+
+Do not add provider SDKs, model clients, web frameworks, queues, databases, or background infrastructure to protocol-core.
+
+## Example Rules
+
+Examples must stay provider-free, network-free, deterministic, and domain-neutral.
+
+Use examples to prove ABI behavior, not to create product workflows.
+
+`examples/toy-protocol` remains the minimal baseline governed protocol example.
+
+`examples/e2e-protocol` may demonstrate the minimal governed vertical slice.
+
+`examples/swarm-protocol` may demonstrate swarm-native collective decision behavior.
+
+Do not turn examples into app runtimes, provider gateways, dashboards, or domain workflows.
+
+## Testing and Validation
+
+Add tests before or alongside behavior.
+
+Tests should prove:
+
+- protocol validation invariants
+- governance authority and decision semantics
+- driver lifecycle compatibility
+- trace lineage requirements
+- conformance checks
+- provider-free examples
+- backward compatibility for existing examples
+
+Before finishing substantive changes, run the relevant subset and, when practical:
+
+```bash
+python -m pytest -q
+python -m pheroos.cli.main validate examples/toy-protocol/capability.json
+python -m pheroos.cli.main conformance examples/toy-protocol
+python -m pheroos.cli.main validate examples/swarm-protocol/capability.json
+python -m pheroos.cli.main conformance examples/swarm-protocol
+```
+
+If the shell does not provide `python`, use the repository virtual environment or available interpreter and report that clearly.
+
+## Documentation Rules
+
+Docs should stay short and ABI-focused.
+
+Document invariants, boundaries, conformance behavior, and provider-free examples.
+
+Do not add marketing copy, product runtime documentation, dashboard docs, provider setup guides, or domain workflow instructions.
+
+## Backward Compatibility Rule
+
+Do not force existing baseline protocols to become swarm protocols.
+
+`examples/toy-protocol` should remain the minimal baseline governed protocol example.
+
+Swarm-native rules apply only when a manifest explicitly declares `collective_decision_policy` with a swarm mode such as `bee_swarm`, `ant_colony`, or `hybrid`.
+
+Baseline quorum-only protocols must continue to validate and pass conformance.
+
+Do not rewrite old protocol examples merely to satisfy new swarm-specific checks. Add a separate `examples/swarm-protocol` example for swarm-native behavior.
+
+## Final Rule
+
+Agents are not authority.
+
+Protocol is authority.
+
+Keep PheroOS small, explicit, deterministic, domain-neutral, provider-free by default, and ABI-focused.

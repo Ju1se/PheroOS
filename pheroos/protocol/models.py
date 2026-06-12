@@ -5,6 +5,7 @@ from typing import Any
 
 
 SUPPORTED_COLLECTIVE_MODES = frozenset({"quorum", "bee_swarm", "ant_colony", "hybrid"})
+SWARM_COLLECTIVE_MODES = frozenset({"bee_swarm", "ant_colony", "hybrid"})
 
 BASE_SWARM_TRACE_EVENTS = frozenset(
     {
@@ -141,3 +142,14 @@ def required_swarm_trace_events(policy: CollectiveDecisionPolicy) -> set[str]:
     if policy.pheromone_enabled:
         events.update({"pheromone_deposit", "pheromone_evaporate"})
     return events
+
+
+def is_swarm_policy(policy: CollectiveDecisionPolicy | None) -> bool:
+    return policy is not None and policy.mode in SWARM_COLLECTIVE_MODES
+
+
+def collective_fallback_id(protocol: ProtocolManifest) -> str:
+    policy = protocol.collective_decision_policy
+    if policy is None:
+        return protocol.quorum_policy.fallback_candidate
+    return policy.fallback_candidate or protocol.quorum_policy.fallback_candidate
