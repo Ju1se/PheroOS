@@ -1,0 +1,91 @@
+{
+  "id": "e2e-protocol",
+  "name": "E2E Protocol",
+  "version": "0.1.0",
+  "permissions": ["driver:invoke", "publish"],
+  "required_connections": [],
+  "drivers": [
+    {
+      "id": "driver:toy-evidence",
+      "kind": "tool",
+      "version": "0.1.0",
+      "capabilities": ["evidence:read"],
+      "permissions": ["driver:invoke"]
+    }
+  ],
+  "protocol": {
+    "protocol_version": "pheroos.protocol.v1",
+    "id": "e2e.review",
+    "targets": [
+      {
+        "id": "decision:e2e",
+        "description": "Provider-free governed decision target."
+      }
+    ],
+    "signals": [
+      {
+        "type": "proposal",
+        "target": "decision:e2e",
+        "authority_required": "governance"
+      }
+    ],
+    "candidates": [
+      {
+        "id": "candidate:approve",
+        "target": "decision:e2e",
+        "label": "Approve"
+      },
+      {
+        "id": "candidate:return",
+        "target": "decision:e2e",
+        "label": "Return"
+      },
+      {
+        "id": "candidate:insufficient_evidence",
+        "target": "decision:e2e",
+        "label": "Insufficient Evidence",
+        "safe_fallback": true
+      }
+    ],
+    "quorum_policy": {
+      "target": "decision:e2e",
+      "fallback_candidate": "candidate:insufficient_evidence",
+      "commit_threshold": 1
+    },
+    "recovery_protocols": [
+      {
+        "id": "recovery:evidence_gap",
+        "trigger_targets": ["decision:e2e"],
+        "allowed_roles": ["reviewer"],
+        "allowed_tags": ["e2e"],
+        "required_tools": ["driver:toy-evidence"],
+        "failure_candidate": "candidate:insufficient_evidence"
+      }
+    ],
+    "evidence_policy": {
+      "require_provenance": true,
+      "allow_agent_fact_creation": false
+    },
+    "output_policy": {
+      "writer_may_create_facts": false,
+      "requires_committed_candidate": true,
+      "requires_evidence_contract": true,
+      "requires_stop_resolution": true,
+      "requires_publication_permission": true
+    },
+    "trace_policy": {
+      "required_events": [
+        "plan",
+        "grant",
+        "expose",
+        "invoke",
+        "evidence",
+        "signal",
+        "block",
+        "commit",
+        "recovery",
+        "output"
+      ]
+    }
+  }
+}
