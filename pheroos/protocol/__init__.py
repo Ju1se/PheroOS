@@ -12,6 +12,9 @@ from pheroos.protocol.models import (
     TargetSpec,
     TracePolicy,
     ValidationDiagnostic,
+    SWARM_COLLECTIVE_MODES,
+    collective_fallback_id,
+    is_swarm_policy,
     required_swarm_trace_events,
 )
 from pheroos.protocol.validation import validate_capability_manifest, validate_ok
@@ -26,9 +29,12 @@ __all__ = [
     "QuorumPolicy",
     "RecoveryProtocol",
     "SignalSpec",
+    "SWARM_COLLECTIVE_MODES",
     "TargetSpec",
     "TracePolicy",
     "ValidationDiagnostic",
+    "collective_fallback_id",
+    "is_swarm_policy",
     "load_capability_manifest",
     "required_swarm_trace_events",
     "validate_capability_manifest",
