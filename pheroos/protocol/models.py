@@ -4,6 +4,21 @@ from dataclasses import dataclass, field
 from typing import Any
 
 
+SUPPORTED_COLLECTIVE_MODES = frozenset({"quorum", "bee_swarm", "ant_colony", "hybrid"})
+
+BASE_SWARM_TRACE_EVENTS = frozenset(
+    {
+        "explore",
+        "scout_report",
+        "candidate_score",
+        "consensus_check",
+        "commit",
+        "fallback",
+        "output",
+    }
+)
+
+
 @dataclass(frozen=True)
 class ValidationDiagnostic:
     code: str
@@ -56,6 +71,18 @@ class QuorumPolicy:
 
 
 @dataclass(frozen=True)
+class CollectiveDecisionPolicy:
+    mode: str = "quorum"
+    min_independent_scouts: int = 1
+    quorum_threshold: int = 1
+    recruitment_enabled: bool = False
+    inhibition_enabled: bool = False
+    pheromone_enabled: bool = False
+    pheromone_evaporation_rate: float = 0.0
+    fallback_candidate: str = ""
+
+
+@dataclass(frozen=True)
 class RecoveryProtocol:
     id: str
     trigger_targets: list[str]
@@ -91,6 +118,7 @@ class ProtocolManifest:
     trace_policy: TracePolicy = field(default_factory=TracePolicy)
     evidence_policy: EvidencePolicy = field(default_factory=EvidencePolicy)
     signals: list[SignalSpec] = field(default_factory=list)
+    collective_decision_policy: CollectiveDecisionPolicy | None = None
 
 
 @dataclass(frozen=True)
@@ -102,3 +130,14 @@ class CapabilityManifest:
     permissions: list[str] = field(default_factory=list)
     required_connections: list[str] = field(default_factory=list)
     drivers: list[dict[str, Any]] = field(default_factory=list)
+
+
+def required_swarm_trace_events(policy: CollectiveDecisionPolicy) -> set[str]:
+    events = set(BASE_SWARM_TRACE_EVENTS)
+    if policy.recruitment_enabled:
+        events.add("recruit")
+    if policy.inhibition_enabled:
+        events.add("inhibit")
+    if policy.pheromone_enabled:
+        events.update({"pheromone_deposit", "pheromone_evaporate"})
+    return events

@@ -9,6 +9,19 @@
     "targets": {"type": "array"},
     "candidates": {"type": "array"},
     "quorum_policy": {"type": "object"},
+    "collective_decision_policy": {
+      "type": "object",
+      "properties": {
+        "mode": {"enum": ["quorum", "bee_swarm", "ant_colony", "hybrid"]},
+        "min_independent_scouts": {"type": "integer", "minimum": 1},
+        "quorum_threshold": {"type": "integer", "minimum": 1},
+        "recruitment_enabled": {"type": "boolean"},
+        "inhibition_enabled": {"type": "boolean"},
+        "pheromone_enabled": {"type": "boolean"},
+        "pheromone_evaporation_rate": {"type": "number", "minimum": 0, "maximum": 1},
+        "fallback_candidate": {"type": "string"}
+      }
+    },
     "output_policy": {"type": "object"},
     "trace_policy": {"type": "object"}
   }

@@ -4,13 +4,17 @@ from pathlib import Path
 
 from pheroos.conformance.checks import (
     candidate_declaration,
+    collective_policy,
     domain_neutrality,
     driver_contract,
     kernel_import_boundary,
     manifest_schema,
     output_contract,
+    pheromone_policy,
     quorum_policy,
     recovery_policy,
+    safe_fallback_collective,
+    swarm_trace_contract,
     trace_contract,
 )
 from pheroos.conformance.report import ConformanceReport
@@ -33,9 +37,13 @@ def run_conformance(path: str | Path, *, root: str | Path | None = None) -> Conf
             [
                 candidate_declaration.check(manifest),
                 quorum_policy.check(manifest),
+                collective_policy.check(manifest),
+                safe_fallback_collective.check(manifest),
+                pheromone_policy.check(manifest),
                 recovery_policy.check(manifest),
                 output_contract.check(manifest),
                 trace_contract.check(manifest),
+                swarm_trace_contract.check(manifest),
                 driver_contract.check(manifest),
             ]
         )
