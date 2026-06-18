@@ -1,7 +1,17 @@
 # PheroOS
 
+<p align="center"><strong>Language / 语言</strong></p>
+
+<table>
+  <tr>
+    <td align="center"><a href="#english-readme"><strong>English</strong><br />Open English README</a></td>
+    <td align="center"><a href="#chinese-readme"><strong>简体中文</strong><br />打开中文说明</a></td>
+  </tr>
+</table>
+
+<a id="english-readme"></a>
 <details open>
-<summary><strong>English</strong></summary>
+<summary><strong>English README</strong> - click to expand or collapse</summary>
 
 PheroOS is an open **AI-as-OS protocol core** for governed, swarm-native multi-agent runtimes.
 
@@ -383,8 +393,9 @@ See `LICENSE`.
 
 </details>
 
+<a id="chinese-readme"></a>
 <details>
-<summary><strong>简体中文</strong></summary>
+<summary><strong>简体中文 README</strong> - 点击展开或收起</summary>
 
 PheroOS 是一个开放的 **AI-as-OS 协议核心**，面向受治理、群体原生的多智能体运行时。
 
