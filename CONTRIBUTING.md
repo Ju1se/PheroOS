@@ -1,71 +1,60 @@
 # Contributing
 
-Thanks for helping improve PheroOS. This project is an open AI-as-OS
-kernel/protocol plus a reference runtime: components should be easy to replace,
-easy to test, and hard to accidentally couple together.
+Thanks for helping improve PheroOS.
 
-## Design Principles
+PheroOS is a protocol-core package for governed, swarm-native multi-agent runtimes. Contributions should keep the repository small, deterministic, domain-neutral, provider-free by default, and ABI-focused.
 
-- Keep components internally cohesive and externally small.
-- Prefer interfaces in `runtime/ports.py` over importing concrete adapters.
-- Keep provider-specific code in adapters such as `runtime/llm.py`,
-  `tools/web_tools.py`, and `tools/wrds_tools.py`.
-- Keep orchestration policy separate from tool implementation.
-- Do not add new production dependencies unless they remove meaningful
-  complexity.
-- Do not commit secrets, generated reports, local logs, screenshots, or
-  `.env.local`.
+## Project Boundaries
 
-## Local Setup
+Contributions should strengthen one of these surfaces:
 
-```bash
-python3 -m venv .venv
-.venv/bin/pip install -e ".[dev]"
-.venv/bin/pytest
-```
+- Protocol ABI
+- Kernel ABI
+- Governance Core
+- Driver ABI
+- Trace ABI
+- Conformance Suite
+- provider-free examples
+- ABI-focused documentation
+- deterministic tests
 
-For LiteLLM proxy support:
+Do not add app runtime infrastructure, product APIs, dashboards, provider gateways, model SDK integrations, background services, queues, databases, plugin marketplaces, or domain-specific workflows to protocol-core.
 
-```bash
-.venv/bin/pip install -e ".[proxy]"
-scripts/start_litellm.sh
-scripts/start_api.sh
-```
+## Contribution Guidelines
 
-## Extension Guidelines
+- Prefer explicit dataclasses, pure functions, small schemas, deterministic examples, and direct tests.
+- Keep public APIs intentional and documented.
+- Keep new behavior covered by tests or conformance.
+- Keep examples provider-free, network-free, and domain-neutral.
+- Preserve baseline protocol compatibility when adding optional swarm behavior.
+- Avoid broad managers, speculative hooks, framework scaffolding, and dependency-heavy implementations.
 
-New integrations should use these extension points:
+## API and ABI Changes
 
-- Model gateways: implement `runtime.ports.ChatModelClient`.
-- Tools: register callables through `ToolRegistry(extra_tools=...)`.
-- Skills: add `skills/<skill-name>/SKILL.md`.
-- API apps: depend on `runtime.factory.build_runtime`, not concrete runtime
-  internals.
+Public API or ABI changes should include:
+
+- motivation
+- affected public surface
+- compatibility impact
+- schema impact when applicable
+- conformance impact when applicable
+- migration notes when behavior changes
+
+Follow [docs/process/api-lifecycle.md](docs/process/api-lifecycle.md) for public API and ABI lifecycle rules.
 
 ## Pull Request Checklist
 
-- Add or update tests for behavior changes.
-- Run `.venv/bin/pytest`.
-- Update docs when public behavior, config, or extension points change.
-- Keep generated local artifacts out of the PR.
-- Explain migration impact if changing API response fields or state shape.
+- Public API or ABI impact is described, or the PR has no public API/ABI impact.
+- Schema changes are reflected in checked-in schema artifacts, or no schema changed.
+- Changelog or migration notes are updated when public behavior changes.
+- Protocol models and validation remain domain-neutral.
+- Kernel, governance, driver, and trace code do not import app/runtime/provider frameworks.
+- Conformance logic remains in `pheroos.conformance`, not product glue.
+- Baseline protocols are not forced into swarm-specific requirements.
+- CI passes before merge.
 
-## PheroOS Improvement Proposals
+## Documentation
 
-Protocol, kernel ABI, driver model, security model, conformance, and trace
-contract changes should start as a PheroOS Improvement Proposal (PIP) under
-`pips/`.
+Documentation should describe protocol invariants, compatibility boundaries, extension points, and release governance.
 
-Use the template in [PIP-0001](pips/PIP-0001-process.md). A PIP should cover:
-
-- abstract and motivation;
-- specification;
-- compatibility impact;
-- security considerations;
-- reference implementation plan;
-- conformance tests;
-- migration plan.
-
-Ordinary bug fixes, capability examples, documentation corrections, and
-reference runtime UI changes do not need a PIP unless they alter protocol or
-kernel compatibility.
+Do not turn documentation into product setup guides, provider setup guides, local server runbooks, dashboard instructions, or domain workflow tutorials.

@@ -36,6 +36,7 @@ class ValidationDiagnostic:
 class TargetSpec:
     id: str
     description: str = ""
+    extensions: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass(frozen=True)
@@ -43,18 +44,21 @@ class SignalSpec:
     type: str
     target: str
     authority_required: str = "governance"
+    extensions: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass(frozen=True)
 class EvidencePolicy:
     require_provenance: bool = True
     allow_agent_fact_creation: bool = False
+    extensions: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass(frozen=True)
 class StopSignalPolicy:
     blocked_actions: list[str] = field(default_factory=list)
     targets: list[str] = field(default_factory=list)
+    extensions: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass(frozen=True)
@@ -63,6 +67,7 @@ class CandidateSpec:
     target: str
     safe_fallback: bool = False
     label: str = ""
+    extensions: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass(frozen=True)
@@ -70,6 +75,7 @@ class QuorumPolicy:
     target: str
     fallback_candidate: str
     commit_threshold: int = 1
+    extensions: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass(frozen=True)
@@ -95,6 +101,7 @@ class CollectiveDecisionPolicy:
     pheromone_require_provenance: bool = True
     pheromone_require_trace: bool = True
     fallback_candidate: str = ""
+    extensions: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass(frozen=True)
@@ -105,6 +112,7 @@ class RecoveryProtocol:
     allowed_tags: list[str] = field(default_factory=list)
     required_tools: list[str] = field(default_factory=list)
     failure_candidate: str = ""
+    extensions: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass(frozen=True)
@@ -114,11 +122,24 @@ class OutputPolicy:
     requires_evidence_contract: bool = True
     requires_stop_resolution: bool = True
     requires_publication_permission: bool = True
+    extensions: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass(frozen=True)
 class TracePolicy:
     required_events: list[str] = field(default_factory=lambda: ["block", "commit", "recovery", "output"])
+    extensions: dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass(frozen=True)
+class DriverSpec:
+    id: str
+    kind: str
+    version: str
+    capabilities: list[str] = field(default_factory=list)
+    permissions: list[str] = field(default_factory=list)
+    config_ref: str = ""
+    extensions: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass(frozen=True)
@@ -134,6 +155,7 @@ class ProtocolManifest:
     evidence_policy: EvidencePolicy = field(default_factory=EvidencePolicy)
     signals: list[SignalSpec] = field(default_factory=list)
     collective_decision_policy: CollectiveDecisionPolicy | None = None
+    extensions: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass(frozen=True)
@@ -144,7 +166,8 @@ class CapabilityManifest:
     protocol: ProtocolManifest
     permissions: list[str] = field(default_factory=list)
     required_connections: list[str] = field(default_factory=list)
-    drivers: list[dict[str, Any]] = field(default_factory=list)
+    drivers: list[DriverSpec] = field(default_factory=list)
+    extensions: dict[str, Any] = field(default_factory=dict)
 
 
 def required_swarm_trace_events(policy: CollectiveDecisionPolicy) -> set[str]:

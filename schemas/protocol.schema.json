@@ -2,13 +2,67 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://pheroos.dev/schemas/protocol.schema.json",
   "type": "object",
-  "required": ["protocol_version", "id", "targets", "candidates", "quorum_policy", "output_policy", "trace_policy"],
+  "required": [
+    "protocol_version",
+    "id",
+    "targets",
+    "candidates",
+    "quorum_policy",
+    "output_policy",
+    "trace_policy"
+  ],
   "properties": {
     "protocol_version": {"type": "string"},
     "id": {"type": "string"},
-    "targets": {"type": "array", "items": {"type": "object", "required": ["id"]}},
-    "candidates": {"type": "array", "items": {"type": "object", "required": ["id", "target"]}},
-    "quorum_policy": {"type": "object", "required": ["target", "fallback_candidate"]},
+    "targets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id"],
+        "properties": {
+          "id": {"type": "string"},
+          "description": {"type": "string"},
+          "extensions": {"type": "object"}
+        }
+      }
+    },
+    "candidates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "target"],
+        "properties": {
+          "id": {"type": "string"},
+          "target": {"type": "string"},
+          "safe_fallback": {"type": "boolean"},
+          "label": {"type": "string"},
+          "extensions": {"type": "object"}
+        }
+      }
+    },
+    "signals": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["type", "target"],
+        "properties": {
+          "type": {"type": "string"},
+          "target": {"type": "string"},
+          "authority_required": {"type": "string"},
+          "extensions": {"type": "object"}
+        }
+      }
+    },
+    "quorum_policy": {
+      "type": "object",
+      "required": ["target", "fallback_candidate"],
+      "properties": {
+        "target": {"type": "string"},
+        "fallback_candidate": {"type": "string"},
+        "commit_threshold": {"type": "integer", "minimum": 1},
+        "extensions": {"type": "object"}
+      }
+    },
     "collective_decision_policy": {
       "type": "object",
       "properties": {
@@ -32,10 +86,23 @@
         "pheromone_min_source_diversity": {"type": "integer", "minimum": 1},
         "pheromone_require_provenance": {"type": "boolean"},
         "pheromone_require_trace": {"type": "boolean"},
-        "fallback_candidate": {"type": "string"}
+        "fallback_candidate": {"type": "string"},
+        "extensions": {"type": "object"}
       }
     },
-    "output_policy": {"type": "object"},
-    "trace_policy": {"type": "object"}
+    "output_policy": {
+      "type": "object",
+      "properties": {
+        "extensions": {"type": "object"}
+      }
+    },
+    "trace_policy": {
+      "type": "object",
+      "properties": {
+        "required_events": {"type": "array", "items": {"type": "string"}},
+        "extensions": {"type": "object"}
+      }
+    },
+    "extensions": {"type": "object"}
   }
 }

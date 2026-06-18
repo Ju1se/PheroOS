@@ -75,10 +75,10 @@ def test_provider_free_governed_vertical_slice() -> None:
     driver_payload = manifest.drivers[0]
     descriptor = declare(
         DriverDescriptor(
-            id=str(driver_payload["id"]),
-            kind=str(driver_payload["kind"]),
-            version=str(driver_payload["version"]),
-            capabilities=[str(item) for item in driver_payload["capabilities"]],
+            id=driver_payload.id,
+            kind=driver_payload.kind,
+            version=driver_payload.version,
+            capabilities=list(driver_payload.capabilities),
         )
     )
     registration = register(descriptor)
@@ -86,7 +86,7 @@ def test_provider_free_governed_vertical_slice() -> None:
     binding = bind(
         registration,
         tenant_id=context.tenant_id,
-        permissions=[str(item) for item in driver_payload["permissions"]],
+        permissions=list(driver_payload.permissions),
     )
     handle = expose(binding)
 

@@ -32,6 +32,8 @@ VALID_EVENT_TYPES = frozenset(
     }
 )
 
+EXTENSION_EVENT_PREFIXES = ("x-", "ext.")
+
 
 @dataclass(frozen=True)
 class TraceEvent:
@@ -42,12 +44,14 @@ class TraceEvent:
     lineage: dict[str, Any] = field(default_factory=dict)
 
     def validate(self) -> None:
-        if self.event_type not in VALID_EVENT_TYPES:
+        if self.event_type not in VALID_EVENT_TYPES and not is_extension_event_type(self.event_type):
             raise ValueError(f"unsupported trace event type: {self.event_type}")
         if not self.protocol_id:
             raise ValueError("trace event protocol_id is required")
         if not self.target:
             raise ValueError("trace event target is required")
+        if not self.reason:
+            raise ValueError("trace event reason is required")
 
 
 @dataclass(frozen=True)
@@ -83,10 +87,16 @@ def missing_required_events(events: Iterable[TraceEvent], required_events: Itera
     return sorted({event_type for event_type in required_events if event_type not in observed})
 
 
+def is_extension_event_type(event_type: str) -> bool:
+    return any(event_type.startswith(prefix) and len(event_type) > len(prefix) for prefix in EXTENSION_EVENT_PREFIXES)
+
+
 __all__ = [
     "InMemoryTraceStore",
     "TraceEvent",
     "TraceRecord",
+    "EXTENSION_EVENT_PREFIXES",
     "VALID_EVENT_TYPES",
+    "is_extension_event_type",
     "missing_required_events",
 ]

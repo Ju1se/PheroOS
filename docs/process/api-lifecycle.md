@@ -22,11 +22,7 @@ The public Python surfaces are package-level imports from:
 - `pheroos.trace`
 - `pheroos.conformance`
 
-The CLI surface is:
-
-- `pheroos validate`
-- `pheroos conformance`
-- `pheroos schema export`
+The CLI surface covers manifest validation, conformance evaluation, and ABI schema export.
 
 The ABI artifact surface is:
 
@@ -79,6 +75,7 @@ API or ABI changes should include:
 - conformance impact if any
 - migration notes when behavior changes
 - tests for new or changed behavior
+- extension and secret-boundary impact when manifest shape changes
 
 Breaking changes should be avoided unless they improve a declared protocol invariant or remove an unsafe ambiguity.
 
@@ -110,21 +107,17 @@ Package version is declared in `pyproject.toml` and `pheroos.__version__`.
 
 Protocol manifests include their own `protocol_version`.
 
-Schema changes should keep checked-in schema artifacts and `pheroos schema export` output aligned.
+Schema changes should keep checked-in schema artifacts and schema export behavior aligned.
 
 Version bumps should follow the release checklist in `docs/process/release-checklist.md`.
 
 ## Conformance Gate
 
-Public API changes should pass:
+Public API changes should pass CI-backed validation for:
 
-```bash
-python -m pytest -q
-python -m pheroos.cli.main validate examples/toy-protocol/capability.json
-python -m pheroos.cli.main conformance examples/toy-protocol
-python -m pheroos.cli.main validate examples/e2e-protocol/capability.json
-python -m pheroos.cli.main conformance examples/e2e-protocol
-python -m pheroos.cli.main validate examples/swarm-protocol/capability.json
-python -m pheroos.cli.main conformance examples/swarm-protocol
-git diff --check
-```
+- deterministic tests
+- baseline protocol compatibility
+- governed e2e protocol compatibility
+- swarm protocol compatibility when swarm behavior is declared
+- checked-in schema artifact consistency
+- formatting and whitespace hygiene

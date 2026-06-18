@@ -16,6 +16,7 @@ Use this checklist before publishing a PheroOS protocol-core release.
 - [ ] Schema helpers and checked-in schema artifacts match.
 - [ ] CLI behavior remains thin and delegates to core packages.
 - [ ] Manifest changes include validation and conformance impact notes.
+- [ ] Manifest extensions preserve metadata without allowing secrets or authority bypass.
 - [ ] Compatibility aliases are documented when present.
 - [ ] Breaking changes include migration notes.
 
@@ -29,20 +30,12 @@ Use this checklist before publishing a PheroOS protocol-core release.
 
 ## Validation
 
-Run:
-
-```bash
-python -m pytest -q
-python -m pheroos.cli.main validate examples/toy-protocol/capability.json
-python -m pheroos.cli.main conformance examples/toy-protocol
-python -m pheroos.cli.main validate examples/e2e-protocol/capability.json
-python -m pheroos.cli.main conformance examples/e2e-protocol
-python -m pheroos.cli.main validate examples/swarm-protocol/capability.json
-python -m pheroos.cli.main conformance examples/swarm-protocol
-git diff --check
-```
-
-If the console script is installed, the `pheroos` command may be used instead of `python -m pheroos.cli.main`.
+- [ ] Deterministic tests pass in CI.
+- [ ] Baseline protocol compatibility is checked.
+- [ ] Governed e2e protocol compatibility is checked.
+- [ ] Swarm protocol compatibility is checked when swarm behavior is declared.
+- [ ] Checked-in schema artifacts match exported ABI schema behavior.
+- [ ] Formatting and whitespace checks pass.
 
 ## Release Metadata
 

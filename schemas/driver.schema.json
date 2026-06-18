@@ -7,6 +7,9 @@
     "id": {"type": "string"},
     "kind": {"type": "string"},
     "version": {"type": "string"},
-    "capabilities": {"type": "array", "items": {"type": "string"}}
+    "capabilities": {"type": "array", "items": {"type": "string"}},
+    "permissions": {"type": "array", "items": {"type": "string"}},
+    "config_ref": {"type": "string"},
+    "extensions": {"type": "object"}
   }
 }

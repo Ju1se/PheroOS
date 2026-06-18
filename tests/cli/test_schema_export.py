@@ -29,7 +29,11 @@ def test_schema_export_protocol_exposes_collective_policy_shape(capsys: Any) -> 
         "trace_policy",
     ]
     assert properties["targets"]["items"]["required"] == ["id"]
+    assert properties["targets"]["items"]["properties"]["extensions"]["type"] == "object"
     assert properties["candidates"]["items"]["required"] == ["id", "target"]
+    assert properties["candidates"]["items"]["properties"]["extensions"]["type"] == "object"
+    assert properties["signals"]["items"]["properties"]["extensions"]["type"] == "object"
+    assert properties["quorum_policy"]["properties"]["extensions"]["type"] == "object"
     assert collective_properties["mode"]["enum"] == ["quorum", "bee_swarm", "ant_colony", "hybrid"]
     assert collective_properties["min_independent_scouts"]["minimum"] == 1
     assert collective_properties["quorum_threshold"]["minimum"] == 1
@@ -45,7 +49,25 @@ def test_schema_export_protocol_exposes_collective_policy_shape(capsys: Any) -> 
     assert collective_properties["pheromone_min_source_diversity"]["minimum"] == 1
     assert collective_properties["pheromone_require_provenance"]["type"] == "boolean"
     assert collective_properties["pheromone_require_trace"]["type"] == "boolean"
+    assert collective_properties["extensions"]["type"] == "object"
+    assert properties["extensions"]["type"] == "object"
     assert "additionalProperties" not in schema
+
+
+def test_schema_export_driver_exposes_provider_neutral_driver_spec(capsys: Any) -> None:
+    schema = exported_schema("driver", capsys)
+    properties = schema["properties"]
+
+    assert properties["permissions"]["items"]["type"] == "string"
+    assert properties["config_ref"]["type"] == "string"
+    assert properties["extensions"]["type"] == "object"
+
+
+def test_schema_export_trace_documents_namespaced_extension_events(capsys: Any) -> None:
+    schema = exported_schema("trace", capsys)
+
+    assert "x-*" in schema["properties"]["event_type"]["description"]
+    assert "ext.*" in schema["properties"]["event_type"]["description"]
 
 
 def exported_schema(surface: str, capsys: Any) -> dict[str, Any]:

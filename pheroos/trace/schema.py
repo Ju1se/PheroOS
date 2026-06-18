@@ -10,7 +10,10 @@ def trace_schema() -> dict[str, Any]:
         "type": "object",
         "required": ["event_type", "protocol_id", "target", "reason"],
         "properties": {
-            "event_type": {"type": "string"},
+            "event_type": {
+                "type": "string",
+                "description": "Built-in trace event type or namespaced extension event using x-* or ext.*.",
+            },
             "protocol_id": {"type": "string"},
             "target": {"type": "string"},
             "reason": {"type": "string"},

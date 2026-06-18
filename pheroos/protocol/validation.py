@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from pheroos.protocol.extensions import secret_like_paths
 from pheroos.protocol.models import (
     SUPPORTED_COLLECTIVE_MODES,
     SUPPORTED_PHEROMONE_DECAY_MODELS,
@@ -17,6 +18,9 @@ def validate_capability_manifest(manifest: CapabilityManifest) -> list[Validatio
     target_ids = {target.id for target in protocol.targets}
     candidate_ids = {candidate.id for candidate in protocol.candidates}
     safe_candidates = {candidate.id for candidate in protocol.candidates if candidate.safe_fallback}
+
+    for secret_path in secret_like_paths(manifest):
+        diagnostics.append(error("secret_like_manifest_field", "manifest must not contain secret-like fields", secret_path))
 
     if not protocol.targets:
         diagnostics.append(error("missing_targets", "protocol must declare at least one target", "protocol.targets"))

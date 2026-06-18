@@ -24,6 +24,21 @@ def test_swarm_manifest_validates_without_errors() -> None:
     assert manifest.protocol.collective_decision_policy.pheromone_require_trace is True
 
 
+def test_collective_policy_preserves_extension_metadata() -> None:
+    manifest = load_capability_manifest("examples/swarm-protocol/capability.json")
+    policy = replace(
+        manifest.protocol.collective_decision_policy,
+        extensions={"x-collective": {"memory": "external-runtime-owned"}},
+    )
+    protocol = replace(manifest.protocol, collective_decision_policy=policy)
+    updated = replace(manifest, protocol=protocol)
+
+    assert validate_capability_manifest(updated) == []
+    assert updated.protocol.collective_decision_policy.extensions["x-collective"] == {
+        "memory": "external-runtime-owned"
+    }
+
+
 def test_collective_policy_rejects_unsupported_mode_thresholds_and_evaporation() -> None:
     manifest = load_capability_manifest("examples/swarm-protocol/capability.json")
     bad_policy = CollectiveDecisionPolicy(

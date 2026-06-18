@@ -3,7 +3,7 @@
 ## Evidence Captured Before Continuing
 
 - Branch: `codex/protocol-core-migration`
-- Baseline command: `.venv/bin/pytest -q --maxfail=20`
+- Baseline test evidence was captured before migration.
 - Baseline result: 873 passed, 11 failed, 1 warning
 - Baseline failing areas:
   - old conformance wrapper for previous toy capability
@@ -92,9 +92,6 @@ Delete these app/runtime/product surfaces:
 - `configs/litellm.yaml`
 - `configs/runtime.yaml`
 - `distros/`
-- `scripts/start_api.sh`
-- `scripts/start_litellm.sh`
-- `scripts/restart_litellm.sh`
 - `runtime/graph.py`
 - `runtime/factory.py`
 - `runtime/llm.py`
@@ -260,8 +257,8 @@ Replacement tests are protocol-core tests only:
 ## Checkpoints
 
 1. Package checkpoint: finish `pheroos/` core package and import boundary tests.
-2. Conformance checkpoint: make `pheroos validate` and `pheroos conformance` pass for `examples/toy-protocol`.
+2. Conformance checkpoint: make the toy protocol pass validation and conformance.
 3. Metadata checkpoint: update `pyproject.toml`, README, GitHub workflow, and PR template.
 4. Documentation checkpoint: write core docs and `docs/removed-app-runtime.md`.
-5. Test checkpoint: add replacement tests and run full pytest.
-6. Audit checkpoint: run CLI, import, domain-neutrality, `git diff --check`, and final status review.
+5. Test checkpoint: add replacement tests and confirm the full deterministic suite.
+6. Audit checkpoint: confirm CLI, import, domain-neutrality, formatting, and final status review gates.
