@@ -16,6 +16,9 @@ dependencies = []
 Homepage = "https://github.com/Ju1se/PheroOS"
 Documentation = "https://github.com/Ju1se/PheroOS/tree/main/docs"
 Issues = "https://github.com/Ju1se/PheroOS/issues"
+Changelog = "https://github.com/Ju1se/PheroOS/blob/main/CHANGELOG.md"
+Specification = "https://github.com/Ju1se/PheroOS/blob/main/SPEC.md"
+Security = "https://github.com/Ju1se/PheroOS/blob/main/SECURITY.md"
 
 [project.optional-dependencies]
 dev = [

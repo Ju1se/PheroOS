@@ -14,6 +14,14 @@ def test_swarm_manifest_validates_without_errors() -> None:
     manifest = load_capability_manifest("examples/swarm-protocol/capability.json")
 
     assert validate_capability_manifest(manifest) == []
+    assert manifest.protocol.collective_decision_policy is not None
+    assert manifest.protocol.collective_decision_policy.pheromone_decay_model == "exponential"
+    assert manifest.protocol.collective_decision_policy.pheromone_novelty_weight == 0.5
+    assert manifest.protocol.collective_decision_policy.pheromone_per_source_cap == 3
+    assert manifest.protocol.collective_decision_policy.pheromone_per_round_deposit_cap == 5
+    assert manifest.protocol.collective_decision_policy.pheromone_min_source_diversity == 1
+    assert manifest.protocol.collective_decision_policy.pheromone_require_provenance is True
+    assert manifest.protocol.collective_decision_policy.pheromone_require_trace is True
 
 
 def test_collective_policy_rejects_unsupported_mode_thresholds_and_evaporation() -> None:
@@ -34,6 +42,50 @@ def test_collective_policy_rejects_unsupported_mode_thresholds_and_evaporation()
     assert "collective_min_scouts_invalid" in codes
     assert "collective_quorum_threshold_invalid" in codes
     assert "collective_pheromone_evaporation_invalid" in codes
+
+
+def test_collective_policy_rejects_invalid_pheromone_memory_fields() -> None:
+    manifest = load_capability_manifest("examples/swarm-protocol/capability.json")
+    bad_policy = replace(
+        manifest.protocol.collective_decision_policy,
+        pheromone_decay_model="adaptive",
+        pheromone_min_strength=5,
+        pheromone_max_strength=1,
+        pheromone_positive_weight=-1,
+        pheromone_negative_weight=-1,
+        pheromone_cautionary_weight=-1,
+        pheromone_novelty_weight=-1,
+        pheromone_cautionary_override_threshold=-1,
+        pheromone_per_source_cap=-1,
+        pheromone_per_round_deposit_cap=-1,
+        pheromone_min_source_diversity=0,
+    )
+    protocol = replace(manifest.protocol, collective_decision_policy=bad_policy)
+
+    codes = {item.code for item in validate_capability_manifest(replace(manifest, protocol=protocol))}
+
+    assert "collective_pheromone_decay_model_invalid" in codes
+    assert "collective_pheromone_strength_bounds_invalid" in codes
+    assert "collective_pheromone_weight_invalid" in codes
+    assert "collective_pheromone_cautionary_threshold_invalid" in codes
+    assert "collective_pheromone_cap_invalid" in codes
+    assert "collective_pheromone_source_diversity_invalid" in codes
+
+
+def test_protocol_accepts_explicit_pheromone_provenance_trace_policy_without_overconstraint() -> None:
+    manifest = load_capability_manifest("examples/swarm-protocol/capability.json")
+    explicit_policy = replace(
+        manifest.protocol.collective_decision_policy,
+        pheromone_enabled=True,
+        pheromone_require_provenance=False,
+        pheromone_require_trace=False,
+    )
+    protocol = replace(manifest.protocol, collective_decision_policy=explicit_policy)
+
+    codes = {item.code for item in validate_capability_manifest(replace(manifest, protocol=protocol))}
+
+    assert "collective_pheromone_provenance_required" not in codes
+    assert "collective_pheromone_trace_required" not in codes
 
 
 def test_collective_policy_requires_declared_safe_fallback() -> None:
@@ -57,8 +109,12 @@ def test_collective_policy_checks_required_swarm_trace_events() -> None:
     )
 
     codes = {item.code for item in validate_capability_manifest(replace(manifest, protocol=protocol))}
+    messages = {item.message for item in validate_capability_manifest(replace(manifest, protocol=protocol))}
 
     assert "swarm_trace_lineage_incomplete" in codes
+    assert any("pheromone_score" in message for message in messages)
+    assert any("pheromone_clip" in message for message in messages)
+    assert any("pheromone_expire" in message for message in messages)
 
 
 def test_quorum_collective_policy_does_not_require_swarm_trace_events() -> None:

@@ -1,0 +1,19 @@
+from __future__ import annotations
+
+from typing import Any
+
+
+def trace_schema() -> dict[str, Any]:
+    return {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "$id": "https://pheroos.dev/schemas/trace.schema.json",
+        "type": "object",
+        "required": ["event_type", "protocol_id", "target", "reason"],
+        "properties": {
+            "event_type": {"type": "string"},
+            "protocol_id": {"type": "string"},
+            "target": {"type": "string"},
+            "reason": {"type": "string"},
+            "lineage": {"type": "object"},
+        },
+    }

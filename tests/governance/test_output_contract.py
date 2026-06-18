@@ -39,3 +39,16 @@ def test_output_denied_when_evidence_provenance_is_missing() -> None:
     evidence = EvidenceGraph(nodes=[EvidenceNode(id="e1", content="Claim", provenance="")])
 
     assert output_authorized(contract, decision, evidence, [], publication_permission=True) is False
+
+
+def test_pheromone_score_cannot_authorize_uncommitted_output() -> None:
+    contract = OutputContract()
+    pheromone_only_decision = QuorumDecision(
+        target="decision:review",
+        candidate_id="candidate:accept",
+        committed=False,
+        reason="pheromone_score_only",
+    )
+    evidence = EvidenceGraph(nodes=[EvidenceNode(id="e1", content="Claim", provenance="source")])
+
+    assert output_authorized(contract, pheromone_only_decision, evidence, [], publication_permission=True) is False
