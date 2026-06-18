@@ -2,319 +2,125 @@
 
 语言：[English](README.md) | **简体中文**
 
-PheroOS 是一个开放的 **AI-as-OS 协议核心**，面向受治理、群体原生的多智能体运行时。
+PheroOS 是面向受治理、群体原生多智能体运行时的 protocol-core package。
 
-> Agents are not authority. Protocol is authority.
+Agents are not authority. Protocol is authority.
 
-PheroOS 定义智能体、内核规划、治理决策、驱动能力、追踪谱系和一致性检查之间的协议边界。它刻意保持小而聚合：本仓库是 protocol-core package，不是应用运行时。
+本仓库定义 ABI contract、validation、governance semantics、driver boundary、trace lineage 和 conformance checks。它不是应用运行时。
 
-| 项目状态 | 范围 |
-| --- | --- |
-| Draft ABI | 公共接口仍处于 pre-stable 阶段，并由 conformance 支撑。 |
-| Protocol core | ABI contract、validation、governance semantics、trace 和 conformance。 |
-| 默认 provider-free | 示例和测试不需要 API key、模型 provider、网络、server 或 database。 |
-| Runtime 不在范围内 | 完整 runtime、provider adapter、dashboard 和领域 workflow 应位于本仓库之外。 |
+## 状态
 
-## 从这里开始
+PheroOS 当前是 draft ABI。
 
-- 第一次了解项目：阅读 [本仓库包含什么](#本仓库包含什么) 和 [本仓库不是什么](#本仓库不是什么)。
-- 想看正式协议 contract：阅读 [SPEC.md](SPEC.md)。
-- 想扩展协议：阅读 [docs/protocol/extension-points.md](docs/protocol/extension-points.md)。
-- 想修改公共 API 或 ABI：阅读 [docs/process/api-lifecycle.md](docs/process/api-lifecycle.md)。
-- 使用 AI coding assistant：改代码前阅读 [AGENTS.md](AGENTS.md)。
+公共接口由 conformance 支撑，但尚未稳定。兼容性变更应尽量保持 additive，并且不应强迫 baseline protocol 满足 swarm-specific requirements。
 
-## 目录
+## 文档
 
-- [本仓库包含什么](#本仓库包含什么)
-- [开放协议材料](#开放协议材料)
-- [本仓库不是什么](#本仓库不是什么)
-- [设计模型](#设计模型)
-- [协议层](#协议层)
-- [核心不变量](#核心不变量)
-- [Driver Lifecycle](#driver-lifecycle)
-- [Trace ABI](#trace-abi)
-- [Conformance](#conformance)
-- [API 与 ABI 管理](#api-与-abi-管理)
-- [仓库结构](#仓库结构)
-- [项目状态](#项目状态)
+- [SPEC.md](SPEC.md) - protocol-core 规范。
+- [docs/protocol/runtime-integration.md](docs/protocol/runtime-integration.md) - 外部 runtime 如何与 PheroOS 组合。
+- [docs/protocol/extension-points.md](docs/protocol/extension-points.md) - 扩展边界。
+- [docs/process/api-lifecycle.md](docs/process/api-lifecycle.md) - 公共 API 与 ABI 生命周期。
+- [docs/conformance/conformance-suite.md](docs/conformance/conformance-suite.md) - 兼容性检查。
+- [docs/process/release-checklist.md](docs/process/release-checklist.md) - 发布门槛。
+- [CHANGELOG.md](CHANGELOG.md) - draft ABI 变更和迁移说明。
+- [AGENTS.md](AGENTS.md) - coding agent 的仓库规则。
 
-## 本仓库包含什么
-
-本仓库包含 PheroOS 的公共 protocol-core 表面：
-
-- **Protocol ABI** - capability manifest、protocol manifest、schema、加载和验证。
-- **Kernel ABI** - 输入信封、OS plan、能力解析、权限授予、运行时上下文和 syscall 风格边界。
-- **Governance Core** - 权威等级、信号、证据、stop signal、quorum 决策、collective decision、恢复 trace 和输出授权。
-- **Driver ABI** - 通用驱动描述符、注册表、生命周期、健康状态、绑定、handle 和标准化结果。
-- **Trace ABI** - 规范 trace event、append-only record 和 required-event validation。
-- **Conformance Suite** - 针对 protocol、kernel、governance、driver、trace 和 package boundary 的确定性兼容性检查。
-- **Provider-free examples** - 最小 manifest 示例，不需要 API key、模型 provider、网络连接、应用服务器或数据库。
-
-## 开放协议材料
-
-公共协议材料包括：
-
-- [SPEC.md](SPEC.md) - protocol-core 规范和兼容性要求。
-- [docs/process/api-lifecycle.md](docs/process/api-lifecycle.md) - 公共 API 与 ABI 生命周期策略。
-- [docs/protocol/extension-points.md](docs/protocol/extension-points.md) - 支持的扩展边界。
-- [docs/protocol/runtime-integration.md](docs/protocol/runtime-integration.md) - 外部 runtime 集成契约。
-- [docs/process/release-checklist.md](docs/process/release-checklist.md) - 发布验证清单。
-- [CHANGELOG.md](CHANGELOG.md) - draft ABI 的重要变更和迁移说明。
-
-## 本仓库不是什么
-
-PheroOS protocol-core 不是：
-
-- agent framework；
-- prompt-chain framework；
-- FastAPI product server；
-- dashboard 或 frontend；
-- LangGraph graph runtime；
-- model-provider router；
-- LiteLLM/OpenAI/Ollama/vLLM wrapper；
-- plugin marketplace；
-- finance、WRDS、valuation 或其他领域特定 workflow package；
-- 完整的 operating-system daemon。
-
-完整运行时基础设施应该位于 protocol-core 之外，并实现这里暴露的 ABI。
-
-## 设计模型
-
-PheroOS 使用类似操作系统的边界模型：
-
-| OS 风格角色 | PheroOS 表面 | 职责 |
-| --- | --- | --- |
-| Userspace process | Agent | 提出 work、evidence、signal 和 candidate。 |
-| Kernel boundary | `pheroos.kernel` | 规划可用能力并物化 run-scoped context。 |
-| Device driver | `pheroos.drivers` | 通过通用生命周期提供 model/tool/data/storage/sandbox 能力。 |
-| Security / governance hook | `pheroos.governance` | 验证 authority、解析 stop、提交 candidate，并授权 output。 |
-| Audit / proc-style view | `pheroos.trace` | 记录 decision、evidence、call、fallback 和 output 的 lineage。 |
-| Compatibility court | `pheroos.conformance` | 证明 manifest 和 implementation 遵守 protocol-core invariant。 |
-
-Kernel 规划可用性。它不做领域结论，不直接调用工具，也不直接访问 secret。
-
-Governance 决定什么被允许。Agent 可以提出建议；验证需要 governance authority。
-
-Driver 提供能力。Protocol 提供权威。
-
-## 协议层
-
-PheroOS 当前有三个 provider-free 协议层。
-
-### 1. Baseline Governed Protocol
-
-`examples/toy-protocol/` 是最小协议示例。它展示 declared targets、declared candidates、safe fallback candidate、quorum policy、recovery policy、evidence policy、output policy 和 required trace events。
-
-这是 baseline compatibility layer。它不要求 swarm behavior。
-
-### 2. Governed E2E Protocol Slice
-
-`examples/e2e-protocol/` 展示最小端到端治理垂直切片：
-
-```text
-manifest -> validation -> kernel plan -> runtime context -> driver exposure -> evidence -> signal -> commit -> recovery/output trace
-```
-
-它保持 provider-free 和 deterministic。
-
-### 3. Swarm-Native Collective Protocol
-
-`examples/swarm-protocol/` 展示可选的 swarm-native collective decision behavior。
-
-Swarm-native behavior 受蜂群和蚁群机制启发，但编码为协议语义，而不是大型 swarm framework。
-
-| 生物机制 | PheroOS 协议概念 |
-| --- | --- |
-| Scout bee | Independent `ScoutReport` |
-| Nest site | Declared candidate |
-| Waggle dance | `RecruitmentSignal` |
-| Stop / dissent | `InhibitionSignal` |
-| Pheromone trail | `PheromoneTrail` |
-| Evaporation | Pheromone confidence decay |
-| Swarm quorum | Collective consensus threshold |
-| Failed convergence | Declared safe fallback candidate |
-
-Manifest 可以声明：
-
-```json
-"collective_decision_policy": {
-  "mode": "hybrid",
-  "min_independent_scouts": 2,
-  "quorum_threshold": 3,
-  "recruitment_enabled": true,
-  "inhibition_enabled": true,
-  "pheromone_enabled": true,
-  "pheromone_evaporation_rate": 0.25,
-  "fallback_candidate": "candidate:safe_fallback"
-}
-```
-
-支持的 collective modes：
-
-```text
-quorum
-bee_swarm
-ant_colony
-hybrid
-```
-
-Swarm-specific trace 和 conformance checks 只适用于 swarm modes：
-
-```text
-bee_swarm
-ant_colony
-hybrid
-```
-
-Baseline quorum-only protocol 可以继续验证并通过 conformance，不需要 swarm trace events。
-
-## 核心不变量
-
-PheroOS protocol-core 验证以下不变量：
-
-- Protocol 必须声明至少一个 target。
-- Protocol 必须声明至少一个 candidate。
-- 每个 candidate 必须引用已声明 target。
-- Quorum fallback 必须引用已声明的 safe fallback candidate。
-- Collective fallback 必须引用已声明的 safe fallback candidate，或者默认使用 quorum fallback。
-- Recovery trigger target 必须已声明。
-- Recovery failure candidate 必须已声明。
-- Writer 不得创建 fact。
-- 当 evidence policy 禁止时，agent 不得创建 fact。
-- Required trace events 必须声明。
-- Swarm trace events 只在 swarm collective modes 下要求。
-- Public core 必须保持 domain-neutral。
-- Core packages 必须保持 import boundaries。
-
-## Driver Lifecycle
-
-Driver 是通用能力 provider。Driver lifecycle 是：
-
-```text
-declare -> validate -> register -> probe -> bind -> expose -> invoke -> trace
-```
-
-Driver contract 刻意保持 provider-neutral。真实 provider integration 不应放在 protocol-core 内。
-
-## Trace ABI
-
-`pheroos.trace.TraceEvent` 是规范 Trace ABI。
-
-Trace event 小、明确、provider-neutral。当前 event types 包含 baseline governed events 和 swarm-native events，例如：
-
-```text
-plan
-explore
-grant
-expose
-invoke
-evidence
-scout_report
-signal
-recruit
-inhibit
-pheromone_deposit
-pheromone_evaporate
-pheromone_score
-pheromone_clip
-pheromone_expire
-pheromone_inhibit
-candidate_score
-consensus_check
-block
-commit
-fallback
-recovery
-output
-```
-
-Trace 不是 database、queue、event bus 或 runtime monitor。Core package 只为测试和 conformance 提供最小 append-only trace 支持。
-
-## Conformance
-
-`pheroos.conformance` 是 PheroOS protocol-core 的 compatibility gate。
-
-Checks 包括 manifest schema、candidate declaration、quorum policy、collective policy、safe collective fallback、pheromone policy、pheromone behavior、recovery policy、output contract、trace contract、swarm trace contract、driver contract、domain-neutral public core 和 kernel import boundary。
-
-Conformance checks 必须保持 deterministic、provider-free、network-free，并明确说明它们 enforced 的 invariant。
-
-## API 与 ABI 管理
-
-PheroOS 当前是 draft ABI。Public package exports、schema artifacts、CLI commands、provider-free examples 和 conformance checks 被作为公共兼容性表面管理。
-
-Public API 或 ABI 的变更应该包含：
-
-- tests 或 conformance coverage；
-- manifest 或 artifact shape 变化时的 schema updates；
-- changelog notes；
-- behavior 变化时的 migration notes；
-- 不引入 runtime、provider、server、dashboard、database 或 domain workflow dependency。
-
-兼容性规则默认是 additive：新行为应尽量 opt-in，baseline protocol 不应被迫满足 swarm-specific requirements。
-
-## 仓库结构
+## 目录结构
 
 ```text
 pheroos/
-  protocol/       Protocol ABI models, manifest loading, schema helpers, validation.
-  kernel/         Kernel ABI models, planning, permissions, runtime materialization.
-  governance/     Authority, signals, evidence, quorum, collective decisions, output authorization.
-  drivers/        Generic driver descriptors, registry, lifecycle, handles, results.
+  protocol/       Manifest objects, schema helpers, validation.
+  kernel/         Capability planning, permissions, runtime context contracts.
+  governance/     Authority, evidence, quorum, collective decision, output checks.
+  drivers/        Provider-neutral driver ABI and lifecycle objects.
   trace/          Canonical trace events and append-only test store.
-  conformance/    Compatibility checks and conformance reports.
-  cli/            Thin command-line wrapper around core packages.
+  conformance/    Deterministic compatibility checks.
+  cli/            Thin wrapper around core packages.
 
 examples/
-  toy-protocol/    Baseline governed protocol example.
+  toy-protocol/    Minimal governed protocol.
   e2e-protocol/    Provider-free governed vertical slice.
-  swarm-protocol/  Provider-free swarm-native collective protocol.
+  swarm-protocol/  Swarm-native collective decision example.
 
-schemas/           Exported protocol schema artifacts.
-docs/              ABI-focused documentation.
-tests/             Deterministic protocol-core tests.
+schemas/           Exported ABI schema artifacts.
+docs/              Protocol and process documentation.
+tests/             Provider-free deterministic tests.
 ```
 
-## AI Coding Assistants
+## 核心表面
 
-如果你使用 Codex 或其他 AI coding assistant，在改代码前请阅读 [AGENTS.md](AGENTS.md)。
+`pheroos.protocol` 负责声明和验证。
 
-重要规则：
+`pheroos.kernel` 负责 planning boundary。它不调用工具、模型、provider 或 secret。
 
-- 不要恢复已移除的 app runtime。
-- 不要向 protocol-core 添加 provider SDK、web framework、dashboard 或 domain workflow。
-- 不要添加宽泛的 protection-layer framework。
-- 将 swarm-native work 保持在 protocol、governance、trace、conformance、examples 和 tests 内。
-- 保持 baseline protocol compatibility。
-- 在行为变更前或同时添加测试。
+`pheroos.governance` 负责 authority 和 decision semantics。Agent 可以提出建议；governance 负责验证。
 
-## 项目状态
+`pheroos.drivers` 负责通用 capability contract。真实 provider adapter 应位于 protocol-core 之外。
 
-| Surface | Status |
-| --- | --- |
-| Protocol models | implemented, draft ABI |
-| Protocol validation | implemented |
-| Kernel models | implemented, minimal ABI |
-| Runtime materializer | implemented, minimal ABI |
-| Governance primitives | implemented |
-| Collective decision primitives | implemented, draft ABI |
-| Driver lifecycle | implemented, minimal ABI |
-| Trace ABI | implemented, minimal provider-free surface |
-| Conformance runner | implemented |
-| CLI | implemented |
-| Toy protocol | implemented |
-| E2E protocol | implemented |
-| Swarm protocol | implemented |
-| Stable public ABI | draft |
-| Full runtime daemon | out of scope for this repository |
+`pheroos.trace` 负责 provider-neutral lineage。它不是 database、queue、event bus 或 runtime monitor。
 
-## 开发原则
+`pheroos.conformance` 证明 ABI compatibility。
 
-PheroOS 应通过小而可测试的 ABI increments 演进。
+## Runtime 集成
 
-Prefer explicit dataclasses、pure functions、deterministic examples、provider-free conformance tests、stable package boundaries 和 minimal dependencies。
+外部 runtime 可以 fork 或依赖本仓库，并围绕 ABI 构建自己的 agent loop、model call、tool call、database、memory store、scheduling、queue、server 和 secret management。
 
-Avoid speculative orchestration layers、broad safety/protection managers、product runtime code、provider-specific integrations、domain-specific workflows，以及强迫 baseline protocols 变成 swarm protocols 的变更。
+推荐组合路径：
+
+```text
+manifest
+-> validation
+-> kernel plan
+-> external adapter binding
+-> evidence, scout reports, and signals
+-> governance decision
+-> trace lineage
+-> output authorization
+-> conformance
+```
+
+Provider 配置应留在 manifest 之外。使用 `config_ref` 这类 opaque external reference；不要把 API key、password、token、credential 或 secret 写入协议文件。
+
+## Swarm 语义
+
+Swarm-native behavior 是协议行为，不是 swarm framework。
+
+蜂群概念映射为 scout report、recruitment signal、inhibition signal、quorum、consensus 和 safe fallback。
+
+蚁群概念映射为 pheromone trail、evaporation、positive 或 negative feedback、bounded source contribution 和 traceable collective memory。
+
+Pheromone 不是 evidence、truth、permission、quorum 或 output authority。
+
+## 不在范围内
+
+本仓库不应成为：
+
+- agent framework
+- model-provider gateway
+- FastAPI 或 product server
+- dashboard
+- LangGraph runtime
+- LiteLLM/OpenAI/Ollama/vLLM wrapper
+- database、queue、worker pool 或 daemon
+- plugin marketplace
+- domain workflow package
+
+## 兼容性
+
+Baseline governed protocol 在没有 swarm behavior 时仍然有效。
+
+Swarm-specific conformance 只在 manifest 声明 swarm collective mode 时适用。
+
+Manifest extension 是 metadata，除非被协议不变量正式采用。Extension metadata 不创建 evidence、permission、quorum、commit authority 或 output authority。
+
+## 开发
+
+保持变更 small、deterministic、provider-free、network-free 和 domain-neutral。
+
+优先使用 dataclass、pure function、explicit validation、small schema、provider-free example、direct test 和 conformance check。
+
+不要为了让测试通过而削弱 package boundary。
 
 ## License
 
-参见 `LICENSE`。
+参见 [LICENSE](LICENSE)。
