@@ -2,7 +2,11 @@
 
 `pheroos.conformance` owns protocol-core compatibility checks.
 
-Checks include:
+Conformance proves that a manifest or implementation obeys the declared ABI
+surface. It is deterministic, provider-free, network-free, and explicit about
+the invariant being checked.
+
+## Check Groups
 
 - manifest schema
 - domain-neutral public core
@@ -20,6 +24,27 @@ Checks include:
 - extension contract
 - kernel import boundary
 
-The CLI is thin and delegates to `pheroos.conformance`.
+## Applicability
 
-Pheromone behavior checks are no-op passes when pheromone is not enabled and active deterministic ABI checks when a manifest declares pheromone-enabled swarm behavior.
+Baseline governed protocols are not required to declare swarm behavior.
+
+Swarm-specific checks apply only when a manifest declares a swarm collective
+mode.
+
+Pheromone behavior checks are no-op passes when pheromone is not enabled and
+active deterministic ABI checks when a manifest declares pheromone-enabled
+swarm behavior.
+
+## Rules
+
+- Conformance checks should prove protocol invariants, not product policy.
+- Checks must not require provider credentials, network access, databases, or
+  external services.
+- New compatibility behavior should include a conformance check when practical.
+- The CLI remains a thin wrapper and delegates to `pheroos.conformance`.
+
+## Failure Semantics
+
+A failed conformance check means the manifest or implementation is not
+compatible with the relevant PheroOS protocol-core surface. It does not attempt
+to diagnose deployment-specific runtime behavior outside protocol-core.

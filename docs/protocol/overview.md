@@ -1,32 +1,60 @@
 # Protocol ABI
 
-`pheroos.protocol` defines the public manifest and validation surface for governed runtimes.
+`pheroos.protocol` defines the public manifest and validation surface for
+governed runtimes.
 
-The formal protocol-core specification is [SPEC.md](../../SPEC.md). Extension boundaries are described in [extension-points.md](extension-points.md). External runtime composition is described in [runtime-integration.md](runtime-integration.md).
+The formal protocol-core specification is [SPEC.md](../../SPEC.md). Extension
+boundaries are described in [extension-points.md](extension-points.md).
+External runtime composition is described in
+[runtime-integration.md](runtime-integration.md).
 
-The protocol layer owns:
+Protocol code is contract code. It declares what exists and validates whether a
+manifest is structurally compatible with the protocol.
+
+## Owned Surface
 
 - capability manifests
 - protocol manifests
 - target declarations
 - candidate declarations
 - quorum policy
+- collective decision policy
 - recovery policy
+- evidence policy
 - output policy
 - trace policy
+- driver declarations
+- extension metadata
 - validation diagnostics
 
-The protocol layer is pure contract code. It does not import kernel, governance, driver, CLI, example, app, runtime, or provider modules.
+## Import Boundary
+
+The protocol package must not import kernel, governance, driver, conformance,
+CLI, examples, app runtime modules, provider frameworks, or tools.
 
 ## Invariants
 
+- A manifest declares at least one target.
+- A manifest declares at least one candidate.
 - Every candidate references a declared target.
 - Quorum fallback references a declared safe fallback candidate.
+- Collective fallback references a declared safe fallback candidate, or defaults
+  to the quorum fallback.
 - Recovery trigger targets are declared.
 - Recovery failure candidates are declared.
 - Writer fact creation is not permitted.
+- Agent fact creation is denied when the evidence policy forbids it.
 - Trace policy includes lineage for block, commit, recovery, and output decisions.
+- Secret-like manifest fields are rejected or diagnosed.
+- Extension metadata is preserved without granting evidence, permission, quorum,
+  commit, or output authority.
 
 ## Compatibility
 
-Protocol ABI changes should follow [api-lifecycle.md](../process/api-lifecycle.md) and be validated through schema export tests plus conformance checks.
+Protocol ABI changes should follow
+[api-lifecycle.md](../process/api-lifecycle.md).
+
+Schema changes should keep checked-in artifacts under `schemas/` aligned with
+schema export behavior.
+
+Baseline protocols must not be forced to opt into swarm-specific behavior.

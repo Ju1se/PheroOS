@@ -17,7 +17,11 @@ PheroOS 当前是 draft ABI。
 ## 文档
 
 - [SPEC.md](SPEC.md) - protocol-core 规范。
+- [CONTRIBUTING.md](CONTRIBUTING.md) - 贡献流程和 patch 要求。
+- [SECURITY.md](SECURITY.md) - 漏洞报告和协议安全边界。
+- [docs/process/index.md](docs/process/index.md) - 源树 process 入口。
 - [docs/protocol/runtime-integration.md](docs/protocol/runtime-integration.md) - 外部 runtime 如何与 PheroOS 组合。
+- [docs/protocol/runtime-adapter-guide.md](docs/protocol/runtime-adapter-guide.md) - 如何将 `DriverSpec` 映射到外部 adapter。
 - [docs/protocol/extension-points.md](docs/protocol/extension-points.md) - 扩展边界。
 - [docs/process/api-lifecycle.md](docs/process/api-lifecycle.md) - 公共 API 与 ABI 生命周期。
 - [docs/conformance/conformance-suite.md](docs/conformance/conformance-suite.md) - 兼容性检查。
