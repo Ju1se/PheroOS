@@ -12,3 +12,7 @@ A proposal should include:
 - migration notes
 
 The process is draft until the first stable public ABI release.
+
+Public API and ABI lifecycle rules are documented in [api-lifecycle.md](api-lifecycle.md).
+
+Release validation is documented in [release-checklist.md](release-checklist.md).

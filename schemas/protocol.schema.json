@@ -6,9 +6,9 @@
   "properties": {
     "protocol_version": {"type": "string"},
     "id": {"type": "string"},
-    "targets": {"type": "array"},
-    "candidates": {"type": "array"},
-    "quorum_policy": {"type": "object"},
+    "targets": {"type": "array", "items": {"type": "object", "required": ["id"]}},
+    "candidates": {"type": "array", "items": {"type": "object", "required": ["id", "target"]}},
+    "quorum_policy": {"type": "object", "required": ["target", "fallback_candidate"]},
     "collective_decision_policy": {
       "type": "object",
       "properties": {
@@ -19,6 +19,19 @@
         "inhibition_enabled": {"type": "boolean"},
         "pheromone_enabled": {"type": "boolean"},
         "pheromone_evaporation_rate": {"type": "number", "minimum": 0, "maximum": 1},
+        "pheromone_decay_model": {"enum": ["linear", "exponential", "step"]},
+        "pheromone_min_strength": {"type": "number"},
+        "pheromone_max_strength": {"type": "number"},
+        "pheromone_positive_weight": {"type": "number", "minimum": 0},
+        "pheromone_negative_weight": {"type": "number", "minimum": 0},
+        "pheromone_cautionary_weight": {"type": "number", "minimum": 0},
+        "pheromone_cautionary_override_threshold": {"type": "number", "minimum": 0},
+        "pheromone_novelty_weight": {"type": "number", "minimum": 0},
+        "pheromone_per_source_cap": {"type": "number", "minimum": 0},
+        "pheromone_per_round_deposit_cap": {"type": "number", "minimum": 0},
+        "pheromone_min_source_diversity": {"type": "integer", "minimum": 1},
+        "pheromone_require_provenance": {"type": "boolean"},
+        "pheromone_require_trace": {"type": "boolean"},
         "fallback_candidate": {"type": "string"}
       }
     },

@@ -5,15 +5,16 @@ from pheroos.governance import (
     EvidenceNode,
     InhibitionSignal,
     OutputContract,
-    PheromonePolicy,
     PheromoneTrail,
     RecruitmentSignal,
     RecoveryTrace,
     ScoutReport,
     StopResolution,
+    deposit_pheromone,
     evaporate_trails,
     evaluate_collective_decision,
     output_authorized,
+    pheromone_policy_from_collective,
     score_candidates,
 )
 from pheroos.protocol import load_capability_manifest, validate_capability_manifest
@@ -50,13 +51,100 @@ def test_provider_free_swarm_collective_vertical_slice() -> None:
     inhibition = [InhibitionSignal("inhibit:a", "candidate:beta", strength=1)]
     trace.append(event("inhibit", protocol.id, target, "inhibition reduced declared candidate support"))
 
-    pheromones = [PheromoneTrail("candidate:alpha", strength=1)]
-    trace.append(event("pheromone_deposit", protocol.id, target, "pheromone support deposited"))
+    pheromone_policy = pheromone_policy_from_collective(policy)
+    raw_pheromones = [
+        pheromone("candidate:alpha", target, "positive", "evidence:a", "scout:a", "trace:pheromone:positive", strength=9),
+        pheromone("candidate:beta", target, "negative", "evidence:b", "scout:b", "trace:pheromone:negative"),
+        pheromone("candidate:beta", target, "cautionary", "evidence:b", "scout:b", "trace:pheromone:cautionary"),
+        pheromone(
+            "",
+            target,
+            "positive",
+            "evidence:a",
+            "scout:a",
+            "trace:pheromone:expired-route",
+            subject_type="route",
+            subject_id="route:expired",
+            ttl_steps=1,
+        ),
+    ]
+    pheromones = [
+        deposit_pheromone(trail, pheromone_policy, candidate_set=candidates)
+        for trail in raw_pheromones
+    ]
+    trace.append(
+        TraceEvent(
+            event_type="pheromone_deposit",
+            protocol_id=protocol.id,
+            target=target,
+            reason="evidence-bound pheromone marks deposited",
+            lineage={"marks": [trail.trace_event_id for trail in pheromones]},
+        )
+    )
+    trace.append(
+        TraceEvent(
+            event_type="pheromone_clip",
+            protocol_id=protocol.id,
+            target=target,
+            reason="pheromone marks clipped to declared bounds",
+            lineage={
+                "marks": [
+                    {
+                        "trace_event_id": before.trace_event_id,
+                        "subject_type": after.subject_type,
+                        "subject_id": after.subject_id or after.candidate_id or after.route_id or after.tool_id,
+                        "kind": after.kind,
+                        "old_strength": before.strength,
+                        "new_strength": after.strength,
+                        "source_id": after.source_id,
+                        "evidence_id": after.evidence_id,
+                        "step": after.updated_at_step,
+                    }
+                    for before, after in zip(raw_pheromones, pheromones)
+                    if before.strength != after.strength
+                ]
+            },
+        )
+    )
     evaporated = evaporate_trails(
         pheromones,
-        PheromonePolicy(enabled=policy.pheromone_enabled, evaporation_rate=policy.pheromone_evaporation_rate),
+        pheromone_policy,
+        current_step=1,
     )
-    trace.append(event("pheromone_evaporate", protocol.id, target, "pheromone support decayed"))
+    trace.append(
+        TraceEvent(
+            event_type="pheromone_evaporate",
+            protocol_id=protocol.id,
+            target=target,
+            reason="pheromone support decayed",
+            lineage={"marks": [trail.trace_event_id for trail in evaporated], "strengths": [trail.strength for trail in evaporated]},
+        )
+    )
+    trace.append(
+        TraceEvent(
+            event_type="pheromone_expire",
+            protocol_id=protocol.id,
+            target=target,
+            reason="expired pheromone represented as stale memory",
+            lineage={
+                "marks": [
+                    {
+                        "trace_event_id": trail.trace_event_id,
+                        "subject_type": trail.subject_type,
+                        "subject_id": trail.subject_id,
+                        "kind": trail.kind,
+                        "old_strength": 1,
+                        "new_strength": trail.strength,
+                        "source_id": trail.source_id,
+                        "evidence_id": trail.evidence_id,
+                        "step": trail.updated_at_step,
+                    }
+                    for trail in evaporated
+                    if trail.kind == "stale"
+                ]
+            },
+        )
+    )
 
     state = score_candidates(
         candidate_set=candidates,
@@ -73,6 +161,30 @@ def test_provider_free_swarm_collective_vertical_slice() -> None:
             target=target,
             reason="candidate scores computed",
             lineage={"scores": state.scores},
+        )
+    )
+    trace.append(
+        TraceEvent(
+            event_type="pheromone_score",
+            protocol_id=protocol.id,
+            target=target,
+            reason="pheromone score contributions computed",
+            lineage={
+                "subjects": [
+                    {
+                        "subject_type": trail.subject_type,
+                        "subject_id": trail.subject_id or trail.candidate_id or trail.route_id or trail.tool_id,
+                        "kind": trail.kind,
+                        "old_strength": 5 if trail.trace_event_id == "trace:pheromone:positive" else 1,
+                        "new_strength": trail.strength,
+                        "source_id": trail.source_id,
+                        "evidence_id": trail.evidence_id,
+                        "step": trail.updated_at_step,
+                    }
+                    for trail in evaporated
+                ],
+                "source_diversity": state.pheromone_source_diversity,
+            },
         )
     )
 
@@ -133,3 +245,32 @@ def test_provider_free_swarm_collective_vertical_slice() -> None:
 
 def event(event_type: str, protocol_id: str, target: str, reason: str) -> TraceEvent:
     return TraceEvent(event_type=event_type, protocol_id=protocol_id, target=target, reason=reason)
+
+
+def pheromone(
+    candidate_id: str,
+    target: str,
+    kind: str,
+    evidence_id: str,
+    provenance: str,
+    trace_event_id: str,
+    *,
+    strength: float = 1,
+    subject_type: str = "candidate",
+    subject_id: str = "",
+    ttl_steps: int | None = None,
+) -> PheromoneTrail:
+    return PheromoneTrail(
+        candidate_id=candidate_id,
+        strength=strength,
+        subject_type=subject_type,
+        subject_id=subject_id or candidate_id,
+        target=target,
+        kind=kind,
+        source_id=provenance,
+        source_role="scout",
+        evidence_id=evidence_id,
+        provenance=provenance,
+        trace_event_id=trace_event_id,
+        ttl_steps=ttl_steps,
+    )

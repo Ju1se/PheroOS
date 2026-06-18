@@ -6,6 +6,7 @@ from typing import Any
 
 SUPPORTED_COLLECTIVE_MODES = frozenset({"quorum", "bee_swarm", "ant_colony", "hybrid"})
 SWARM_COLLECTIVE_MODES = frozenset({"bee_swarm", "ant_colony", "hybrid"})
+SUPPORTED_PHEROMONE_DECAY_MODELS = frozenset({"linear", "exponential", "step"})
 
 BASE_SWARM_TRACE_EVENTS = frozenset(
     {
@@ -80,6 +81,19 @@ class CollectiveDecisionPolicy:
     inhibition_enabled: bool = False
     pheromone_enabled: bool = False
     pheromone_evaporation_rate: float = 0.0
+    pheromone_decay_model: str = "exponential"
+    pheromone_min_strength: float = 0.0
+    pheromone_max_strength: float = 10.0
+    pheromone_positive_weight: float = 1.0
+    pheromone_negative_weight: float = 1.0
+    pheromone_cautionary_weight: float = 1.0
+    pheromone_cautionary_override_threshold: float = 1.0
+    pheromone_novelty_weight: float = 0.5
+    pheromone_per_source_cap: float = 3.0
+    pheromone_per_round_deposit_cap: float = 5.0
+    pheromone_min_source_diversity: int = 1
+    pheromone_require_provenance: bool = True
+    pheromone_require_trace: bool = True
     fallback_candidate: str = ""
 
 
@@ -140,7 +154,15 @@ def required_swarm_trace_events(policy: CollectiveDecisionPolicy) -> set[str]:
     if policy.inhibition_enabled:
         events.add("inhibit")
     if policy.pheromone_enabled:
-        events.update({"pheromone_deposit", "pheromone_evaporate"})
+        events.update(
+            {
+                "pheromone_deposit",
+                "pheromone_evaporate",
+                "pheromone_score",
+                "pheromone_clip",
+                "pheromone_expire",
+            }
+        )
     return events
 
 

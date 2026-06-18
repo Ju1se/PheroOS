@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from pheroos.protocol.models import (
     SUPPORTED_COLLECTIVE_MODES,
+    SUPPORTED_PHEROMONE_DECAY_MODELS,
     CapabilityManifest,
     ValidationDiagnostic,
     collective_fallback_id,
@@ -43,6 +44,23 @@ def validate_capability_manifest(manifest: CapabilityManifest) -> list[Validatio
             diagnostics.append(error("collective_quorum_threshold_invalid", "quorum_threshold must be positive", "protocol.collective_decision_policy.quorum_threshold"))
         if not 0 <= collective_policy.pheromone_evaporation_rate <= 1:
             diagnostics.append(error("collective_pheromone_evaporation_invalid", "pheromone evaporation rate must be between 0 and 1", "protocol.collective_decision_policy.pheromone_evaporation_rate"))
+        if collective_policy.pheromone_decay_model not in SUPPORTED_PHEROMONE_DECAY_MODELS:
+            diagnostics.append(error("collective_pheromone_decay_model_invalid", "pheromone decay model is unsupported", "protocol.collective_decision_policy.pheromone_decay_model"))
+        if collective_policy.pheromone_min_strength > collective_policy.pheromone_max_strength:
+            diagnostics.append(error("collective_pheromone_strength_bounds_invalid", "pheromone min strength must not exceed max strength", "protocol.collective_decision_policy"))
+        if (
+            collective_policy.pheromone_positive_weight < 0
+            or collective_policy.pheromone_negative_weight < 0
+            or collective_policy.pheromone_cautionary_weight < 0
+            or collective_policy.pheromone_novelty_weight < 0
+        ):
+            diagnostics.append(error("collective_pheromone_weight_invalid", "pheromone weights must be non-negative", "protocol.collective_decision_policy"))
+        if collective_policy.pheromone_cautionary_override_threshold < 0:
+            diagnostics.append(error("collective_pheromone_cautionary_threshold_invalid", "pheromone cautionary override threshold must be non-negative", "protocol.collective_decision_policy.pheromone_cautionary_override_threshold"))
+        if collective_policy.pheromone_per_source_cap < 0 or collective_policy.pheromone_per_round_deposit_cap < 0:
+            diagnostics.append(error("collective_pheromone_cap_invalid", "pheromone caps must be non-negative", "protocol.collective_decision_policy"))
+        if collective_policy.pheromone_min_source_diversity <= 0:
+            diagnostics.append(error("collective_pheromone_source_diversity_invalid", "pheromone min source diversity must be positive", "protocol.collective_decision_policy.pheromone_min_source_diversity"))
         fallback_candidate = collective_fallback_id(protocol)
         if fallback_candidate not in candidate_ids:
             diagnostics.append(error("collective_fallback_missing", "collective fallback candidate must be declared", "protocol.collective_decision_policy.fallback_candidate"))

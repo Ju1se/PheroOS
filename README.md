@@ -18,6 +18,16 @@ This repository contains the public protocol-core surfaces for PheroOS:
 - **Conformance Suite** - deterministic compatibility checks for protocol, kernel, governance, driver, trace, and package boundaries.
 - **Provider-free examples** - minimal manifests that require no API keys, model provider, network connection, app server, or database.
 
+## Open Protocol Materials
+
+The public protocol materials are:
+
+- [SPEC.md](SPEC.md) - protocol-core specification and compatibility requirements.
+- [docs/process/api-lifecycle.md](docs/process/api-lifecycle.md) - public API and ABI lifecycle policy.
+- [docs/protocol/extension-points.md](docs/protocol/extension-points.md) - supported extension boundaries.
+- [docs/process/release-checklist.md](docs/process/release-checklist.md) - release validation checklist.
+- [CHANGELOG.md](CHANGELOG.md) - notable draft ABI changes and migration notes.
+
 ## What This Repository Is Not
 
 PheroOS protocol-core is not:
@@ -181,6 +191,10 @@ recruit
 inhibit
 pheromone_deposit
 pheromone_evaporate
+pheromone_score
+pheromone_clip
+pheromone_expire
+pheromone_inhibit
 candidate_score
 consensus_check
 block
@@ -280,6 +294,7 @@ Checks include:
 - collective policy;
 - safe collective fallback;
 - pheromone policy;
+- pheromone behavior;
 - recovery policy;
 - output contract;
 - trace contract;
@@ -289,6 +304,20 @@ Checks include:
 - kernel import boundary.
 
 Conformance checks must stay deterministic, provider-free, network-free, and explicit about the invariant they enforce.
+
+## API and ABI Management
+
+PheroOS is currently a draft ABI. Public package exports, schema artifacts, CLI commands, provider-free examples, and conformance checks are managed as the public compatibility surface.
+
+Changes to public API or ABI should include:
+
+- tests or conformance coverage;
+- schema updates when manifest or artifact shape changes;
+- changelog notes;
+- migration notes when behavior changes;
+- no new runtime, provider, server, dashboard, database, or domain workflow dependency.
+
+The compatibility rule is additive by default: new behavior should be opt-in when possible, and baseline protocols should not be forced into swarm-specific requirements.
 
 ## AI Coding Assistants
 

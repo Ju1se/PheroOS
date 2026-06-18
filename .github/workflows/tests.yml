@@ -27,5 +27,10 @@ jobs:
 
       - name: Check CLI
         run: |
+          git diff --check
           pheroos validate examples/toy-protocol/capability.json
           pheroos conformance examples/toy-protocol
+          pheroos validate examples/e2e-protocol/capability.json
+          pheroos conformance examples/e2e-protocol
+          pheroos validate examples/swarm-protocol/capability.json
+          pheroos conformance examples/swarm-protocol

@@ -5,7 +5,10 @@ import json
 from typing import Any
 
 from pheroos.conformance import run_conformance, validate_manifest
-from pheroos.protocol.schema import capability_schema, protocol_schema
+from pheroos.drivers.schema import driver_schema
+from pheroos.kernel.schema import kernel_schema
+from pheroos.protocol.schema import protocol_schema
+from pheroos.trace.schema import trace_schema
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -43,21 +46,12 @@ def schema_for(surface: str) -> dict[str, Any]:
     if surface == "protocol":
         return protocol_schema()
     if surface == "kernel":
-        return simple_surface_schema("kernel")
+        return kernel_schema()
     if surface == "driver":
-        return simple_surface_schema("driver")
+        return driver_schema()
     if surface == "trace":
-        return simple_surface_schema("trace")
+        return trace_schema()
     raise ValueError(f"unknown schema surface: {surface}")
-
-
-def simple_surface_schema(surface: str) -> dict[str, Any]:
-    return {
-        "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "$id": f"https://pheroos.dev/schemas/{surface}.schema.json",
-        "type": "object",
-        "additionalProperties": True,
-    }
 
 
 if __name__ == "__main__":  # pragma: no cover
