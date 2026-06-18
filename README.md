@@ -17,7 +17,11 @@ Public interfaces are conformance-backed, but not yet stable. Compatibility chan
 ## Documentation
 
 - [SPEC.md](SPEC.md) - protocol-core specification.
+- [CONTRIBUTING.md](CONTRIBUTING.md) - contribution process and patch requirements.
+- [SECURITY.md](SECURITY.md) - vulnerability reporting and protocol security scope.
+- [docs/process/index.md](docs/process/index.md) - source-tree process entry point.
 - [docs/protocol/runtime-integration.md](docs/protocol/runtime-integration.md) - how external runtimes compose with PheroOS.
+- [docs/protocol/runtime-adapter-guide.md](docs/protocol/runtime-adapter-guide.md) - mapping `DriverSpec` to external adapters.
 - [docs/protocol/extension-points.md](docs/protocol/extension-points.md) - extension boundaries.
 - [docs/process/api-lifecycle.md](docs/process/api-lifecycle.md) - public API and ABI lifecycle.
 - [docs/conformance/conformance-suite.md](docs/conformance/conformance-suite.md) - compatibility checks.

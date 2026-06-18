@@ -74,6 +74,8 @@ They describe what a capability exposes, not how a provider is called.
 
 `config_ref` is an opaque external reference. Protocol-core must not resolve it, read secrets from it, or treat it as authority.
 
+The adapter mapping contract is described in [runtime-adapter-guide.md](runtime-adapter-guide.md).
+
 ## Extensions
 
 Manifest extensions are metadata.

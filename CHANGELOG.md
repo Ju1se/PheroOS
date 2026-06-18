@@ -26,16 +26,26 @@ The project is currently pre-stable. Until the first stable ABI release, entries
 - Namespaced pheromone metadata values that validate structurally without scoring candidates by default.
 - Step-level collective decision helper for deterministic pheromone evaporation, scoring, and evaluation order.
 - Runtime integration contract for external multi-agent runtimes in `docs/protocol/runtime-integration.md`.
+- Runtime adapter mapping contract in `docs/protocol/runtime-adapter-guide.md`.
 - `extension_contract` conformance check for extension and secret-boundary compatibility.
 
 ### Changed
 
+- Source-tree documentation is organized around stable protocol, process, security, and conformance documents.
+- `CONTRIBUTING.md` now contains the protocol change proposal requirements.
+- `SECURITY.md` now describes protocol-core security scope and no longer documents removed runtime behavior.
 - Swarm protocol example now declares bounded, traceable, evidence-bound pheromone policy fields.
 - Conformance now covers pheromone behavior boundaries in addition to pheromone policy shape.
 - GitHub Actions validation is expected to cover baseline, e2e, and swarm protocol conformance.
 - Capability driver declarations are loaded as typed provider-neutral driver specs while preserving compatibility with generic driver ABI behavior.
 - Trace validation accepts namespaced extension events while preserving canonical built-in event validation.
 - Trace event validation now enforces a non-empty `reason`, matching the trace schema required field.
+
+### Removed
+
+- Historical goal, execution-plan, and migration-inventory Markdown documents from the public source tree.
+- The standalone protocol proposal stub after merging its requirements into `CONTRIBUTING.md`.
+- The standalone security overview after merging protocol security scope into `SECURITY.md`.
 
 ### Compatibility
 

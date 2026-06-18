@@ -113,6 +113,10 @@ Provider-specific configuration, API keys, tokens, passwords, credentials, and s
 
 Driver declarations are provider-neutral. `config_ref` is an opaque external reference owned by an external runtime; protocol-core does not resolve it.
 
+External runtimes map `DriverSpec` declarations to real adapters outside
+protocol-core. That mapping must preserve the governance, trace, evidence, and
+secret-boundary rules defined by this specification.
+
 Namespaced trace and pheromone extensions may record external runtime lineage or metadata, but unknown extensions do not score candidates or authorize decisions by default.
 
 Extensions should not add:
@@ -128,7 +132,7 @@ Extensions should not add:
 
 The current public ABI is draft `0.1.0`.
 
-Before the first stable ABI release, changes may still refine dataclass fields, schema shape, and conformance checks. Such changes should be documented in `CHANGELOG.md`, reviewed through the PheroOS Improvement Process, and backed by tests or conformance.
+Before the first stable ABI release, changes may still refine dataclass fields, schema shape, and conformance checks. Such changes should be documented in `CHANGELOG.md`, reviewed through the contribution and API lifecycle process, and backed by tests or conformance.
 
 After a stable ABI release, incompatible changes should require:
 
