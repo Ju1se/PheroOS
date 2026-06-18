@@ -25,6 +25,10 @@ Extensions may add manifest fields when they are:
 
 Swarm-specific fields should apply only when `collective_decision_policy.mode` declares a swarm mode.
 
+Manifest extensions should use the explicit `extensions` object or namespaced keys such as `x-*` and `ext.*`.
+
+Extension metadata is preserved for external runtimes, but it does not create evidence, permission, quorum, commit authority, or output authority. Manifests must not contain API keys, tokens, passwords, credentials, secrets, or provider configuration values.
+
 ### Governance Reference Semantics
 
 Governance extensions may add deterministic primitives for:
@@ -44,11 +48,15 @@ Driver extensions may add generic capability descriptors or lifecycle-compatible
 
 Provider-specific drivers should live outside protocol-core and implement the generic driver ABI.
 
+Driver declarations in manifests are provider-neutral. `config_ref` may name an external configuration reference, but protocol-core must not resolve that reference or read secrets from it.
+
 ### Trace ABI
 
 Trace extensions may add provider-neutral event types or lineage metadata.
 
 Trace extensions must stay small and append-only. Trace must not become a database, event bus, queue, logging framework, runtime monitor, or daemon.
+
+Namespaced trace event types such as `x-*` and `ext.*` may be used for external runtime lineage. They are trace records only and do not grant authority.
 
 ### Conformance
 

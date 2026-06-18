@@ -2,7 +2,7 @@
 
 `pheroos.protocol` defines the public manifest and validation surface for governed runtimes.
 
-The formal protocol-core specification is [SPEC.md](../../SPEC.md). Extension boundaries are described in [extension-points.md](extension-points.md).
+The formal protocol-core specification is [SPEC.md](../../SPEC.md). Extension boundaries are described in [extension-points.md](extension-points.md). External runtime composition is described in [runtime-integration.md](runtime-integration.md).
 
 The protocol layer owns:
 

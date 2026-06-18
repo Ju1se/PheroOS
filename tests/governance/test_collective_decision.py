@@ -14,6 +14,7 @@ from pheroos.governance import (
     deposit_pheromone,
     evaporate_trails,
     evaluate_collective_decision,
+    evaluate_collective_decision_step,
     pheromone_subject_id,
     pheromone_subject_type,
     score_candidates,
@@ -435,6 +436,32 @@ def test_invalid_pheromone_kind_steps_strength_and_candidate_are_rejected() -> N
             validate_pheromone_trail(trail, policy, candidate_set=declared_candidates())
 
 
+def test_namespaced_pheromone_values_validate_but_do_not_score_by_default() -> None:
+    policy = pheromone_policy(per_source_cap=100)
+    custom_kind = pheromone("candidate:alpha", strength=10, kind="x-acme.preference")
+    custom_subject = pheromone(
+        "",
+        subject_type="ext.acme.path",
+        subject_id="candidate:alpha",
+        kind="positive",
+        strength=10,
+    )
+
+    validate_pheromone_trail(custom_kind, policy, candidate_set=declared_candidates())
+    validate_pheromone_trail(custom_subject, policy, candidate_set=declared_candidates())
+    scores = score_pheromone_trails(
+        candidate_set=declared_candidates(),
+        policy=policy,
+        trails=[custom_kind, custom_subject],
+    )
+
+    assert scores == {
+        "candidate:alpha": 0.0,
+        "candidate:beta": 0.0,
+        "candidate:safe_fallback": 0.0,
+    }
+
+
 def test_high_pheromone_without_independent_scouts_falls_back_safely() -> None:
     decision = evaluate_collective_decision(
         candidate_set=declared_candidates(),
@@ -452,6 +479,53 @@ def test_high_pheromone_without_independent_scouts_falls_back_safely() -> None:
 
     assert decision.candidate_id == "candidate:safe_fallback"
     assert decision.reason == "safe_collective_fallback"
+
+
+def test_collective_decision_step_evaporates_pheromones_before_scoring() -> None:
+    step = evaluate_collective_decision_step(
+        candidate_set=declared_candidates(),
+        policy=policy(
+            min_independent_scouts=1,
+            quorum_threshold=5,
+            pheromone_enabled=True,
+            pheromone_evaporation_rate=0.5,
+            pheromone_per_source_cap=100,
+            pheromone_require_provenance=True,
+            pheromone_require_trace=True,
+        ),
+        target="decision:collective",
+        scout_reports=[ScoutReport("scout:a", "candidate:alpha", "evidence:a", "driver:a")],
+        pheromone_trails=[pheromone("candidate:alpha", strength=8)],
+        current_step=1,
+    )
+
+    assert step.pheromone_trails[0].strength == 4
+    assert step.state.scores["candidate:alpha"] == 5
+    assert step.decision.candidate_id == "candidate:alpha"
+    assert step.decision.reason == "collective_consensus"
+
+
+def test_collective_decision_step_expires_stale_pheromones_before_evaluation() -> None:
+    step = evaluate_collective_decision_step(
+        candidate_set=declared_candidates(),
+        policy=policy(
+            min_independent_scouts=1,
+            quorum_threshold=5,
+            pheromone_enabled=True,
+            pheromone_per_source_cap=100,
+            pheromone_require_provenance=True,
+            pheromone_require_trace=True,
+        ),
+        target="decision:collective",
+        scout_reports=[ScoutReport("scout:a", "candidate:alpha", "evidence:a", "driver:a")],
+        pheromone_trails=[pheromone("candidate:alpha", strength=10, ttl_steps=1)],
+        current_step=1,
+    )
+
+    assert step.pheromone_trails[0].kind == "stale"
+    assert step.state.scores["candidate:alpha"] == 1
+    assert step.decision.candidate_id == "candidate:safe_fallback"
+    assert step.decision.reason == "safe_collective_fallback"
 
 
 def test_novelty_only_pheromone_without_independent_scouts_falls_back_safely() -> None:

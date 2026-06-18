@@ -816,3 +816,377 @@ Assessment:
 - Public APIs are now managed as declared draft ABI surfaces rather than incidental imports.
 - API changes are gated through tests, checked-in schemas, conformance, changelog/migration notes, CI, and PR checklist expectations.
 - The current state is well managed for a pre-stable open protocol, but it is still explicitly draft ABI rather than a frozen stable public ABI.
+
+ABI extensibility hardening plan - 2026-06-18:
+Based on the architecture audit, the next task is to harden PheroOS as an extensible protocol ABI for external multi-agent runtimes without adding runtime infrastructure to protocol-core.
+
+Audit summary:
+
+- The current core is correctly provider-free and database-free by default.
+- No hardcoded model API key, database backend, provider SDK, queue, server, dashboard, or domain workflow was found in core.
+- `pyproject.toml` has no runtime dependencies.
+- Kernel and driver code expose generic contracts instead of calling tools, models, databases, or secrets directly.
+- Pheromone governance already proves important authority boundaries: pheromone is not evidence, not quorum, not permission, and not output authority.
+- The remaining extensibility risks are ABI shape risks rather than provider-coupling risks.
+
+Primary objective:
+
+Make PheroOS easier for external runtimes to implement without forking protocol-core, while keeping protocol-core small, deterministic, provider-neutral, domain-neutral, and ABI-focused.
+
+This means:
+
+1. Preserve extension metadata across manifest loading and ABI objects.
+2. Provide a provider-neutral driver declaration shape.
+3. Allow namespaced extension points without giving them implicit authority.
+4. Make the pheromone workflow harder to misuse.
+5. Document how external runtimes compose with the protocol without adding runtime code here.
+
+Required boundary:
+
+Do not add:
+
+- app runtime code
+- FastAPI or product APIs
+- dashboards or frontend code
+- LangGraph graphs
+- provider SDK wrappers
+- model routing
+- endpoint catalogs
+- local server wrappers
+- persistent storage implementations
+- database adapters
+- queues
+- worker pools
+- background daemons
+- plugin marketplaces
+- broad agent frameworks
+- broad safety/protection frameworks
+- domain workflows
+- secrets, API keys, tokens, passwords, or provider configuration values in manifests
+
+Allowed implementation surfaces:
+
+- `pheroos.protocol` for manifest declarations, extension metadata, schema shape, and structural validation.
+- `pheroos.kernel` for planning and exposure of declared provider-neutral driver specs.
+- `pheroos.drivers` for generic driver ABI objects only.
+- `pheroos.governance` for deterministic pheromone workflow helpers and extension-safe scoring behavior.
+- `pheroos.trace` for canonical and namespaced provider-neutral trace events.
+- `pheroos.conformance` for compatibility checks.
+- `schemas/` for checked-in ABI artifacts.
+- `docs/protocol` for integration contracts.
+- `tests` for deterministic proof.
+- `examples` only when an example is needed to prove ABI behavior without providers, networks, servers, or databases.
+- `pheroos.cli` only if schema export must stay aligned.
+
+Phase 0 - Record scope and preserve current worktree:
+
+Goal: prevent task drift.
+
+Actions:
+
+- Treat this as "PheroOS ABI Extensibility Hardening", not as a runtime implementation.
+- Preserve existing README, i18n, and documentation cleanup work.
+- Preserve existing pheromone behavior and conformance boundaries.
+- Keep `examples/toy-protocol` and `examples/e2e-protocol` compatible without forcing swarm behavior.
+
+Acceptance:
+
+- The implementation plan remains limited to protocol-core surfaces.
+- No old runtime or provider gateway is restored.
+- Existing public behavior is not narrowed to a hand-picked minimum test set.
+
+Phase 1 - Manifest extension retention:
+
+Goal: allow external runtimes to declare namespaced metadata without losing it during manifest loading.
+
+Implement:
+
+- Add small `extensions: dict[str, Any]` fields where needed on public ABI dataclasses.
+- Candidate locations:
+  - `CapabilityManifest`
+  - `ProtocolManifest`
+  - `CollectiveDecisionPolicy`
+  - `TargetSpec`
+  - `CandidateSpec`
+  - `SignalSpec`
+  - driver declaration shape from Phase 2
+- Preserve namespaced extension fields from manifest payloads.
+- Prefer an explicit `extensions` object for new manifests.
+- Optionally support top-level `x-*` keys as compatibility extension keys if this stays simple and deterministic.
+
+Rules:
+
+- Extension metadata is data, not authority.
+- Extension metadata must not affect commit, evidence, permission, or output authorization unless a future built-in protocol invariant explicitly adopts it.
+- Extension metadata must not contain secrets.
+- Protocol validation should reject or diagnose obvious secret-like keys such as `api_key`, `token`, `password`, `secret`, and credential-like nested fields.
+
+Tests:
+
+- Manifest loader preserves declared extension metadata.
+- Unknown extension metadata does not break baseline validation.
+- Secret-like extension keys are rejected or reported through validation diagnostics.
+- Baseline toy and e2e manifests still validate unchanged.
+
+Phase 2 - Provider-neutral driver manifest ABI:
+
+Goal: replace raw driver dict usage with a small typed protocol declaration while avoiding provider-specific configuration.
+
+Implement:
+
+```python
+@dataclass(frozen=True)
+class DriverSpec:
+    id: str
+    kind: str
+    version: str
+    capabilities: list[str] = field(default_factory=list)
+    permissions: list[str] = field(default_factory=list)
+    config_ref: str = ""
+    extensions: dict[str, Any] = field(default_factory=dict)
+```
+
+Behavior:
+
+- `CapabilityManifest.drivers` should become `list[DriverSpec]` or expose a typed compatibility path.
+- Manifest loading converts driver payloads into `DriverSpec`.
+- Kernel planning reads `DriverSpec.id` and `DriverSpec.permissions`.
+- Driver lifecycle remains generic and provider-free.
+- `config_ref` is only an external opaque reference, never an inline secret or provider config.
+
+Rules:
+
+- Do not implement concrete model, database, storage, queue, or tool adapters in protocol-core.
+- Do not make kernel resolve `config_ref`.
+- Do not add secret loading.
+
+Tests:
+
+- Driver specs load from existing e2e manifest.
+- Kernel plan exposes typed driver specs with correct permissions.
+- Missing driver id or kind remains a conformance failure.
+- Secret-like driver fields are rejected or reported.
+- Existing driver lifecycle tests continue to pass.
+
+Phase 3 - Namespaced trace and pheromone extensions:
+
+Goal: keep built-in ABI strict while allowing external runtimes to record extension events and pheromone metadata safely.
+
+Trace plan:
+
+- Keep built-in `VALID_EVENT_TYPES`.
+- Allow namespaced extension event types only when they follow a safe naming rule such as `x-*` or `ext.*`.
+- Namespaced events must still require `protocol_id`, `target`, and `reason`.
+- Namespaced events are append-only trace facts, not authority.
+
+Pheromone plan:
+
+- Keep built-in pheromone kinds:
+  - `positive`
+  - `negative`
+  - `cautionary`
+  - `novelty`
+  - `stale`
+- Keep built-in subject types:
+  - `candidate`
+  - `route`
+  - `tool`
+  - `evidence`
+  - `agent`
+- Allow namespaced custom pheromone kinds or subject types only if they validate structurally and traceably.
+- Unknown namespaced pheromone kinds must not contribute to candidate scoring by default.
+- Unknown namespaced subject types must not accidentally map to declared candidates.
+
+Tests:
+
+- Built-in trace events continue to validate.
+- Namespaced trace events validate and append.
+- Invalid non-namespaced trace events still fail.
+- Built-in pheromone scoring remains unchanged.
+- Namespaced pheromone marks can validate as traceable metadata.
+- Namespaced pheromone marks do not score candidates by default.
+
+Phase 4 - Pheromone workflow helper:
+
+Goal: reduce misuse of pheromone evaporation and scoring by giving runtime authors a deterministic reference workflow.
+
+Problem:
+
+- `evaporate_trails()` supports `current_step`.
+- `score_candidates()` and `evaluate_collective_decision()` currently accept trails but do not own the step/evaporation workflow.
+- External runtimes can accidentally evaluate stale or unexpired trails if they skip the evaporation step.
+
+Implement one small pure helper, with final naming chosen to match local style:
+
+```python
+evaluate_collective_decision_step(...)
+```
+
+or:
+
+```python
+advance_collective_memory(...)
+```
+
+Required behavior:
+
+- Accept `current_step`.
+- Apply pheromone evaporation and TTL expiry deterministically.
+- Score candidates.
+- Evaluate collective decision using the existing declared-candidate and safe-fallback rules.
+- Return enough structured data for trace lineage, but do not create a trace database or runtime loop.
+
+Rules:
+
+- Do not store memory.
+- Do not add a scheduler, daemon, worker, or event bus.
+- Do not make pheromone authority.
+- Keep existing lower-level helpers available for advanced users.
+
+Tests:
+
+- Helper applies evaporation before scoring.
+- Helper turns expired TTL pheromones stale before evaluation.
+- Helper falls back safely when pheromone support is stale or insufficient.
+- Helper still requires independent scouts for commit.
+- Existing manual workflow tests continue to pass.
+
+Phase 5 - Runtime integration contract documentation:
+
+Goal: explain how users build their own multi-agent systems on top of PheroOS without putting runtime implementation into this repository.
+
+Add:
+
+- `docs/protocol/runtime-integration.md`
+
+Document:
+
+```text
+manifest
+-> protocol validation
+-> kernel plan
+-> external runtime binds adapters
+-> agents produce scout reports, evidence, and signals
+-> governance evaluates decision
+-> trace records lineage
+-> output authorization checks authority boundary
+-> conformance proves compatibility
+```
+
+Clarify external runtime responsibilities:
+
+- agent loops
+- model calls
+- tool calls
+- database persistence
+- vector stores or memory backends
+- queueing
+- scheduling
+- secret management
+- provider-specific adapter code
+
+Clarify protocol-core responsibilities:
+
+- ABI objects
+- validation
+- kernel planning contracts
+- generic driver contracts
+- governance reference semantics
+- trace ABI
+- conformance
+
+Documentation constraints:
+
+- Do not add Quick Start.
+- Do not add provider setup.
+- Do not add database setup.
+- Do not add API key instructions.
+- Do not document product runtime behavior as if it lives in protocol-core.
+
+Phase 6 - Schema, conformance, and compatibility gates:
+
+Goal: prove the extension mechanism is managed and does not weaken protocol authority.
+
+Schema:
+
+- Update protocol and driver schema helpers.
+- Update checked-in schema artifacts.
+- Keep CLI schema export aligned.
+
+Conformance:
+
+- Add checks for extension metadata retention where practical.
+- Add checks for provider-free driver spec shape.
+- Add checks that extension metadata does not bypass built-in authority boundaries.
+- Add checks that secret-like manifest fields are rejected or diagnosed.
+
+Tests:
+
+- Protocol tests for extension loading and validation.
+- Kernel tests for typed driver exposure.
+- Driver tests for provider-neutral descriptor compatibility.
+- Governance tests for namespaced pheromone safety.
+- Trace tests for namespaced event validation.
+- Conformance tests for toy/e2e/swarm compatibility.
+- CLI schema export tests when schema changes.
+
+Validation requirements:
+
+Run the full relevant validation set before completion:
+
+```bash
+.venv/bin/python -m pytest -q
+.venv/bin/python -m pheroos.cli.main validate examples/toy-protocol/capability.json
+.venv/bin/python -m pheroos.cli.main conformance examples/toy-protocol
+.venv/bin/python -m pheroos.cli.main validate examples/e2e-protocol/capability.json
+.venv/bin/python -m pheroos.cli.main conformance examples/e2e-protocol
+.venv/bin/python -m pheroos.cli.main validate examples/swarm-protocol/capability.json
+.venv/bin/python -m pheroos.cli.main conformance examples/swarm-protocol
+git diff --check
+```
+
+Completion criteria:
+
+- Extension metadata is preserved without granting authority.
+- Provider-neutral driver specs replace or wrap raw manifest driver dicts.
+- No secret-like manifest fields are accepted silently.
+- Kernel still does not access secrets, tools, providers, databases, or queues.
+- Trace supports safe namespaced extension events without weakening canonical event validation.
+- Pheromone supports safe namespaced metadata without letting unknown pheromone kinds score candidates by default.
+- A deterministic pheromone workflow helper prevents stale/evaporation misuse.
+- Runtime integration documentation clearly explains how external systems compose with PheroOS.
+- Existing toy, e2e, and swarm examples remain compatible.
+- All changed public API or ABI surfaces are covered by tests, schema updates, conformance, and changelog/migration notes where appropriate.
+- No runtime, provider gateway, database adapter, model SDK, dashboard, worker, queue, server, or broad agent framework is added.
+
+Completion update for ABI extensibility hardening - 2026-06-18:
+The ABI extensibility hardening plan above has been implemented in the current worktree while preserving the protocol-core boundary.
+
+Implemented:
+
+- Added manifest extension retention through explicit `extensions` metadata and namespaced `x-*` / `ext.*` keys.
+- Added secret-like manifest field rejection/diagnostics for API keys, tokens, passwords, credentials, and secrets.
+- Added provider-neutral `DriverSpec` declarations with opaque external `config_ref`.
+- Updated manifest loading so capability driver declarations become typed `DriverSpec` objects.
+- Updated kernel planning and driver conformance to consume typed driver specs while retaining a compatibility path for dict-shaped driver payloads.
+- Added `extension_contract` conformance for extension and secret-boundary compatibility.
+- Added namespaced trace extension event validation while preserving canonical built-in trace event validation.
+- Added namespaced pheromone value validation for metadata-only extension kinds/subjects that do not score candidates by default.
+- Added `CollectiveDecisionStep` and `evaluate_collective_decision_step()` to apply deterministic pheromone evaporation, TTL expiry, scoring, and evaluation in a single pure workflow helper.
+- Updated protocol, driver, and trace schema helpers plus checked-in schema artifacts.
+- Added `docs/protocol/runtime-integration.md` as the external runtime integration contract.
+- Updated README links, protocol overview, extension docs, driver docs, governance docs, conformance docs, SPEC, API lifecycle notes, release checklist, project metadata tests, and CHANGELOG.
+- Added tests for extension retention, typed driver specs, secret-like manifest rejection, namespaced trace events, namespaced pheromone safety, pheromone step evaluation, schema export, conformance, and runtime integration document presence.
+- Kept toy, e2e, and swarm examples compatible.
+- Did not add runtime infrastructure, provider wrappers, model SDKs, database adapters, queues, servers, dashboards, workers, or broad agent frameworks.
+
+Verification:
+
+- `.venv/bin/python -m pytest -q` passes with 97 tests.
+- `.venv/bin/python -m pheroos.cli.main validate examples/toy-protocol/capability.json` passes.
+- `.venv/bin/python -m pheroos.cli.main conformance examples/toy-protocol` passes and includes `extension_contract`.
+- `.venv/bin/python -m pheroos.cli.main validate examples/e2e-protocol/capability.json` passes.
+- `.venv/bin/python -m pheroos.cli.main conformance examples/e2e-protocol` passes and includes `extension_contract`.
+- `.venv/bin/python -m pheroos.cli.main validate examples/swarm-protocol/capability.json` passes.
+- `.venv/bin/python -m pheroos.cli.main conformance examples/swarm-protocol` passes and includes `extension_contract`.
+- `git diff --check` passes.

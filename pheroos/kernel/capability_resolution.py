@@ -4,7 +4,7 @@ from pheroos.kernel.input_envelope import InputEnvelope
 from pheroos.kernel.connection import ConnectionRequirement
 from pheroos.kernel.os_plan import CapabilityResolution, DriverExposure, KernelDiagnostic, OSPlan
 from pheroos.kernel.permission import PermissionGrant
-from pheroos.protocol.models import CapabilityManifest
+from pheroos.protocol.models import CapabilityManifest, DriverSpec
 
 
 class OSKernel:
@@ -34,16 +34,19 @@ class OSKernel:
             for capability in capabilities
             for connection in capability.required_connections
         ]
-        driver_exposures = [
-            DriverExposure(
-                driver_id=driver_id,
-                capability_id=capability.id,
-                permissions=text_list(driver.get("permissions")) or list(capability.permissions),
-            )
-            for capability in capabilities
-            for driver in capability.drivers
-            if (driver_id := str(driver.get("id") or "").strip())
-        ]
+        driver_exposures: list[DriverExposure] = []
+        for capability in capabilities:
+            for driver in capability.drivers:
+                driver_id = driver_spec_id(driver)
+                if not driver_id:
+                    continue
+                driver_exposures.append(
+                    DriverExposure(
+                        driver_id=driver_id,
+                        capability_id=capability.id,
+                        permissions=driver_spec_permissions(driver) or list(capability.permissions),
+                    )
+                )
         return OSPlan(
             tenant_id=envelope.tenant_id,
             request_id=str(envelope.metadata.get("request_id") or "request"),
@@ -61,3 +64,15 @@ def text_list(value: object) -> list[str]:
     if not isinstance(value, list):
         return []
     return [str(item).strip() for item in value if str(item).strip()]
+
+
+def driver_spec_id(driver: DriverSpec | dict[str, object]) -> str:
+    if isinstance(driver, DriverSpec):
+        return driver.id.strip()
+    return str(driver.get("id") or "").strip()
+
+
+def driver_spec_permissions(driver: DriverSpec | dict[str, object]) -> list[str]:
+    if isinstance(driver, DriverSpec):
+        return [permission for permission in driver.permissions if permission]
+    return text_list(driver.get("permissions"))

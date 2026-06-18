@@ -14,6 +14,7 @@ Governance owns:
 - recovery traces
 - output contracts
 - trace events
+- deterministic collective decision steps
 
 ## Invariants
 
@@ -23,3 +24,5 @@ Governance owns:
 - Stop signals block target actions.
 - Recovery follows declared triggers, roles, tags, tools, and failure behavior.
 - Output authorization requires a committed candidate, evidence provenance, stop resolution, and publication permission.
+- Pheromone is bounded collective memory, not evidence, quorum, permission, or output authority.
+- Namespaced pheromone metadata does not score candidates by default.

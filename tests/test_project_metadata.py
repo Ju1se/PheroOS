@@ -17,5 +17,6 @@ def test_open_protocol_materials_exist() -> None:
         "docs/process/api-lifecycle.md",
         "docs/process/release-checklist.md",
         "docs/protocol/extension-points.md",
+        "docs/protocol/runtime-integration.md",
     ]:
         assert Path(path).is_file()

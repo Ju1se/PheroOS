@@ -3,6 +3,10 @@ from __future__ import annotations
 from typing import Any
 
 
+def extensions_schema() -> dict[str, Any]:
+    return {"type": "object"}
+
+
 def protocol_schema() -> dict[str, Any]:
     return {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -12,9 +16,55 @@ def protocol_schema() -> dict[str, Any]:
         "properties": {
             "protocol_version": {"type": "string"},
             "id": {"type": "string"},
-            "targets": {"type": "array", "items": {"type": "object", "required": ["id"]}},
-            "candidates": {"type": "array", "items": {"type": "object", "required": ["id", "target"]}},
-            "quorum_policy": {"type": "object", "required": ["target", "fallback_candidate"]},
+            "targets": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "required": ["id"],
+                    "properties": {
+                        "id": {"type": "string"},
+                        "description": {"type": "string"},
+                        "extensions": extensions_schema(),
+                    },
+                },
+            },
+            "candidates": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "required": ["id", "target"],
+                    "properties": {
+                        "id": {"type": "string"},
+                        "target": {"type": "string"},
+                        "safe_fallback": {"type": "boolean"},
+                        "label": {"type": "string"},
+                        "extensions": extensions_schema(),
+                    },
+                },
+            },
+            "signals": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "required": ["type", "target"],
+                    "properties": {
+                        "type": {"type": "string"},
+                        "target": {"type": "string"},
+                        "authority_required": {"type": "string"},
+                        "extensions": extensions_schema(),
+                    },
+                },
+            },
+            "quorum_policy": {
+                "type": "object",
+                "required": ["target", "fallback_candidate"],
+                "properties": {
+                    "target": {"type": "string"},
+                    "fallback_candidate": {"type": "string"},
+                    "commit_threshold": {"type": "integer", "minimum": 1},
+                    "extensions": extensions_schema(),
+                },
+            },
             "collective_decision_policy": {
                 "type": "object",
                 "properties": {
@@ -39,10 +89,18 @@ def protocol_schema() -> dict[str, Any]:
                     "pheromone_require_provenance": {"type": "boolean"},
                     "pheromone_require_trace": {"type": "boolean"},
                     "fallback_candidate": {"type": "string"},
+                    "extensions": extensions_schema(),
                 },
             },
-            "output_policy": {"type": "object"},
-            "trace_policy": {"type": "object"},
+            "output_policy": {"type": "object", "properties": {"extensions": extensions_schema()}},
+            "trace_policy": {
+                "type": "object",
+                "properties": {
+                    "required_events": {"type": "array", "items": {"type": "string"}},
+                    "extensions": extensions_schema(),
+                },
+            },
+            "extensions": extensions_schema(),
         },
     }
 
@@ -57,6 +115,26 @@ def capability_schema() -> dict[str, Any]:
             "id": {"type": "string"},
             "name": {"type": "string"},
             "version": {"type": "string"},
+            "permissions": {"type": "array", "items": {"type": "string"}},
+            "required_connections": {"type": "array", "items": {"type": "string"}},
+            "drivers": {"type": "array", "items": driver_spec_schema()},
             "protocol": protocol_schema(),
+            "extensions": extensions_schema(),
+        },
+    }
+
+
+def driver_spec_schema() -> dict[str, Any]:
+    return {
+        "type": "object",
+        "required": ["id", "kind", "version"],
+        "properties": {
+            "id": {"type": "string"},
+            "kind": {"type": "string"},
+            "version": {"type": "string"},
+            "capabilities": {"type": "array", "items": {"type": "string"}},
+            "permissions": {"type": "array", "items": {"type": "string"}},
+            "config_ref": {"type": "string"},
+            "extensions": extensions_schema(),
         },
     }

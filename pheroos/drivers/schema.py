@@ -14,5 +14,8 @@ def driver_schema() -> dict[str, Any]:
             "kind": {"type": "string"},
             "version": {"type": "string"},
             "capabilities": {"type": "array", "items": {"type": "string"}},
+            "permissions": {"type": "array", "items": {"type": "string"}},
+            "config_ref": {"type": "string"},
+            "extensions": {"type": "object"},
         },
     }

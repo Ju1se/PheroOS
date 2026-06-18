@@ -57,6 +57,46 @@ def test_trace_store_rejects_unknown_event_type() -> None:
         )
 
 
+def test_trace_store_accepts_namespaced_extension_events() -> None:
+    store = InMemoryTraceStore()
+
+    record = store.append(
+        TraceEvent(
+            event_type="x-acme.agent_observed",
+            protocol_id="e2e.review",
+            target="decision:e2e",
+            reason="external runtime observation",
+            lineage={"adapter": "outside-core"},
+        )
+    )
+
+    assert record.event.event_type == "x-acme.agent_observed"
+    assert store.require_events(["x-acme.agent_observed"]) == []
+
+
+def test_trace_store_rejects_invalid_extension_prefix_and_empty_reason() -> None:
+    store = InMemoryTraceStore()
+
+    with pytest.raises(ValueError, match="unsupported trace event type"):
+        store.append(
+            TraceEvent(
+                event_type="x-",
+                protocol_id="e2e.review",
+                target="decision:e2e",
+                reason="test",
+            )
+        )
+    with pytest.raises(ValueError, match="reason is required"):
+        store.append(
+            TraceEvent(
+                event_type="ext.acme.observed",
+                protocol_id="e2e.review",
+                target="decision:e2e",
+                reason="",
+            )
+        )
+
+
 def test_trace_event_lineage_carries_pheromone_metadata() -> None:
     store = InMemoryTraceStore()
     deposit = store.append(

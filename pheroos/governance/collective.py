@@ -10,6 +10,7 @@ from pheroos.protocol.models import CollectiveDecisionPolicy
 
 SUPPORTED_PHEROMONE_KINDS = frozenset({"positive", "negative", "cautionary", "novelty", "stale"})
 SUPPORTED_PHEROMONE_SUBJECT_TYPES = frozenset({"candidate", "route", "tool", "evidence", "agent"})
+PHEROMONE_EXTENSION_PREFIXES = ("x-", "ext.")
 
 
 @dataclass(frozen=True)
@@ -81,6 +82,13 @@ class CollectiveDecisionState:
     pheromone_source_diversity: dict[str, int] = field(default_factory=dict)
 
 
+@dataclass(frozen=True)
+class CollectiveDecisionStep:
+    decision: QuorumDecision
+    state: CollectiveDecisionState
+    pheromone_trails: list[PheromoneTrail] = field(default_factory=list)
+
+
 def pheromone_policy_from_collective(policy: CollectiveDecisionPolicy) -> PheromonePolicy:
     return PheromonePolicy(
         enabled=policy.pheromone_enabled,
@@ -111,9 +119,9 @@ def validate_pheromone_trail(
     *,
     candidate_set: CandidateSet | None = None,
 ) -> None:
-    if trail.subject_type not in SUPPORTED_PHEROMONE_SUBJECT_TYPES:
+    if trail.subject_type not in SUPPORTED_PHEROMONE_SUBJECT_TYPES and not is_extension_pheromone_value(trail.subject_type):
         raise GovernanceError(f"unsupported pheromone subject type: {trail.subject_type}")
-    if trail.kind not in SUPPORTED_PHEROMONE_KINDS:
+    if trail.kind not in SUPPORTED_PHEROMONE_KINDS and not is_extension_pheromone_value(trail.kind):
         raise GovernanceError(f"unsupported pheromone kind: {trail.kind}")
     if trail.strength < 0:
         raise GovernanceError("pheromone strength must be non-negative")
@@ -317,6 +325,10 @@ def cap_source_contribution(
     return allowed if delta >= 0 else -allowed
 
 
+def is_extension_pheromone_value(value: str) -> bool:
+    return any(value.startswith(prefix) and len(value) > len(prefix) for prefix in PHEROMONE_EXTENSION_PREFIXES)
+
+
 def score_candidates(
     *,
     candidate_set: CandidateSet,
@@ -388,6 +400,60 @@ def evaluate_collective_decision(
         inhibition_signals=inhibition_signals,
         pheromone_trails=pheromone_trails,
     )
+    return decide_collective_state(
+        candidate_set=candidate_set,
+        policy=policy,
+        target=target,
+        state=state,
+        fallback_candidate_id=fallback_candidate_id,
+    )
+
+
+def evaluate_collective_decision_step(
+    *,
+    candidate_set: CandidateSet,
+    policy: CollectiveDecisionPolicy,
+    target: str,
+    scout_reports: list[ScoutReport],
+    current_step: int,
+    recruitment_signals: list[RecruitmentSignal] | None = None,
+    inhibition_signals: list[InhibitionSignal] | None = None,
+    pheromone_trails: list[PheromoneTrail] | None = None,
+    fallback_candidate_id: str | None = None,
+) -> CollectiveDecisionStep:
+    active_trails = list(pheromone_trails or [])
+    if policy.pheromone_enabled:
+        active_trails = evaporate_trails(
+            active_trails,
+            pheromone_policy_from_collective(policy),
+            current_step=current_step,
+        )
+    state = score_candidates(
+        candidate_set=candidate_set,
+        policy=policy,
+        scout_reports=scout_reports,
+        recruitment_signals=recruitment_signals,
+        inhibition_signals=inhibition_signals,
+        pheromone_trails=active_trails,
+    )
+    decision = decide_collective_state(
+        candidate_set=candidate_set,
+        policy=policy,
+        target=target,
+        state=state,
+        fallback_candidate_id=fallback_candidate_id,
+    )
+    return CollectiveDecisionStep(decision=decision, state=state, pheromone_trails=active_trails)
+
+
+def decide_collective_state(
+    *,
+    candidate_set: CandidateSet,
+    policy: CollectiveDecisionPolicy,
+    target: str,
+    state: CollectiveDecisionState,
+    fallback_candidate_id: str | None = None,
+) -> QuorumDecision:
     candidates_by_score = sorted(state.scores.items(), key=lambda item: (-item[1], item[0]))
     for candidate_id, score in candidates_by_score:
         scout_count = len(state.independent_scouts[candidate_id])

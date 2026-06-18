@@ -52,16 +52,7 @@ The public schema artifacts are:
 - `schemas/driver.schema.json`
 - `schemas/trace.schema.json`
 
-The public CLI surfaces are:
-
-```bash
-pheroos validate <capability.json>
-pheroos conformance <protocol-directory-or-capability.json>
-pheroos schema export protocol
-pheroos schema export kernel
-pheroos schema export driver
-pheroos schema export trace
-```
+The public CLI surfaces cover manifest validation, conformance evaluation, and ABI schema export for protocol, kernel, driver, and trace artifacts.
 
 ## Compatibility Requirements
 
@@ -76,7 +67,8 @@ A compatible implementation should satisfy these requirements:
 7. Driver lifecycle follows `declare -> validate -> register -> probe -> bind -> expose -> invoke -> trace`.
 8. Swarm-specific checks apply only when a manifest declares a swarm collective mode.
 9. Baseline quorum protocols do not need to declare swarm behavior.
-10. Implementations pass the relevant `pheroos conformance` profile for their declared protocol behavior.
+10. Extension metadata is preserved without granting evidence, permission, quorum, commit, or output authority.
+11. Implementations pass the relevant conformance profile for their declared protocol behavior.
 
 ## Swarm-Native Semantics
 
@@ -115,6 +107,14 @@ Allowed extension points include:
 - external runtime implementations that consume the ABI
 - external provider adapters outside protocol-core
 
+Manifest extensions should use an explicit `extensions` object or namespaced keys such as `x-*` and `ext.*`.
+
+Provider-specific configuration, API keys, tokens, passwords, credentials, and secrets must stay outside protocol manifests.
+
+Driver declarations are provider-neutral. `config_ref` is an opaque external reference owned by an external runtime; protocol-core does not resolve it.
+
+Namespaced trace and pheromone extensions may record external runtime lineage or metadata, but unknown extensions do not score candidates or authorize decisions by default.
+
 Extensions should not add:
 
 - provider SDKs to protocol-core
@@ -148,18 +148,7 @@ Conformance is the compatibility gate for protocol-core. Checks should remain:
 - explicit about the invariant being checked
 - scoped to declared protocol behavior
 
-The minimum release validation set is:
-
-```bash
-python -m pytest -q
-python -m pheroos.cli.main validate examples/toy-protocol/capability.json
-python -m pheroos.cli.main conformance examples/toy-protocol
-python -m pheroos.cli.main validate examples/e2e-protocol/capability.json
-python -m pheroos.cli.main conformance examples/e2e-protocol
-python -m pheroos.cli.main validate examples/swarm-protocol/capability.json
-python -m pheroos.cli.main conformance examples/swarm-protocol
-git diff --check
-```
+Release validation is enforced by CI and release governance. The specification defines the invariants and compatibility expectations; it is not a local runbook.
 
 ## Governance Principle
 
