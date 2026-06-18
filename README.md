@@ -1,5 +1,7 @@
 # PheroOS
 
+Language: **English** | [简体中文](README.zh-CN.md)
+
 PheroOS is an open **AI-as-OS protocol core** for governed, swarm-native multi-agent runtimes.
 
 > Agents are not authority. Protocol is authority.
