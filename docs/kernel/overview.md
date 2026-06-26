@@ -29,6 +29,7 @@ does not execute provider calls.
 - Tool exposure requires granted permission.
 - Missing required capability produces a degraded or not-ready plan.
 - Driver exposure is derived from declared provider-neutral driver specs.
+- Driver exposure uses declared driver permissions only and does not inherit capability-level permissions by fallback.
 
 ## Import Boundary
 

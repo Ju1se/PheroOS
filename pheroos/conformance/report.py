@@ -18,10 +18,14 @@ class CheckResult:
 class ConformanceReport:
     target: str
     checks: list[CheckResult] = field(default_factory=list)
+    profile: str = ""
 
     @property
     def ok(self) -> bool:
         return all(check.ok for check in self.checks)
 
     def to_dict(self) -> dict[str, Any]:
-        return {"target": self.target, "ok": self.ok, "checks": [check.to_dict() for check in self.checks]}
+        payload = {"target": self.target, "ok": self.ok, "checks": [check.to_dict() for check in self.checks]}
+        if self.profile:
+            payload["profile"] = self.profile
+        return payload

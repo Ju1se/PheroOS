@@ -558,6 +558,21 @@ def test_undeclared_candidate_cannot_enter_collective_decision() -> None:
         )
 
 
+def test_collective_decision_rejects_candidate_for_different_target() -> None:
+    with pytest.raises(GovernanceError, match="not active target"):
+        evaluate_collective_decision(
+            candidate_set=CandidateSet(
+                [
+                    Candidate(id="candidate:alpha", target="decision:other"),
+                    Candidate(id="candidate:safe_fallback", target="decision:collective", safe_fallback=True),
+                ]
+            ),
+            policy=policy(fallback_candidate="candidate:safe_fallback", min_independent_scouts=1, quorum_threshold=1),
+            target="decision:collective",
+            scout_reports=[ScoutReport("scout:a", "candidate:alpha", "evidence:a", "driver:a")],
+        )
+
+
 def test_scout_report_requires_evidence_provenance() -> None:
     with pytest.raises(GovernanceError):
         score_candidates(

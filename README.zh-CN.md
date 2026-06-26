@@ -14,6 +14,8 @@ PheroOS 当前是 draft ABI。
 
 公共接口由 conformance 支撑，但尚未稳定。兼容性变更应尽量保持 additive，并且不应强迫 baseline protocol 满足 swarm-specific requirements。
 
+仓库内的 schema artifact 覆盖完整 capability manifest 形状，以及 protocol、kernel、driver 和 trace ABI surface。
+
 ## 文档
 
 - [SPEC.md](SPEC.md) - protocol-core 规范。

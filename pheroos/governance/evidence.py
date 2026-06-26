@@ -22,5 +22,8 @@ class EvidenceGraph:
     nodes: list[EvidenceNode] = field(default_factory=list)
     edges: list[EvidenceEdge] = field(default_factory=list)
 
+    def has_evidence(self) -> bool:
+        return bool(self.nodes)
+
     def has_provenance(self) -> bool:
         return all(bool(node.provenance) for node in self.nodes)

@@ -11,6 +11,10 @@ External runtime composition is described in
 Protocol code is contract code. It declares what exists and validates whether a
 manifest is structurally compatible with the protocol.
 
+The capability manifest schema is a public ABI artifact. The loader rejects
+unknown non-namespaced fields, invalid primitive shapes, and invalid collection
+shapes before constructing typed manifest objects.
+
 ## Owned Surface
 
 - capability manifests

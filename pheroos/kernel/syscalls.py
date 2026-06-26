@@ -23,8 +23,12 @@ class DriverInvokeReply:
 
 class KernelSyscalls:
     def expose_driver(self, context: RuntimeContext, driver_id: str) -> DriverExposure:
+        if not context.ready:
+            raise KernelError("runtime context is not ready")
         for exposure in context.driver_exposures:
             if exposure.driver_id == driver_id:
+                if not exposure.permissions:
+                    raise KernelError(f"driver exposure has no granted permissions: {driver_id}")
                 return exposure
         raise KernelError(f"driver is not exposed by the active runtime context: {driver_id}")
 

@@ -40,11 +40,21 @@ class OSKernel:
                 driver_id = driver_spec_id(driver)
                 if not driver_id:
                     continue
+                permissions = driver_spec_permissions(driver)
+                if not permissions:
+                    diagnostics.append(
+                        KernelDiagnostic(
+                            code="driver_permissions_missing",
+                            message=f"Driver {driver_id} has no declared driver permissions.",
+                            severity="warning",
+                        )
+                    )
+                    continue
                 driver_exposures.append(
                     DriverExposure(
                         driver_id=driver_id,
                         capability_id=capability.id,
-                        permissions=driver_spec_permissions(driver) or list(capability.permissions),
+                        permissions=permissions,
                     )
                 )
         return OSPlan(

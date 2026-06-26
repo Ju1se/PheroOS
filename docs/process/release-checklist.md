@@ -14,8 +14,10 @@ Use this checklist before publishing a PheroOS protocol-core release.
 
 - [ ] Public package exports are intentional.
 - [ ] Schema helpers and checked-in schema artifacts match.
+- [ ] `schemas/capability.schema.json` reflects the full manifest loader contract.
 - [ ] CLI behavior remains thin and delegates to core packages.
 - [ ] Manifest changes include validation and conformance impact notes.
+- [ ] Conformance profile version changes are documented.
 - [ ] Manifest extensions preserve metadata without allowing secrets or authority bypass.
 - [ ] Compatibility aliases are documented when present.
 - [ ] Breaking changes include migration notes.

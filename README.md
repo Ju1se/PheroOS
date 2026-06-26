@@ -14,6 +14,8 @@ PheroOS is a draft ABI.
 
 Public interfaces are conformance-backed, but not yet stable. Compatibility changes should be additive where possible and should keep baseline protocols working without swarm-specific requirements.
 
+Checked-in schema artifacts include the full capability manifest shape and the protocol, kernel, driver, and trace ABI surfaces.
+
 ## Documentation
 
 - [SPEC.md](SPEC.md) - protocol-core specification.

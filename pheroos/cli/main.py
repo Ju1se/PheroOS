@@ -7,7 +7,7 @@ from typing import Any
 from pheroos.conformance import run_conformance, validate_manifest
 from pheroos.drivers.schema import driver_schema
 from pheroos.kernel.schema import kernel_schema
-from pheroos.protocol.schema import protocol_schema
+from pheroos.protocol.schema import capability_schema, protocol_schema
 from pheroos.trace.schema import trace_schema
 
 
@@ -24,7 +24,7 @@ def main(argv: list[str] | None = None) -> int:
     schema_parser = sub.add_parser("schema")
     schema_sub = schema_parser.add_subparsers(dest="schema_command", required=True)
     export_parser = schema_sub.add_parser("export")
-    export_parser.add_argument("surface", choices=["protocol", "kernel", "driver", "trace"])
+    export_parser.add_argument("surface", choices=["capability", "protocol", "kernel", "driver", "trace"])
 
     args = parser.parse_args(argv)
     if args.command == "validate":
@@ -43,6 +43,8 @@ def emit_report(payload: dict[str, Any]) -> int:
 
 
 def schema_for(surface: str) -> dict[str, Any]:
+    if surface == "capability":
+        return capability_schema()
     if surface == "protocol":
         return protocol_schema()
     if surface == "kernel":

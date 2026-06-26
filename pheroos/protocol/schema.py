@@ -3,71 +3,75 @@ from __future__ import annotations
 from typing import Any
 
 
+EXTENSION_KEY_PATTERN = r"^(x-|ext\.).+"
+
+
+def object_schema(properties: dict[str, Any], *, required: list[str] | None = None) -> dict[str, Any]:
+    return {
+        "type": "object",
+        "required": required or [],
+        "properties": properties,
+        "patternProperties": {EXTENSION_KEY_PATTERN: {}},
+        "additionalProperties": False,
+    }
+
+
 def extensions_schema() -> dict[str, Any]:
     return {"type": "object"}
 
 
 def protocol_schema() -> dict[str, Any]:
-    return {
-        "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "$id": "https://pheroos.dev/schemas/protocol.schema.json",
-        "type": "object",
-        "required": ["protocol_version", "id", "targets", "candidates", "quorum_policy", "output_policy", "trace_policy"],
-        "properties": {
+    return object_schema(
+        {
             "protocol_version": {"type": "string"},
             "id": {"type": "string"},
             "targets": {
                 "type": "array",
-                "items": {
-                    "type": "object",
-                    "required": ["id"],
-                    "properties": {
+                "items": object_schema(
+                    {
                         "id": {"type": "string"},
                         "description": {"type": "string"},
                         "extensions": extensions_schema(),
                     },
-                },
+                    required=["id"],
+                ),
             },
             "candidates": {
                 "type": "array",
-                "items": {
-                    "type": "object",
-                    "required": ["id", "target"],
-                    "properties": {
+                "items": object_schema(
+                    {
                         "id": {"type": "string"},
                         "target": {"type": "string"},
                         "safe_fallback": {"type": "boolean"},
                         "label": {"type": "string"},
                         "extensions": extensions_schema(),
                     },
-                },
+                    required=["id", "target"],
+                ),
             },
             "signals": {
                 "type": "array",
-                "items": {
-                    "type": "object",
-                    "required": ["type", "target"],
-                    "properties": {
+                "items": object_schema(
+                    {
                         "type": {"type": "string"},
                         "target": {"type": "string"},
                         "authority_required": {"type": "string"},
                         "extensions": extensions_schema(),
                     },
-                },
+                    required=["type", "target"],
+                ),
             },
-            "quorum_policy": {
-                "type": "object",
-                "required": ["target", "fallback_candidate"],
-                "properties": {
+            "quorum_policy": object_schema(
+                {
                     "target": {"type": "string"},
                     "fallback_candidate": {"type": "string"},
                     "commit_threshold": {"type": "integer", "minimum": 1},
                     "extensions": extensions_schema(),
                 },
-            },
-            "collective_decision_policy": {
-                "type": "object",
-                "properties": {
+                required=["target", "fallback_candidate"],
+            ),
+            "collective_decision_policy": object_schema(
+                {
                     "mode": {"enum": ["quorum", "bee_swarm", "ant_colony", "hybrid"]},
                     "min_independent_scouts": {"type": "integer", "minimum": 1},
                     "quorum_threshold": {"type": "integer", "minimum": 1},
@@ -90,28 +94,58 @@ def protocol_schema() -> dict[str, Any]:
                     "pheromone_require_trace": {"type": "boolean"},
                     "fallback_candidate": {"type": "string"},
                     "extensions": extensions_schema(),
-                },
+                }
+            ),
+            "recovery_protocols": {
+                "type": "array",
+                "items": object_schema(
+                    {
+                        "id": {"type": "string"},
+                        "trigger_targets": {"type": "array", "items": {"type": "string"}},
+                        "allowed_roles": {"type": "array", "items": {"type": "string"}},
+                        "allowed_tags": {"type": "array", "items": {"type": "string"}},
+                        "required_tools": {"type": "array", "items": {"type": "string"}},
+                        "failure_candidate": {"type": "string"},
+                        "extensions": extensions_schema(),
+                    },
+                    required=["id", "trigger_targets"],
+                ),
             },
-            "output_policy": {"type": "object", "properties": {"extensions": extensions_schema()}},
-            "trace_policy": {
-                "type": "object",
-                "properties": {
+            "evidence_policy": object_schema(
+                {
+                    "require_provenance": {"type": "boolean"},
+                    "allow_agent_fact_creation": {"type": "boolean"},
+                    "extensions": extensions_schema(),
+                }
+            ),
+            "output_policy": object_schema(
+                {
+                    "writer_may_create_facts": {"type": "boolean"},
+                    "requires_committed_candidate": {"type": "boolean"},
+                    "requires_evidence_contract": {"type": "boolean"},
+                    "requires_stop_resolution": {"type": "boolean"},
+                    "requires_publication_permission": {"type": "boolean"},
+                    "extensions": extensions_schema(),
+                }
+            ),
+            "trace_policy": object_schema(
+                {
                     "required_events": {"type": "array", "items": {"type": "string"}},
                     "extensions": extensions_schema(),
-                },
-            },
+                }
+            ),
             "extensions": extensions_schema(),
         },
+        required=["protocol_version", "id", "targets", "candidates", "quorum_policy", "output_policy", "trace_policy"],
+    ) | {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "$id": "https://pheroos.dev/schemas/protocol.schema.json",
     }
 
 
 def capability_schema() -> dict[str, Any]:
-    return {
-        "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "$id": "https://pheroos.dev/schemas/capability.schema.json",
-        "type": "object",
-        "required": ["id", "name", "version", "protocol"],
-        "properties": {
+    return object_schema(
+        {
             "id": {"type": "string"},
             "name": {"type": "string"},
             "version": {"type": "string"},
@@ -121,14 +155,16 @@ def capability_schema() -> dict[str, Any]:
             "protocol": protocol_schema(),
             "extensions": extensions_schema(),
         },
+        required=["id", "name", "version", "protocol"],
+    ) | {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "$id": "https://pheroos.dev/schemas/capability.schema.json",
     }
 
 
 def driver_spec_schema() -> dict[str, Any]:
-    return {
-        "type": "object",
-        "required": ["id", "kind", "version"],
-        "properties": {
+    return object_schema(
+        {
             "id": {"type": "string"},
             "kind": {"type": "string"},
             "version": {"type": "string"},
@@ -137,4 +173,5 @@ def driver_spec_schema() -> dict[str, Any]:
             "config_ref": {"type": "string"},
             "extensions": extensions_schema(),
         },
-    }
+        required=["id", "kind", "version"],
+    )

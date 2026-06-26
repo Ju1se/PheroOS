@@ -27,10 +27,12 @@ and candidates; governance authority is required to verify and commit.
 
 - Agents can propose signals.
 - Governance authority is required to verify signals.
-- Quorum can commit only declared candidates.
+- Quorum can commit only declared candidates for the active target.
+- Baseline quorum commits only when verified support reaches the declared threshold.
+- Failed quorum or collective consensus falls back only to a declared safe candidate for the active target.
 - Stop signals block target actions.
 - Recovery follows declared triggers, roles, tags, tools, and failure behavior.
-- Output authorization requires a committed candidate, evidence provenance, stop resolution, and publication permission.
+- Output authorization requires a committed candidate, non-empty provenance-bearing evidence, stop resolution, and publication permission.
 - Pheromone is bounded collective memory, not evidence, quorum, permission, or output authority.
 - Namespaced pheromone metadata does not score candidates by default.
 
