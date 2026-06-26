@@ -41,6 +41,18 @@ def test_output_denied_when_evidence_provenance_is_missing() -> None:
     assert output_authorized(contract, decision, evidence, [], publication_permission=True) is False
 
 
+def test_output_denied_when_required_evidence_is_empty() -> None:
+    contract = OutputContract()
+    decision = QuorumDecision(
+        target="decision:review",
+        candidate_id="candidate:accept",
+        committed=True,
+        reason="declared",
+    )
+
+    assert output_authorized(contract, decision, EvidenceGraph(), [], publication_permission=True) is False
+
+
 def test_pheromone_score_cannot_authorize_uncommitted_output() -> None:
     contract = OutputContract()
     pheromone_only_decision = QuorumDecision(

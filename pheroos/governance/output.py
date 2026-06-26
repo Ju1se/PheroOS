@@ -24,7 +24,7 @@ def output_authorized(
 ) -> bool:
     if contract.committed_candidate_required and not decision.committed:
         return False
-    if contract.evidence_required and not evidence.has_provenance():
+    if contract.evidence_required and (not evidence.has_evidence() or not evidence.has_provenance()):
         return False
     if any(resolution.blocked for resolution in stop_resolutions):
         return False

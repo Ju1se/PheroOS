@@ -35,6 +35,20 @@ Pheromone behavior checks are no-op passes when pheromone is not enabled and
 active deterministic ABI checks when a manifest declares pheromone-enabled
 swarm behavior.
 
+## Profiles
+
+Conformance reports include the profile version that was applied.
+
+- `pheroos-manifest-v1` applies to manifest validation.
+- `pheroos-core-v1` applies to baseline governed protocols.
+- `pheroos-swarm-v1` applies when a manifest declares swarm collective behavior.
+
+Profile version changes are ABI changes and should be documented in the
+changelog.
+
+The `profile_contract` check fails when a required check for the applied profile
+is missing or failing.
+
 ## Rules
 
 - Conformance checks should prove protocol invariants, not product policy.

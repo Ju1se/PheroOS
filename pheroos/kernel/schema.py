@@ -9,6 +9,7 @@ def kernel_schema() -> dict[str, Any]:
         "$id": "https://pheroos.dev/schemas/kernel.schema.json",
         "type": "object",
         "required": ["tenant_id", "request_id", "runtime_ready"],
+        "additionalProperties": False,
         "properties": {
             "tenant_id": {"type": "string"},
             "request_id": {"type": "string"},

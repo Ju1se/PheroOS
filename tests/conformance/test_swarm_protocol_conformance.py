@@ -11,6 +11,7 @@ def test_swarm_protocol_validate_and_conformance_pass() -> None:
 
     assert validation.ok is True
     assert conformance.ok is True
+    assert conformance.profile == "pheroos-swarm-v1"
     assert {check.name for check in conformance.checks} >= {
         "collective_policy",
         "safe_fallback_collective",

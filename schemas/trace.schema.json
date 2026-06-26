@@ -1,16 +1,30 @@
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://pheroos.dev/schemas/trace.schema.json",
-  "type": "object",
-  "required": ["event_type", "protocol_id", "target", "reason"],
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
   "properties": {
     "event_type": {
-      "type": "string",
-      "description": "Built-in trace event type or namespaced extension event using x-* or ext.*."
+      "description": "Built-in trace event type or namespaced extension event using x-* or ext.*.",
+      "type": "string"
     },
-    "protocol_id": {"type": "string"},
-    "target": {"type": "string"},
-    "reason": {"type": "string"},
-    "lineage": {"type": "object"}
-  }
+    "lineage": {
+      "type": "object"
+    },
+    "protocol_id": {
+      "type": "string"
+    },
+    "reason": {
+      "type": "string"
+    },
+    "target": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "event_type",
+    "protocol_id",
+    "target",
+    "reason"
+  ],
+  "type": "object"
 }

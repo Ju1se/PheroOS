@@ -16,3 +16,21 @@ def test_candidate_must_reference_declared_target() -> None:
     codes = {item.code for item in validate_capability_manifest(manifest)}
 
     assert "candidate_target_missing" in codes
+
+
+def test_candidate_ids_must_be_unique() -> None:
+    protocol = ProtocolManifest(
+        protocol_version="pheroos.protocol.v1",
+        id="toy.invalid",
+        targets=[TargetSpec(id="decision:review")],
+        candidates=[
+            CandidateSpec(id="candidate:accept", target="decision:review"),
+            CandidateSpec(id="candidate:accept", target="decision:review"),
+        ],
+        quorum_policy=QuorumPolicy(target="decision:review", fallback_candidate="candidate:accept"),
+    )
+    manifest = CapabilityManifest(id="toy", name="Toy", version="0.1.0", protocol=protocol)
+
+    codes = {item.code for item in validate_capability_manifest(manifest)}
+
+    assert "duplicate_candidate" in codes

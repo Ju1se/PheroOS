@@ -334,16 +334,25 @@ def score_candidates(
     candidate_set: CandidateSet,
     policy: CollectiveDecisionPolicy,
     scout_reports: list[ScoutReport],
+    target: str | None = None,
     recruitment_signals: list[RecruitmentSignal] | None = None,
     inhibition_signals: list[InhibitionSignal] | None = None,
     pheromone_trails: list[PheromoneTrail] | None = None,
 ) -> CollectiveDecisionState:
-    scores = {candidate.id: 0.0 for candidate in candidate_set.candidates}
-    independent_scouts = {candidate.id: set() for candidate in candidate_set.candidates}
-    pheromone_source_diversity = {candidate.id: 0 for candidate in candidate_set.candidates}
+    candidates = [
+        candidate for candidate in candidate_set.candidates
+        if target is None or candidate.target == target
+    ]
+    active_candidate_set = CandidateSet(candidates)
+    scores = {candidate.id: 0.0 for candidate in candidates}
+    independent_scouts = {candidate.id: set() for candidate in candidates}
+    pheromone_source_diversity = {candidate.id: 0 for candidate in candidates}
 
     for report in scout_reports:
-        candidate_set.require_declared(report.candidate_id)
+        if target is None:
+            candidate_set.require_declared(report.candidate_id)
+        else:
+            candidate_set.require_declared_for_target(report.candidate_id, target)
         if not report.provenance:
             raise GovernanceError(f"scout report evidence is missing provenance: {report.evidence_id}")
         scores[report.candidate_id] += max(0.0, report.support)
@@ -351,23 +360,29 @@ def score_candidates(
 
     if policy.recruitment_enabled:
         for signal in recruitment_signals or []:
-            candidate_set.require_declared(signal.candidate_id)
+            if target is None:
+                candidate_set.require_declared(signal.candidate_id)
+            else:
+                candidate_set.require_declared_for_target(signal.candidate_id, target)
             scores[signal.candidate_id] += max(0.0, signal.strength)
 
     if policy.inhibition_enabled:
         for signal in inhibition_signals or []:
-            candidate_set.require_declared(signal.candidate_id)
+            if target is None:
+                candidate_set.require_declared(signal.candidate_id)
+            else:
+                candidate_set.require_declared_for_target(signal.candidate_id, target)
             scores[signal.candidate_id] -= max(0.0, signal.strength)
 
     if policy.pheromone_enabled:
         pheromone_policy = pheromone_policy_from_collective(policy)
         pheromone_source_diversity = collect_pheromone_source_diversity(
-            candidate_set=candidate_set,
+            candidate_set=active_candidate_set,
             trails=pheromone_trails or [],
             policy=pheromone_policy,
         )
         pheromone_scores = score_pheromone_trails(
-            candidate_set=candidate_set,
+            candidate_set=active_candidate_set,
             trails=pheromone_trails or [],
             policy=pheromone_policy,
         )
@@ -396,6 +411,7 @@ def evaluate_collective_decision(
         candidate_set=candidate_set,
         policy=policy,
         scout_reports=scout_reports,
+        target=target,
         recruitment_signals=recruitment_signals,
         inhibition_signals=inhibition_signals,
         pheromone_trails=pheromone_trails,
@@ -432,6 +448,7 @@ def evaluate_collective_decision_step(
         candidate_set=candidate_set,
         policy=policy,
         scout_reports=scout_reports,
+        target=target,
         recruitment_signals=recruitment_signals,
         inhibition_signals=inhibition_signals,
         pheromone_trails=active_trails,
@@ -458,7 +475,7 @@ def decide_collective_state(
     for candidate_id, score in candidates_by_score:
         scout_count = len(state.independent_scouts[candidate_id])
         if scout_count >= policy.min_independent_scouts and score >= policy.quorum_threshold:
-            candidate = candidate_set.require_declared(candidate_id)
+            candidate = candidate_set.require_declared_for_target(candidate_id, target)
             return QuorumDecision(
                 target=target,
                 candidate_id=candidate.id,
@@ -466,7 +483,7 @@ def decide_collective_state(
                 reason="collective_consensus",
             )
 
-    fallback = candidate_set.require_declared(fallback_candidate_id or policy.fallback_candidate)
+    fallback = candidate_set.require_declared_for_target(fallback_candidate_id or policy.fallback_candidate, target)
     if not fallback.safe_fallback:
         raise GovernanceError(f"collective fallback candidate is not marked safe: {fallback.id}")
     return QuorumDecision(

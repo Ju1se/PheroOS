@@ -3,6 +3,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+from pheroos.conformance.checks.kernel_import_boundary import check
+
 
 ROOT = Path(__file__).resolve().parents[2]
 FORBIDDEN = {"app", "runtime", "tools", "capabilities", "fastapi", "langgraph", "litellm"}
@@ -37,3 +39,9 @@ def test_core_package_has_no_forbidden_import_roots() -> None:
                     offenders.append(f"{path}:{module}")
 
     assert offenders == []
+
+
+def test_core_package_respects_package_import_dag() -> None:
+    result = check(ROOT)
+
+    assert result.ok is True, result.detail

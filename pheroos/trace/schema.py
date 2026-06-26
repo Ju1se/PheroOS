@@ -9,6 +9,7 @@ def trace_schema() -> dict[str, Any]:
         "$id": "https://pheroos.dev/schemas/trace.schema.json",
         "type": "object",
         "required": ["event_type", "protocol_id", "target", "reason"],
+        "additionalProperties": False,
         "properties": {
             "event_type": {
                 "type": "string",

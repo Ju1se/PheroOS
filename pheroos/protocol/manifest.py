@@ -14,14 +14,18 @@ from pheroos.protocol.models import (
     QuorumPolicy,
     RecoveryProtocol,
     SignalSpec,
-    StopSignalPolicy,
     TargetSpec,
     TracePolicy,
 )
+from pheroos.protocol.schema import capability_schema
+from pheroos.protocol.schema_validation import validate_json_schema
 
 
 def capability_manifest_from_dict(payload: dict[str, Any]) -> CapabilityManifest:
     reject_secret_like_fields(payload)
+    schema_errors = validate_json_schema(payload, capability_schema())
+    if schema_errors:
+        raise ValueError(f"manifest schema invalid: {'; '.join(schema_errors)}")
     protocol_payload = object_payload(payload.get("protocol"))
     return CapabilityManifest(
         id=required_text(payload, "id"),
@@ -162,14 +166,6 @@ def evidence_policy_from_dict(payload: dict[str, Any]) -> EvidencePolicy:
     return EvidencePolicy(
         require_provenance=bool(payload.get("require_provenance", True)),
         allow_agent_fact_creation=bool(payload.get("allow_agent_fact_creation", False)),
-        extensions=collect_extensions(payload),
-    )
-
-
-def stop_signal_policy_from_dict(payload: dict[str, Any]) -> StopSignalPolicy:
-    return StopSignalPolicy(
-        blocked_actions=text_list(payload.get("blocked_actions")),
-        targets=text_list(payload.get("targets")),
         extensions=collect_extensions(payload),
     )
 

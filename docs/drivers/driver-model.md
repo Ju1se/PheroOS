@@ -21,6 +21,10 @@ Drivers provide capability. Protocol and governance provide authority.
 declare -> validate -> register -> probe -> bind -> expose -> invoke -> trace
 ```
 
+Lifecycle operations fail closed. Invalid descriptors cannot register, inactive
+registrations cannot bind, bindings without granted permissions cannot expose,
+and invocations that may feed evidence require provenance.
+
 ## Rules
 
 - Driver declarations are provider-neutral.

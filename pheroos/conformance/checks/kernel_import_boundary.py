@@ -7,6 +7,15 @@ from pheroos.conformance.report import CheckResult
 
 
 FORBIDDEN_IMPORT_ROOTS = {"app", "runtime", "tools", "capabilities", "fastapi", "langgraph", "litellm"}
+PACKAGE_IMPORT_ALLOWLIST = {
+    "protocol": {"protocol"},
+    "kernel": {"kernel", "protocol", "drivers"},
+    "governance": {"governance", "protocol", "trace"},
+    "drivers": {"drivers"},
+    "trace": {"trace"},
+    "conformance": {"conformance", "protocol", "kernel", "governance", "drivers", "trace"},
+    "cli": {"cli", "protocol", "kernel", "governance", "drivers", "trace", "conformance"},
+}
 
 
 def check(root: Path) -> CheckResult:
@@ -28,3 +37,21 @@ def check(root: Path) -> CheckResult:
 def record_if_forbidden(root: Path, path: Path, module: str, offenders: list[str]) -> None:
     if module.split(".", 1)[0] in FORBIDDEN_IMPORT_ROOTS:
         offenders.append(f"{path.relative_to(root).as_posix()}:{module}")
+        return
+    if not module.startswith("pheroos."):
+        return
+    source_package = source_package_for(root, path)
+    imported_package = module.split(".", 2)[1]
+    allowed = PACKAGE_IMPORT_ALLOWLIST.get(source_package)
+    if allowed is not None and imported_package not in allowed:
+        offenders.append(f"{path.relative_to(root).as_posix()}:{module}")
+
+
+def source_package_for(root: Path, path: Path) -> str:
+    relative = path.relative_to(root)
+    parts = relative.parts
+    if len(parts) < 2 or parts[0] != "pheroos":
+        return ""
+    if len(parts) == 2:
+        return ""
+    return parts[1]

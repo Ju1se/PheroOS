@@ -55,13 +55,6 @@ class EvidencePolicy:
 
 
 @dataclass(frozen=True)
-class StopSignalPolicy:
-    blocked_actions: list[str] = field(default_factory=list)
-    targets: list[str] = field(default_factory=list)
-    extensions: dict[str, Any] = field(default_factory=dict)
-
-
-@dataclass(frozen=True)
 class CandidateSpec:
     id: str
     target: str

@@ -3,12 +3,17 @@ from __future__ import annotations
 from typing import Any
 
 
+EXTENSION_KEY_PATTERN = r"^(x-|ext\.).+"
+
+
 def driver_schema() -> dict[str, Any]:
     return {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
         "$id": "https://pheroos.dev/schemas/driver.schema.json",
         "type": "object",
         "required": ["id", "kind", "version"],
+        "patternProperties": {EXTENSION_KEY_PATTERN: {}},
+        "additionalProperties": False,
         "properties": {
             "id": {"type": "string"},
             "kind": {"type": "string"},

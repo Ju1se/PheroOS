@@ -27,6 +27,7 @@ The CLI surface covers manifest validation, conformance evaluation, and ABI sche
 The ABI artifact surface is:
 
 - checked-in JSON schemas under `schemas/`
+- full capability manifest schema under `schemas/capability.schema.json`
 - provider-free examples under `examples/`
 - conformance checks under `pheroos.conformance`
 
@@ -61,7 +62,7 @@ Current project status:
 - Public package exports: Draft, test-backed.
 - CLI commands: Supported draft.
 - Provider-free examples: Supported draft.
-- Conformance checks: Supported draft.
+- Conformance checks and profile versions: Supported draft.
 - Full runtime infrastructure: out of scope.
 
 ## Change Rules
@@ -108,6 +109,8 @@ Package version is declared in `pyproject.toml` and `pheroos.__version__`.
 Protocol manifests include their own `protocol_version`.
 
 Schema changes should keep checked-in schema artifacts and schema export behavior aligned.
+
+Conformance reports include a profile version. A profile version change is an ABI signal and should be documented in `CHANGELOG.md`.
 
 Version bumps should follow the release checklist in `docs/process/release-checklist.md`.
 

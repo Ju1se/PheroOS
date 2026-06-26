@@ -17,10 +17,16 @@ def validate_capability_manifest(manifest: CapabilityManifest) -> list[Validatio
     protocol = manifest.protocol
     target_ids = {target.id for target in protocol.targets}
     candidate_ids = {candidate.id for candidate in protocol.candidates}
+    candidates_by_id = {candidate.id: candidate for candidate in protocol.candidates}
     safe_candidates = {candidate.id for candidate in protocol.candidates if candidate.safe_fallback}
 
     for secret_path in secret_like_paths(manifest):
         diagnostics.append(error("secret_like_manifest_field", "manifest must not contain secret-like fields", secret_path))
+
+    for target_id in duplicate_values(target.id for target in protocol.targets):
+        diagnostics.append(error("duplicate_target", f"target {target_id} is declared more than once", "protocol.targets"))
+    for candidate_id in duplicate_values(candidate.id for candidate in protocol.candidates):
+        diagnostics.append(error("duplicate_candidate", f"candidate {candidate_id} is declared more than once", "protocol.candidates"))
 
     if not protocol.targets:
         diagnostics.append(error("missing_targets", "protocol must declare at least one target", "protocol.targets"))
@@ -37,6 +43,13 @@ def validate_capability_manifest(manifest: CapabilityManifest) -> list[Validatio
         diagnostics.append(error("quorum_fallback_missing", "quorum fallback candidate must be declared", "protocol.quorum_policy.fallback_candidate"))
     if protocol.quorum_policy.fallback_candidate and protocol.quorum_policy.fallback_candidate not in safe_candidates:
         diagnostics.append(error("quorum_fallback_not_safe", "quorum fallback candidate must be marked safe_fallback", "protocol.quorum_policy.fallback_candidate"))
+    fallback = candidates_by_id.get(protocol.quorum_policy.fallback_candidate)
+    if fallback is not None and fallback.target != protocol.quorum_policy.target:
+        diagnostics.append(error("quorum_fallback_target_mismatch", "quorum fallback candidate must target the quorum target", "protocol.quorum_policy.fallback_candidate"))
+
+    for signal in protocol.signals:
+        if signal.target not in target_ids:
+            diagnostics.append(error("signal_target_missing", f"signal {signal.type} references undeclared target", "protocol.signals"))
 
     collective_policy = protocol.collective_decision_policy
     if collective_policy is not None:
@@ -70,6 +83,10 @@ def validate_capability_manifest(manifest: CapabilityManifest) -> list[Validatio
             diagnostics.append(error("collective_fallback_missing", "collective fallback candidate must be declared", "protocol.collective_decision_policy.fallback_candidate"))
         elif fallback_candidate not in safe_candidates:
             diagnostics.append(error("collective_fallback_not_safe", "collective fallback candidate must be marked safe_fallback", "protocol.collective_decision_policy.fallback_candidate"))
+        else:
+            collective_fallback = candidates_by_id[fallback_candidate]
+            if collective_fallback.target != protocol.quorum_policy.target:
+                diagnostics.append(error("collective_fallback_target_mismatch", "collective fallback candidate must target the collective target", "protocol.collective_decision_policy.fallback_candidate"))
         if is_swarm_policy(collective_policy):
             swarm_missing_trace = sorted(required_swarm_trace_events(collective_policy) - set(protocol.trace_policy.required_events))
             if swarm_missing_trace:
@@ -81,6 +98,9 @@ def validate_capability_manifest(manifest: CapabilityManifest) -> list[Validatio
                 diagnostics.append(error("recovery_target_missing", f"recovery target {target} is undeclared", "protocol.recovery_protocols"))
         if recovery.failure_candidate and recovery.failure_candidate not in candidate_ids:
             diagnostics.append(error("recovery_failure_candidate_missing", "recovery failure candidate must be declared", "protocol.recovery_protocols"))
+        failure_candidate = candidates_by_id.get(recovery.failure_candidate)
+        if failure_candidate is not None and failure_candidate.target not in set(recovery.trigger_targets):
+            diagnostics.append(error("recovery_failure_candidate_target_mismatch", "recovery failure candidate must target a recovery trigger target", "protocol.recovery_protocols"))
 
     if protocol.output_policy.writer_may_create_facts:
         diagnostics.append(error("writer_fact_creation", "output policy must not allow writer fact creation", "protocol.output_policy"))
@@ -102,3 +122,14 @@ def validate_ok(manifest: CapabilityManifest) -> bool:
 
 def error(code: str, message: str, path: str) -> ValidationDiagnostic:
     return ValidationDiagnostic(code=code, message=message, path=path)
+
+
+def duplicate_values(values: object) -> list[str]:
+    seen: set[str] = set()
+    duplicates: set[str] = set()
+    for value in values:
+        text = str(value)
+        if text in seen:
+            duplicates.add(text)
+        seen.add(text)
+    return sorted(duplicates)

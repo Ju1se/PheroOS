@@ -1,15 +1,43 @@
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://pheroos.dev/schemas/driver.schema.json",
-  "type": "object",
-  "required": ["id", "kind", "version"],
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "patternProperties": {
+    "^(x-|ext\\.).+": {}
+  },
   "properties": {
-    "id": {"type": "string"},
-    "kind": {"type": "string"},
-    "version": {"type": "string"},
-    "capabilities": {"type": "array", "items": {"type": "string"}},
-    "permissions": {"type": "array", "items": {"type": "string"}},
-    "config_ref": {"type": "string"},
-    "extensions": {"type": "object"}
-  }
+    "capabilities": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "config_ref": {
+      "type": "string"
+    },
+    "extensions": {
+      "type": "object"
+    },
+    "id": {
+      "type": "string"
+    },
+    "kind": {
+      "type": "string"
+    },
+    "permissions": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "version": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "kind",
+    "version"
+  ],
+  "type": "object"
 }

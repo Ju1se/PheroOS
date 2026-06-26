@@ -1,12 +1,25 @@
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://pheroos.dev/schemas/kernel.schema.json",
-  "type": "object",
-  "required": ["tenant_id", "request_id", "runtime_ready"],
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
   "properties": {
-    "tenant_id": {"type": "string"},
-    "request_id": {"type": "string"},
-    "runtime_ready": {"type": "boolean"},
-    "degraded": {"type": "boolean"}
-  }
+    "degraded": {
+      "type": "boolean"
+    },
+    "request_id": {
+      "type": "string"
+    },
+    "runtime_ready": {
+      "type": "boolean"
+    },
+    "tenant_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "tenant_id",
+    "request_id",
+    "runtime_ready"
+  ],
+  "type": "object"
 }

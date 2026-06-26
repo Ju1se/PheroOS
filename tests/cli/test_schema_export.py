@@ -6,11 +6,26 @@ from pheroos.cli.main import main
 
 
 def test_schema_export_matches_checked_in_surface_artifacts(capsys: Any) -> None:
-    for surface in ["protocol", "kernel", "driver", "trace"]:
+    for surface in ["capability", "protocol", "kernel", "driver", "trace"]:
         schema = exported_schema(surface, capsys)
         expected = json.loads(Path(f"schemas/{surface}.schema.json").read_text())
 
         assert schema == expected
+
+
+def test_schema_export_capability_exposes_full_manifest_shape(capsys: Any) -> None:
+    schema = exported_schema("capability", capsys)
+    properties = schema["properties"]
+    protocol_properties = properties["protocol"]["properties"]
+
+    assert schema["$id"] == "https://pheroos.dev/schemas/capability.schema.json"
+    assert schema["required"] == ["id", "name", "version", "protocol"]
+    assert properties["drivers"]["items"]["required"] == ["id", "kind", "version"]
+    assert protocol_properties["recovery_protocols"]["items"]["required"] == ["id", "trigger_targets"]
+    assert protocol_properties["evidence_policy"]["properties"]["require_provenance"]["type"] == "boolean"
+    assert protocol_properties["output_policy"]["properties"]["requires_committed_candidate"]["type"] == "boolean"
+    assert schema["additionalProperties"] is False
+    assert "^(x-|ext\\.).+" in schema["patternProperties"]
 
 
 def test_schema_export_protocol_exposes_collective_policy_shape(capsys: Any) -> None:
@@ -51,7 +66,8 @@ def test_schema_export_protocol_exposes_collective_policy_shape(capsys: Any) -> 
     assert collective_properties["pheromone_require_trace"]["type"] == "boolean"
     assert collective_properties["extensions"]["type"] == "object"
     assert properties["extensions"]["type"] == "object"
-    assert "additionalProperties" not in schema
+    assert schema["additionalProperties"] is False
+    assert "^(x-|ext\\.).+" in schema["patternProperties"]
 
 
 def test_schema_export_driver_exposes_provider_neutral_driver_spec(capsys: Any) -> None:
@@ -61,6 +77,14 @@ def test_schema_export_driver_exposes_provider_neutral_driver_spec(capsys: Any) 
     assert properties["permissions"]["items"]["type"] == "string"
     assert properties["config_ref"]["type"] == "string"
     assert properties["extensions"]["type"] == "object"
+    assert schema["additionalProperties"] is False
+    assert "^(x-|ext\\.).+" in schema["patternProperties"]
+
+
+def test_schema_export_kernel_exposes_strict_runtime_context_shape(capsys: Any) -> None:
+    schema = exported_schema("kernel", capsys)
+
+    assert schema["additionalProperties"] is False
 
 
 def test_schema_export_trace_documents_namespaced_extension_events(capsys: Any) -> None:
@@ -68,6 +92,7 @@ def test_schema_export_trace_documents_namespaced_extension_events(capsys: Any) 
 
     assert "x-*" in schema["properties"]["event_type"]["description"]
     assert "ext.*" in schema["properties"]["event_type"]["description"]
+    assert schema["additionalProperties"] is False
 
 
 def exported_schema(surface: str, capsys: Any) -> dict[str, Any]:

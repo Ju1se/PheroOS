@@ -47,12 +47,13 @@ The public Python package surfaces are:
 
 The public schema artifacts are:
 
+- `schemas/capability.schema.json`
 - `schemas/protocol.schema.json`
 - `schemas/kernel.schema.json`
 - `schemas/driver.schema.json`
 - `schemas/trace.schema.json`
 
-The public CLI surfaces cover manifest validation, conformance evaluation, and ABI schema export for protocol, kernel, driver, and trace artifacts.
+The public CLI surfaces cover manifest validation, conformance evaluation, and ABI schema export for capability, protocol, kernel, driver, and trace artifacts.
 
 ## Compatibility Requirements
 
@@ -60,15 +61,19 @@ A compatible implementation should satisfy these requirements:
 
 1. Protocol manifests declare targets, candidates, quorum policy, trace policy, output policy, and any optional swarm policy they use.
 2. Candidates reference declared targets.
-3. Quorum fallback references a declared safe fallback candidate.
-4. Collective fallback references a declared safe fallback candidate or defaults to the quorum fallback.
-5. Output authorization requires the configured output contract.
-6. Trace events use `pheroos.trace.TraceEvent` semantics or a compatible provider-neutral representation.
-7. Driver lifecycle follows `declare -> validate -> register -> probe -> bind -> expose -> invoke -> trace`.
-8. Swarm-specific checks apply only when a manifest declares a swarm collective mode.
-9. Baseline quorum protocols do not need to declare swarm behavior.
-10. Extension metadata is preserved without granting evidence, permission, quorum, commit, or output authority.
-11. Implementations pass the relevant conformance profile for their declared protocol behavior.
+3. Candidate commits and fallbacks are scoped to the active target.
+4. Quorum fallback references a declared safe fallback candidate for the quorum target.
+5. Baseline quorum commits only when verified support reaches `commit_threshold`; otherwise it falls back safely.
+6. Collective fallback references a declared safe fallback candidate for the active target or defaults to the quorum fallback.
+7. Output authorization requires the configured output contract and non-empty provenance-bearing evidence when evidence is required.
+8. Trace events use `pheroos.trace.TraceEvent` semantics or a compatible provider-neutral representation.
+9. Driver lifecycle follows `declare -> validate -> register -> probe -> bind -> expose -> invoke -> trace`.
+10. Driver registration, binding, exposure, and invocation fail closed when descriptors, grants, handles, or provenance are invalid.
+11. Driver exposure uses declared driver permissions only; capability-level permissions do not become driver permissions by fallback.
+12. Swarm-specific checks apply only when a manifest declares a swarm collective mode.
+13. Baseline quorum protocols do not need to declare swarm behavior.
+14. Extension metadata is preserved without granting evidence, permission, quorum, commit, or output authority.
+15. Implementations pass the relevant versioned conformance profile for their declared protocol behavior.
 
 ## Swarm-Native Semantics
 
@@ -151,6 +156,15 @@ Conformance is the compatibility gate for protocol-core. Checks should remain:
 - network-free
 - explicit about the invariant being checked
 - scoped to declared protocol behavior
+
+Reports include the applicable profile version:
+
+- `pheroos-manifest-v1` for manifest validation.
+- `pheroos-core-v1` for baseline governed protocols.
+- `pheroos-swarm-v1` for manifests declaring swarm collective behavior.
+
+The applied profile is a gate: required checks must be present and passing for
+the profile contract to pass.
 
 Release validation is enforced by CI and release governance. The specification defines the invariants and compatibility expectations; it is not a local runbook.
 

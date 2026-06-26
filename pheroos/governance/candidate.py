@@ -21,3 +21,11 @@ class CandidateSet:
             if candidate.id == candidate_id:
                 return candidate
         raise GovernanceError(f"candidate is not declared by the active protocol: {candidate_id}")
+
+    def require_declared_for_target(self, candidate_id: str, target: str) -> Candidate:
+        candidate = self.require_declared(candidate_id)
+        if candidate.target != target:
+            raise GovernanceError(
+                f"candidate {candidate_id} targets {candidate.target}, not active target {target}"
+            )
+        return candidate

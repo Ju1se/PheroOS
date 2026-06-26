@@ -28,7 +28,7 @@ from pheroos.governance.collective import (
 )
 from pheroos.governance.evidence import EvidenceEdge, EvidenceGraph, EvidenceNode
 from pheroos.governance.output import OutputContract, output_authorized
-from pheroos.governance.quorum import QuorumDecision, commit_candidate
+from pheroos.governance.quorum import QuorumDecision, QuorumSignal, commit_candidate, evaluate_quorum_decision
 from pheroos.governance.recovery import RecoveryTrace
 from pheroos.governance.signal import Signal, SignalStatus
 from pheroos.governance.stop_signal import StopResolution, StopSignal, resolve_stop_signal
@@ -51,6 +51,7 @@ __all__ = [
     "PheromonePolicy",
     "PheromoneTrail",
     "QuorumDecision",
+    "QuorumSignal",
     "RecruitmentSignal",
     "RecoveryTrace",
     "SUPPORTED_PHEROMONE_KINDS",
@@ -70,6 +71,7 @@ __all__ = [
     "evaporate_trails",
     "evaluate_collective_decision",
     "evaluate_collective_decision_step",
+    "evaluate_quorum_decision",
     "is_extension_pheromone_value",
     "output_authorized",
     "pheromone_policy_from_collective",

@@ -1,7 +1,342 @@
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://pheroos.dev/schemas/protocol.schema.json",
-  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "patternProperties": {
+    "^(x-|ext\\.).+": {}
+  },
+  "properties": {
+    "candidates": {
+      "items": {
+        "additionalProperties": false,
+        "patternProperties": {
+          "^(x-|ext\\.).+": {}
+        },
+        "properties": {
+          "extensions": {
+            "type": "object"
+          },
+          "id": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "safe_fallback": {
+            "type": "boolean"
+          },
+          "target": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "target"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "collective_decision_policy": {
+      "additionalProperties": false,
+      "patternProperties": {
+        "^(x-|ext\\.).+": {}
+      },
+      "properties": {
+        "extensions": {
+          "type": "object"
+        },
+        "fallback_candidate": {
+          "type": "string"
+        },
+        "inhibition_enabled": {
+          "type": "boolean"
+        },
+        "min_independent_scouts": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "mode": {
+          "enum": [
+            "quorum",
+            "bee_swarm",
+            "ant_colony",
+            "hybrid"
+          ]
+        },
+        "pheromone_cautionary_override_threshold": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "pheromone_cautionary_weight": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "pheromone_decay_model": {
+          "enum": [
+            "linear",
+            "exponential",
+            "step"
+          ]
+        },
+        "pheromone_enabled": {
+          "type": "boolean"
+        },
+        "pheromone_evaporation_rate": {
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number"
+        },
+        "pheromone_max_strength": {
+          "type": "number"
+        },
+        "pheromone_min_source_diversity": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "pheromone_min_strength": {
+          "type": "number"
+        },
+        "pheromone_negative_weight": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "pheromone_novelty_weight": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "pheromone_per_round_deposit_cap": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "pheromone_per_source_cap": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "pheromone_positive_weight": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "pheromone_require_provenance": {
+          "type": "boolean"
+        },
+        "pheromone_require_trace": {
+          "type": "boolean"
+        },
+        "quorum_threshold": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "recruitment_enabled": {
+          "type": "boolean"
+        }
+      },
+      "required": [],
+      "type": "object"
+    },
+    "evidence_policy": {
+      "additionalProperties": false,
+      "patternProperties": {
+        "^(x-|ext\\.).+": {}
+      },
+      "properties": {
+        "allow_agent_fact_creation": {
+          "type": "boolean"
+        },
+        "extensions": {
+          "type": "object"
+        },
+        "require_provenance": {
+          "type": "boolean"
+        }
+      },
+      "required": [],
+      "type": "object"
+    },
+    "extensions": {
+      "type": "object"
+    },
+    "id": {
+      "type": "string"
+    },
+    "output_policy": {
+      "additionalProperties": false,
+      "patternProperties": {
+        "^(x-|ext\\.).+": {}
+      },
+      "properties": {
+        "extensions": {
+          "type": "object"
+        },
+        "requires_committed_candidate": {
+          "type": "boolean"
+        },
+        "requires_evidence_contract": {
+          "type": "boolean"
+        },
+        "requires_publication_permission": {
+          "type": "boolean"
+        },
+        "requires_stop_resolution": {
+          "type": "boolean"
+        },
+        "writer_may_create_facts": {
+          "type": "boolean"
+        }
+      },
+      "required": [],
+      "type": "object"
+    },
+    "protocol_version": {
+      "type": "string"
+    },
+    "quorum_policy": {
+      "additionalProperties": false,
+      "patternProperties": {
+        "^(x-|ext\\.).+": {}
+      },
+      "properties": {
+        "commit_threshold": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "extensions": {
+          "type": "object"
+        },
+        "fallback_candidate": {
+          "type": "string"
+        },
+        "target": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "target",
+        "fallback_candidate"
+      ],
+      "type": "object"
+    },
+    "recovery_protocols": {
+      "items": {
+        "additionalProperties": false,
+        "patternProperties": {
+          "^(x-|ext\\.).+": {}
+        },
+        "properties": {
+          "allowed_roles": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "allowed_tags": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "extensions": {
+            "type": "object"
+          },
+          "failure_candidate": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "required_tools": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "trigger_targets": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "trigger_targets"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "signals": {
+      "items": {
+        "additionalProperties": false,
+        "patternProperties": {
+          "^(x-|ext\\.).+": {}
+        },
+        "properties": {
+          "authority_required": {
+            "type": "string"
+          },
+          "extensions": {
+            "type": "object"
+          },
+          "target": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "target"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "targets": {
+      "items": {
+        "additionalProperties": false,
+        "patternProperties": {
+          "^(x-|ext\\.).+": {}
+        },
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "extensions": {
+            "type": "object"
+          },
+          "id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "trace_policy": {
+      "additionalProperties": false,
+      "patternProperties": {
+        "^(x-|ext\\.).+": {}
+      },
+      "properties": {
+        "extensions": {
+          "type": "object"
+        },
+        "required_events": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "required": [],
+      "type": "object"
+    }
+  },
   "required": [
     "protocol_version",
     "id",
@@ -11,98 +346,5 @@
     "output_policy",
     "trace_policy"
   ],
-  "properties": {
-    "protocol_version": {"type": "string"},
-    "id": {"type": "string"},
-    "targets": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "required": ["id"],
-        "properties": {
-          "id": {"type": "string"},
-          "description": {"type": "string"},
-          "extensions": {"type": "object"}
-        }
-      }
-    },
-    "candidates": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "required": ["id", "target"],
-        "properties": {
-          "id": {"type": "string"},
-          "target": {"type": "string"},
-          "safe_fallback": {"type": "boolean"},
-          "label": {"type": "string"},
-          "extensions": {"type": "object"}
-        }
-      }
-    },
-    "signals": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "required": ["type", "target"],
-        "properties": {
-          "type": {"type": "string"},
-          "target": {"type": "string"},
-          "authority_required": {"type": "string"},
-          "extensions": {"type": "object"}
-        }
-      }
-    },
-    "quorum_policy": {
-      "type": "object",
-      "required": ["target", "fallback_candidate"],
-      "properties": {
-        "target": {"type": "string"},
-        "fallback_candidate": {"type": "string"},
-        "commit_threshold": {"type": "integer", "minimum": 1},
-        "extensions": {"type": "object"}
-      }
-    },
-    "collective_decision_policy": {
-      "type": "object",
-      "properties": {
-        "mode": {"enum": ["quorum", "bee_swarm", "ant_colony", "hybrid"]},
-        "min_independent_scouts": {"type": "integer", "minimum": 1},
-        "quorum_threshold": {"type": "integer", "minimum": 1},
-        "recruitment_enabled": {"type": "boolean"},
-        "inhibition_enabled": {"type": "boolean"},
-        "pheromone_enabled": {"type": "boolean"},
-        "pheromone_evaporation_rate": {"type": "number", "minimum": 0, "maximum": 1},
-        "pheromone_decay_model": {"enum": ["linear", "exponential", "step"]},
-        "pheromone_min_strength": {"type": "number"},
-        "pheromone_max_strength": {"type": "number"},
-        "pheromone_positive_weight": {"type": "number", "minimum": 0},
-        "pheromone_negative_weight": {"type": "number", "minimum": 0},
-        "pheromone_cautionary_weight": {"type": "number", "minimum": 0},
-        "pheromone_cautionary_override_threshold": {"type": "number", "minimum": 0},
-        "pheromone_novelty_weight": {"type": "number", "minimum": 0},
-        "pheromone_per_source_cap": {"type": "number", "minimum": 0},
-        "pheromone_per_round_deposit_cap": {"type": "number", "minimum": 0},
-        "pheromone_min_source_diversity": {"type": "integer", "minimum": 1},
-        "pheromone_require_provenance": {"type": "boolean"},
-        "pheromone_require_trace": {"type": "boolean"},
-        "fallback_candidate": {"type": "string"},
-        "extensions": {"type": "object"}
-      }
-    },
-    "output_policy": {
-      "type": "object",
-      "properties": {
-        "extensions": {"type": "object"}
-      }
-    },
-    "trace_policy": {
-      "type": "object",
-      "properties": {
-        "required_events": {"type": "array", "items": {"type": "string"}},
-        "extensions": {"type": "object"}
-      }
-    },
-    "extensions": {"type": "object"}
-  }
+  "type": "object"
 }

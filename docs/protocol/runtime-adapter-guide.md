@@ -117,7 +117,8 @@ A compatible external adapter should:
 - fail closed when its `DriverSpec` cannot be mapped
 - fail closed when `config_ref` cannot be resolved by the runtime
 - expose only declared capabilities
-- bind only granted permissions
+- bind only declared driver permissions that were granted by the runtime
+- never treat capability-level permissions as driver permissions by fallback
 - return structured results
 - include provenance when a result may become evidence
 - emit trace lineage for expose and invoke behavior

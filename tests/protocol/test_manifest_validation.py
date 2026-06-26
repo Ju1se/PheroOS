@@ -85,3 +85,42 @@ def test_protocol_validation_reports_secret_like_extension_fields() -> None:
 
     assert {item.code for item in diagnostics} == {"secret_like_manifest_field"}
     assert diagnostics[0].path == "extensions.x-runtime.token"
+
+
+@pytest.mark.parametrize(
+    ("mutate", "expected_detail"),
+    [
+        (
+            lambda payload: payload["protocol"]["quorum_policy"].__setitem__("commit_threshold", 0),
+            "$.protocol.quorum_policy.commit_threshold",
+        ),
+        (
+            lambda payload: payload["protocol"]["targets"].append("not-object"),
+            "$.protocol.targets[1]",
+        ),
+        (
+            lambda payload: payload["drivers"].__getitem__(0).__setitem__("capabilities", "not-list"),
+            "$.drivers[0].capabilities",
+        ),
+        (
+            lambda payload: payload["protocol"]["candidates"].__getitem__(0).__setitem__("safe_fallback", "false"),
+            "$.protocol.candidates[0].safe_fallback",
+        ),
+        (
+            lambda payload: payload["protocol"]["trace_policy"].__setitem__("required_events", "commit"),
+            "$.protocol.trace_policy.required_events",
+        ),
+        (
+            lambda payload: payload["protocol"]["targets"].__getitem__(0).__setitem__("unexpected", "value"),
+            "$.protocol.targets[0].unexpected",
+        ),
+    ],
+)
+def test_manifest_loader_rejects_invalid_manifest_shape(mutate, expected_detail: str) -> None:
+    payload = json.loads(Path("examples/e2e-protocol/capability.json").read_text())
+    mutate(payload)
+
+    with pytest.raises(ValueError, match="manifest schema invalid") as exc:
+        capability_manifest_from_dict(payload)
+
+    assert expected_detail in str(exc.value)
