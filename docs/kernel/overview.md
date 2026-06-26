@@ -26,10 +26,11 @@ does not execute provider calls.
 - The kernel does not call model providers directly.
 - The kernel does not access secrets directly.
 - Runtime context is tenant-scoped and run-scoped.
-- Tool exposure requires granted permission.
+- Driver and tool exposure require granted permission.
 - Missing required capability produces a degraded or not-ready plan.
 - Driver exposure is derived from declared provider-neutral driver specs.
 - Driver exposure uses declared driver permissions only and does not inherit capability-level permissions by fallback.
+- Driver syscall replies require matching driver id and provenance.
 
 ## Import Boundary
 

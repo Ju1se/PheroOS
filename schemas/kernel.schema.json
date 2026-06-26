@@ -3,8 +3,124 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "additionalProperties": false,
   "properties": {
+    "capability_resolutions": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "available": {
+            "type": "boolean"
+          },
+          "capability_id": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "capability_id",
+          "available"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "connection_requirements": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "capability_id": {
+            "type": "string"
+          },
+          "connection": {
+            "type": "string"
+          },
+          "required": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "capability_id",
+          "connection"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
     "degraded": {
       "type": "boolean"
+    },
+    "diagnostics": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "severity": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "message"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "driver_exposures": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "capability_id": {
+            "type": "string"
+          },
+          "driver_id": {
+            "type": "string"
+          },
+          "permissions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "driver_id",
+          "capability_id"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "permission_grants": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "capability_id": {
+            "type": "string"
+          },
+          "granted": {
+            "type": "boolean"
+          },
+          "permission": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "capability_id",
+          "permission"
+        ],
+        "type": "object"
+      },
+      "type": "array"
     },
     "request_id": {
       "type": "string"
@@ -14,12 +130,44 @@
     },
     "tenant_id": {
       "type": "string"
+    },
+    "tool_exposures": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "capability_id": {
+            "type": "string"
+          },
+          "permissions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "tool_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "tool_id",
+          "capability_id"
+        ],
+        "type": "object"
+      },
+      "type": "array"
     }
   },
   "required": [
     "tenant_id",
     "request_id",
-    "runtime_ready"
+    "capability_resolutions",
+    "permission_grants",
+    "connection_requirements",
+    "driver_exposures",
+    "tool_exposures",
+    "diagnostics",
+    "runtime_ready",
+    "degraded"
   ],
   "type": "object"
 }

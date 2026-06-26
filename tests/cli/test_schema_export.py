@@ -83,8 +83,27 @@ def test_schema_export_driver_exposes_provider_neutral_driver_spec(capsys: Any) 
 
 def test_schema_export_kernel_exposes_strict_runtime_context_shape(capsys: Any) -> None:
     schema = exported_schema("kernel", capsys)
+    properties = schema["properties"]
 
     assert schema["additionalProperties"] is False
+    assert schema["required"] == [
+        "tenant_id",
+        "request_id",
+        "capability_resolutions",
+        "permission_grants",
+        "connection_requirements",
+        "driver_exposures",
+        "tool_exposures",
+        "diagnostics",
+        "runtime_ready",
+        "degraded",
+    ]
+    assert properties["capability_resolutions"]["items"]["required"] == ["capability_id", "available"]
+    assert properties["permission_grants"]["items"]["required"] == ["capability_id", "permission"]
+    assert properties["connection_requirements"]["items"]["required"] == ["capability_id", "connection"]
+    assert properties["driver_exposures"]["items"]["required"] == ["driver_id", "capability_id"]
+    assert properties["tool_exposures"]["items"]["required"] == ["tool_id", "capability_id"]
+    assert properties["diagnostics"]["items"]["required"] == ["code", "message"]
 
 
 def test_schema_export_trace_documents_namespaced_extension_events(capsys: Any) -> None:

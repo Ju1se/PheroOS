@@ -33,8 +33,12 @@ class KernelSyscalls:
         raise KernelError(f"driver is not exposed by the active runtime context: {driver_id}")
 
     def expose_tool(self, context: RuntimeContext, tool_id: str) -> ToolExposure:
+        if not context.ready:
+            raise KernelError("runtime context is not ready")
         for exposure in context.tool_exposures:
             if exposure.tool_id == tool_id:
+                if not exposure.permissions:
+                    raise KernelError(f"tool exposure has no granted permissions: {tool_id}")
                 return exposure
         raise KernelError(f"tool is not exposed by the active runtime context: {tool_id}")
 
@@ -47,4 +51,6 @@ class KernelSyscalls:
         self.expose_driver(context, request.driver_id)
         if result.driver_id != request.driver_id:
             raise KernelError("driver result does not match syscall request")
+        if not result.provenance:
+            raise KernelError("driver result provenance is required")
         return DriverInvokeReply(request=request, result=result)

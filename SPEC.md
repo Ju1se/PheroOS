@@ -2,7 +2,7 @@
 
 Status: draft ABI v0.1
 
-PheroOS is an open AI-as-OS protocol-core package for governed, swarm-native multi-agent runtimes.
+PheroOS is an open swarm-native multi-agent operating protocol-core package for governed multi-agent runtimes.
 
 Agents are not authority. Protocol is authority.
 

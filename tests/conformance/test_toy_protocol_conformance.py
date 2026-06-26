@@ -18,6 +18,7 @@ def test_toy_protocol_validate_and_conformance_pass() -> None:
         "output_contract",
         "trace_contract",
         "driver_contract",
+        "kernel_contract",
         "domain_neutrality_public_core",
         "kernel_import_boundary",
         "profile_contract",

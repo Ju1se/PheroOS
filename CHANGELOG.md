@@ -31,6 +31,7 @@ The project is currently pre-stable. Until the first stable ABI release, entries
 - `extension_contract` conformance check for extension and secret-boundary compatibility.
 - Versioned conformance profiles for manifest validation, baseline governed protocols, and swarm protocols.
 - Baseline quorum evaluator for threshold-based declared-candidate commits and safe fallback.
+- `kernel_contract` conformance check for Kernel ABI planning, materialization, and syscall authority boundaries.
 
 ### Changed
 
@@ -53,6 +54,9 @@ The project is currently pre-stable. Until the first stable ABI release, entries
 - Kernel driver exposure no longer falls back from missing driver permissions to capability-level permissions.
 - Conformance profiles now enforce required checks through `profile_contract`.
 - Driver conformance now requires declared driver capabilities and driver permissions.
+- Exported kernel schema now covers the full `OSPlan` authority surface instead of only runtime context identity fields.
+- Kernel runtime materialization now filters unpermissioned driver exposures and exposes no callable resources from not-ready plans.
+- Kernel driver syscalls now reject driver results without provenance.
 
 ### Removed
 
@@ -72,6 +76,8 @@ The project is currently pre-stable. Until the first stable ABI release, entries
 - Draft ABI driver invocation paths must expose only granted permissions and include provenance when invoking through the core lifecycle helper.
 - Draft ABI multi-target protocols must keep fallback and commit candidates scoped to the active target.
 - Draft ABI output flows with `requires_evidence_contract` must provide at least one provenance-bearing evidence node.
+- Draft ABI kernel plans should serialize the complete OSPlan surface when validated against `schemas/kernel.schema.json`.
+- Draft ABI kernel conformance now requires `kernel_contract` for baseline and swarm protocol profiles.
 
 ### Migration Notes
 
@@ -83,3 +89,5 @@ The project is currently pre-stable. Until the first stable ABI release, entries
 - External runtimes should validate manifests against `schemas/capability.schema.json` or the manifest loader before mapping `DriverSpec` declarations.
 - External runtimes should treat conformance report `profile` as the applied compatibility profile version.
 - External runtimes should use declared `DriverSpec.permissions` for driver exposure and must not substitute capability-level permissions.
+- External runtimes invoking drivers through Kernel ABI should return provenance-bearing `DriverResult` objects.
+- External runtimes should not expose driver or tool handles from not-ready runtime contexts.

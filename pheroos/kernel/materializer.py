@@ -8,6 +8,9 @@ class RuntimeMaterializer:
     """Materialize run-scoped resources allowed by an OSPlan."""
 
     def materialize(self, plan: OSPlan) -> RuntimeContext:
+        allowed_drivers = [
+            exposure for exposure in plan.driver_exposures if exposure.permissions and plan.runtime_ready
+        ]
         allowed_tools = [
             exposure for exposure in plan.tool_exposures if exposure.permissions and plan.runtime_ready
         ]
@@ -15,7 +18,7 @@ class RuntimeMaterializer:
             tenant_id=plan.tenant_id,
             request_id=plan.request_id,
             permission_grants=[grant for grant in plan.permission_grants if grant.granted],
-            driver_exposures=list(plan.driver_exposures) if plan.runtime_ready else [],
+            driver_exposures=allowed_drivers,
             tool_exposures=allowed_tools,
             ready=plan.runtime_ready,
             degraded=plan.degraded,
