@@ -4,7 +4,7 @@
 
 This repository is the PheroOS protocol-core package.
 
-PheroOS is an AI-as-OS protocol core for governed, swarm-native multi-agent runtimes.
+PheroOS is a swarm-native multi-agent operating protocol core for governed multi-agent runtimes.
 
 Agents are not authority. Protocol is authority.
 

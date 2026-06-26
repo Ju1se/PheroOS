@@ -28,6 +28,7 @@ CORE_PROFILE = ConformanceProfile(
         "output_contract",
         "trace_contract",
         "driver_contract",
+        "kernel_contract",
         "extension_contract",
         "domain_neutrality_public_core",
         "kernel_import_boundary",

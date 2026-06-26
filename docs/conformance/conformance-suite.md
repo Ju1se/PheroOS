@@ -21,6 +21,7 @@ the invariant being checked.
 - trace contract
 - swarm trace contract
 - driver contract
+- kernel contract
 - extension contract
 - kernel import boundary
 

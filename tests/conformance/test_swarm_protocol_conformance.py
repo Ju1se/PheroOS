@@ -17,6 +17,7 @@ def test_swarm_protocol_validate_and_conformance_pass() -> None:
         "safe_fallback_collective",
         "pheromone_behavior",
         "pheromone_policy",
+        "kernel_contract",
         "swarm_trace_contract",
     }
 

@@ -8,6 +8,7 @@ from pheroos.conformance.checks import (
     domain_neutrality,
     driver_contract,
     extension_contract,
+    kernel_contract,
     kernel_import_boundary,
     manifest_schema,
     output_contract,
@@ -56,6 +57,7 @@ def run_conformance(path: str | Path, *, root: str | Path | None = None) -> Conf
                 trace_contract.check(manifest),
                 swarm_trace_contract.check(manifest),
                 driver_contract.check(manifest),
+                kernel_contract.check(manifest),
                 extension_contract.check(manifest),
             ]
         )

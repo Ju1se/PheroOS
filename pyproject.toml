@@ -5,11 +5,11 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "pheroos"
 version = "0.1.0"
-description = "Open AI-as-OS protocol and kernel for governed agent runtimes."
+description = "Open swarm-native multi-agent operating protocol core for governed agent runtimes."
 readme = "README.md"
 requires-python = ">=3.12"
 license = { file = "LICENSE" }
-keywords = ["ai-os", "protocol", "kernel", "governance", "drivers", "conformance"]
+keywords = ["multi-agent-os", "operating-protocol", "protocol-core", "kernel", "governance", "drivers", "conformance"]
 dependencies = []
 
 [project.urls]

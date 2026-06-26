@@ -1,7 +1,7 @@
 import pytest
 
 from pheroos.drivers import DriverResult
-from pheroos.kernel import DriverExposure, DriverInvokeRequest, KernelSyscalls, RuntimeContext
+from pheroos.kernel import DriverExposure, DriverInvokeRequest, KernelSyscalls, RuntimeContext, ToolExposure
 from pheroos.kernel.errors import KernelError
 
 
@@ -54,3 +54,53 @@ def test_driver_invoke_rejects_unpermissioned_exposure() -> None:
 
     with pytest.raises(KernelError, match="no granted permissions"):
         KernelSyscalls().invoke_driver(context, request, result)
+
+
+def test_driver_invoke_rejects_mismatched_result_driver() -> None:
+    context = RuntimeContext(
+        tenant_id="tenant-a",
+        request_id="req-1",
+        driver_exposures=[DriverExposure(driver_id="driver:toy", capability_id="toy", permissions=["driver:invoke"])],
+    )
+    request = DriverInvokeRequest(driver_id="driver:toy")
+    result = DriverResult(driver_id="driver:other", ok=True, provenance="driver:other")
+
+    with pytest.raises(KernelError, match="does not match"):
+        KernelSyscalls().invoke_driver(context, request, result)
+
+
+def test_driver_invoke_rejects_missing_result_provenance() -> None:
+    context = RuntimeContext(
+        tenant_id="tenant-a",
+        request_id="req-1",
+        driver_exposures=[DriverExposure(driver_id="driver:toy", capability_id="toy", permissions=["driver:invoke"])],
+    )
+    request = DriverInvokeRequest(driver_id="driver:toy")
+    result = DriverResult(driver_id="driver:toy", ok=True)
+
+    with pytest.raises(KernelError, match="provenance"):
+        KernelSyscalls().invoke_driver(context, request, result)
+
+
+def test_tool_exposure_requires_ready_context_and_permissions() -> None:
+    syscalls = KernelSyscalls()
+    ready_context = RuntimeContext(
+        tenant_id="tenant-a",
+        request_id="req-1",
+        tool_exposures=[
+            ToolExposure(tool_id="tool:allowed", capability_id="toy", permissions=["tool:use"]),
+            ToolExposure(tool_id="tool:hidden", capability_id="toy"),
+        ],
+    )
+    not_ready_context = RuntimeContext(
+        tenant_id="tenant-a",
+        request_id="req-1",
+        tool_exposures=[ToolExposure(tool_id="tool:allowed", capability_id="toy", permissions=["tool:use"])],
+        ready=False,
+    )
+
+    assert syscalls.expose_tool(ready_context, "tool:allowed").tool_id == "tool:allowed"
+    with pytest.raises(KernelError, match="no granted permissions"):
+        syscalls.expose_tool(ready_context, "tool:hidden")
+    with pytest.raises(KernelError, match="not ready"):
+        syscalls.expose_tool(not_ready_context, "tool:allowed")
