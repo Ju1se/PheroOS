@@ -19,7 +19,6 @@ def test_toy_protocol_validate_and_conformance_pass() -> None:
         "trace_contract",
         "driver_contract",
         "kernel_contract",
-        "domain_neutrality_public_core",
-        "kernel_import_boundary",
         "profile_contract",
     }
+    assert "domain_neutrality_public_core" not in {check.name for check in conformance.checks}

@@ -45,3 +45,33 @@ def test_core_package_respects_package_import_dag() -> None:
     result = check(ROOT)
 
     assert result.ok is True, result.detail
+
+
+def test_package_import_dag_resolves_relative_cross_package_imports(tmp_path: Path) -> None:
+    protocol = tmp_path / "pheroos" / "protocol"
+    protocol.mkdir(parents=True)
+    (tmp_path / "pheroos" / "__init__.py").write_text("", encoding="utf-8")
+    (protocol / "__init__.py").write_text("", encoding="utf-8")
+    (protocol / "bad.py").write_text("from ..governance import Candidate\n", encoding="utf-8")
+
+    result = check(tmp_path)
+
+    assert result.ok is False
+    assert result.name == "package_import_boundary"
+    assert "pheroos.governance" in result.detail
+
+
+def test_package_import_dag_resolves_absolute_root_alias_imports(tmp_path: Path) -> None:
+    protocol = tmp_path / "pheroos" / "protocol"
+    protocol.mkdir(parents=True)
+    (tmp_path / "pheroos" / "__init__.py").write_text("", encoding="utf-8")
+    (protocol / "__init__.py").write_text("", encoding="utf-8")
+    (protocol / "bad.py").write_text(
+        "from pheroos import governance as forbidden_governance\n",
+        encoding="utf-8",
+    )
+
+    result = check(tmp_path)
+
+    assert result.ok is False
+    assert "pheroos.governance" in result.detail

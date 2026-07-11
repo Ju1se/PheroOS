@@ -4,7 +4,7 @@ import argparse
 import json
 from typing import Any
 
-from pheroos.conformance import run_conformance, validate_manifest
+from pheroos.conformance import run_conformance, run_source_conformance, validate_manifest
 from pheroos.drivers.schema import driver_schema
 from pheroos.kernel.schema import kernel_schema
 from pheroos.protocol.schema import capability_schema, protocol_schema
@@ -21,6 +21,9 @@ def main(argv: list[str] | None = None) -> int:
     conformance_parser = sub.add_parser("conformance")
     conformance_parser.add_argument("path")
 
+    source_conformance_parser = sub.add_parser("source-conformance")
+    source_conformance_parser.add_argument("core_root", nargs="?")
+
     schema_parser = sub.add_parser("schema")
     schema_sub = schema_parser.add_subparsers(dest="schema_command", required=True)
     export_parser = schema_sub.add_parser("export")
@@ -31,6 +34,8 @@ def main(argv: list[str] | None = None) -> int:
         return emit_report(validate_manifest(args.path).to_dict())
     if args.command == "conformance":
         return emit_report(run_conformance(args.path).to_dict())
+    if args.command == "source-conformance":
+        return emit_report(run_source_conformance(args.core_root).to_dict())
     if args.command == "schema" and args.schema_command == "export":
         return emit_report(schema_for(args.surface))
     parser.error("unknown command")

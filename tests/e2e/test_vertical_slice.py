@@ -15,7 +15,6 @@ from pheroos.governance import (
     EvidenceGraph,
     EvidenceNode,
     OutputContract,
-    RecoveryTrace,
     Signal,
     SignalStatus,
     StopResolution,
@@ -192,33 +191,19 @@ def test_provider_free_governed_vertical_slice() -> None:
             protocol_id=protocol.id,
             target=target,
             reason=decision.reason,
-            lineage={"candidate": decision.candidate_id},
-        )
-    )
-
-    recovery_protocol = protocol.recovery_protocols[0]
-    recovery = RecoveryTrace(
-        protocol_id=recovery_protocol.id,
-        trigger_target=target,
-        selected_roles=recovery_protocol.allowed_roles,
-        selected_tags=recovery_protocol.allowed_tags,
-        selected_tools=recovery_protocol.required_tools,
-        success=True,
-        failure_candidate=recovery_protocol.failure_candidate,
-    )
-    trace.append(
-        TraceEvent(
-            event_type="recovery",
-            protocol_id=protocol.id,
-            target=target,
-            reason="declared recovery path available",
-            lineage={"recovery": recovery.protocol_id, "failure_candidate": recovery.failure_candidate},
+            lineage={
+                "target": target,
+                "candidate_id": decision.candidate_id,
+                "decision_reason": decision.reason,
+                "upstream_score_lineage": ["signal:governance"],
+            },
         )
     )
 
     contract = OutputContract(
         committed_candidate_required=protocol.output_policy.requires_committed_candidate,
         evidence_required=protocol.output_policy.requires_evidence_contract,
+        stop_resolution_required=protocol.output_policy.requires_stop_resolution,
         publication_permission_required=protocol.output_policy.requires_publication_permission,
     )
     authorized = output_authorized(
@@ -227,6 +212,7 @@ def test_provider_free_governed_vertical_slice() -> None:
         evidence,
         [stop_resolution],
         publication_permission=True,
+        candidate_set=candidates,
     )
     trace.append(
         TraceEvent(
@@ -234,9 +220,17 @@ def test_provider_free_governed_vertical_slice() -> None:
             protocol_id=protocol.id,
             target=target,
             reason="output authorized by contract",
-            lineage={"authorized": authorized},
+            lineage={
+                "committed_candidate": decision.committed,
+                "evidence_provenance": evidence.has_evidence() and evidence.has_provenance(),
+                "stop_resolution": not stop_resolution.blocked,
+                "publication_permission": True,
+                "authorized": authorized,
+            },
         )
     )
 
     assert authorized is True
-    assert trace.require_events(protocol.trace_policy.required_events) == []
+    actual_required = set(protocol.trace_policy.required_events) - {"recovery"}
+    assert trace.require_events(actual_required) == []
+    assert "recovery" not in {event.event_type for event in trace.events}

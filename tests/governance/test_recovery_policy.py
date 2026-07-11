@@ -11,5 +11,5 @@ def test_recovery_trace_records_declared_selection_inputs() -> None:
         failure_candidate="candidate:insufficient_evidence",
     )
 
-    assert trace.selected_roles == ["reviewer"]
+    assert trace.selected_roles == ("reviewer",)
     assert trace.failure_candidate == "candidate:insufficient_evidence"

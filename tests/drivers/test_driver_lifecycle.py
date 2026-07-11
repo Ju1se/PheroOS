@@ -1,6 +1,17 @@
 import pytest
 
-from pheroos.drivers import DriverDescriptor, DriverRegistration, bind, declare, expose, invoke, probe, register, validate
+from pheroos.drivers import (
+    DriverBinding,
+    DriverDescriptor,
+    DriverRegistration,
+    bind,
+    declare,
+    expose,
+    invoke,
+    probe,
+    register,
+    validate,
+)
 from pheroos.drivers.errors import DriverError
 
 
@@ -46,3 +57,55 @@ def test_driver_lifecycle_rejects_unpermissioned_exposure_and_missing_provenance
     handle = expose(bind(registration, tenant_id="tenant-a", permissions=["tool:use"]))
     with pytest.raises(DriverError, match="provenance"):
         invoke(handle, payload={"ok": True}, provenance="")
+
+
+def test_binding_snapshots_permissions_and_rejects_mutation_bypass() -> None:
+    registration = register(
+        DriverDescriptor(id="driver:toy", kind="tool", version="0.1.0")
+    )
+    caller_permissions = ["driver:invoke"]
+
+    binding = bind(
+        registration,
+        tenant_id="tenant-a",
+        permissions=caller_permissions,
+    )
+    caller_permissions.append("driver:admin")
+
+    assert binding.permissions == ("driver:invoke",)
+    with pytest.raises(AttributeError):
+        binding.permissions.append("driver:admin")
+
+    forged = DriverBinding(
+        driver_id="driver:toy",
+        tenant_id="tenant-a",
+        permissions=["driver:invoke"],
+    )
+    object.__setattr__(forged, "permissions", ["driver:invoke"])
+    with pytest.raises(DriverError, match="immutable"):
+        expose(forged)
+
+
+@pytest.mark.parametrize(
+    ("tenant_id", "permissions", "message"),
+    [
+        ("   ", ["driver:invoke"], "tenant id"),
+        ("tenant-a", ["   "], "nonblank"),
+        ("tenant-a", [7], "nonblank"),
+    ],
+)
+def test_bind_rejects_blank_authority_identities(
+    tenant_id: str,
+    permissions: list[object],
+    message: str,
+) -> None:
+    registration = register(
+        DriverDescriptor(id="driver:toy", kind="tool", version="0.1.0")
+    )
+
+    with pytest.raises(DriverError, match=message):
+        bind(
+            registration,
+            tenant_id=tenant_id,
+            permissions=permissions,  # type: ignore[arg-type]
+        )

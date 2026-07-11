@@ -34,3 +34,42 @@ jobs:
           pheroos conformance examples/e2e-protocol
           pheroos validate examples/swarm-protocol/capability.json
           pheroos conformance examples/swarm-protocol
+          pheroos validate examples/hybrid-pheromone-protocol/capability.json
+          pheroos conformance examples/hybrid-pheromone-protocol
+          pheroos source-conformance .
+          python examples/hybrid-pheromone-protocol/run.py
+          python examples/adaptive-pheromone-replay/replay.py
+
+  wheel:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Build and install isolated wheel
+        run: |
+          python -m pip install --upgrade pip build
+          python -m build --wheel
+          python -m venv "$RUNNER_TEMP/pheroos-wheel"
+          "$RUNNER_TEMP/pheroos-wheel/bin/python" -m pip install dist/*.whl
+
+      - name: Verify installed package outside source cwd
+        run: |
+          cd "$RUNNER_TEMP"
+          PHEROOS="$RUNNER_TEMP/pheroos-wheel/bin/pheroos"
+          PYTHON="$RUNNER_TEMP/pheroos-wheel/bin/python"
+          "$PHEROOS" validate "$GITHUB_WORKSPACE/examples/toy-protocol/capability.json"
+          "$PHEROOS" conformance "$GITHUB_WORKSPACE/examples/toy-protocol"
+          "$PHEROOS" conformance "$GITHUB_WORKSPACE/examples/e2e-protocol"
+          "$PHEROOS" conformance "$GITHUB_WORKSPACE/examples/swarm-protocol"
+          "$PHEROOS" conformance "$GITHUB_WORKSPACE/examples/hybrid-pheromone-protocol"
+          "$PHEROOS" source-conformance
+          "$PYTHON" "$GITHUB_WORKSPACE/examples/hybrid-pheromone-protocol/run.py"
+          "$PYTHON" "$GITHUB_WORKSPACE/examples/adaptive-pheromone-replay/replay.py"
+          "$PYTHON" -c "import pheroos.governance as g, pheroos.protocol as p; assert g.PheromoneKindProfile is p.PheromoneKindProfile"
