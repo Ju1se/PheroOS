@@ -11,6 +11,7 @@ from pheroos.kernel import (
     KernelSyscalls,
     OSKernel,
     OSPlan,
+    PermissionGrant,
     RuntimeContext,
     RuntimeMaterializer,
     ToolExposure,
@@ -33,6 +34,7 @@ def check(manifest: CapabilityManifest) -> CheckResult:
     problems.extend(manifest_plan_problems(manifest))
     problems.extend(driver_permission_fallback_problems())
     problems.extend(materialization_boundary_problems())
+    problems.extend(authority_snapshot_problems())
     problems.extend(syscall_boundary_problems())
     return CheckResult("kernel_contract", not problems, ", ".join(problems))
 
@@ -119,6 +121,80 @@ def materialization_boundary_problems() -> list[str]:
         problems.append("materializer:tool_permission_gate")
     if not_ready_context.driver_exposures or not_ready_context.tool_exposures:
         problems.append("materializer:not_ready_exposed")
+    return problems
+
+
+def authority_snapshot_problems() -> list[str]:
+    permissions = ["driver:invoke"]
+    grants = [
+        PermissionGrant(
+            capability_id="capability:test",
+            permission="driver:invoke",
+        )
+    ]
+    exposures = [
+        DriverExposure(
+            driver_id="driver:allowed",
+            capability_id="capability:test",
+            permissions=permissions,
+        )
+    ]
+    plan = OSPlan(
+        tenant_id="conformance",
+        request_id="snapshot",
+        permission_grants=grants,
+        driver_exposures=exposures,
+    )
+    permissions.append("driver:admin")
+    grants.append(
+        PermissionGrant(
+            capability_id="capability:test",
+            permission="driver:admin",
+        )
+    )
+    exposures.append(
+        DriverExposure(
+            driver_id="driver:forged",
+            capability_id="capability:test",
+            permissions=["driver:invoke"],
+        )
+    )
+    context = RuntimeMaterializer().materialize(plan)
+
+    problems: list[str] = []
+    if plan.driver_exposures[0].permissions != ("driver:invoke",):
+        problems.append("authority_snapshot:exposure_permissions")
+    if len(plan.permission_grants) != 1 or len(plan.driver_exposures) != 1:
+        problems.append("authority_snapshot:plan_collections")
+    if not isinstance(context.driver_exposures, tuple):
+        problems.append("authority_snapshot:context_collections")
+
+    forged_plan = OSPlan(tenant_id="conformance", request_id="forged")
+    object.__setattr__(forged_plan, "driver_exposures", [])
+    if not raises_kernel_error(lambda: RuntimeMaterializer().materialize(forged_plan)):
+        problems.append("authority_snapshot:mutable_plan_bypass")
+    if not raises_kernel_error(
+        lambda: RuntimeMaterializer().materialize(
+            OSPlan(tenant_id="   ", request_id="blank-tenant")
+        )
+    ):
+        problems.append("authority_snapshot:blank_tenant")
+    if not raises_kernel_error(
+        lambda: RuntimeMaterializer().materialize(
+            OSPlan(
+                tenant_id="conformance",
+                request_id="blank-permission",
+                driver_exposures=[
+                    DriverExposure(
+                        driver_id="driver:allowed",
+                        capability_id="capability:test",
+                        permissions=["   "],
+                    )
+                ],
+            )
+        )
+    ):
+        problems.append("authority_snapshot:blank_permission")
     return problems
 
 

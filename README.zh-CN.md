@@ -16,6 +16,13 @@ PheroOS 当前是 draft ABI。
 
 仓库内的 schema artifact 覆盖完整 capability manifest 形状，以及 protocol、kernel、driver 和 trace ABI surface。
 
+Bee-swarm、ant-colony 和 Hybrid 的 collective signal 都必须携带由 governance
+签发的 `SignalVerification`。Hybrid pheromone manifest 使用
+`pheroos-hybrid-swarm-v1` conformance profile；其完整 reference path 还要求所有数值输入
+必须是有限数，并且 output 除 commit、
+evidence provenance 和 publication permission 外，还必须具备 target-scoped stop
+resolution；当前 target 的任一 blocked resolution 都会拒绝 output。
+
 ## 文档
 
 - [SPEC.md](SPEC.md) - protocol-core 规范。
@@ -23,6 +30,7 @@ PheroOS 当前是 draft ABI。
 - [SECURITY.md](SECURITY.md) - 漏洞报告和协议安全边界。
 - [docs/process/index.md](docs/process/index.md) - 源树 process 入口。
 - [docs/protocol/runtime-integration.md](docs/protocol/runtime-integration.md) - 外部 runtime 如何与 PheroOS 组合。
+- [docs/protocol/hybrid-pheromone-v1-migration.md](docs/protocol/hybrid-pheromone-v1-migration.md) - draft Hybrid v1 迁移说明。
 - [docs/protocol/runtime-adapter-guide.md](docs/protocol/runtime-adapter-guide.md) - 如何将 `DriverSpec` 映射到外部 adapter。
 - [docs/protocol/extension-points.md](docs/protocol/extension-points.md) - 扩展边界。
 - [docs/process/api-lifecycle.md](docs/process/api-lifecycle.md) - 公共 API 与 ABI 生命周期。
@@ -47,6 +55,8 @@ examples/
   toy-protocol/    Minimal governed protocol.
   e2e-protocol/    Provider-free governed vertical slice.
   swarm-protocol/  Swarm-native collective decision example.
+  hybrid-pheromone-protocol/  完整 Hybrid Pheromone ABI 示例。
+  adaptive-pheromone-replay/  trace-like adaptive input replay 示例。
 
 schemas/           Exported ABI schema artifacts.
 docs/              Protocol and process documentation.
@@ -97,6 +107,18 @@ Swarm-native behavior 是协议行为，不是 swarm framework。
 
 Pheromone 不是 evidence、truth、permission、quorum 或 output authority。
 
+所有 swarm mode 的 scout 和已启用 collective signal 只有通过 governance verification
+后才能计数或影响评分。Hybrid runtime 还向 `evaluate_hybrid_collective_step(...)` 提交
+trail、topology、feedback、layer proposal、performance snapshot、
+strategy bias 以及有界 policy-adjustment proposal。这个 pure reference step 按 manifest
+声明执行 deposit、evaporation、diffusion、reinforcement、coordination、scoring、scout
+gate 和 commit-or-fallback，并返回该真实路径产生的 canonical `trace_events`。
+
+`LayerCoordinationState` 是 governance output，不是具有 authority 的 Hybrid input。外部
+runtime 必须提交 `LayerProposal` 及相关 proposal input，由 governance 重新计算协调结果。
+Manifest ABI 只有一个 canonical `PheromoneKindProfile`，由 `pheroos.protocol` 导出；
+`pheroos.governance` 中的同名符号是同一个 compatibility type。
+
 ## 不在范围内
 
 本仓库不应成为：
@@ -116,6 +138,34 @@ Pheromone 不是 evidence、truth、permission、quorum 或 output authority。
 Baseline governed protocol 在没有 swarm behavior 时仍然有效。
 
 Swarm-specific conformance 只在 manifest 声明 swarm collective mode 时适用。
+
+Hybrid declaration 选择 `pheroos-hybrid-swarm-v1`，其中包含 core、swarm 和 Hybrid
+required checks。Baseline quorum 和 basic swarm protocol 不会因此增加 Hybrid-only required
+field 或 check。
+
+## Hybrid Pheromone Draft ABI
+
+完整 Hybrid reference path 已作为确定性、provider-free 的 protocol-core vertical slice
+交付：governance signal verification、有界 deposit/evaporation/diffusion/reinforcement、
+L1–L4 coordination、run-scoped policy adjustment、declared-candidate consensus 或 safe
+fallback、四个 output gate，以及可因果重放的 trace/conformance。Pheromone 始终只是
+collective memory，不会成为 evidence 或 authority。
+
+外部 runtime 只能使用 `replay_state_from_hybrid_step(...)` 返回的 governance-issued
+`HybridReplayState` 继续 Hybrid run。Replay receipt 会绑定 deposit、diffusion、feedback 和
+adjustment payload；trace conformance 会拒绝 payload substitution、跨 lifecycle identity
+collision，以及缺少匹配 issued prior state 的 replay claim。详见
+[完整加固计划](docs/protocol/hybrid-pheromone-full-hardening-plan.md)、
+[ABI 参考](docs/protocol/hybrid-pheromone-abi.md) 和
+[迁移说明](docs/protocol/hybrid-pheromone-v1-migration.md)。
+
+可通过以下 provider-free reference 验证：
+
+```bash
+.venv/bin/python -m pheroos.cli.main conformance examples/hybrid-pheromone-protocol
+.venv/bin/python examples/hybrid-pheromone-protocol/run.py
+.venv/bin/python examples/adaptive-pheromone-replay/replay.py
+```
 
 Manifest extension 是 metadata，除非被协议不变量正式采用。Extension metadata 不创建 evidence、permission、quorum、commit authority 或 output authority。
 

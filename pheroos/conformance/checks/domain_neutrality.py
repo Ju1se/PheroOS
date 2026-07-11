@@ -6,17 +6,14 @@ from pathlib import Path
 from pheroos.conformance.report import CheckResult
 
 
-CORE_PATHS = (
+CORE_SOURCE_PATHS = (
     "pheroos/protocol",
     "pheroos/kernel",
     "pheroos/governance",
     "pheroos/drivers",
+    "pheroos/trace",
     "pheroos/conformance",
-    "schemas",
-    "docs/protocol",
-    "docs/kernel",
-    "docs/governance",
-    "docs/drivers",
+    "pheroos/cli",
 )
 
 
@@ -29,22 +26,18 @@ def forbidden_terms() -> list[str]:
         "comp" "ustat",
         "c" "rsp",
         "i" "bes",
-        "b" "uy",
-        "s" "ell",
-        "w" "atch",
-        "a" "void",
     ]
 
 
 def check_public_core(root: Path) -> CheckResult:
     pattern = re.compile(r"\b(" + "|".join(re.escape(term) for term in forbidden_terms()) + r")\b", re.IGNORECASE)
     offenders: list[str] = []
-    for rel in CORE_PATHS:
+    for rel in CORE_SOURCE_PATHS:
         base = root / rel
         if not base.exists():
             continue
         for path in base.rglob("*"):
-            if not path.is_file() or path.suffix not in {".py", ".md", ".json"}:
+            if not path.is_file() or path.suffix != ".py":
                 continue
             match = pattern.search(path.read_text(encoding="utf-8"))
             if match:

@@ -25,6 +25,10 @@ Lifecycle operations fail closed. Invalid descriptors cannot register, inactive
 registrations cannot bind, bindings without granted permissions cannot expose,
 and invocations that may feed evidence require provenance.
 
+Descriptor identity fields must be nonblank strings. Descriptor capability
+inputs are defensively snapshotted as immutable values before validation, so a
+caller cannot change registered capability state after the trust boundary.
+
 ## Rules
 
 - Driver declarations are provider-neutral.

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import ast
+from importlib.util import resolve_name
 from pathlib import Path
 
 from pheroos.conformance.report import CheckResult
@@ -20,18 +21,52 @@ PACKAGE_IMPORT_ALLOWLIST = {
 
 def check(root: Path) -> CheckResult:
     offenders: list[str] = []
-    for path in (root / "pheroos").rglob("*.py"):
+    package_root = root / "pheroos"
+    if not package_root.is_dir():
+        return CheckResult("package_import_boundary", False, "missing:pheroos")
+    for path in package_root.rglob("*.py"):
         tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
         for node in ast.walk(tree):
-            module = ""
             if isinstance(node, ast.Import):
                 for alias in node.names:
-                    module = alias.name
-                    record_if_forbidden(root, path, module, offenders)
+                    record_if_forbidden(root, path, alias.name, offenders)
             elif isinstance(node, ast.ImportFrom):
-                module = node.module or ""
-                record_if_forbidden(root, path, module, offenders)
-    return CheckResult("kernel_import_boundary", not offenders, "; ".join(offenders))
+                for module in resolved_import_from_modules(root, path, node):
+                    record_if_forbidden(root, path, module, offenders)
+    return CheckResult("package_import_boundary", not offenders, "; ".join(sorted(set(offenders))))
+
+
+def resolved_import_from_modules(root: Path, path: Path, node: ast.ImportFrom) -> tuple[str, ...]:
+    if node.level == 0:
+        if node.module == "pheroos":
+            return tuple(f"pheroos.{alias.name}" for alias in node.names)
+        return (node.module or "",)
+    package = package_for_path(root, path)
+    if not package:
+        return (node.module or "",)
+    relative_name = "." * node.level + (node.module or "")
+    try:
+        resolved = resolve_name(relative_name, package)
+    except (ImportError, ValueError):
+        return (node.module or "",)
+    # ``from .. import governance`` names the imported package only through
+    # the alias.  Include it so relative cross-package imports cannot evade the
+    # same allowlist applied to absolute imports.
+    if node.module is None:
+        return tuple(f"{resolved}.{alias.name}" for alias in node.names)
+    return (resolved,)
+
+
+def package_for_path(root: Path, path: Path) -> str:
+    relative = path.relative_to(root).with_suffix("")
+    parts = relative.parts
+    if not parts or parts[0] != "pheroos":
+        return ""
+    if parts[-1] == "__init__":
+        parts = parts[:-1]
+    else:
+        parts = parts[:-1]
+    return ".".join(parts)
 
 
 def record_if_forbidden(root: Path, path: Path, module: str, offenders: list[str]) -> None:

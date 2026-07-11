@@ -50,7 +50,7 @@
       "commit_threshold": 2
     },
     "collective_decision_policy": {
-      "mode": "hybrid",
+      "mode": "bee_swarm",
       "min_independent_scouts": 2,
       "quorum_threshold": 3,
       "recruitment_enabled": true,

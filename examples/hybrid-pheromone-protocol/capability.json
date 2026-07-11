@@ -1,0 +1,219 @@
+{
+  "id": "hybrid-pheromone-protocol",
+  "name": "Hybrid Pheromone Protocol",
+  "version": "0.1.0",
+  "permissions": [],
+  "required_connections": [],
+  "drivers": [],
+  "protocol": {
+    "protocol_version": "pheroos.protocol.v1",
+    "id": "swarm.hybrid-pheromone",
+    "targets": [
+      {
+        "id": "decision:collective",
+        "description": "A provider-free hybrid pheromone collective decision target."
+      }
+    ],
+    "signals": [
+      {
+        "type": "recruitment",
+        "target": "decision:collective",
+        "authority_required": "governance"
+      },
+      {
+        "type": "inhibition",
+        "target": "decision:collective",
+        "authority_required": "governance"
+      }
+    ],
+    "candidates": [
+      {
+        "id": "candidate:alpha",
+        "target": "decision:collective",
+        "label": "Alpha"
+      },
+      {
+        "id": "candidate:beta",
+        "target": "decision:collective",
+        "label": "Beta"
+      },
+      {
+        "id": "candidate:safe_fallback",
+        "target": "decision:collective",
+        "label": "Safe Fallback",
+        "safe_fallback": true
+      }
+    ],
+    "quorum_policy": {
+      "target": "decision:collective",
+      "fallback_candidate": "candidate:safe_fallback",
+      "commit_threshold": 2
+    },
+    "collective_decision_policy": {
+      "mode": "hybrid",
+      "min_independent_scouts": 2,
+      "quorum_threshold": 4,
+      "recruitment_enabled": true,
+      "inhibition_enabled": true,
+      "pheromone_enabled": true,
+      "pheromone_evaporation_rate": 0.2,
+      "pheromone_decay_model": "exponential",
+      "pheromone_min_strength": 0,
+      "pheromone_max_strength": 10,
+      "pheromone_positive_weight": 1,
+      "pheromone_negative_weight": 1,
+      "pheromone_cautionary_weight": 1,
+      "pheromone_cautionary_override_threshold": 2,
+      "pheromone_novelty_weight": 0.5,
+      "pheromone_per_source_cap": 4,
+      "pheromone_per_round_deposit_cap": 5,
+      "pheromone_min_source_diversity": 1,
+      "pheromone_require_provenance": true,
+      "pheromone_require_trace": true,
+      "pheromone_scored_subject_types": ["candidate", "route", "tool", "agent"],
+      "pheromone_kind_profiles": {
+        "positive": {
+          "weight": 1,
+          "evaporation_rate": 0.2,
+          "ttl_steps": 6,
+          "response_model": "saturating",
+          "priority": 1,
+          "scored_subject_types": ["candidate", "route", "tool", "agent"]
+        },
+        "negative": {
+          "weight": 1,
+          "evaporation_rate": 0.3,
+          "ttl_steps": 4,
+          "response_model": "linear",
+          "priority": 2,
+          "scored_subject_types": ["candidate", "route"]
+        },
+        "cautionary": {
+          "weight": 1.25,
+          "evaporation_rate": 0.5,
+          "ttl_steps": 2,
+          "response_model": "threshold",
+          "priority": 3,
+          "can_suppress_positive": true,
+          "scored_subject_types": ["candidate", "route"]
+        },
+        "alarm": {
+          "weight": 2,
+          "evaporation_rate": 0.8,
+          "ttl_steps": 1,
+          "response_model": "threshold",
+          "priority": 4,
+          "can_suppress_positive": true,
+          "scored_subject_types": ["candidate", "route"]
+        },
+        "novelty": {
+          "weight": 0.5,
+          "evaporation_rate": 0.6,
+          "ttl_steps": 2,
+          "response_model": "linear",
+          "priority": 1,
+          "scored_subject_types": ["candidate", "route"]
+        },
+        "stale": {
+          "weight": 0,
+          "priority": 0
+        }
+      },
+      "pheromone_response_model": "saturating",
+      "pheromone_activation_threshold": 0.5,
+      "pheromone_saturation_threshold": 4,
+      "pheromone_competition_mode": "normalize",
+      "pheromone_exploration_floor": 0.1,
+      "pheromone_diffusion_enabled": true,
+      "pheromone_diffusion_max_hops": 1,
+      "pheromone_diffusion_attenuation": 0.5,
+      "pheromone_feedback_enabled": true,
+      "exploration_enabled": true,
+      "exploration_floor": 0.1,
+      "novelty_decay_rate": 0.6,
+      "stale_route_reopen_threshold": 0.2,
+      "layer_coordination_enabled": true,
+      "layer_weight_bounds": {
+        "reactive": [0, 1.5],
+        "learned": [0, 1.5],
+        "evolutionary": [0, 1],
+        "metacognitive": [0, 1]
+      },
+      "layer_default_weights": {
+        "reactive": 1,
+        "learned": 1,
+        "evolutionary": 0.5,
+        "metacognitive": 0.5
+      },
+      "layer_confidence_thresholds": {
+        "reactive": 0.6,
+        "learned": 0.6,
+        "evolutionary": 0.6,
+        "metacognitive": 0.6
+      },
+      "layer_conflict_threshold": 0.1,
+      "layer_emergency_override_threshold": 0.8,
+      "layer_min_provenance": 2,
+      "layer_fallback_on_unresolved_conflict": true,
+      "policy_adjustment_bounds": {
+        "pheromone_evaporation_rate": [0.1, 0.5],
+        "pheromone_positive_weight": [0.5, 2],
+        "pheromone_response_model": {
+          "allowed_values": ["linear", "saturating", "threshold", "competitive"]
+        },
+        "pheromone_exploration_floor": [0, 1],
+        "layer_learned_weight": [0, 1.5]
+      },
+      "fallback_candidate": "candidate:safe_fallback"
+    },
+    "recovery_protocols": [
+      {
+        "id": "recovery:hybrid_conflict",
+        "trigger_targets": ["decision:collective"],
+        "allowed_roles": ["reviewer"],
+        "allowed_tags": ["swarm", "hybrid"],
+        "required_tools": [],
+        "failure_candidate": "candidate:safe_fallback"
+      }
+    ],
+    "evidence_policy": {
+      "require_provenance": true,
+      "allow_agent_fact_creation": false
+    },
+    "output_policy": {
+      "writer_may_create_facts": false,
+      "requires_committed_candidate": true,
+      "requires_evidence_contract": true,
+      "requires_stop_resolution": true,
+      "requires_publication_permission": true
+    },
+    "trace_policy": {
+      "required_events": [
+        "explore",
+        "scout_report",
+        "recruit",
+        "inhibit",
+        "pheromone_deposit",
+        "pheromone_evaporate",
+        "pheromone_score",
+        "pheromone_clip",
+        "pheromone_expire",
+        "pheromone_observe",
+        "pheromone_diffuse",
+        "pheromone_reinforce",
+        "pheromone_normalize",
+        "layer_proposal",
+        "coordination_assess",
+        "coordination_resolve",
+        "policy_adjustment",
+        "candidate_score",
+        "consensus_check",
+        "block",
+        "commit",
+        "fallback",
+        "recovery",
+        "output"
+      ]
+    }
+  }
+}

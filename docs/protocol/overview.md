@@ -6,7 +6,11 @@ governed runtimes.
 The formal protocol-core specification is [SPEC.md](../../SPEC.md). Extension
 boundaries are described in [extension-points.md](extension-points.md).
 External runtime composition is described in
-[runtime-integration.md](runtime-integration.md).
+[runtime-integration.md](runtime-integration.md). Pheromone core simplification
+and future adaptive runtime boundaries are described in
+[adaptive-pheromone-core-plan.md](adaptive-pheromone-core-plan.md). The complete
+audit-driven hardening and delivery plan is documented in
+[hybrid-pheromone-full-hardening-plan.md](hybrid-pheromone-full-hardening-plan.md).
 
 Protocol code is contract code. It declares what exists and validates whether a
 manifest is structurally compatible with the protocol.
@@ -49,6 +53,10 @@ CLI, examples, app runtime modules, provider frameworks, or tools.
 - Writer fact creation is not permitted.
 - Agent fact creation is denied when the evidence policy forbids it.
 - Trace policy includes lineage for block, commit, recovery, and output decisions.
+- Swarm trace policy includes collective lineage when swarm behavior is declared.
+- Hybrid pheromone policy fields are bounded when declared: subject scoring,
+  kind profiles, diffusion, feedback, nonlinear response, layer coordination,
+  and policy-adjustment bounds.
 - Secret-like manifest fields are rejected or diagnosed.
 - Extension metadata is preserved without granting evidence, permission, quorum,
   commit, or output authority.

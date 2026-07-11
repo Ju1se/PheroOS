@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from collections.abc import Mapping, Sequence
+from copy import deepcopy
 from dataclasses import fields, is_dataclass
 from typing import Any
 
@@ -28,10 +30,10 @@ def collect_extensions(payload: dict[str, Any]) -> dict[str, Any]:
     extensions: dict[str, Any] = {}
     explicit = payload.get("extensions")
     if isinstance(explicit, dict):
-        extensions.update(explicit)
+        extensions.update(deepcopy(explicit))
     for key, value in payload.items():
         if is_namespaced_extension(str(key)):
-            extensions[str(key)] = value
+            extensions[str(key)] = deepcopy(value)
     return extensions
 
 
@@ -47,7 +49,7 @@ def secret_like_paths(value: Any, *, path: str = "") -> list[str]:
             item_path = dotted(path, item.name)
             paths.extend(secret_like_paths(getattr(value, item.name), path=item_path))
         return paths
-    if isinstance(value, dict):
+    if isinstance(value, Mapping):
         for key, item in value.items():
             key_text = str(key)
             item_path = dotted(path, key_text)
@@ -55,7 +57,7 @@ def secret_like_paths(value: Any, *, path: str = "") -> list[str]:
                 paths.append(item_path)
             paths.extend(secret_like_paths(item, path=item_path))
         return paths
-    if isinstance(value, list):
+    if isinstance(value, Sequence) and not isinstance(value, (str, bytes, bytearray)):
         for index, item in enumerate(value):
             paths.extend(secret_like_paths(item, path=f"{path}[{index}]" if path else f"[{index}]"))
     return paths

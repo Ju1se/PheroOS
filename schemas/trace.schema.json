@@ -1,22 +1,3204 @@
 {
+  "$defs": {
+    "coverageValue": {
+      "oneOf": [
+        {
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number"
+        },
+        {
+          "additionalProperties": {
+            "$ref": "#/$defs/coverageValue"
+          },
+          "type": "object"
+        }
+      ]
+    }
+  },
   "$id": "https://pheroos.dev/schemas/trace.schema.json",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "candidate_score"
+          }
+        },
+        "required": [
+          "event_type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "lineage": {
+            "additionalProperties": true,
+            "properties": {
+              "pheromone_source_diversity": {
+                "additionalProperties": {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "type": "object"
+              },
+              "score_breakdown": {
+                "additionalProperties": {
+                  "additionalProperties": {
+                    "type": "number"
+                  },
+                  "minProperties": 1,
+                  "type": "object"
+                },
+                "description": "Each candidate's categories must sum to its value in scores; enforced by Trace ABI validation.",
+                "minProperties": 1,
+                "type": "object"
+              },
+              "scores": {
+                "additionalProperties": {
+                  "type": "number"
+                },
+                "minProperties": 1,
+                "type": "object"
+              },
+              "scout_diversity": {
+                "additionalProperties": {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "type": "object"
+              }
+            },
+            "required": [
+              "pheromone_source_diversity",
+              "score_breakdown",
+              "scores",
+              "scout_diversity"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "lineage"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "commit"
+          }
+        },
+        "required": [
+          "event_type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "lineage": {
+            "additionalProperties": true,
+            "properties": {
+              "candidate_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "decision_reason": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "target": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "upstream_score_lineage": {
+                "items": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "minItems": 1,
+                "type": "array"
+              }
+            },
+            "required": [
+              "candidate_id",
+              "decision_reason",
+              "target",
+              "upstream_score_lineage"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "lineage"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "consensus_check"
+          }
+        },
+        "required": [
+          "event_type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "lineage": {
+            "additionalProperties": true,
+            "properties": {
+              "min_independent_scouts": {
+                "minimum": 1,
+                "type": "integer"
+              },
+              "quorum_threshold": {
+                "exclusiveMinimum": 0,
+                "type": "number"
+              }
+            },
+            "required": [
+              "min_independent_scouts",
+              "quorum_threshold"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "lineage"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "coordination_assess"
+          }
+        },
+        "required": [
+          "event_type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "lineage": {
+            "additionalProperties": true,
+            "properties": {
+              "action_effects": {
+                "additionalProperties": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "type": "object"
+              },
+              "confidences": {
+                "additionalProperties": false,
+                "properties": {
+                  "evolutionary": {
+                    "maximum": 1,
+                    "minimum": 0,
+                    "type": "number"
+                  },
+                  "learned": {
+                    "maximum": 1,
+                    "minimum": 0,
+                    "type": "number"
+                  },
+                  "metacognitive": {
+                    "maximum": 1,
+                    "minimum": 0,
+                    "type": "number"
+                  },
+                  "reactive": {
+                    "maximum": 1,
+                    "minimum": 0,
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "evolutionary",
+                  "learned",
+                  "metacognitive",
+                  "reactive"
+                ],
+                "type": "object"
+              },
+              "coverage": {
+                "additionalProperties": {
+                  "$ref": "#/$defs/coverageValue"
+                },
+                "minProperties": 1,
+                "type": "object"
+              },
+              "proposal_lineage": {
+                "items": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "snapshots": {
+                "additionalProperties": false,
+                "properties": {
+                  "evolutionary": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "evidence_coverage": {
+                        "maximum": 1,
+                        "minimum": 0,
+                        "type": "number"
+                      },
+                      "mean_confidence": {
+                        "maximum": 1,
+                        "minimum": 0,
+                        "type": "number"
+                      },
+                      "present": {
+                        "type": "boolean"
+                      },
+                      "recent_conflict_rate": {
+                        "maximum": 1,
+                        "minimum": 0,
+                        "type": "number"
+                      },
+                      "recent_fallback_rate": {
+                        "maximum": 1,
+                        "minimum": 0,
+                        "type": "number"
+                      },
+                      "recent_success_rate": {
+                        "maximum": 1,
+                        "minimum": 0,
+                        "type": "number"
+                      },
+                      "trace_coverage": {
+                        "maximum": 1,
+                        "minimum": 0,
+                        "type": "number"
+                      }
+                    },
+                    "required": [
+                      "present",
+                      "recent_success_rate",
+                      "recent_conflict_rate",
+                      "recent_fallback_rate",
+                      "mean_confidence",
+                      "evidence_coverage",
+                      "trace_coverage"
+                    ],
+                    "type": "object"
+                  },
+                  "learned": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "evidence_coverage": {
+                        "maximum": 1,
+                        "minimum": 0,
+                        "type": "number"
+                      },
+                      "mean_confidence": {
+                        "maximum": 1,
+                        "minimum": 0,
+                        "type": "number"
+                      },
+                      "present": {
+                        "type": "boolean"
+                      },
+                      "recent_conflict_rate": {
+                        "maximum": 1,
+                        "minimum": 0,
+                        "type": "number"
+                      },
+                      "recent_fallback_rate": {
+                        "maximum": 1,
+                        "minimum": 0,
+                        "type": "number"
+                      },
+                      "recent_success_rate": {
+                        "maximum": 1,
+                        "minimum": 0,
+                        "type": "number"
+                      },
+                      "trace_coverage": {
+                        "maximum": 1,
+                        "minimum": 0,
+                        "type": "number"
+                      }
+                    },
+                    "required": [
+                      "present",
+                      "recent_success_rate",
+                      "recent_conflict_rate",
+                      "recent_fallback_rate",
+                      "mean_confidence",
+                      "evidence_coverage",
+                      "trace_coverage"
+                    ],
+                    "type": "object"
+                  },
+                  "metacognitive": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "evidence_coverage": {
+                        "maximum": 1,
+                        "minimum": 0,
+                        "type": "number"
+                      },
+                      "mean_confidence": {
+                        "maximum": 1,
+                        "minimum": 0,
+                        "type": "number"
+                      },
+                      "present": {
+                        "type": "boolean"
+                      },
+                      "recent_conflict_rate": {
+                        "maximum": 1,
+                        "minimum": 0,
+                        "type": "number"
+                      },
+                      "recent_fallback_rate": {
+                        "maximum": 1,
+                        "minimum": 0,
+                        "type": "number"
+                      },
+                      "recent_success_rate": {
+                        "maximum": 1,
+                        "minimum": 0,
+                        "type": "number"
+                      },
+                      "trace_coverage": {
+                        "maximum": 1,
+                        "minimum": 0,
+                        "type": "number"
+                      }
+                    },
+                    "required": [
+                      "present",
+                      "recent_success_rate",
+                      "recent_conflict_rate",
+                      "recent_fallback_rate",
+                      "mean_confidence",
+                      "evidence_coverage",
+                      "trace_coverage"
+                    ],
+                    "type": "object"
+                  },
+                  "reactive": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "evidence_coverage": {
+                        "maximum": 1,
+                        "minimum": 0,
+                        "type": "number"
+                      },
+                      "mean_confidence": {
+                        "maximum": 1,
+                        "minimum": 0,
+                        "type": "number"
+                      },
+                      "present": {
+                        "type": "boolean"
+                      },
+                      "recent_conflict_rate": {
+                        "maximum": 1,
+                        "minimum": 0,
+                        "type": "number"
+                      },
+                      "recent_fallback_rate": {
+                        "maximum": 1,
+                        "minimum": 0,
+                        "type": "number"
+                      },
+                      "recent_success_rate": {
+                        "maximum": 1,
+                        "minimum": 0,
+                        "type": "number"
+                      },
+                      "trace_coverage": {
+                        "maximum": 1,
+                        "minimum": 0,
+                        "type": "number"
+                      }
+                    },
+                    "required": [
+                      "present",
+                      "recent_success_rate",
+                      "recent_conflict_rate",
+                      "recent_fallback_rate",
+                      "mean_confidence",
+                      "evidence_coverage",
+                      "trace_coverage"
+                    ],
+                    "type": "object"
+                  }
+                },
+                "required": [
+                  "evolutionary",
+                  "learned",
+                  "metacognitive",
+                  "reactive"
+                ],
+                "type": "object"
+              },
+              "trace_coverage_confirmations": {
+                "additionalProperties": {
+                  "maximum": 1,
+                  "minimum": 0,
+                  "type": "number"
+                },
+                "type": "object"
+              },
+              "weights": {
+                "additionalProperties": false,
+                "properties": {
+                  "evolutionary": {
+                    "minimum": 0,
+                    "type": "number"
+                  },
+                  "learned": {
+                    "minimum": 0,
+                    "type": "number"
+                  },
+                  "metacognitive": {
+                    "minimum": 0,
+                    "type": "number"
+                  },
+                  "reactive": {
+                    "minimum": 0,
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "evolutionary",
+                  "learned",
+                  "metacognitive",
+                  "reactive"
+                ],
+                "type": "object"
+              }
+            },
+            "required": [
+              "action_effects",
+              "confidences",
+              "coverage",
+              "proposal_lineage",
+              "snapshots",
+              "trace_coverage_confirmations",
+              "weights"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "lineage"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "coordination_resolve"
+          }
+        },
+        "required": [
+          "event_type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "lineage": {
+            "additionalProperties": true,
+            "properties": {
+              "conflicts": {
+                "items": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "fallback_used": {
+                "type": "boolean"
+              },
+              "proposal_lineage": {
+                "items": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "reason": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "resolution": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "selected_candidate": {
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "required": [
+              "conflicts",
+              "fallback_used",
+              "proposal_lineage",
+              "reason",
+              "resolution",
+              "selected_candidate"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "lineage"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "explore"
+          }
+        },
+        "required": [
+          "event_type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "lineage": {
+            "additionalProperties": true,
+            "properties": {
+              "scout_count": {
+                "minimum": 1,
+                "type": "integer"
+              }
+            },
+            "required": [
+              "scout_count"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "lineage"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "fallback"
+          }
+        },
+        "required": [
+          "event_type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "lineage": {
+            "additionalProperties": true,
+            "properties": {
+              "candidate_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "decision_reason": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "target": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "upstream_score_lineage": {
+                "items": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "minItems": 1,
+                "type": "array"
+              }
+            },
+            "required": [
+              "candidate_id",
+              "decision_reason",
+              "target",
+              "upstream_score_lineage"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "lineage"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "inhibit"
+          }
+        },
+        "required": [
+          "event_type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "lineage": {
+            "additionalProperties": true,
+            "properties": {
+              "candidate_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "provenance": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "source_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "source_trace_event_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "strength": {
+                "minimum": 0,
+                "type": "number"
+              },
+              "verification_trace_event_id": {
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "required": [
+              "candidate_id",
+              "provenance",
+              "source_id",
+              "source_trace_event_id",
+              "strength",
+              "verification_trace_event_id"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "lineage"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "layer_proposal"
+          }
+        },
+        "required": [
+          "event_type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "lineage": {
+            "additionalProperties": true,
+            "allOf": [
+              {
+                "if": {
+                  "properties": {
+                    "action": {
+                      "const": "propose_pheromone"
+                    }
+                  },
+                  "required": [
+                    "action"
+                  ]
+                },
+                "then": {
+                  "properties": {
+                    "effect": {
+                      "const": "bounded_pheromone_deposit_proposed"
+                    },
+                    "proposed_pheromone_kind": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "proposed_strength": {
+                      "exclusiveMinimum": 0,
+                      "maximum": 10,
+                      "type": "number"
+                    }
+                  }
+                }
+              }
+            ],
+            "properties": {
+              "action": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "candidate_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "confidence": {
+                "maximum": 1,
+                "minimum": 0,
+                "type": "number"
+              },
+              "effect": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "evidence_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "layer_id": {
+                "enum": [
+                  "reactive",
+                  "learned",
+                  "evolutionary",
+                  "metacognitive"
+                ]
+              },
+              "proposed_pheromone_kind": {
+                "type": "string"
+              },
+              "proposed_strength": {
+                "maximum": 10,
+                "minimum": 0,
+                "type": "number"
+              },
+              "provenance": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "risk": {
+                "maximum": 10,
+                "minimum": 0,
+                "type": "number"
+              },
+              "source_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "source_trace_event_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "subject_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "subject_type": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "support": {
+                "maximum": 10,
+                "minimum": 0,
+                "type": "number"
+              }
+            },
+            "required": [
+              "action",
+              "candidate_id",
+              "confidence",
+              "effect",
+              "evidence_id",
+              "layer_id",
+              "proposed_pheromone_kind",
+              "proposed_strength",
+              "provenance",
+              "risk",
+              "source_id",
+              "source_trace_event_id",
+              "subject_id",
+              "subject_type",
+              "support"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "lineage"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "output"
+          }
+        },
+        "required": [
+          "event_type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "lineage": {
+            "additionalProperties": true,
+            "allOf": [
+              {
+                "if": {
+                  "properties": {
+                    "authorized": {
+                      "const": true
+                    }
+                  },
+                  "required": [
+                    "authorized"
+                  ]
+                },
+                "then": {
+                  "properties": {
+                    "committed_candidate": {
+                      "const": true
+                    },
+                    "evidence_provenance": {
+                      "const": true
+                    },
+                    "publication_permission": {
+                      "const": true
+                    },
+                    "stop_resolution": {
+                      "const": true
+                    }
+                  }
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "committed_candidate": {
+                      "const": true
+                    },
+                    "evidence_provenance": {
+                      "const": true
+                    },
+                    "publication_permission": {
+                      "const": true
+                    },
+                    "stop_resolution": {
+                      "const": true
+                    }
+                  },
+                  "required": [
+                    "committed_candidate",
+                    "evidence_provenance",
+                    "stop_resolution",
+                    "publication_permission"
+                  ]
+                },
+                "then": {
+                  "properties": {
+                    "authorized": {
+                      "const": true
+                    }
+                  }
+                }
+              }
+            ],
+            "properties": {
+              "authorized": {
+                "type": "boolean"
+              },
+              "committed_candidate": {
+                "type": "boolean"
+              },
+              "evidence_provenance": {
+                "type": "boolean"
+              },
+              "publication_permission": {
+                "type": "boolean"
+              },
+              "stop_resolution": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "authorized",
+              "committed_candidate",
+              "evidence_provenance",
+              "publication_permission",
+              "stop_resolution"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "lineage"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "pheromone_clip"
+          }
+        },
+        "required": [
+          "event_type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "lineage": {
+            "additionalProperties": true,
+            "allOf": [
+              {
+                "if": {
+                  "properties": {
+                    "result": {
+                      "const": "rejected"
+                    }
+                  },
+                  "required": [
+                    "result"
+                  ]
+                },
+                "then": {
+                  "required": [
+                    "causal_payload",
+                    "causal_fingerprint"
+                  ]
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "lifecycle": {
+                      "const": "deposit"
+                    }
+                  },
+                  "required": [
+                    "lifecycle"
+                  ]
+                },
+                "then": {
+                  "required": [
+                    "source_kind",
+                    "source_strength",
+                    "new_strength",
+                    "step"
+                  ]
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "lifecycle": {
+                      "const": "diffusion"
+                    }
+                  },
+                  "required": [
+                    "lifecycle"
+                  ]
+                },
+                "then": {
+                  "properties": {
+                    "applied_strength": {
+                      "const": 0
+                    },
+                    "new_strength": {
+                      "const": 0
+                    },
+                    "result": {
+                      "const": "rejected"
+                    }
+                  },
+                  "required": [
+                    "source_kind",
+                    "source_strength",
+                    "new_strength",
+                    "step",
+                    "source_subject",
+                    "target_subject",
+                    "hop",
+                    "attenuation",
+                    "policy_attenuation",
+                    "edge_attenuation",
+                    "root_trace_event_id"
+                  ]
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "lifecycle": {
+                      "const": "feedback"
+                    }
+                  },
+                  "required": [
+                    "lifecycle"
+                  ]
+                },
+                "then": {
+                  "properties": {
+                    "applied_strength": {
+                      "const": 0
+                    },
+                    "result": {
+                      "const": "rejected"
+                    }
+                  },
+                  "required": [
+                    "source_kind",
+                    "source_strength",
+                    "new_strength",
+                    "step",
+                    "outcome",
+                    "reward",
+                    "strength_delta",
+                    "feedback_trace_event_id"
+                  ]
+                }
+              }
+            ],
+            "properties": {
+              "applied_strength": {
+                "minimum": 0,
+                "type": "number"
+              },
+              "attenuation": {
+                "maximum": 1,
+                "minimum": 0,
+                "type": "number"
+              },
+              "candidate_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "causal_fingerprint": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "causal_payload": {
+                "oneOf": [
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "effective": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "candidate_id": {
+                            "minLength": 1,
+                            "type": "string"
+                          },
+                          "source_id": {
+                            "minLength": 1,
+                            "type": "string"
+                          },
+                          "subject_id": {
+                            "minLength": 1,
+                            "type": "string"
+                          },
+                          "subject_type": {
+                            "minLength": 1,
+                            "type": "string"
+                          },
+                          "target": {
+                            "minLength": 1,
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "target",
+                          "candidate_id",
+                          "subject_type",
+                          "subject_id",
+                          "source_id"
+                        ],
+                        "type": "object"
+                      },
+                      "input": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "candidate_id": {
+                            "type": "string"
+                          },
+                          "deposited_at_step": {
+                            "minimum": 0,
+                            "type": "integer"
+                          },
+                          "diffusion_hop": {
+                            "minimum": 0,
+                            "type": "integer"
+                          },
+                          "diffusion_parent_trace_event_id": {
+                            "type": "string"
+                          },
+                          "diffusion_root_trace_event_id": {
+                            "type": "string"
+                          },
+                          "evidence_id": {
+                            "type": "string"
+                          },
+                          "kind": {
+                            "type": "string"
+                          },
+                          "lineage_event_ids": {
+                            "items": {
+                              "minLength": 1,
+                              "type": "string"
+                            },
+                            "type": "array"
+                          },
+                          "provenance": {
+                            "type": "string"
+                          },
+                          "route_id": {
+                            "type": "string"
+                          },
+                          "source_id": {
+                            "type": "string"
+                          },
+                          "source_role": {
+                            "type": "string"
+                          },
+                          "strength": {
+                            "minimum": 0,
+                            "type": "number"
+                          },
+                          "subject_id": {
+                            "type": "string"
+                          },
+                          "subject_type": {
+                            "type": "string"
+                          },
+                          "target": {
+                            "type": "string"
+                          },
+                          "tool_id": {
+                            "type": "string"
+                          },
+                          "trace_event_id": {
+                            "type": "string"
+                          },
+                          "ttl_steps": {
+                            "oneOf": [
+                              {
+                                "minimum": 0,
+                                "type": "integer"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "updated_at_step": {
+                            "minimum": 0,
+                            "type": "integer"
+                          }
+                        },
+                        "required": [
+                          "candidate_id",
+                          "subject_type",
+                          "subject_id",
+                          "target",
+                          "route_id",
+                          "tool_id",
+                          "kind",
+                          "source_id",
+                          "source_role",
+                          "evidence_id",
+                          "provenance",
+                          "trace_event_id",
+                          "diffusion_root_trace_event_id",
+                          "diffusion_parent_trace_event_id",
+                          "strength",
+                          "deposited_at_step",
+                          "updated_at_step",
+                          "ttl_steps",
+                          "lineage_event_ids",
+                          "diffusion_hop"
+                        ],
+                        "type": "object"
+                      },
+                      "lifecycle": {
+                        "const": "deposit"
+                      }
+                    },
+                    "required": [
+                      "lifecycle",
+                      "input",
+                      "effective"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "input": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "candidate_id": {
+                            "minLength": 1,
+                            "type": "string"
+                          },
+                          "evidence_id": {
+                            "type": "string"
+                          },
+                          "outcome": {
+                            "minLength": 1,
+                            "type": "string"
+                          },
+                          "provenance": {
+                            "minLength": 1,
+                            "type": "string"
+                          },
+                          "reward": {
+                            "type": "number"
+                          },
+                          "source_id": {
+                            "minLength": 1,
+                            "type": "string"
+                          },
+                          "step": {
+                            "minimum": 0,
+                            "type": "integer"
+                          },
+                          "strength_delta": {
+                            "minimum": 0,
+                            "type": "number"
+                          },
+                          "subject_id": {
+                            "minLength": 1,
+                            "type": "string"
+                          },
+                          "subject_type": {
+                            "minLength": 1,
+                            "type": "string"
+                          },
+                          "target": {
+                            "minLength": 1,
+                            "type": "string"
+                          },
+                          "trace_event_id": {
+                            "minLength": 1,
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "source_id",
+                          "subject_type",
+                          "subject_id",
+                          "candidate_id",
+                          "target",
+                          "outcome",
+                          "reward",
+                          "strength_delta",
+                          "evidence_id",
+                          "provenance",
+                          "trace_event_id",
+                          "step"
+                        ],
+                        "type": "object"
+                      },
+                      "lifecycle": {
+                        "const": "feedback"
+                      },
+                      "source_state": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "kind": {
+                            "minLength": 1,
+                            "type": "string"
+                          },
+                          "provenance": {
+                            "minLength": 1,
+                            "type": "string"
+                          },
+                          "strength": {
+                            "minimum": 0,
+                            "type": "number"
+                          },
+                          "trace_event_id": {
+                            "minLength": 1,
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "trace_event_id",
+                          "strength",
+                          "kind",
+                          "provenance"
+                        ],
+                        "type": "object"
+                      }
+                    },
+                    "required": [
+                      "lifecycle",
+                      "input",
+                      "source_state"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "effective": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "candidate_id": {
+                            "minLength": 1,
+                            "type": "string"
+                          },
+                          "root_trace_event_id": {
+                            "minLength": 1,
+                            "type": "string"
+                          },
+                          "source_id": {
+                            "minLength": 1,
+                            "type": "string"
+                          },
+                          "source_kind": {
+                            "minLength": 1,
+                            "type": "string"
+                          },
+                          "source_strength": {
+                            "minimum": 0,
+                            "type": "number"
+                          },
+                          "subject_id": {
+                            "minLength": 1,
+                            "type": "string"
+                          },
+                          "subject_type": {
+                            "minLength": 1,
+                            "type": "string"
+                          },
+                          "target": {
+                            "minLength": 1,
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "target",
+                          "candidate_id",
+                          "subject_type",
+                          "subject_id",
+                          "source_id",
+                          "source_kind",
+                          "source_strength",
+                          "root_trace_event_id"
+                        ],
+                        "type": "object"
+                      },
+                      "input": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "derived_trace_event_id": {
+                            "minLength": 1,
+                            "type": "string"
+                          },
+                          "edge": {
+                            "additionalProperties": false,
+                            "properties": {
+                              "attenuation": {
+                                "maximum": 1,
+                                "minimum": 0,
+                                "type": "number"
+                              },
+                              "source_subject_id": {
+                                "minLength": 1,
+                                "type": "string"
+                              },
+                              "source_subject_type": {
+                                "minLength": 1,
+                                "type": "string"
+                              },
+                              "target_subject_id": {
+                                "minLength": 1,
+                                "type": "string"
+                              },
+                              "target_subject_type": {
+                                "minLength": 1,
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "source_subject_type",
+                              "source_subject_id",
+                              "target_subject_type",
+                              "target_subject_id",
+                              "attenuation"
+                            ],
+                            "type": "object"
+                          },
+                          "hop": {
+                            "minimum": 1,
+                            "type": "integer"
+                          },
+                          "parent_trace_event_id": {
+                            "minLength": 1,
+                            "type": "string"
+                          },
+                          "policy_attenuation": {
+                            "maximum": 1,
+                            "minimum": 0,
+                            "type": "number"
+                          },
+                          "source_trail": {
+                            "additionalProperties": false,
+                            "properties": {
+                              "candidate_id": {
+                                "type": "string"
+                              },
+                              "deposited_at_step": {
+                                "minimum": 0,
+                                "type": "integer"
+                              },
+                              "diffusion_hop": {
+                                "minimum": 0,
+                                "type": "integer"
+                              },
+                              "diffusion_parent_trace_event_id": {
+                                "type": "string"
+                              },
+                              "diffusion_root_trace_event_id": {
+                                "type": "string"
+                              },
+                              "evidence_id": {
+                                "type": "string"
+                              },
+                              "kind": {
+                                "type": "string"
+                              },
+                              "lineage_event_ids": {
+                                "items": {
+                                  "minLength": 1,
+                                  "type": "string"
+                                },
+                                "type": "array"
+                              },
+                              "provenance": {
+                                "type": "string"
+                              },
+                              "route_id": {
+                                "type": "string"
+                              },
+                              "source_id": {
+                                "type": "string"
+                              },
+                              "source_role": {
+                                "type": "string"
+                              },
+                              "strength": {
+                                "minimum": 0,
+                                "type": "number"
+                              },
+                              "subject_id": {
+                                "type": "string"
+                              },
+                              "subject_type": {
+                                "type": "string"
+                              },
+                              "target": {
+                                "type": "string"
+                              },
+                              "tool_id": {
+                                "type": "string"
+                              },
+                              "trace_event_id": {
+                                "type": "string"
+                              },
+                              "ttl_steps": {
+                                "oneOf": [
+                                  {
+                                    "minimum": 0,
+                                    "type": "integer"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              },
+                              "updated_at_step": {
+                                "minimum": 0,
+                                "type": "integer"
+                              }
+                            },
+                            "required": [
+                              "candidate_id",
+                              "subject_type",
+                              "subject_id",
+                              "target",
+                              "route_id",
+                              "tool_id",
+                              "kind",
+                              "source_id",
+                              "source_role",
+                              "evidence_id",
+                              "provenance",
+                              "trace_event_id",
+                              "diffusion_root_trace_event_id",
+                              "diffusion_parent_trace_event_id",
+                              "strength",
+                              "deposited_at_step",
+                              "updated_at_step",
+                              "ttl_steps",
+                              "lineage_event_ids",
+                              "diffusion_hop"
+                            ],
+                            "type": "object"
+                          },
+                          "target_subject": {
+                            "additionalProperties": false,
+                            "properties": {
+                              "candidate_id": {
+                                "minLength": 1,
+                                "type": "string"
+                              },
+                              "subject_id": {
+                                "minLength": 1,
+                                "type": "string"
+                              },
+                              "subject_type": {
+                                "minLength": 1,
+                                "type": "string"
+                              },
+                              "target": {
+                                "minLength": 1,
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "subject_type",
+                              "subject_id",
+                              "candidate_id",
+                              "target"
+                            ],
+                            "type": "object"
+                          }
+                        },
+                        "required": [
+                          "source_trail",
+                          "target_subject",
+                          "edge",
+                          "policy_attenuation",
+                          "hop",
+                          "parent_trace_event_id",
+                          "derived_trace_event_id"
+                        ],
+                        "type": "object"
+                      },
+                      "lifecycle": {
+                        "const": "diffusion"
+                      }
+                    },
+                    "required": [
+                      "lifecycle",
+                      "input",
+                      "effective"
+                    ],
+                    "type": "object"
+                  }
+                ]
+              },
+              "edge_attenuation": {
+                "maximum": 1,
+                "minimum": 0,
+                "type": "number"
+              },
+              "feedback_trace_event_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "hop": {
+                "minimum": 1,
+                "type": "integer"
+              },
+              "kind": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "lifecycle": {
+                "enum": [
+                  "deposit",
+                  "diffusion",
+                  "feedback"
+                ]
+              },
+              "new_strength": {
+                "minimum": 0,
+                "type": "number"
+              },
+              "outcome": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "policy_attenuation": {
+                "maximum": 1,
+                "minimum": 0,
+                "type": "number"
+              },
+              "provenance": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "requested_strength": {
+                "minimum": 0,
+                "type": "number"
+              },
+              "result": {
+                "enum": [
+                  "applied",
+                  "rejected"
+                ]
+              },
+              "reward": {
+                "type": "number"
+              },
+              "root_trace_event_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "round_budget_remaining": {
+                "minimum": 0,
+                "type": "number"
+              },
+              "source_budget_remaining": {
+                "minimum": 0,
+                "type": "number"
+              },
+              "source_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "source_kind": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "source_strength": {
+                "minimum": 0,
+                "type": "number"
+              },
+              "source_subject": {
+                "additionalProperties": true,
+                "properties": {
+                  "id": {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "type": {
+                    "minLength": 1,
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "id"
+                ],
+                "type": "object"
+              },
+              "source_trace_event_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "step": {
+                "minimum": 0,
+                "type": "integer"
+              },
+              "strength_delta": {
+                "minimum": 0,
+                "type": "number"
+              },
+              "subject_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "subject_type": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "target_subject": {
+                "additionalProperties": true,
+                "properties": {
+                  "id": {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "type": {
+                    "minLength": 1,
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "id"
+                ],
+                "type": "object"
+              },
+              "trace_event_id": {
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "required": [
+              "applied_strength",
+              "candidate_id",
+              "kind",
+              "lifecycle",
+              "provenance",
+              "requested_strength",
+              "result",
+              "round_budget_remaining",
+              "source_budget_remaining",
+              "source_id",
+              "source_trace_event_id",
+              "subject_id",
+              "subject_type",
+              "trace_event_id"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "lineage"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "pheromone_deposit"
+          }
+        },
+        "required": [
+          "event_type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "lineage": {
+            "additionalProperties": true,
+            "properties": {
+              "applied_strength": {
+                "minimum": 0,
+                "type": "number"
+              },
+              "candidate_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "deposited_at_step": {
+                "minimum": 0,
+                "type": "integer"
+              },
+              "kind": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "new_strength": {
+                "minimum": 0,
+                "type": "number"
+              },
+              "old_strength": {
+                "minimum": 0,
+                "type": "number"
+              },
+              "provenance": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "requested_strength": {
+                "minimum": 0,
+                "type": "number"
+              },
+              "round_budget_remaining": {
+                "minimum": 0,
+                "type": "number"
+              },
+              "source_budget_remaining": {
+                "minimum": 0,
+                "type": "number"
+              },
+              "source_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "source_kind": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "source_strength": {
+                "minimum": 0,
+                "type": "number"
+              },
+              "source_trace_event_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "step": {
+                "minimum": 0,
+                "type": "integer"
+              },
+              "subject_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "subject_type": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "trace_event_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "updated_at_step": {
+                "minimum": 0,
+                "type": "integer"
+              }
+            },
+            "required": [
+              "applied_strength",
+              "candidate_id",
+              "deposited_at_step",
+              "kind",
+              "new_strength",
+              "old_strength",
+              "provenance",
+              "requested_strength",
+              "round_budget_remaining",
+              "source_budget_remaining",
+              "source_id",
+              "source_kind",
+              "source_strength",
+              "source_trace_event_id",
+              "step",
+              "subject_id",
+              "subject_type",
+              "trace_event_id",
+              "updated_at_step"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "lineage"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "pheromone_diffuse"
+          }
+        },
+        "required": [
+          "event_type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "lineage": {
+            "additionalProperties": true,
+            "properties": {
+              "applied_strength": {
+                "minimum": 0,
+                "type": "number"
+              },
+              "attenuation": {
+                "maximum": 1,
+                "minimum": 0,
+                "type": "number"
+              },
+              "candidate_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "edge_attenuation": {
+                "maximum": 1,
+                "minimum": 0,
+                "type": "number"
+              },
+              "hop": {
+                "minimum": 1,
+                "type": "integer"
+              },
+              "kind": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "new_strength": {
+                "minimum": 0,
+                "type": "number"
+              },
+              "policy_attenuation": {
+                "maximum": 1,
+                "minimum": 0,
+                "type": "number"
+              },
+              "provenance": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "requested_strength": {
+                "minimum": 0,
+                "type": "number"
+              },
+              "root_trace_event_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "round_budget_remaining": {
+                "minimum": 0,
+                "type": "number"
+              },
+              "source_budget_remaining": {
+                "minimum": 0,
+                "type": "number"
+              },
+              "source_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "source_kind": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "source_strength": {
+                "minimum": 0,
+                "type": "number"
+              },
+              "source_subject": {
+                "additionalProperties": true,
+                "properties": {
+                  "id": {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "type": {
+                    "minLength": 1,
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "id"
+                ],
+                "type": "object"
+              },
+              "source_trace_event_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "target_subject": {
+                "additionalProperties": true,
+                "properties": {
+                  "id": {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "type": {
+                    "minLength": 1,
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "id"
+                ],
+                "type": "object"
+              },
+              "trace_event_id": {
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "required": [
+              "applied_strength",
+              "attenuation",
+              "candidate_id",
+              "edge_attenuation",
+              "hop",
+              "kind",
+              "new_strength",
+              "policy_attenuation",
+              "provenance",
+              "requested_strength",
+              "root_trace_event_id",
+              "round_budget_remaining",
+              "source_budget_remaining",
+              "source_id",
+              "source_kind",
+              "source_strength",
+              "source_subject",
+              "source_trace_event_id",
+              "target_subject",
+              "trace_event_id"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "lineage"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "pheromone_evaporate"
+          }
+        },
+        "required": [
+          "event_type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "lineage": {
+            "additionalProperties": true,
+            "properties": {
+              "applied_strength": {
+                "minimum": 0,
+                "type": "number"
+              },
+              "candidate_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "deposited_at_step": {
+                "minimum": 0,
+                "type": "integer"
+              },
+              "elapsed_steps": {
+                "minimum": 1,
+                "type": "integer"
+              },
+              "kind": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "new_strength": {
+                "minimum": 0,
+                "type": "number"
+              },
+              "old_strength": {
+                "minimum": 0,
+                "type": "number"
+              },
+              "profile": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "provenance": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "requested_strength": {
+                "minimum": 0,
+                "type": "number"
+              },
+              "source_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "source_kind": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "source_strength": {
+                "minimum": 0,
+                "type": "number"
+              },
+              "source_trace_event_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "source_updated_at_step": {
+                "minimum": 0,
+                "type": "integer"
+              },
+              "step": {
+                "minimum": 0,
+                "type": "integer"
+              },
+              "strength_delta": {
+                "type": "number"
+              },
+              "subject_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "subject_type": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "trace_event_id": {
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "required": [
+              "applied_strength",
+              "candidate_id",
+              "deposited_at_step",
+              "elapsed_steps",
+              "kind",
+              "new_strength",
+              "old_strength",
+              "profile",
+              "provenance",
+              "requested_strength",
+              "source_id",
+              "source_kind",
+              "source_strength",
+              "source_trace_event_id",
+              "source_updated_at_step",
+              "step",
+              "strength_delta",
+              "subject_id",
+              "subject_type",
+              "trace_event_id"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "lineage"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "pheromone_expire"
+          }
+        },
+        "required": [
+          "event_type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "lineage": {
+            "additionalProperties": true,
+            "properties": {
+              "action": {
+                "const": "expire"
+              },
+              "applied_strength": {
+                "minimum": 0,
+                "type": "number"
+              },
+              "candidate_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "deposited_at_step": {
+                "minimum": 0,
+                "type": "integer"
+              },
+              "elapsed_steps": {
+                "minimum": 0,
+                "type": "integer"
+              },
+              "kind": {
+                "const": "stale"
+              },
+              "new_strength": {
+                "minimum": 0,
+                "type": "number"
+              },
+              "old_strength": {
+                "minimum": 0,
+                "type": "number"
+              },
+              "provenance": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "requested_strength": {
+                "minimum": 0,
+                "type": "number"
+              },
+              "source_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "source_kind": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "source_strength": {
+                "minimum": 0,
+                "type": "number"
+              },
+              "source_trace_event_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "source_updated_at_step": {
+                "minimum": 0,
+                "type": "integer"
+              },
+              "step": {
+                "minimum": 0,
+                "type": "integer"
+              },
+              "strength_delta": {
+                "type": "number"
+              },
+              "subject_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "subject_type": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "target": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "trace_event_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "ttl_steps": {
+                "minimum": 0,
+                "type": "integer"
+              }
+            },
+            "required": [
+              "action",
+              "applied_strength",
+              "candidate_id",
+              "deposited_at_step",
+              "elapsed_steps",
+              "kind",
+              "new_strength",
+              "old_strength",
+              "provenance",
+              "requested_strength",
+              "source_id",
+              "source_kind",
+              "source_strength",
+              "source_trace_event_id",
+              "source_updated_at_step",
+              "step",
+              "strength_delta",
+              "subject_id",
+              "subject_type",
+              "target",
+              "trace_event_id",
+              "ttl_steps"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "lineage"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "pheromone_normalize"
+          }
+        },
+        "required": [
+          "event_type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "lineage": {
+            "additionalProperties": true,
+            "properties": {
+              "candidates": {
+                "items": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "minItems": 1,
+                "type": "array"
+              },
+              "competition_mode": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "post_scores": {
+                "additionalProperties": {
+                  "type": "number"
+                },
+                "minProperties": 1,
+                "type": "object"
+              },
+              "pre_scores": {
+                "additionalProperties": {
+                  "type": "number"
+                },
+                "minProperties": 1,
+                "type": "object"
+              },
+              "response_model": {
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "required": [
+              "candidates",
+              "competition_mode",
+              "post_scores",
+              "pre_scores",
+              "response_model"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "lineage"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "pheromone_observe"
+          }
+        },
+        "required": [
+          "event_type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "lineage": {
+            "oneOf": [
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "lifecycle": {
+                    "enum": [
+                      "deposit",
+                      "diffusion",
+                      "feedback"
+                    ]
+                  },
+                  "processed_payload_fingerprint": {
+                    "pattern": "^sha256:[0-9a-f]{64}$",
+                    "type": "string"
+                  },
+                  "replay_payload": {
+                    "description": "Complete canonical replay receipt; its SHA-256 binding is recomputed by Trace ABI validation.",
+                    "minItems": 1,
+                    "type": "array"
+                  },
+                  "replay_payload_fingerprint": {
+                    "pattern": "^sha256:[0-9a-f]{64}$",
+                    "type": "string"
+                  },
+                  "result": {
+                    "const": "replay_ignored"
+                  },
+                  "source_trace_event_id": {
+                    "minLength": 1,
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "lifecycle",
+                  "source_trace_event_id",
+                  "result",
+                  "replay_payload",
+                  "replay_payload_fingerprint",
+                  "processed_payload_fingerprint"
+                ]
+              },
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "candidate_id": {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "novelty_pressure": {
+                    "minimum": 0,
+                    "type": "number"
+                  },
+                  "reopen_eligible": {
+                    "type": "boolean"
+                  },
+                  "source_trace_event_id": {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "subject_id": {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "subject_type": {
+                    "minLength": 1,
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "candidate_id",
+                  "subject_type",
+                  "subject_id",
+                  "novelty_pressure",
+                  "reopen_eligible",
+                  "source_trace_event_id"
+                ]
+              },
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "candidate_ids": {
+                    "items": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "minItems": 1,
+                    "type": "array"
+                  },
+                  "exploration_floor": {
+                    "minimum": 0,
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "exploration_floor",
+                  "candidate_ids"
+                ]
+              }
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "lineage"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "pheromone_reinforce"
+          }
+        },
+        "required": [
+          "event_type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "lineage": {
+            "additionalProperties": true,
+            "properties": {
+              "applied_strength": {
+                "minimum": 0,
+                "type": "number"
+              },
+              "budget_result": {
+                "additionalProperties": true,
+                "properties": {
+                  "round_remaining": {
+                    "minimum": 0,
+                    "type": "number"
+                  },
+                  "source_remaining": {
+                    "minimum": 0,
+                    "type": "number"
+                  },
+                  "status": {
+                    "enum": [
+                      "applied",
+                      "rejected"
+                    ]
+                  }
+                },
+                "required": [
+                  "round_remaining",
+                  "source_remaining",
+                  "status"
+                ],
+                "type": "object"
+              },
+              "candidate_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "delta": {
+                "type": "number"
+              },
+              "feedback_source": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "feedback_trace_event_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "kind": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "new_strength": {
+                "minimum": 0,
+                "type": "number"
+              },
+              "old_strength": {
+                "minimum": 0,
+                "type": "number"
+              },
+              "outcome": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "provenance": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "requested_strength": {
+                "minimum": 0,
+                "type": "number"
+              },
+              "reward": {
+                "type": "number"
+              },
+              "source_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "source_kind": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "source_strength": {
+                "minimum": 0,
+                "type": "number"
+              },
+              "source_trace_event_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "step": {
+                "minimum": 0,
+                "type": "integer"
+              },
+              "subject_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "subject_type": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "trace_event_id": {
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "required": [
+              "applied_strength",
+              "budget_result",
+              "candidate_id",
+              "delta",
+              "feedback_source",
+              "feedback_trace_event_id",
+              "kind",
+              "new_strength",
+              "old_strength",
+              "outcome",
+              "provenance",
+              "requested_strength",
+              "reward",
+              "source_id",
+              "source_kind",
+              "source_strength",
+              "source_trace_event_id",
+              "step",
+              "subject_id",
+              "subject_type",
+              "trace_event_id"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "lineage"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "pheromone_score"
+          }
+        },
+        "required": [
+          "event_type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "lineage": {
+            "additionalProperties": true,
+            "properties": {
+              "active_trails": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "candidate_id": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "deposited_at_step": {
+                      "minimum": 0,
+                      "type": "integer"
+                    },
+                    "kind": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "provenance": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "source_id": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "source_kind": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "strength": {
+                      "minimum": 0,
+                      "type": "number"
+                    },
+                    "subject_id": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "subject_type": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "trace_event_id": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "ttl_steps": {
+                      "oneOf": [
+                        {
+                          "minimum": 0,
+                          "type": "integer"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "updated_at_step": {
+                      "minimum": 0,
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "trace_event_id",
+                    "source_id",
+                    "candidate_id",
+                    "subject_type",
+                    "subject_id",
+                    "kind",
+                    "source_kind",
+                    "strength",
+                    "provenance",
+                    "deposited_at_step",
+                    "updated_at_step",
+                    "ttl_steps"
+                  ],
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              "current_step": {
+                "minimum": 0,
+                "type": "integer"
+              },
+              "kind_breakdown": {
+                "additionalProperties": {
+                  "additionalProperties": {
+                    "type": "number"
+                  },
+                  "type": "object"
+                },
+                "description": "Each candidate dimension must reconstruct its score; enforced by Trace ABI validation.",
+                "minProperties": 1,
+                "type": "object"
+              },
+              "processed_replay_receipts": {
+                "additionalProperties": false,
+                "properties": {
+                  "adjustment": {
+                    "additionalProperties": {
+                      "pattern": "^sha256:[0-9a-f]{64}$",
+                      "type": "string"
+                    },
+                    "type": "object"
+                  },
+                  "deposit": {
+                    "additionalProperties": {
+                      "pattern": "^sha256:[0-9a-f]{64}$",
+                      "type": "string"
+                    },
+                    "type": "object"
+                  },
+                  "diffusion": {
+                    "additionalProperties": {
+                      "pattern": "^sha256:[0-9a-f]{64}$",
+                      "type": "string"
+                    },
+                    "type": "object"
+                  },
+                  "feedback": {
+                    "additionalProperties": {
+                      "pattern": "^sha256:[0-9a-f]{64}$",
+                      "type": "string"
+                    },
+                    "type": "object"
+                  }
+                },
+                "required": [
+                  "deposit",
+                  "diffusion",
+                  "feedback",
+                  "adjustment"
+                ],
+                "type": "object"
+              },
+              "score_breakdown": {
+                "additionalProperties": {
+                  "additionalProperties": {
+                    "type": "number"
+                  },
+                  "type": "object"
+                },
+                "description": "Each candidate dimension must reconstruct its score; enforced by Trace ABI validation.",
+                "minProperties": 1,
+                "type": "object"
+              },
+              "scores": {
+                "additionalProperties": {
+                  "type": "number"
+                },
+                "minProperties": 1,
+                "type": "object"
+              },
+              "subject_breakdown": {
+                "additionalProperties": {
+                  "additionalProperties": {
+                    "type": "number"
+                  },
+                  "type": "object"
+                },
+                "description": "Each candidate dimension must reconstruct its score; enforced by Trace ABI validation.",
+                "minProperties": 1,
+                "type": "object"
+              }
+            },
+            "required": [
+              "active_trails",
+              "current_step",
+              "kind_breakdown",
+              "score_breakdown",
+              "scores",
+              "subject_breakdown"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "lineage"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "policy_adjustment"
+          }
+        },
+        "required": [
+          "event_type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "lineage": {
+            "additionalProperties": true,
+            "allOf": [
+              {
+                "if": {
+                  "properties": {
+                    "result": {
+                      "const": "replay_ignored"
+                    }
+                  },
+                  "required": [
+                    "result"
+                  ]
+                },
+                "then": {
+                  "properties": {
+                    "replayed": {
+                      "const": true
+                    }
+                  },
+                  "required": [
+                    "replayed",
+                    "replay_payload",
+                    "replay_payload_fingerprint",
+                    "processed_payload_fingerprint"
+                  ]
+                }
+              }
+            ],
+            "properties": {
+              "declared_bounds": {
+                "additionalProperties": {
+                  "oneOf": [
+                    {
+                      "items": {
+                        "type": "number"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2,
+                      "type": "array"
+                    },
+                    {
+                      "additionalProperties": false,
+                      "properties": {
+                        "max": {
+                          "type": "number"
+                        },
+                        "min": {
+                          "type": "number"
+                        }
+                      },
+                      "required": [
+                        "min",
+                        "max"
+                      ],
+                      "type": "object"
+                    },
+                    {
+                      "additionalProperties": false,
+                      "properties": {
+                        "allowed_values": {
+                          "items": {
+                            "oneOf": [
+                              {
+                                "type": "number"
+                              },
+                              {
+                                "minLength": 1,
+                                "type": "string"
+                              }
+                            ]
+                          },
+                          "minItems": 1,
+                          "type": "array"
+                        }
+                      },
+                      "required": [
+                        "allowed_values"
+                      ],
+                      "type": "object"
+                    }
+                  ]
+                },
+                "minProperties": 1,
+                "type": "object"
+              },
+              "layer_id": {
+                "enum": [
+                  "reactive",
+                  "learned",
+                  "evolutionary",
+                  "metacognitive"
+                ]
+              },
+              "processed_payload_fingerprint": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "proposed_values": {
+                "additionalProperties": {
+                  "oneOf": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "minLength": 1,
+                      "type": "string"
+                    }
+                  ]
+                },
+                "minProperties": 1,
+                "type": "object"
+              },
+              "provenance": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "replay_payload": {
+                "description": "Complete canonical replay receipt; its SHA-256 binding is recomputed by Trace ABI validation.",
+                "minItems": 1,
+                "type": "array"
+              },
+              "replay_payload_fingerprint": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "replayed": {
+                "type": "boolean"
+              },
+              "result": {
+                "enum": [
+                  "accepted",
+                  "rejected",
+                  "replay_ignored"
+                ]
+              },
+              "source_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "source_trace_event_id": {
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "required": [
+              "declared_bounds",
+              "layer_id",
+              "proposed_values",
+              "provenance",
+              "result",
+              "source_id",
+              "source_trace_event_id"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "lineage"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "recruit"
+          }
+        },
+        "required": [
+          "event_type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "lineage": {
+            "additionalProperties": true,
+            "properties": {
+              "candidate_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "provenance": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "source_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "source_trace_event_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "strength": {
+                "minimum": 0,
+                "type": "number"
+              },
+              "verification_trace_event_id": {
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "required": [
+              "candidate_id",
+              "provenance",
+              "source_id",
+              "source_trace_event_id",
+              "strength",
+              "verification_trace_event_id"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "lineage"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "scout_report"
+          }
+        },
+        "required": [
+          "event_type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "lineage": {
+            "additionalProperties": true,
+            "properties": {
+              "candidate_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "evidence_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "provenance": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "scout_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "source_trace_event_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "support": {
+                "minimum": 0,
+                "type": "number"
+              },
+              "verification_trace_event_id": {
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "required": [
+              "candidate_id",
+              "evidence_id",
+              "provenance",
+              "scout_id",
+              "source_trace_event_id",
+              "support",
+              "verification_trace_event_id"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "lineage"
+        ]
+      }
+    }
+  ],
   "properties": {
     "event_type": {
       "description": "Built-in trace event type or namespaced extension event using x-* or ext.*.",
-      "type": "string"
+      "oneOf": [
+        {
+          "enum": [
+            "block",
+            "candidate_score",
+            "commit",
+            "consensus_check",
+            "coordination_assess",
+            "coordination_resolve",
+            "evidence",
+            "explore",
+            "expose",
+            "fallback",
+            "grant",
+            "inhibit",
+            "invoke",
+            "layer_proposal",
+            "output",
+            "pheromone_clip",
+            "pheromone_deposit",
+            "pheromone_diffuse",
+            "pheromone_evaporate",
+            "pheromone_expire",
+            "pheromone_inhibit",
+            "pheromone_normalize",
+            "pheromone_observe",
+            "pheromone_reinforce",
+            "pheromone_score",
+            "plan",
+            "policy_adjustment",
+            "recovery",
+            "recruit",
+            "scout_report",
+            "signal"
+          ]
+        },
+        {
+          "pattern": "^(x-.+|ext\\..+)$",
+          "type": "string"
+        }
+      ]
     },
     "lineage": {
       "type": "object"
     },
     "protocol_id": {
+      "minLength": 1,
       "type": "string"
     },
     "reason": {
+      "minLength": 1,
       "type": "string"
     },
     "target": {
+      "minLength": 1,
       "type": "string"
     }
   },

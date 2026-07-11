@@ -6,6 +6,8 @@ import pytest
 
 from pheroos.protocol import DriverSpec, load_capability_manifest, validate_capability_manifest
 from pheroos.protocol.manifest import capability_manifest_from_dict
+from pheroos.protocol.schema import capability_schema
+from pheroos.protocol.schema_validation import validate_json_schema
 
 
 def test_toy_manifest_validates_without_errors() -> None:
@@ -64,7 +66,7 @@ def test_e2e_manifest_loads_provider_neutral_driver_specs() -> None:
     assert isinstance(driver, DriverSpec)
     assert driver.id == "driver:toy-evidence"
     assert driver.kind == "tool"
-    assert driver.permissions == ["driver:invoke"]
+    assert driver.permissions == ("driver:invoke",)
     assert driver.config_ref == ""
     assert driver.extensions == {}
 
@@ -124,3 +126,154 @@ def test_manifest_loader_rejects_invalid_manifest_shape(mutate, expected_detail:
         capability_manifest_from_dict(payload)
 
     assert expected_detail in str(exc.value)
+
+
+@pytest.mark.parametrize("constant", ["NaN", "Infinity", "-Infinity"])
+def test_manifest_file_loader_rejects_non_finite_json_constants(tmp_path: Path, constant: str) -> None:
+    raw = Path("examples/hybrid-pheromone-protocol/capability.json").read_text()
+    raw = raw.replace('"pheromone_evaporation_rate": 0.2', f'"pheromone_evaporation_rate": {constant}')
+    path = tmp_path / "capability.json"
+    path.write_text(raw)
+
+    with pytest.raises(ValueError, match="non-finite JSON number"):
+        load_capability_manifest(path)
+
+
+@pytest.mark.parametrize("extension_style", ["extensions", "namespaced"])
+def test_manifest_loader_rejects_exponent_overflow_in_extension_metadata(
+    tmp_path: Path,
+    extension_style: str,
+) -> None:
+    payload = json.loads(Path("examples/toy-protocol/capability.json").read_text())
+    if extension_style == "extensions":
+        payload.setdefault("extensions", {})["x-overflow"] = {"nested": "__OVERFLOW__"}
+    else:
+        payload["x-overflow"] = {"nested": "__OVERFLOW__"}
+    path = tmp_path / "capability.json"
+    path.write_text(
+        json.dumps(payload).replace('"__OVERFLOW__"', "1e999"),
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ValueError, match="non-finite JSON number"):
+        load_capability_manifest(path)
+
+
+@pytest.mark.parametrize(
+    ("mutate", "expected_path"),
+    [
+        (
+            lambda policy: policy["pheromone_kind_profiles"].__setitem__("positive", "not-an-object"),
+            "$.protocol.collective_decision_policy.pheromone_kind_profiles.positive",
+        ),
+        (
+            lambda policy: policy["pheromone_kind_profiles"]["positive"].__setitem__("weight", True),
+            "$.protocol.collective_decision_policy.pheromone_kind_profiles.positive.weight",
+        ),
+        (
+            lambda policy: policy["layer_default_weights"].__setitem__("learned", "1.0"),
+            "$.protocol.collective_decision_policy.layer_default_weights.learned",
+        ),
+        (
+            lambda policy: policy["layer_weight_bounds"].__setitem__("learned", [0, 1, 2]),
+            "$.protocol.collective_decision_policy.layer_weight_bounds.learned",
+        ),
+        (
+            lambda policy: policy["policy_adjustment_bounds"].__setitem__("manifest", [0, 1]),
+            "$.protocol.collective_decision_policy.policy_adjustment_bounds.manifest",
+        ),
+        (
+            lambda policy: policy["policy_adjustment_bounds"].__setitem__(
+                "pheromone_response_model",
+                {"allowed_values": []},
+            ),
+            "$.protocol.collective_decision_policy.policy_adjustment_bounds.pheromone_response_model.allowed_values",
+        ),
+    ],
+)
+def test_hybrid_raw_json_shape_is_rejected_consistently_by_schema_and_loader(
+    mutate,
+    expected_path: str,
+) -> None:
+    payload = json.loads(Path("examples/hybrid-pheromone-protocol/capability.json").read_text())
+    mutate(payload["protocol"]["collective_decision_policy"])
+    generated_errors = validate_json_schema(payload, capability_schema())
+    checked_in_schema = json.loads(Path("schemas/capability.schema.json").read_text())
+    artifact_errors = validate_json_schema(payload, checked_in_schema)
+
+    assert any(expected_path in item for item in generated_errors)
+    # The checked-in artifact is regenerated from the same schema in this change.
+    assert any(expected_path in item for item in artifact_errors)
+    with pytest.raises(ValueError, match="manifest schema invalid") as exc:
+        capability_manifest_from_dict(payload)
+    assert expected_path in str(exc.value)
+
+
+def test_manifest_mapping_does_not_repair_invalid_kind_profile_to_defaults() -> None:
+    payload = json.loads(Path("examples/hybrid-pheromone-protocol/capability.json").read_text())
+    payload["protocol"]["collective_decision_policy"]["pheromone_kind_profiles"]["alarm"] = []
+
+    with pytest.raises(ValueError, match="pheromone_kind_profiles.alarm"):
+        capability_manifest_from_dict(payload)
+
+
+def test_direct_payload_with_non_finite_number_is_rejected_before_typed_mapping() -> None:
+    payload = json.loads(Path("examples/hybrid-pheromone-protocol/capability.json").read_text())
+    payload["protocol"]["collective_decision_policy"]["pheromone_evaporation_rate"] = float("nan")
+
+    with pytest.raises(ValueError, match="must be finite"):
+        capability_manifest_from_dict(payload)
+
+
+@pytest.mark.parametrize(
+    "field_name",
+    [
+        "requires_committed_candidate",
+        "requires_evidence_contract",
+        "requires_stop_resolution",
+        "requires_publication_permission",
+    ],
+)
+def test_manifest_schema_rejects_disabling_mandatory_output_gate(field_name: str) -> None:
+    payload = json.loads(Path("examples/e2e-protocol/capability.json").read_text())
+    payload["protocol"]["output_policy"][field_name] = False
+
+    errors = validate_json_schema(payload, capability_schema())
+
+    assert any(f"$.protocol.output_policy.{field_name}" in item for item in errors)
+    with pytest.raises(ValueError, match=rf"output_policy\.{field_name}"):
+        capability_manifest_from_dict(payload)
+
+
+@pytest.mark.parametrize(
+    "field_name",
+    [
+        "requires_committed_candidate",
+        "requires_evidence_contract",
+        "requires_stop_resolution",
+        "requires_publication_permission",
+    ],
+)
+def test_typed_manifest_validation_rejects_disabling_mandatory_output_gate(
+    field_name: str,
+) -> None:
+    manifest = load_capability_manifest("examples/e2e-protocol/capability.json")
+    output_policy = replace(manifest.protocol.output_policy, **{field_name: False})
+    protocol = replace(manifest.protocol, output_policy=output_policy)
+
+    diagnostics = validate_capability_manifest(replace(manifest, protocol=protocol))
+
+    assert [(item.code, item.path) for item in diagnostics] == [
+        ("output_gate_disabled", f"protocol.output_policy.{field_name}")
+    ]
+
+
+def test_json_schema_integer_value_is_normalized_to_python_int() -> None:
+    payload = json.loads(Path("examples/hybrid-pheromone-protocol/capability.json").read_text())
+    payload["protocol"]["collective_decision_policy"]["pheromone_kind_profiles"]["alarm"]["ttl_steps"] = 1.0
+
+    manifest = capability_manifest_from_dict(payload)
+    ttl_steps = manifest.protocol.collective_decision_policy.pheromone_kind_profiles["alarm"].ttl_steps
+
+    assert ttl_steps == 1
+    assert isinstance(ttl_steps, int)

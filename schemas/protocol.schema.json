@@ -43,6 +43,14 @@
         "^(x-|ext\\.).+": {}
       },
       "properties": {
+        "exploration_enabled": {
+          "type": "boolean"
+        },
+        "exploration_floor": {
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number"
+        },
         "extensions": {
           "type": "object"
         },
@@ -51,6 +59,91 @@
         },
         "inhibition_enabled": {
           "type": "boolean"
+        },
+        "layer_confidence_thresholds": {
+          "additionalProperties": false,
+          "patternProperties": {
+            "^(reactive|learned|evolutionary|metacognitive)$": {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            }
+          },
+          "type": "object"
+        },
+        "layer_conflict_threshold": {
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number"
+        },
+        "layer_coordination_enabled": {
+          "type": "boolean"
+        },
+        "layer_default_weights": {
+          "additionalProperties": false,
+          "patternProperties": {
+            "^(reactive|learned|evolutionary|metacognitive)$": {
+              "maximum": 10,
+              "minimum": 0,
+              "type": "number"
+            }
+          },
+          "type": "object"
+        },
+        "layer_emergency_override_threshold": {
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number"
+        },
+        "layer_fallback_on_unresolved_conflict": {
+          "type": "boolean"
+        },
+        "layer_min_provenance": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "layer_weight_bounds": {
+          "additionalProperties": false,
+          "patternProperties": {
+            "^(reactive|learned|evolutionary|metacognitive)$": {
+              "oneOf": [
+                {
+                  "items": {
+                    "maximum": 10,
+                    "minimum": 0,
+                    "type": "number"
+                  },
+                  "maxItems": 2,
+                  "minItems": 2,
+                  "type": "array"
+                },
+                {
+                  "additionalProperties": false,
+                  "patternProperties": {
+                    "^(x-|ext\\.).+": {}
+                  },
+                  "properties": {
+                    "max": {
+                      "maximum": 10,
+                      "minimum": 0,
+                      "type": "number"
+                    },
+                    "min": {
+                      "maximum": 10,
+                      "minimum": 0,
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "min",
+                    "max"
+                  ],
+                  "type": "object"
+                }
+              ]
+            }
+          },
+          "type": "object"
         },
         "min_independent_scouts": {
           "minimum": 1,
@@ -64,6 +157,15 @@
             "hybrid"
           ]
         },
+        "novelty_decay_rate": {
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number"
+        },
+        "pheromone_activation_threshold": {
+          "minimum": 0,
+          "type": "number"
+        },
         "pheromone_cautionary_override_threshold": {
           "minimum": 0,
           "type": "number"
@@ -72,12 +174,30 @@
           "minimum": 0,
           "type": "number"
         },
+        "pheromone_competition_mode": {
+          "enum": [
+            "none",
+            "normalize"
+          ]
+        },
         "pheromone_decay_model": {
           "enum": [
             "linear",
             "exponential",
             "step"
           ]
+        },
+        "pheromone_diffusion_attenuation": {
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number"
+        },
+        "pheromone_diffusion_enabled": {
+          "type": "boolean"
+        },
+        "pheromone_diffusion_max_hops": {
+          "minimum": 0,
+          "type": "integer"
         },
         "pheromone_enabled": {
           "type": "boolean"
@@ -87,7 +207,116 @@
           "minimum": 0,
           "type": "number"
         },
+        "pheromone_exploration_floor": {
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number"
+        },
+        "pheromone_feedback_enabled": {
+          "type": "boolean"
+        },
+        "pheromone_kind_profiles": {
+          "additionalProperties": false,
+          "patternProperties": {
+            "^(positive|negative|cautionary|alarm|novelty|stale)$": {
+              "additionalProperties": false,
+              "patternProperties": {
+                "^(x-|ext\\.).+": {}
+              },
+              "properties": {
+                "can_suppress_positive": {
+                  "type": "boolean"
+                },
+                "evaporation_rate": {
+                  "maximum": 1,
+                  "minimum": 0,
+                  "type": "number"
+                },
+                "extensions": {
+                  "type": "object"
+                },
+                "priority": {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "response_model": {
+                  "enum": [
+                    "linear",
+                    "saturating",
+                    "threshold",
+                    "competitive"
+                  ]
+                },
+                "scored_subject_types": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "ttl_steps": {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "weight": {
+                  "minimum": 0,
+                  "type": "number"
+                }
+              },
+              "required": [],
+              "type": "object"
+            },
+            "^(x-|ext\\.).+": {
+              "additionalProperties": false,
+              "patternProperties": {
+                "^(x-|ext\\.).+": {}
+              },
+              "properties": {
+                "can_suppress_positive": {
+                  "type": "boolean"
+                },
+                "evaporation_rate": {
+                  "maximum": 1,
+                  "minimum": 0,
+                  "type": "number"
+                },
+                "extensions": {
+                  "type": "object"
+                },
+                "priority": {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "response_model": {
+                  "enum": [
+                    "linear",
+                    "saturating",
+                    "threshold",
+                    "competitive"
+                  ]
+                },
+                "scored_subject_types": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "ttl_steps": {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "weight": {
+                  "minimum": 0,
+                  "type": "number"
+                }
+              },
+              "required": [],
+              "type": "object"
+            }
+          },
+          "type": "object"
+        },
         "pheromone_max_strength": {
+          "minimum": 0,
           "type": "number"
         },
         "pheromone_min_source_diversity": {
@@ -95,6 +324,7 @@
           "type": "integer"
         },
         "pheromone_min_strength": {
+          "minimum": 0,
           "type": "number"
         },
         "pheromone_negative_weight": {
@@ -123,12 +353,139 @@
         "pheromone_require_trace": {
           "type": "boolean"
         },
+        "pheromone_response_model": {
+          "enum": [
+            "linear",
+            "saturating",
+            "threshold",
+            "competitive"
+          ]
+        },
+        "pheromone_saturation_threshold": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "pheromone_scored_subject_types": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "type": "array"
+        },
+        "policy_adjustment_bounds": {
+          "additionalProperties": false,
+          "patternProperties": {
+            "^(pheromone_evaporation_rate|pheromone_exploration_floor|layer_emergency_override_threshold)$": {
+              "oneOf": [
+                {
+                  "items": {
+                    "maximum": 1,
+                    "minimum": 0,
+                    "type": "number"
+                  },
+                  "maxItems": 2,
+                  "minItems": 2,
+                  "type": "array"
+                },
+                {
+                  "additionalProperties": false,
+                  "patternProperties": {
+                    "^(x-|ext\\.).+": {}
+                  },
+                  "properties": {
+                    "max": {
+                      "maximum": 1,
+                      "minimum": 0,
+                      "type": "number"
+                    },
+                    "min": {
+                      "maximum": 1,
+                      "minimum": 0,
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "min",
+                    "max"
+                  ],
+                  "type": "object"
+                }
+              ]
+            },
+            "^(pheromone_positive_weight|pheromone_negative_weight|pheromone_cautionary_weight|pheromone_alarm_weight|pheromone_novelty_weight|pheromone_cautionary_override_threshold|layer_learned_weight|layer_evolutionary_weight|layer_metacognitive_weight)$": {
+              "oneOf": [
+                {
+                  "items": {
+                    "maximum": 10,
+                    "minimum": 0,
+                    "type": "number"
+                  },
+                  "maxItems": 2,
+                  "minItems": 2,
+                  "type": "array"
+                },
+                {
+                  "additionalProperties": false,
+                  "patternProperties": {
+                    "^(x-|ext\\.).+": {}
+                  },
+                  "properties": {
+                    "max": {
+                      "maximum": 10,
+                      "minimum": 0,
+                      "type": "number"
+                    },
+                    "min": {
+                      "maximum": 10,
+                      "minimum": 0,
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "min",
+                    "max"
+                  ],
+                  "type": "object"
+                }
+              ]
+            },
+            "^pheromone_response_model$": {
+              "additionalProperties": false,
+              "patternProperties": {
+                "^(x-|ext\\.).+": {}
+              },
+              "properties": {
+                "allowed_values": {
+                  "items": {
+                    "enum": [
+                      "linear",
+                      "saturating",
+                      "threshold",
+                      "competitive"
+                    ]
+                  },
+                  "minItems": 1,
+                  "type": "array"
+                }
+              },
+              "required": [
+                "allowed_values"
+              ],
+              "type": "object"
+            }
+          },
+          "type": "object"
+        },
         "quorum_threshold": {
           "minimum": 1,
           "type": "integer"
         },
         "recruitment_enabled": {
           "type": "boolean"
+        },
+        "stale_route_reopen_threshold": {
+          "minimum": 0,
+          "type": "number"
         }
       },
       "required": [],
@@ -169,15 +526,19 @@
           "type": "object"
         },
         "requires_committed_candidate": {
+          "const": true,
           "type": "boolean"
         },
         "requires_evidence_contract": {
+          "const": true,
           "type": "boolean"
         },
         "requires_publication_permission": {
+          "const": true,
           "type": "boolean"
         },
         "requires_stop_resolution": {
+          "const": true,
           "type": "boolean"
         },
         "writer_may_create_facts": {

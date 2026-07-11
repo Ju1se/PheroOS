@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Any
 
 
@@ -17,8 +17,11 @@ class CheckResult:
 @dataclass(frozen=True)
 class ConformanceReport:
     target: str
-    checks: list[CheckResult] = field(default_factory=list)
+    checks: tuple[CheckResult, ...] = ()
     profile: str = ""
+
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "checks", tuple(self.checks))
 
     @property
     def ok(self) -> bool:
