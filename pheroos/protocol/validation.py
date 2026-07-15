@@ -2,9 +2,32 @@ from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
 import math
+import unicodedata
 from numbers import Real
 
-from pheroos.protocol.extensions import secret_like_paths
+from pheroos.protocol.commit_models import (
+    COMMIT_CANONICAL_VERSION,
+    COMMIT_MODEL,
+    COMMIT_POLICY_VERSION,
+    COMMIT_WIRE_VERSION,
+    MAX_AUTHORITY_INTEGER,
+    REQUIRED_COMMIT_RESET_RULES,
+    SUPPORTED_CERTIFICATE_MODES,
+    SUPPORTED_COMMIT_ASSURANCES,
+    SUPPORTED_DEADLINE_OUTCOMES,
+    SUPPORTED_RISK_BANDS,
+    SUPPORTED_TERMINAL_OUTCOMES,
+    WEIGHT_SCALE,
+    CertificatePolicy,
+    CollectiveCommitPolicy,
+    CommitWindowPolicy,
+    DistributedCommitPolicy,
+    EvidenceQualificationPolicy,
+    RiskBandPolicy,
+    SupportLeasePolicy,
+    TerminalOutcomePolicy,
+)
+from pheroos.protocol.extensions import is_namespaced_extension, secret_like_paths
 from pheroos.protocol.models import (
     SUPPORTED_COLLECTIVE_MODES,
     SUPPORTED_PHEROMONE_DECAY_MODELS,
@@ -15,6 +38,7 @@ from pheroos.protocol.models import (
     CapabilityManifest,
     CollectiveDecisionPolicy,
     PheromoneKindProfile,
+    ProtocolManifest,
     ValidationDiagnostic,
     collective_fallback_id,
     effective_pheromone_scored_subject_types,
@@ -64,6 +88,25 @@ ALLOWED_POLICY_ADJUSTMENT_FIELDS = frozenset(
     POLICY_ADJUSTMENT_NUMERIC_ABSOLUTE_BOUNDS | POLICY_ADJUSTMENT_ENUM_FIELDS
 )
 MAX_LAYER_WEIGHT = 10.0
+COMMIT_ASSURANCE_ORDER = {
+    "advisory": 0,
+    "evidence_bound": 1,
+    "certified": 2,
+    "distributed": 3,
+}
+CERTIFICATE_MODE_BY_ASSURANCE = {
+    "advisory": "none",
+    "evidence_bound": "local_receipt",
+    "certified": "portable",
+    "distributed": "distributed",
+}
+NON_PUBLISHABLE_TERMINAL_OUTCOMES = frozenset(
+    {"invalid", "finality_unavailable", "safety_violation"}
+)
+COMMIT_CRITICAL_EXTENSION_PREFIXES = (
+    "x-critical",
+    "ext.critical",
+)
 
 
 def validate_capability_manifest(manifest: CapabilityManifest) -> list[ValidationDiagnostic]:
@@ -382,6 +425,9 @@ def validate_capability_manifest(manifest: CapabilityManifest) -> list[Validatio
             if swarm_missing_trace:
                 diagnostics.append(error("swarm_trace_lineage_incomplete", f"trace policy missing swarm events: {', '.join(swarm_missing_trace)}", "protocol.trace_policy"))
 
+    if protocol.collective_commit_policy is not None:
+        diagnostics.extend(validate_collective_commit_policy(protocol))
+
     for recovery in protocol.recovery_protocols:
         for target in recovery.trigger_targets:
             if target not in target_ids:
@@ -419,6 +465,454 @@ def validate_capability_manifest(manifest: CapabilityManifest) -> list[Validatio
         diagnostics.append(error("trace_lineage_incomplete", f"trace policy missing events: {', '.join(missing_trace)}", "protocol.trace_policy"))
 
     return diagnostics
+
+
+def validate_collective_commit_policy(
+    protocol: ProtocolManifest,
+) -> list[ValidationDiagnostic]:
+    policy = protocol.collective_commit_policy
+    path = "protocol.collective_commit_policy"
+    if not isinstance(policy, CollectiveCommitPolicy):
+        return [
+            error(
+                "commit_policy_type_invalid",
+                "collective commit policy must use the canonical Protocol ABI declaration",
+                path,
+            )
+        ]
+
+    diagnostics: list[ValidationDiagnostic] = []
+    if policy.policy_version != COMMIT_POLICY_VERSION:
+        diagnostics.append(error("commit_policy_version_unsupported", "collective commit policy version is unsupported", f"{path}.policy_version"))
+    if policy.model != COMMIT_MODEL:
+        diagnostics.append(error("commit_model_unsupported", "collective commit model is unsupported", f"{path}.model"))
+    if policy.assurance not in SUPPORTED_COMMIT_ASSURANCES:
+        diagnostics.append(error("commit_assurance_unsupported", "collective commit assurance is unsupported", f"{path}.assurance"))
+    if not canonical_nonblank_text(policy.target):
+        diagnostics.append(error("commit_target_invalid", "collective commit target must be canonical and non-blank", f"{path}.target"))
+
+    extension_owners = (
+        (policy, path),
+        (policy.evidence_qualification, f"{path}.evidence_qualification"),
+        (policy.support_lease, f"{path}.support_lease"),
+        (policy.commit_window, f"{path}.commit_window"),
+        (policy.terminal_outcome, f"{path}.terminal_outcome"),
+        (policy.certificate, f"{path}.certificate"),
+        *((band, f"{path}.risk_bands.{name}") for name, band in policy.risk_bands.items()),
+    )
+    if policy.distributed is not None:
+        extension_owners = (
+            *extension_owners,
+            (policy.distributed, f"{path}.distributed"),
+        )
+    for owner, owner_path in extension_owners:
+        diagnostics.extend(
+            validate_commit_extensions(
+                getattr(owner, "extensions", None),
+                path=f"{owner_path}.extensions",
+            )
+        )
+
+    target_ids = {target.id for target in protocol.targets}
+    candidates_by_id = {candidate.id: candidate for candidate in protocol.candidates}
+    safe_candidates = {candidate.id for candidate in protocol.candidates if candidate.safe_fallback}
+    if policy.target not in target_ids:
+        diagnostics.append(error("commit_target_missing", "collective commit target must be declared", f"{path}.target"))
+    if policy.target != protocol.quorum_policy.target:
+        diagnostics.append(error("commit_target_mismatch", "collective commit and quorum targets must match exactly", f"{path}.target"))
+
+    diagnostics.extend(validate_evidence_qualification_policy(policy.evidence_qualification, path=f"{path}.evidence_qualification"))
+    diagnostics.extend(validate_support_lease_policy(policy.support_lease, path=f"{path}.support_lease"))
+    diagnostics.extend(validate_commit_window_policy(policy.commit_window, path=f"{path}.commit_window"))
+    diagnostics.extend(
+        validate_terminal_outcome_policy(
+            policy.terminal_outcome,
+            assurance=policy.assurance,
+            path=f"{path}.terminal_outcome",
+        )
+    )
+    diagnostics.extend(
+        validate_certificate_policy(
+            policy.certificate,
+            assurance=policy.assurance,
+            path=f"{path}.certificate",
+        )
+    )
+    diagnostics.extend(
+        validate_distributed_commit_policy(
+            policy.distributed,
+            assurance=policy.assurance,
+            path=f"{path}.distributed",
+        )
+    )
+
+    terminal = policy.terminal_outcome
+    if isinstance(terminal, TerminalOutcomePolicy):
+        fallback_id = terminal.safe_fallback_candidate
+        if fallback_id != protocol.quorum_policy.fallback_candidate:
+            diagnostics.append(error("commit_fallback_quorum_mismatch", "collective commit and quorum fallbacks must match exactly", f"{path}.terminal_outcome.safe_fallback_candidate"))
+        if protocol.collective_decision_policy is not None and fallback_id != collective_fallback_id(protocol):
+            diagnostics.append(error("commit_fallback_collective_mismatch", "collective commit and collective decision fallbacks must match exactly", f"{path}.terminal_outcome.safe_fallback_candidate"))
+        fallback = candidates_by_id.get(fallback_id)
+        if fallback is None:
+            diagnostics.append(error("commit_fallback_missing", "collective commit fallback candidate must be declared", f"{path}.terminal_outcome.safe_fallback_candidate"))
+        elif fallback_id not in safe_candidates:
+            diagnostics.append(error("commit_fallback_not_safe", "collective commit fallback candidate must be marked safe", f"{path}.terminal_outcome.safe_fallback_candidate"))
+        elif fallback.target != policy.target:
+            diagnostics.append(error("commit_fallback_target_mismatch", "collective commit fallback must target the active commit target", f"{path}.terminal_outcome.safe_fallback_candidate"))
+
+    if protocol.evidence_policy.require_provenance is not True:
+        diagnostics.append(error("commit_manifest_provenance_required", "collective commit requires protocol evidence provenance", "protocol.evidence_policy.require_provenance"))
+
+    diagnostics.extend(validate_risk_bands(policy, path=f"{path}.risk_bands"))
+    return diagnostics
+
+
+def validate_commit_extensions(
+    extensions: object,
+    *,
+    path: str,
+) -> list[ValidationDiagnostic]:
+    """Keep optional metadata open without accepting unknown critical semantics."""
+
+    if not isinstance(extensions, Mapping):
+        return [
+            error(
+                "commit_extensions_type_invalid",
+                "commit extensions must be a namespaced metadata object",
+                path,
+            )
+        ]
+    diagnostics: list[ValidationDiagnostic] = []
+    for key in extensions:
+        if not isinstance(key, str) or not is_namespaced_extension(key):
+            diagnostics.append(
+                error(
+                    "commit_extension_namespace_invalid",
+                    "commit extension keys must use x- or ext. namespaces",
+                    f"{path}.{key}",
+                )
+            )
+            continue
+        normalized = key.lower()
+        if any(
+            normalized == prefix
+            or normalized.startswith(prefix + "-")
+            or normalized.startswith(prefix + ".")
+            for prefix in COMMIT_CRITICAL_EXTENSION_PREFIXES
+        ):
+            diagnostics.append(
+                error(
+                    "commit_unknown_critical_extension",
+                    "unknown critical commit extensions require a new supported ABI version",
+                    f"{path}.{key}",
+                )
+            )
+    return diagnostics
+
+
+def validate_evidence_qualification_policy(
+    policy: object,
+    *,
+    path: str,
+) -> list[ValidationDiagnostic]:
+    if not isinstance(policy, EvidenceQualificationPolicy):
+        return [error("commit_evidence_policy_type_invalid", "evidence qualification must use the canonical Protocol ABI declaration", path)]
+    diagnostics: list[ValidationDiagnostic] = []
+    if policy.numeric_scale != WEIGHT_SCALE:
+        diagnostics.append(error("commit_numeric_scale_invalid", "commit numeric scale must use the v1 fixed-point scale", f"{path}.numeric_scale"))
+    for name, value, minimum, maximum in (
+        ("minimum_quality_ppm", policy.minimum_quality_ppm, 0, WEIGHT_SCALE),
+        ("minimum_relevance_ppm", policy.minimum_relevance_ppm, 0, WEIGHT_SCALE),
+        ("positive_group_cap", policy.positive_group_cap, 1, MAX_AUTHORITY_INTEGER),
+        ("counter_group_cap", policy.counter_group_cap, 1, MAX_AUTHORITY_INTEGER),
+        ("counter_weight_ppm", policy.counter_weight_ppm, 1, MAX_AUTHORITY_INTEGER),
+        ("minimum_positive_evidence", policy.minimum_positive_evidence, 1, MAX_AUTHORITY_INTEGER),
+        ("maximum_counterevidence", policy.maximum_counterevidence, 0, MAX_AUTHORITY_INTEGER),
+        ("maximum_counterevidence_ratio_ppm", policy.maximum_counterevidence_ratio_ppm, 0, WEIGHT_SCALE),
+        ("domain_contribution_floor", policy.domain_contribution_floor, 1, MAX_AUTHORITY_INTEGER),
+        ("minimum_source_diversity", policy.minimum_source_diversity, 1, MAX_AUTHORITY_INTEGER),
+        ("observation_ttl_steps", policy.observation_ttl_steps, 1, MAX_AUTHORITY_INTEGER),
+    ):
+        if not authority_integer_in_range(value, minimum, maximum):
+            diagnostics.append(error("commit_evidence_numeric_invalid", f"{name} is outside the declared commit numeric bounds", f"{path}.{name}"))
+    if not canonical_string_set(policy.required_challenge_categories, require_nonempty=True):
+        diagnostics.append(error("commit_challenge_categories_invalid", "required challenge categories must be unique canonical strings", f"{path}.required_challenge_categories"))
+    if policy.require_provenance is not True:
+        diagnostics.append(error("commit_evidence_provenance_required", "commit evidence provenance cannot be disabled", f"{path}.require_provenance"))
+    if policy.require_trace is not True:
+        diagnostics.append(error("commit_evidence_trace_required", "commit evidence trace lineage cannot be disabled", f"{path}.require_trace"))
+    return diagnostics
+
+
+def validate_support_lease_policy(
+    policy: object,
+    *,
+    path: str,
+) -> list[ValidationDiagnostic]:
+    if not isinstance(policy, SupportLeasePolicy):
+        return [error("commit_support_policy_type_invalid", "support lease policy must use the canonical Protocol ABI declaration", path)]
+    diagnostics: list[ValidationDiagnostic] = []
+    for name, value, minimum, maximum in (
+        ("minimum_support_clusters", policy.minimum_support_clusters, 1, MAX_AUTHORITY_INTEGER),
+        ("support_ratio_ppm", policy.support_ratio_ppm, 1, WEIGHT_SCALE),
+        ("lease_ttl_steps", policy.lease_ttl_steps, 1, MAX_AUTHORITY_INTEGER),
+    ):
+        if not authority_integer_in_range(value, minimum, maximum):
+            diagnostics.append(error("commit_support_numeric_invalid", f"{name} is outside the declared commit numeric bounds", f"{path}.{name}"))
+    for name, observed, required in (
+        ("membership_mode", policy.membership_mode, "verified_snapshot_v1"),
+        ("switch_mode", policy.switch_mode, "revoke_then_issue_v1"),
+        ("equivocation_mode", policy.equivocation_mode, "exclude_conflicts_v1"),
+    ):
+        if observed != required:
+            diagnostics.append(error("commit_support_semantics_invalid", f"{name} must use the normative v1 mode", f"{path}.{name}"))
+    if policy.evidence_reference_required is not True:
+        diagnostics.append(error("commit_support_evidence_reference_required", "support leases must reference qualified evidence", f"{path}.evidence_reference_required"))
+    if policy.cluster_verification_required is not True:
+        diagnostics.append(error("commit_support_cluster_verification_required", "support leases must use verified principal clusters", f"{path}.cluster_verification_required"))
+    return diagnostics
+
+
+def validate_commit_window_policy(
+    policy: object,
+    *,
+    path: str,
+) -> list[ValidationDiagnostic]:
+    if not isinstance(policy, CommitWindowPolicy):
+        return [error("commit_window_policy_type_invalid", "commit window policy must use the canonical Protocol ABI declaration", path)]
+    diagnostics: list[ValidationDiagnostic] = []
+    for name, value, minimum in (
+        ("minimum_stability_steps", policy.minimum_stability_steps, 1),
+        ("deliberation_deadline_steps", policy.deliberation_deadline_steps, 1),
+        ("maximum_leader_resets", policy.maximum_leader_resets, 0),
+        ("maximum_epoch_restarts", policy.maximum_epoch_restarts, 0),
+        ("run_deadline_steps", policy.run_deadline_steps, 1),
+    ):
+        if not authority_integer_in_range(value, minimum, MAX_AUTHORITY_INTEGER):
+            diagnostics.append(error("commit_window_numeric_invalid", f"{name} is outside the declared commit numeric bounds", f"{path}.{name}"))
+    if set(policy.reset_rules) != set(REQUIRED_COMMIT_RESET_RULES) or not canonical_string_set(policy.reset_rules, require_nonempty=True):
+        diagnostics.append(error("commit_window_reset_rules_invalid", "commit window reset rules must exactly cover every normative reset condition", f"{path}.reset_rules"))
+    if authority_integer(policy.minimum_stability_steps) and authority_integer(policy.deliberation_deadline_steps) and policy.minimum_stability_steps > policy.deliberation_deadline_steps:
+        diagnostics.append(error("commit_window_unreachable", "minimum stability cannot exceed the deliberation deadline", path))
+    if authority_integer(policy.deliberation_deadline_steps) and authority_integer(policy.run_deadline_steps) and policy.deliberation_deadline_steps > policy.run_deadline_steps:
+        diagnostics.append(error("commit_deadline_order_invalid", "deliberation deadline cannot exceed the absolute run deadline", path))
+    return diagnostics
+
+
+def validate_terminal_outcome_policy(
+    policy: object,
+    *,
+    assurance: object,
+    path: str,
+) -> list[ValidationDiagnostic]:
+    if not isinstance(policy, TerminalOutcomePolicy):
+        return [error("commit_terminal_policy_type_invalid", "terminal outcome policy must use the canonical Protocol ABI declaration", path)]
+    diagnostics: list[ValidationDiagnostic] = []
+    if not canonical_nonblank_text(policy.safe_fallback_candidate):
+        diagnostics.append(error("commit_fallback_invalid", "safe fallback candidate must be canonical and non-blank", f"{path}.safe_fallback_candidate"))
+    if policy.deadline_outcome not in SUPPORTED_DEADLINE_OUTCOMES:
+        diagnostics.append(error("commit_deadline_outcome_invalid", "deadline outcome must be safe_fallback or advisory", f"{path}.deadline_outcome"))
+    if policy.policy_incomplete_outcome != "invalid":
+        diagnostics.append(error("commit_policy_incomplete_outcome_invalid", "policy-incomplete runs must terminate as invalid", f"{path}.policy_incomplete_outcome"))
+    if policy.finality_unavailable_outcome != "finality_unavailable":
+        diagnostics.append(error("commit_finality_outcome_invalid", "missing finality must remain a typed finality_unavailable outcome", f"{path}.finality_unavailable_outcome"))
+    for name, outcomes in (
+        ("deliverable_outcomes", policy.deliverable_outcomes),
+        ("publishable_outcomes", policy.publishable_outcomes),
+        ("executable_outcomes", policy.executable_outcomes),
+    ):
+        if not canonical_string_set(outcomes) or not set(outcomes).issubset(SUPPORTED_TERMINAL_OUTCOMES):
+            diagnostics.append(error("commit_terminal_outcomes_invalid", f"{name} must contain unique supported terminal outcomes", f"{path}.{name}"))
+    if set(policy.deliverable_outcomes) != set(SUPPORTED_TERMINAL_OUTCOMES):
+        diagnostics.append(error("commit_terminal_totality_incomplete", "every terminal outcome must remain deliverable", f"{path}.deliverable_outcomes"))
+    if set(policy.publishable_outcomes) & NON_PUBLISHABLE_TERMINAL_OUTCOMES:
+        diagnostics.append(error("commit_terminal_publication_unsafe", "invalid, finality-unavailable, and safety-violation outcomes cannot authorize publication", f"{path}.publishable_outcomes"))
+    if not set(policy.executable_outcomes).issubset({"evidence_commit"}):
+        diagnostics.append(error("commit_terminal_execution_unsafe", "only an evidence commit may be execution-eligible", f"{path}.executable_outcomes"))
+    if assurance == "advisory" and (policy.publishable_outcomes or policy.executable_outcomes):
+        diagnostics.append(error("commit_advisory_authority_invalid", "advisory assurance cannot authorize publication or execution", path))
+    return diagnostics
+
+
+def validate_certificate_policy(
+    policy: object,
+    *,
+    assurance: object,
+    path: str,
+) -> list[ValidationDiagnostic]:
+    if not isinstance(policy, CertificatePolicy):
+        return [error("commit_certificate_policy_type_invalid", "certificate policy must use the canonical Protocol ABI declaration", path)]
+    diagnostics: list[ValidationDiagnostic] = []
+    if policy.mode not in SUPPORTED_CERTIFICATE_MODES:
+        diagnostics.append(error("commit_certificate_mode_invalid", "certificate mode is unsupported", f"{path}.mode"))
+    expected_mode = CERTIFICATE_MODE_BY_ASSURANCE.get(assurance)
+    if expected_mode is not None and policy.mode != expected_mode:
+        diagnostics.append(error("commit_certificate_assurance_mismatch", "certificate mode must exactly match the declared assurance", f"{path}.mode"))
+    if policy.wire_version != COMMIT_WIRE_VERSION:
+        diagnostics.append(error("commit_wire_version_unsupported", "commit wire version is unsupported", f"{path}.wire_version"))
+    if policy.canonicalization != COMMIT_CANONICAL_VERSION:
+        diagnostics.append(error("commit_canonical_version_unsupported", "commit canonicalization version is unsupported", f"{path}.canonicalization"))
+    if policy.hash_algorithm != "sha256":
+        diagnostics.append(error("commit_hash_algorithm_unsupported", "commit hash algorithm must be sha256", f"{path}.hash_algorithm"))
+    requires_portable = assurance in {"certified", "distributed"}
+    if policy.issuer_attestation_required is not requires_portable:
+        diagnostics.append(error("commit_certificate_issuer_requirement_invalid", "issuer attestation requirement must match the assurance", f"{path}.issuer_attestation_required"))
+    if policy.independent_verification_required is not requires_portable:
+        diagnostics.append(error("commit_certificate_verification_requirement_invalid", "independent verification requirement must match the assurance", f"{path}.independent_verification_required"))
+    return diagnostics
+
+
+def validate_distributed_commit_policy(
+    policy: object,
+    *,
+    assurance: object,
+    path: str,
+) -> list[ValidationDiagnostic]:
+    if assurance != "distributed":
+        if policy is not None:
+            return [error("commit_distributed_policy_inactive", "distributed policy is only valid for distributed assurance", path)]
+        return []
+    if not isinstance(policy, DistributedCommitPolicy):
+        return [error("commit_distributed_policy_required", "distributed assurance requires the complete distributed policy", path)]
+    diagnostics: list[ValidationDiagnostic] = []
+    if policy.fault_model != "byzantine_static_v1":
+        diagnostics.append(error("commit_fault_model_invalid", "distributed commit must use the normative static Byzantine fault model", f"{path}.fault_model"))
+    if policy.membership_mode != "static_epoch_verified_clusters_v1":
+        diagnostics.append(error("commit_membership_mode_invalid", "distributed commit must use static epoch verified clusters", f"{path}.membership_mode"))
+    if policy.conflict_rule != "freeze_v1":
+        diagnostics.append(error("commit_conflict_rule_invalid", "distributed conflicts must freeze finality", f"{path}.conflict_rule"))
+    if not canonical_nonblank_text(policy.epoch_transition_rule):
+        diagnostics.append(error("commit_epoch_transition_rule_invalid", "epoch transition rule must be canonical and non-blank", f"{path}.epoch_transition_rule"))
+    for name, value, minimum in (
+        ("membership_size", policy.membership_size, 1),
+        ("max_byzantine_faults", policy.max_byzantine_faults, 0),
+        ("witness_quorum", policy.witness_quorum, 1),
+        ("witness_ttl_steps", policy.witness_ttl_steps, 1),
+        ("minimum_failure_domain_diversity", policy.minimum_failure_domain_diversity, 1),
+    ):
+        if not authority_integer_in_range(value, minimum, MAX_AUTHORITY_INTEGER):
+            diagnostics.append(error("commit_distributed_numeric_invalid", f"{name} is outside the declared commit numeric bounds", f"{path}.{name}"))
+    if all(authority_integer(value) for value in (policy.membership_size, policy.max_byzantine_faults, policy.witness_quorum)):
+        n = policy.membership_size
+        f = policy.max_byzantine_faults
+        q = policy.witness_quorum
+        if n < 3 * f + 1:
+            diagnostics.append(error("commit_byzantine_membership_invalid", "membership must satisfy n >= 3f + 1", path))
+        if q > n - f:
+            diagnostics.append(error("commit_witness_quorum_too_large", "witness quorum must satisfy q <= n - f", path))
+        if 2 * q - n <= f:
+            diagnostics.append(error("commit_quorum_intersection_invalid", "witness quorum must satisfy 2q - n > f", path))
+        if authority_integer(policy.minimum_failure_domain_diversity) and policy.minimum_failure_domain_diversity > q:
+            diagnostics.append(error("commit_failure_domain_diversity_unreachable", "failure-domain diversity cannot exceed the witness quorum", f"{path}.minimum_failure_domain_diversity"))
+    return diagnostics
+
+
+def validate_risk_bands(
+    policy: CollectiveCommitPolicy,
+    *,
+    path: str,
+) -> list[ValidationDiagnostic]:
+    diagnostics: list[ValidationDiagnostic] = []
+    if not isinstance(policy.risk_bands, Mapping) or set(policy.risk_bands) != set(SUPPORTED_RISK_BANDS):
+        return [error("commit_risk_band_coverage_invalid", "risk policy must declare exactly LOW, MODERATE, HIGH, and CRITICAL", path)]
+    evidence = policy.evidence_qualification
+    support = policy.support_lease
+    window = policy.commit_window
+    terminal = policy.terminal_outcome
+    previous: RiskBandPolicy | None = None
+    for band_name in SUPPORTED_RISK_BANDS:
+        band = policy.risk_bands[band_name]
+        band_path = f"{path}.{band_name}"
+        if not isinstance(band, RiskBandPolicy):
+            diagnostics.append(error("commit_risk_band_type_invalid", "risk band must use the canonical Protocol ABI declaration", band_path))
+            previous = None
+            continue
+        for name, value, minimum, maximum in (
+            ("minimum_positive_evidence", band.minimum_positive_evidence, 1, MAX_AUTHORITY_INTEGER),
+            ("maximum_counterevidence", band.maximum_counterevidence, 0, MAX_AUTHORITY_INTEGER),
+            ("maximum_counterevidence_ratio_ppm", band.maximum_counterevidence_ratio_ppm, 0, WEIGHT_SCALE),
+            ("minimum_support_clusters", band.minimum_support_clusters, 1, MAX_AUTHORITY_INTEGER),
+            ("minimum_support_ratio_ppm", band.minimum_support_ratio_ppm, 1, WEIGHT_SCALE),
+            ("minimum_source_diversity", band.minimum_source_diversity, 1, MAX_AUTHORITY_INTEGER),
+            ("minimum_margin", band.minimum_margin, 1, MAX_AUTHORITY_INTEGER),
+            ("stability_steps", band.stability_steps, 1, MAX_AUTHORITY_INTEGER),
+        ):
+            if not authority_integer_in_range(value, minimum, maximum):
+                diagnostics.append(error("commit_risk_numeric_invalid", f"{name} is outside the declared commit numeric bounds", f"{band_path}.{name}"))
+        if band.minimum_assurance not in SUPPORTED_COMMIT_ASSURANCES:
+            diagnostics.append(error("commit_risk_assurance_invalid", "risk band minimum assurance is unsupported", f"{band_path}.minimum_assurance"))
+        if not canonical_string_set(band.required_challenge_categories, require_nonempty=True):
+            diagnostics.append(error("commit_risk_challenges_invalid", "risk band challenge categories must be unique canonical strings", f"{band_path}.required_challenge_categories"))
+        for name, outcomes in (
+            ("publishable_outcomes", band.publishable_outcomes),
+            ("executable_outcomes", band.executable_outcomes),
+        ):
+            if not canonical_string_set(outcomes) or not set(outcomes).issubset(SUPPORTED_TERMINAL_OUTCOMES):
+                diagnostics.append(error("commit_risk_outcomes_invalid", f"{name} must contain unique supported outcomes", f"{band_path}.{name}"))
+
+        if isinstance(evidence, EvidenceQualificationPolicy):
+            if band.minimum_positive_evidence < evidence.minimum_positive_evidence or band.maximum_counterevidence > evidence.maximum_counterevidence or band.maximum_counterevidence_ratio_ppm > evidence.maximum_counterevidence_ratio_ppm or band.minimum_source_diversity < evidence.minimum_source_diversity or not set(band.required_challenge_categories).issuperset(evidence.required_challenge_categories):
+                diagnostics.append(error("commit_risk_evidence_weakened", "risk band cannot weaken the evidence qualification baseline", band_path))
+        if isinstance(support, SupportLeasePolicy) and (band.minimum_support_clusters < support.minimum_support_clusters or band.minimum_support_ratio_ppm < support.support_ratio_ppm):
+            diagnostics.append(error("commit_risk_support_weakened", "risk band cannot weaken the support lease baseline", band_path))
+        if isinstance(window, CommitWindowPolicy):
+            if band.stability_steps < window.minimum_stability_steps:
+                diagnostics.append(error("commit_risk_window_weakened", "risk band cannot weaken the stability baseline", f"{band_path}.stability_steps"))
+            if band.stability_steps > window.deliberation_deadline_steps:
+                diagnostics.append(error("commit_risk_window_unreachable", "risk-band stability cannot exceed the deliberation deadline", f"{band_path}.stability_steps"))
+        if isinstance(terminal, TerminalOutcomePolicy):
+            if not set(band.publishable_outcomes).issubset(terminal.publishable_outcomes) or not set(band.executable_outcomes).issubset(terminal.executable_outcomes):
+                diagnostics.append(error("commit_risk_action_ceiling_exceeded", "risk-band action outcomes must stay inside the terminal policy ceiling", band_path))
+        if not set(band.executable_outcomes).issubset({"evidence_commit"}):
+            diagnostics.append(error("commit_risk_execution_unsafe", "risk bands may execute only an evidence commit", f"{band_path}.executable_outcomes"))
+
+        if previous is not None:
+            weaker_minimum = any(
+                current < prior
+                for current, prior in (
+                    (band.minimum_positive_evidence, previous.minimum_positive_evidence),
+                    (band.minimum_support_clusters, previous.minimum_support_clusters),
+                    (band.minimum_support_ratio_ppm, previous.minimum_support_ratio_ppm),
+                    (band.minimum_source_diversity, previous.minimum_source_diversity),
+                    (band.minimum_margin, previous.minimum_margin),
+                    (band.stability_steps, previous.stability_steps),
+                )
+            )
+            weaker_maximum = band.maximum_counterevidence > previous.maximum_counterevidence or band.maximum_counterevidence_ratio_ppm > previous.maximum_counterevidence_ratio_ppm
+            weaker_challenge = not set(band.required_challenge_categories).issuperset(previous.required_challenge_categories)
+            weaker_assurance = COMMIT_ASSURANCE_ORDER.get(band.minimum_assurance, -1) < COMMIT_ASSURANCE_ORDER.get(previous.minimum_assurance, -1)
+            expanded_actions = not set(band.publishable_outcomes).issubset(previous.publishable_outcomes) or not set(band.executable_outcomes).issubset(previous.executable_outcomes)
+            if weaker_minimum or weaker_maximum or weaker_challenge or weaker_assurance or expanded_actions:
+                diagnostics.append(error("commit_risk_monotonicity_invalid", "risk thresholds, assurance, challenges, and action authority must strengthen monotonically", band_path))
+        previous = band
+    return diagnostics
+
+
+def authority_integer(value: object) -> bool:
+    return type(value) is int and 0 <= value <= MAX_AUTHORITY_INTEGER
+
+
+def authority_integer_in_range(value: object, minimum: int, maximum: int) -> bool:
+    return authority_integer(value) and minimum <= value <= maximum
+
+
+def canonical_nonblank_text(value: object) -> bool:
+    return (
+        isinstance(value, str)
+        and bool(value)
+        and value == value.strip()
+        and value == unicodedata.normalize("NFC", value)
+    )
+
+
+def canonical_string_set(value: object, *, require_nonempty: bool = False) -> bool:
+    if not isinstance(value, Sequence) or isinstance(value, (str, bytes, bytearray)):
+        return False
+    if require_nonempty and not value:
+        return False
+    values = list(value)
+    return all(canonical_nonblank_text(item) for item in values) and len(values) == len(set(values))
 
 
 def validate_ok(manifest: CapabilityManifest) -> bool:

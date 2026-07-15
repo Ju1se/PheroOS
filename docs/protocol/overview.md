@@ -11,6 +11,13 @@ and future adaptive runtime boundaries are described in
 [adaptive-pheromone-core-plan.md](adaptive-pheromone-core-plan.md). The complete
 audit-driven hardening and delivery plan is documented in
 [hybrid-pheromone-full-hardening-plan.md](hybrid-pheromone-full-hardening-plan.md).
+The implemented Draft Optimal Commit evolution that separates Hybrid attention
+and memory from commit authority is specified in
+[optimal-commit-abi.md](optimal-commit-abi.md). Its design record is documented in
+[commit-integrity-abi-plan.md](commit-integrity-abi-plan.md).
+The complete no-downgrade implementation, liveness, certificate, and
+distributed-finality hardening record is documented in
+[optimal-commit-full-hardening-plan.md](optimal-commit-full-hardening-plan.md).
 
 Protocol code is contract code. It declares what exists and validates whether a
 manifest is structurally compatible with the protocol.
@@ -27,6 +34,7 @@ shapes before constructing typed manifest objects.
 - candidate declarations
 - quorum policy
 - collective decision policy
+- optional collective commit policy and assurance profile
 - recovery policy
 - evidence policy
 - output policy
@@ -57,6 +65,9 @@ CLI, examples, app runtime modules, provider frameworks, or tools.
 - Hybrid pheromone policy fields are bounded when declared: subject scoring,
   kind profiles, diffusion, feedback, nonlinear response, layer coordination,
   and policy-adjustment bounds.
+- An activated collective commit policy binds a declared target and safe
+  fallback, exact evidence/risk/window rules, bounded liveness, certificate
+  mode, and any distributed fault model without changing baseline manifests.
 - Secret-like manifest fields are rejected or diagnosed.
 - Extension metadata is preserved without granting evidence, permission, quorum,
   commit, or output authority.

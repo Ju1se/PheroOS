@@ -1,0 +1,470 @@
+{
+  "id": "commit-integrity-v1-case-01",
+  "tck_version": "pheroos-commit-integrity-tck-v1",
+  "matrix_case": 1,
+  "title": "Positive evidence independence-group cap",
+  "manifest": {
+    "id": "hybrid-commit-protocol",
+    "name": "Hybrid Commit Protocol",
+    "version": "0.1.0",
+    "permissions": [],
+    "required_connections": [],
+    "drivers": [],
+    "protocol": {
+      "protocol_version": "pheroos.protocol.v1",
+      "id": "swarm.hybrid-commit",
+      "targets": [
+        {
+          "id": "decision:collective",
+          "description": "A provider-free Hybrid attention and evidence-bound Optimal Commit target."
+        }
+      ],
+      "signals": [
+        {
+          "type": "recruitment",
+          "target": "decision:collective",
+          "authority_required": "governance"
+        },
+        {
+          "type": "inhibition",
+          "target": "decision:collective",
+          "authority_required": "governance"
+        }
+      ],
+      "candidates": [
+        {
+          "id": "candidate:alpha",
+          "target": "decision:collective",
+          "label": "Alpha"
+        },
+        {
+          "id": "candidate:beta",
+          "target": "decision:collective",
+          "label": "Beta"
+        },
+        {
+          "id": "candidate:safe_fallback",
+          "target": "decision:collective",
+          "label": "Safe Fallback",
+          "safe_fallback": true
+        }
+      ],
+      "quorum_policy": {
+        "target": "decision:collective",
+        "fallback_candidate": "candidate:safe_fallback",
+        "commit_threshold": 2
+      },
+      "collective_decision_policy": {
+        "mode": "hybrid",
+        "min_independent_scouts": 2,
+        "quorum_threshold": 4,
+        "recruitment_enabled": true,
+        "inhibition_enabled": true,
+        "pheromone_enabled": true,
+        "pheromone_evaporation_rate": 0.2,
+        "pheromone_decay_model": "exponential",
+        "pheromone_min_strength": 0,
+        "pheromone_max_strength": 10,
+        "pheromone_positive_weight": 1,
+        "pheromone_negative_weight": 1,
+        "pheromone_cautionary_weight": 1,
+        "pheromone_cautionary_override_threshold": 2,
+        "pheromone_novelty_weight": 0.5,
+        "pheromone_per_source_cap": 4,
+        "pheromone_per_round_deposit_cap": 5,
+        "pheromone_min_source_diversity": 1,
+        "pheromone_require_provenance": true,
+        "pheromone_require_trace": true,
+        "pheromone_scored_subject_types": [
+          "candidate",
+          "route",
+          "tool",
+          "agent"
+        ],
+        "pheromone_kind_profiles": {
+          "positive": {
+            "weight": 1,
+            "evaporation_rate": 0.2,
+            "ttl_steps": 6,
+            "response_model": "saturating",
+            "priority": 1,
+            "scored_subject_types": [
+              "candidate",
+              "route",
+              "tool",
+              "agent"
+            ]
+          },
+          "negative": {
+            "weight": 1,
+            "evaporation_rate": 0.3,
+            "ttl_steps": 4,
+            "response_model": "linear",
+            "priority": 2,
+            "scored_subject_types": [
+              "candidate",
+              "route"
+            ]
+          },
+          "cautionary": {
+            "weight": 1.25,
+            "evaporation_rate": 0.5,
+            "ttl_steps": 2,
+            "response_model": "threshold",
+            "priority": 3,
+            "can_suppress_positive": true,
+            "scored_subject_types": [
+              "candidate",
+              "route"
+            ]
+          },
+          "alarm": {
+            "weight": 2,
+            "evaporation_rate": 0.8,
+            "ttl_steps": 1,
+            "response_model": "threshold",
+            "priority": 4,
+            "can_suppress_positive": true,
+            "scored_subject_types": [
+              "candidate",
+              "route"
+            ]
+          },
+          "novelty": {
+            "weight": 0.5,
+            "evaporation_rate": 0.6,
+            "ttl_steps": 2,
+            "response_model": "linear",
+            "priority": 1,
+            "scored_subject_types": [
+              "candidate",
+              "route"
+            ]
+          },
+          "stale": {
+            "weight": 0,
+            "priority": 0
+          }
+        },
+        "pheromone_response_model": "saturating",
+        "pheromone_activation_threshold": 0.5,
+        "pheromone_saturation_threshold": 4,
+        "pheromone_competition_mode": "normalize",
+        "pheromone_exploration_floor": 0.1,
+        "pheromone_diffusion_enabled": true,
+        "pheromone_diffusion_max_hops": 1,
+        "pheromone_diffusion_attenuation": 0.5,
+        "pheromone_feedback_enabled": true,
+        "exploration_enabled": true,
+        "exploration_floor": 0.1,
+        "novelty_decay_rate": 0.6,
+        "stale_route_reopen_threshold": 0.2,
+        "layer_coordination_enabled": true,
+        "layer_weight_bounds": {
+          "reactive": [
+            0,
+            1.5
+          ],
+          "learned": [
+            0,
+            1.5
+          ],
+          "evolutionary": [
+            0,
+            1
+          ],
+          "metacognitive": [
+            0,
+            1
+          ]
+        },
+        "layer_default_weights": {
+          "reactive": 1,
+          "learned": 1,
+          "evolutionary": 0.5,
+          "metacognitive": 0.5
+        },
+        "layer_confidence_thresholds": {
+          "reactive": 0.6,
+          "learned": 0.6,
+          "evolutionary": 0.6,
+          "metacognitive": 0.6
+        },
+        "layer_conflict_threshold": 0.1,
+        "layer_emergency_override_threshold": 0.8,
+        "layer_min_provenance": 2,
+        "layer_fallback_on_unresolved_conflict": true,
+        "policy_adjustment_bounds": {
+          "pheromone_evaporation_rate": [
+            0.1,
+            0.5
+          ],
+          "pheromone_positive_weight": [
+            0.5,
+            2
+          ],
+          "pheromone_response_model": {
+            "allowed_values": [
+              "linear",
+              "saturating",
+              "threshold",
+              "competitive"
+            ]
+          },
+          "pheromone_exploration_floor": [
+            0,
+            1
+          ],
+          "layer_learned_weight": [
+            0,
+            1.5
+          ]
+        },
+        "fallback_candidate": "candidate:safe_fallback"
+      },
+      "recovery_protocols": [
+        {
+          "id": "recovery:hybrid_conflict",
+          "trigger_targets": [
+            "decision:collective"
+          ],
+          "allowed_roles": [
+            "reviewer"
+          ],
+          "allowed_tags": [
+            "swarm",
+            "hybrid"
+          ],
+          "required_tools": [],
+          "failure_candidate": "candidate:safe_fallback"
+        }
+      ],
+      "evidence_policy": {
+        "require_provenance": true,
+        "allow_agent_fact_creation": false
+      },
+      "output_policy": {
+        "writer_may_create_facts": false,
+        "requires_committed_candidate": true,
+        "requires_evidence_contract": true,
+        "requires_stop_resolution": true,
+        "requires_publication_permission": true
+      },
+      "trace_policy": {
+        "required_events": [
+          "explore",
+          "scout_report",
+          "recruit",
+          "inhibit",
+          "pheromone_deposit",
+          "pheromone_evaporate",
+          "pheromone_score",
+          "pheromone_clip",
+          "pheromone_expire",
+          "pheromone_observe",
+          "pheromone_diffuse",
+          "pheromone_reinforce",
+          "pheromone_normalize",
+          "layer_proposal",
+          "coordination_assess",
+          "coordination_resolve",
+          "policy_adjustment",
+          "candidate_score",
+          "consensus_check",
+          "block",
+          "commit",
+          "fallback",
+          "recovery",
+          "output"
+        ]
+      },
+      "collective_commit_policy": {
+        "policy_version": "pheroos-collective-commit-policy-v1",
+        "model": "optimal_evidence_v1",
+        "assurance": "evidence_bound",
+        "target": "decision:collective",
+        "evidence_qualification": {
+          "numeric_scale": 1000000,
+          "minimum_quality_ppm": 500000,
+          "minimum_relevance_ppm": 500000,
+          "positive_group_cap": 1000000,
+          "counter_group_cap": 1000000,
+          "counter_weight_ppm": 1000000,
+          "minimum_positive_evidence": 2000000,
+          "maximum_counterevidence": 500000,
+          "maximum_counterevidence_ratio_ppm": 200000,
+          "domain_contribution_floor": 250000,
+          "minimum_source_diversity": 2,
+          "required_challenge_categories": [
+            "independent_replication"
+          ],
+          "observation_ttl_steps": 32,
+          "require_provenance": true,
+          "require_trace": true
+        },
+        "support_lease": {
+          "minimum_support_clusters": 2,
+          "support_ratio_ppm": 500000,
+          "lease_ttl_steps": 16,
+          "membership_mode": "verified_snapshot_v1",
+          "switch_mode": "revoke_then_issue_v1",
+          "equivocation_mode": "exclude_conflicts_v1",
+          "evidence_reference_required": true,
+          "cluster_verification_required": true
+        },
+        "risk_bands": {
+          "LOW": {
+            "minimum_positive_evidence": 2000000,
+            "maximum_counterevidence": 500000,
+            "maximum_counterevidence_ratio_ppm": 200000,
+            "minimum_support_clusters": 2,
+            "minimum_support_ratio_ppm": 500000,
+            "minimum_source_diversity": 2,
+            "minimum_margin": 250000,
+            "stability_steps": 2,
+            "required_challenge_categories": [
+              "independent_replication"
+            ],
+            "minimum_assurance": "evidence_bound",
+            "publishable_outcomes": [
+              "evidence_commit"
+            ],
+            "executable_outcomes": []
+          },
+          "MODERATE": {
+            "minimum_positive_evidence": 2500000,
+            "maximum_counterevidence": 400000,
+            "maximum_counterevidence_ratio_ppm": 150000,
+            "minimum_support_clusters": 2,
+            "minimum_support_ratio_ppm": 600000,
+            "minimum_source_diversity": 2,
+            "minimum_margin": 300000,
+            "stability_steps": 3,
+            "required_challenge_categories": [
+              "independent_replication"
+            ],
+            "minimum_assurance": "evidence_bound",
+            "publishable_outcomes": [
+              "evidence_commit"
+            ],
+            "executable_outcomes": []
+          },
+          "HIGH": {
+            "minimum_positive_evidence": 3000000,
+            "maximum_counterevidence": 300000,
+            "maximum_counterevidence_ratio_ppm": 100000,
+            "minimum_support_clusters": 3,
+            "minimum_support_ratio_ppm": 700000,
+            "minimum_source_diversity": 3,
+            "minimum_margin": 400000,
+            "stability_steps": 4,
+            "required_challenge_categories": [
+              "independent_replication",
+              "counter_search"
+            ],
+            "minimum_assurance": "certified",
+            "publishable_outcomes": [
+              "evidence_commit"
+            ],
+            "executable_outcomes": []
+          },
+          "CRITICAL": {
+            "minimum_positive_evidence": 4000000,
+            "maximum_counterevidence": 200000,
+            "maximum_counterevidence_ratio_ppm": 50000,
+            "minimum_support_clusters": 4,
+            "minimum_support_ratio_ppm": 800000,
+            "minimum_source_diversity": 4,
+            "minimum_margin": 500000,
+            "stability_steps": 5,
+            "required_challenge_categories": [
+              "independent_replication",
+              "counter_search",
+              "failure_domain_review"
+            ],
+            "minimum_assurance": "distributed",
+            "publishable_outcomes": [
+              "evidence_commit"
+            ],
+            "executable_outcomes": []
+          }
+        },
+        "commit_window": {
+          "minimum_stability_steps": 2,
+          "deliberation_deadline_steps": 12,
+          "maximum_leader_resets": 4,
+          "maximum_epoch_restarts": 1,
+          "run_deadline_steps": 24,
+          "reset_rules": [
+            "epoch_change",
+            "gate_failure",
+            "leader_change",
+            "membership_change",
+            "policy_change",
+            "risk_change",
+            "step_gap"
+          ]
+        },
+        "terminal_outcome": {
+          "safe_fallback_candidate": "candidate:safe_fallback",
+          "deadline_outcome": "safe_fallback",
+          "policy_incomplete_outcome": "invalid",
+          "finality_unavailable_outcome": "finality_unavailable",
+          "deliverable_outcomes": [
+            "evidence_commit",
+            "safe_fallback",
+            "advisory",
+            "blocked",
+            "invalid",
+            "finality_unavailable",
+            "safety_violation"
+          ],
+          "publishable_outcomes": [
+            "evidence_commit",
+            "safe_fallback"
+          ],
+          "executable_outcomes": []
+        },
+        "certificate": {
+          "mode": "local_receipt",
+          "wire_version": "pheroos-commit-wire-v1",
+          "canonicalization": "pheroos-commit-canonical-v1",
+          "hash_algorithm": "sha256",
+          "issuer_attestation_required": false,
+          "independent_verification_required": false
+        },
+        "distributed": null
+      }
+    }
+  },
+  "profile": "pheroos-hybrid-commit-v1",
+  "prior_authoritative_state": {
+    "kind": "declared-empty-authority-head",
+    "revision": 0
+  },
+  "inputs": {
+    "operation": "matrix_case"
+  },
+  "expected": {
+    "metrics": {
+      "raw_positive": 3000000,
+      "counted_positive": 1000000,
+      "positive_group_cap": 1000000,
+      "observation_count": 3
+    },
+    "roots": {
+      "evidence_root": "sha256:92d5aeb492bf9f61f8146902f832b52bcf4d50216b8e29e7556c0c824d972f17"
+    },
+    "progress": null,
+    "outcome": {
+      "cap_enforced": true
+    },
+    "trace_sequence": [
+      "risk_assessed"
+    ],
+    "certificate": null,
+    "failure_code": null
+  },
+  "mutations": [],
+  "permutations": []
+}

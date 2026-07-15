@@ -1,0 +1,714 @@
+{
+  "id": "commit-integrity-v1-case-17",
+  "tck_version": "pheroos-commit-integrity-tck-v1",
+  "matrix_case": 17,
+  "title": "Input permutations preserve canonical outputs",
+  "manifest": {
+    "id": "hybrid-commit-protocol",
+    "name": "Hybrid Commit Protocol",
+    "version": "0.1.0",
+    "permissions": [],
+    "required_connections": [],
+    "drivers": [],
+    "protocol": {
+      "protocol_version": "pheroos.protocol.v1",
+      "id": "swarm.hybrid-commit",
+      "targets": [
+        {
+          "id": "decision:collective",
+          "description": "A provider-free Hybrid attention and evidence-bound Optimal Commit target."
+        }
+      ],
+      "signals": [
+        {
+          "type": "recruitment",
+          "target": "decision:collective",
+          "authority_required": "governance"
+        },
+        {
+          "type": "inhibition",
+          "target": "decision:collective",
+          "authority_required": "governance"
+        }
+      ],
+      "candidates": [
+        {
+          "id": "candidate:alpha",
+          "target": "decision:collective",
+          "label": "Alpha"
+        },
+        {
+          "id": "candidate:beta",
+          "target": "decision:collective",
+          "label": "Beta"
+        },
+        {
+          "id": "candidate:safe_fallback",
+          "target": "decision:collective",
+          "label": "Safe Fallback",
+          "safe_fallback": true
+        }
+      ],
+      "quorum_policy": {
+        "target": "decision:collective",
+        "fallback_candidate": "candidate:safe_fallback",
+        "commit_threshold": 2
+      },
+      "collective_decision_policy": {
+        "mode": "hybrid",
+        "min_independent_scouts": 2,
+        "quorum_threshold": 4,
+        "recruitment_enabled": true,
+        "inhibition_enabled": true,
+        "pheromone_enabled": true,
+        "pheromone_evaporation_rate": 0.2,
+        "pheromone_decay_model": "exponential",
+        "pheromone_min_strength": 0,
+        "pheromone_max_strength": 10,
+        "pheromone_positive_weight": 1,
+        "pheromone_negative_weight": 1,
+        "pheromone_cautionary_weight": 1,
+        "pheromone_cautionary_override_threshold": 2,
+        "pheromone_novelty_weight": 0.5,
+        "pheromone_per_source_cap": 4,
+        "pheromone_per_round_deposit_cap": 5,
+        "pheromone_min_source_diversity": 1,
+        "pheromone_require_provenance": true,
+        "pheromone_require_trace": true,
+        "pheromone_scored_subject_types": [
+          "candidate",
+          "route",
+          "tool",
+          "agent"
+        ],
+        "pheromone_kind_profiles": {
+          "positive": {
+            "weight": 1,
+            "evaporation_rate": 0.2,
+            "ttl_steps": 6,
+            "response_model": "saturating",
+            "priority": 1,
+            "scored_subject_types": [
+              "candidate",
+              "route",
+              "tool",
+              "agent"
+            ]
+          },
+          "negative": {
+            "weight": 1,
+            "evaporation_rate": 0.3,
+            "ttl_steps": 4,
+            "response_model": "linear",
+            "priority": 2,
+            "scored_subject_types": [
+              "candidate",
+              "route"
+            ]
+          },
+          "cautionary": {
+            "weight": 1.25,
+            "evaporation_rate": 0.5,
+            "ttl_steps": 2,
+            "response_model": "threshold",
+            "priority": 3,
+            "can_suppress_positive": true,
+            "scored_subject_types": [
+              "candidate",
+              "route"
+            ]
+          },
+          "alarm": {
+            "weight": 2,
+            "evaporation_rate": 0.8,
+            "ttl_steps": 1,
+            "response_model": "threshold",
+            "priority": 4,
+            "can_suppress_positive": true,
+            "scored_subject_types": [
+              "candidate",
+              "route"
+            ]
+          },
+          "novelty": {
+            "weight": 0.5,
+            "evaporation_rate": 0.6,
+            "ttl_steps": 2,
+            "response_model": "linear",
+            "priority": 1,
+            "scored_subject_types": [
+              "candidate",
+              "route"
+            ]
+          },
+          "stale": {
+            "weight": 0,
+            "priority": 0
+          }
+        },
+        "pheromone_response_model": "saturating",
+        "pheromone_activation_threshold": 0.5,
+        "pheromone_saturation_threshold": 4,
+        "pheromone_competition_mode": "normalize",
+        "pheromone_exploration_floor": 0.1,
+        "pheromone_diffusion_enabled": true,
+        "pheromone_diffusion_max_hops": 1,
+        "pheromone_diffusion_attenuation": 0.5,
+        "pheromone_feedback_enabled": true,
+        "exploration_enabled": true,
+        "exploration_floor": 0.1,
+        "novelty_decay_rate": 0.6,
+        "stale_route_reopen_threshold": 0.2,
+        "layer_coordination_enabled": true,
+        "layer_weight_bounds": {
+          "reactive": [
+            0,
+            1.5
+          ],
+          "learned": [
+            0,
+            1.5
+          ],
+          "evolutionary": [
+            0,
+            1
+          ],
+          "metacognitive": [
+            0,
+            1
+          ]
+        },
+        "layer_default_weights": {
+          "reactive": 1,
+          "learned": 1,
+          "evolutionary": 0.5,
+          "metacognitive": 0.5
+        },
+        "layer_confidence_thresholds": {
+          "reactive": 0.6,
+          "learned": 0.6,
+          "evolutionary": 0.6,
+          "metacognitive": 0.6
+        },
+        "layer_conflict_threshold": 0.1,
+        "layer_emergency_override_threshold": 0.8,
+        "layer_min_provenance": 2,
+        "layer_fallback_on_unresolved_conflict": true,
+        "policy_adjustment_bounds": {
+          "pheromone_evaporation_rate": [
+            0.1,
+            0.5
+          ],
+          "pheromone_positive_weight": [
+            0.5,
+            2
+          ],
+          "pheromone_response_model": {
+            "allowed_values": [
+              "linear",
+              "saturating",
+              "threshold",
+              "competitive"
+            ]
+          },
+          "pheromone_exploration_floor": [
+            0,
+            1
+          ],
+          "layer_learned_weight": [
+            0,
+            1.5
+          ]
+        },
+        "fallback_candidate": "candidate:safe_fallback"
+      },
+      "recovery_protocols": [
+        {
+          "id": "recovery:hybrid_conflict",
+          "trigger_targets": [
+            "decision:collective"
+          ],
+          "allowed_roles": [
+            "reviewer"
+          ],
+          "allowed_tags": [
+            "swarm",
+            "hybrid"
+          ],
+          "required_tools": [],
+          "failure_candidate": "candidate:safe_fallback"
+        }
+      ],
+      "evidence_policy": {
+        "require_provenance": true,
+        "allow_agent_fact_creation": false
+      },
+      "output_policy": {
+        "writer_may_create_facts": false,
+        "requires_committed_candidate": true,
+        "requires_evidence_contract": true,
+        "requires_stop_resolution": true,
+        "requires_publication_permission": true
+      },
+      "trace_policy": {
+        "required_events": [
+          "explore",
+          "scout_report",
+          "recruit",
+          "inhibit",
+          "pheromone_deposit",
+          "pheromone_evaporate",
+          "pheromone_score",
+          "pheromone_clip",
+          "pheromone_expire",
+          "pheromone_observe",
+          "pheromone_diffuse",
+          "pheromone_reinforce",
+          "pheromone_normalize",
+          "layer_proposal",
+          "coordination_assess",
+          "coordination_resolve",
+          "policy_adjustment",
+          "candidate_score",
+          "consensus_check",
+          "block",
+          "commit",
+          "fallback",
+          "recovery",
+          "output"
+        ]
+      },
+      "collective_commit_policy": {
+        "policy_version": "pheroos-collective-commit-policy-v1",
+        "model": "optimal_evidence_v1",
+        "assurance": "evidence_bound",
+        "target": "decision:collective",
+        "evidence_qualification": {
+          "numeric_scale": 1000000,
+          "minimum_quality_ppm": 500000,
+          "minimum_relevance_ppm": 500000,
+          "positive_group_cap": 1000000,
+          "counter_group_cap": 1000000,
+          "counter_weight_ppm": 1000000,
+          "minimum_positive_evidence": 2000000,
+          "maximum_counterevidence": 500000,
+          "maximum_counterevidence_ratio_ppm": 200000,
+          "domain_contribution_floor": 250000,
+          "minimum_source_diversity": 2,
+          "required_challenge_categories": [
+            "independent_replication"
+          ],
+          "observation_ttl_steps": 32,
+          "require_provenance": true,
+          "require_trace": true
+        },
+        "support_lease": {
+          "minimum_support_clusters": 2,
+          "support_ratio_ppm": 500000,
+          "lease_ttl_steps": 16,
+          "membership_mode": "verified_snapshot_v1",
+          "switch_mode": "revoke_then_issue_v1",
+          "equivocation_mode": "exclude_conflicts_v1",
+          "evidence_reference_required": true,
+          "cluster_verification_required": true
+        },
+        "risk_bands": {
+          "LOW": {
+            "minimum_positive_evidence": 2000000,
+            "maximum_counterevidence": 500000,
+            "maximum_counterevidence_ratio_ppm": 200000,
+            "minimum_support_clusters": 2,
+            "minimum_support_ratio_ppm": 500000,
+            "minimum_source_diversity": 2,
+            "minimum_margin": 250000,
+            "stability_steps": 2,
+            "required_challenge_categories": [
+              "independent_replication"
+            ],
+            "minimum_assurance": "evidence_bound",
+            "publishable_outcomes": [
+              "evidence_commit"
+            ],
+            "executable_outcomes": []
+          },
+          "MODERATE": {
+            "minimum_positive_evidence": 2500000,
+            "maximum_counterevidence": 400000,
+            "maximum_counterevidence_ratio_ppm": 150000,
+            "minimum_support_clusters": 2,
+            "minimum_support_ratio_ppm": 600000,
+            "minimum_source_diversity": 2,
+            "minimum_margin": 300000,
+            "stability_steps": 3,
+            "required_challenge_categories": [
+              "independent_replication"
+            ],
+            "minimum_assurance": "evidence_bound",
+            "publishable_outcomes": [
+              "evidence_commit"
+            ],
+            "executable_outcomes": []
+          },
+          "HIGH": {
+            "minimum_positive_evidence": 3000000,
+            "maximum_counterevidence": 300000,
+            "maximum_counterevidence_ratio_ppm": 100000,
+            "minimum_support_clusters": 3,
+            "minimum_support_ratio_ppm": 700000,
+            "minimum_source_diversity": 3,
+            "minimum_margin": 400000,
+            "stability_steps": 4,
+            "required_challenge_categories": [
+              "independent_replication",
+              "counter_search"
+            ],
+            "minimum_assurance": "certified",
+            "publishable_outcomes": [
+              "evidence_commit"
+            ],
+            "executable_outcomes": []
+          },
+          "CRITICAL": {
+            "minimum_positive_evidence": 4000000,
+            "maximum_counterevidence": 200000,
+            "maximum_counterevidence_ratio_ppm": 50000,
+            "minimum_support_clusters": 4,
+            "minimum_support_ratio_ppm": 800000,
+            "minimum_source_diversity": 4,
+            "minimum_margin": 500000,
+            "stability_steps": 5,
+            "required_challenge_categories": [
+              "independent_replication",
+              "counter_search",
+              "failure_domain_review"
+            ],
+            "minimum_assurance": "distributed",
+            "publishable_outcomes": [
+              "evidence_commit"
+            ],
+            "executable_outcomes": []
+          }
+        },
+        "commit_window": {
+          "minimum_stability_steps": 2,
+          "deliberation_deadline_steps": 12,
+          "maximum_leader_resets": 4,
+          "maximum_epoch_restarts": 1,
+          "run_deadline_steps": 24,
+          "reset_rules": [
+            "epoch_change",
+            "gate_failure",
+            "leader_change",
+            "membership_change",
+            "policy_change",
+            "risk_change",
+            "step_gap"
+          ]
+        },
+        "terminal_outcome": {
+          "safe_fallback_candidate": "candidate:safe_fallback",
+          "deadline_outcome": "safe_fallback",
+          "policy_incomplete_outcome": "invalid",
+          "finality_unavailable_outcome": "finality_unavailable",
+          "deliverable_outcomes": [
+            "evidence_commit",
+            "safe_fallback",
+            "advisory",
+            "blocked",
+            "invalid",
+            "finality_unavailable",
+            "safety_violation"
+          ],
+          "publishable_outcomes": [
+            "evidence_commit",
+            "safe_fallback"
+          ],
+          "executable_outcomes": []
+        },
+        "certificate": {
+          "mode": "local_receipt",
+          "wire_version": "pheroos-commit-wire-v1",
+          "canonicalization": "pheroos-commit-canonical-v1",
+          "hash_algorithm": "sha256",
+          "issuer_attestation_required": false,
+          "independent_verification_required": false
+        },
+        "distributed": null
+      }
+    }
+  },
+  "profile": "pheroos-hybrid-commit-v1",
+  "prior_authoritative_state": {
+    "kind": "declared-empty-authority-head",
+    "revision": 0
+  },
+  "inputs": {
+    "operation": "matrix_case",
+    "candidate_order": [
+      0,
+      1
+    ]
+  },
+  "expected": {
+    "metrics": {
+      "candidate_metrics": [
+        {
+          "candidate_id": "candidate:alpha",
+          "claim_fingerprint": "sha256:bb50701b6cdd914a89cbeed17a0690af53de619911cce2c6e64e4ada5a745957",
+          "evidence_binding_fingerprint": "sha256:1a2b87e07c887e8cf314df0cb178ba668d22a4845f2a248534bce879d804c422",
+          "evidence_summary_fingerprint": "sha256:95913a4a6561c08326f382cd98121d7c6348de036020270be0c5a11704a57812",
+          "positive_root": "sha256:09d534072241ac40f845aa43521860a6f2150908cc62a93ffaca870e7ab900bf",
+          "counter_root": "sha256:89e2b451cfa4a6f306d96c8f7e5bced4bfba9fd59bc297da412f9819cdd6211f",
+          "disposition_root": "sha256:e3d19c2a35908d824fae534961b8824453481e92cfc8a411b39491dfef50cc02",
+          "evidence_root": "sha256:9cfe2ac629c0bda87e1abb771da8deee050432cfddaa80afb660b7b4fc8c7092",
+          "challenge_root": "sha256:31f5bd94bec94f2bcc74e298f6937e983e7163539d48875f2930143381828b65",
+          "challenge_coverage_fingerprint": "sha256:14b4bed39e8fbe2d1a816c66eefd23b473e2d2a5481fad00c7b8b580a7e76708",
+          "lease_root": "sha256:148176791c888ba04374fd4d8352c2172d254bb43bea4d7d32f96cb3a711b21f",
+          "support_replay_scope_root": "sha256:975db17f96a65d37af7da2691a441610f441a298a5085f421fa3f6c66b6d8c2e",
+          "positive_evidence": 2000000,
+          "counterevidence": 0,
+          "weighted_counterevidence": 0,
+          "net_evidence": 2000000,
+          "counterevidence_ratio_ppm": 0,
+          "active_support_clusters": 2,
+          "eligible_support_clusters": 3,
+          "support_threshold_clusters": 2,
+          "support_ratio_ppm": 666666,
+          "source_diversity": 2,
+          "margin": 1000000,
+          "missing_challenge_categories": [],
+          "blocker_references": [],
+          "equivocation_finding_ids": [],
+          "replay_conflict_references": [],
+          "roots_valid": true,
+          "positive_threshold_satisfied": true,
+          "counter_limit_satisfied": true,
+          "counter_ratio_satisfied": true,
+          "critical_counterevidence_clear": true,
+          "challenge_coverage_satisfied": true,
+          "support_cluster_satisfied": true,
+          "support_ratio_satisfied": true,
+          "source_diversity_satisfied": true,
+          "minimum_assurance_satisfied": true,
+          "margin_satisfied": true,
+          "unique_leader": true,
+          "stop_resolution_satisfied": true,
+          "commit_permission_satisfied": true,
+          "replay_clear": true,
+          "equivocation_clear": true,
+          "ready_for_stability": true,
+          "reason_codes": []
+        },
+        {
+          "candidate_id": "candidate:beta",
+          "claim_fingerprint": "sha256:93efcf9270cab2215a88fc7ee08151008269ccd69a3dedbda6d0a45662bea39b",
+          "evidence_binding_fingerprint": "sha256:eac08dd5de43366c6339c5428b65b6c1c57892a7482759a2abbfd5e15801f52e",
+          "evidence_summary_fingerprint": "sha256:9619176b61a08d93e16e399a4a9a34837b71557729c4727be6081a1eb299ff8f",
+          "positive_root": "sha256:d374fff4e226b4da1bfc6192dde4e7eb9346f5f606020dfd053bda16e71d97e3",
+          "counter_root": "sha256:89e2b451cfa4a6f306d96c8f7e5bced4bfba9fd59bc297da412f9819cdd6211f",
+          "disposition_root": "sha256:e3d19c2a35908d824fae534961b8824453481e92cfc8a411b39491dfef50cc02",
+          "evidence_root": "sha256:ce65b19ce02e2beede1829fffa48e0770220e5c18458dbf29698f9cfb920d7db",
+          "challenge_root": "sha256:3c952fc25b8815436dda862fcdd9c64c9e0b279192707fde0114b63a0250be0f",
+          "challenge_coverage_fingerprint": "sha256:7dd82c926916c59e8c58213133dedff8784e8b18a045c775341e454041cdbb72",
+          "lease_root": "sha256:2f013236b977c2caf9ef0664d5044f0b4351e8989937f335b126228b7d620fe6",
+          "support_replay_scope_root": "sha256:975db17f96a65d37af7da2691a441610f441a298a5085f421fa3f6c66b6d8c2e",
+          "positive_evidence": 1000000,
+          "counterevidence": 0,
+          "weighted_counterevidence": 0,
+          "net_evidence": 1000000,
+          "counterevidence_ratio_ppm": 0,
+          "active_support_clusters": 1,
+          "eligible_support_clusters": 3,
+          "support_threshold_clusters": 2,
+          "support_ratio_ppm": 333333,
+          "source_diversity": 1,
+          "margin": -1000000,
+          "missing_challenge_categories": [],
+          "blocker_references": [],
+          "equivocation_finding_ids": [],
+          "replay_conflict_references": [],
+          "roots_valid": true,
+          "positive_threshold_satisfied": false,
+          "counter_limit_satisfied": true,
+          "counter_ratio_satisfied": true,
+          "critical_counterevidence_clear": true,
+          "challenge_coverage_satisfied": true,
+          "support_cluster_satisfied": false,
+          "support_ratio_satisfied": false,
+          "source_diversity_satisfied": false,
+          "minimum_assurance_satisfied": true,
+          "margin_satisfied": false,
+          "unique_leader": false,
+          "stop_resolution_satisfied": true,
+          "commit_permission_satisfied": true,
+          "replay_clear": true,
+          "equivocation_clear": true,
+          "ready_for_stability": false,
+          "reason_codes": [
+            "positive_evidence_insufficient",
+            "not_leader",
+            "margin_insufficient",
+            "source_diversity_insufficient",
+            "support_ratio_insufficient",
+            "support_clusters_insufficient"
+          ]
+        }
+      ],
+      "leader_margin": 1000000
+    },
+    "roots": {
+      "assessment_ref": "sha256:8140553455e85f45a17f4639f1012e31498996aaba54caf97412c6a4244187cb",
+      "evidence_root": "sha256:ef774628397800f2ae239c82932d5f047106d07f7eee2b19510b4f3a6d3735dd",
+      "challenge_root": "sha256:62310418b3e0984e6950730b74b7cf45b3790788c91e3a4ea2e05c448e5e5517",
+      "lease_root": "sha256:7ee039f857dadbf29899fa680b28e0296875647610cdd272b0965ddcee620a8f"
+    },
+    "progress": null,
+    "outcome": {
+      "status": "ready",
+      "leader_candidate_id": "candidate:alpha",
+      "unique_leader": true
+    },
+    "trace_sequence": [
+      "risk_assessed"
+    ],
+    "certificate": null,
+    "failure_code": null
+  },
+  "mutations": [],
+  "permutations": [
+    {
+      "id": "reverse-candidate-order",
+      "authority_namespace": "shared",
+      "path": [
+        "inputs",
+        "candidate_order"
+      ],
+      "order": "reverse",
+      "expected": {
+        "metrics": {
+          "candidate_metrics": [
+            {
+              "candidate_id": "candidate:alpha",
+              "claim_fingerprint": "sha256:bb50701b6cdd914a89cbeed17a0690af53de619911cce2c6e64e4ada5a745957",
+              "evidence_binding_fingerprint": "sha256:1a2b87e07c887e8cf314df0cb178ba668d22a4845f2a248534bce879d804c422",
+              "evidence_summary_fingerprint": "sha256:95913a4a6561c08326f382cd98121d7c6348de036020270be0c5a11704a57812",
+              "positive_root": "sha256:09d534072241ac40f845aa43521860a6f2150908cc62a93ffaca870e7ab900bf",
+              "counter_root": "sha256:89e2b451cfa4a6f306d96c8f7e5bced4bfba9fd59bc297da412f9819cdd6211f",
+              "disposition_root": "sha256:e3d19c2a35908d824fae534961b8824453481e92cfc8a411b39491dfef50cc02",
+              "evidence_root": "sha256:9cfe2ac629c0bda87e1abb771da8deee050432cfddaa80afb660b7b4fc8c7092",
+              "challenge_root": "sha256:31f5bd94bec94f2bcc74e298f6937e983e7163539d48875f2930143381828b65",
+              "challenge_coverage_fingerprint": "sha256:14b4bed39e8fbe2d1a816c66eefd23b473e2d2a5481fad00c7b8b580a7e76708",
+              "lease_root": "sha256:148176791c888ba04374fd4d8352c2172d254bb43bea4d7d32f96cb3a711b21f",
+              "support_replay_scope_root": "sha256:975db17f96a65d37af7da2691a441610f441a298a5085f421fa3f6c66b6d8c2e",
+              "positive_evidence": 2000000,
+              "counterevidence": 0,
+              "weighted_counterevidence": 0,
+              "net_evidence": 2000000,
+              "counterevidence_ratio_ppm": 0,
+              "active_support_clusters": 2,
+              "eligible_support_clusters": 3,
+              "support_threshold_clusters": 2,
+              "support_ratio_ppm": 666666,
+              "source_diversity": 2,
+              "margin": 1000000,
+              "missing_challenge_categories": [],
+              "blocker_references": [],
+              "equivocation_finding_ids": [],
+              "replay_conflict_references": [],
+              "roots_valid": true,
+              "positive_threshold_satisfied": true,
+              "counter_limit_satisfied": true,
+              "counter_ratio_satisfied": true,
+              "critical_counterevidence_clear": true,
+              "challenge_coverage_satisfied": true,
+              "support_cluster_satisfied": true,
+              "support_ratio_satisfied": true,
+              "source_diversity_satisfied": true,
+              "minimum_assurance_satisfied": true,
+              "margin_satisfied": true,
+              "unique_leader": true,
+              "stop_resolution_satisfied": true,
+              "commit_permission_satisfied": true,
+              "replay_clear": true,
+              "equivocation_clear": true,
+              "ready_for_stability": true,
+              "reason_codes": []
+            },
+            {
+              "candidate_id": "candidate:beta",
+              "claim_fingerprint": "sha256:93efcf9270cab2215a88fc7ee08151008269ccd69a3dedbda6d0a45662bea39b",
+              "evidence_binding_fingerprint": "sha256:eac08dd5de43366c6339c5428b65b6c1c57892a7482759a2abbfd5e15801f52e",
+              "evidence_summary_fingerprint": "sha256:9619176b61a08d93e16e399a4a9a34837b71557729c4727be6081a1eb299ff8f",
+              "positive_root": "sha256:d374fff4e226b4da1bfc6192dde4e7eb9346f5f606020dfd053bda16e71d97e3",
+              "counter_root": "sha256:89e2b451cfa4a6f306d96c8f7e5bced4bfba9fd59bc297da412f9819cdd6211f",
+              "disposition_root": "sha256:e3d19c2a35908d824fae534961b8824453481e92cfc8a411b39491dfef50cc02",
+              "evidence_root": "sha256:ce65b19ce02e2beede1829fffa48e0770220e5c18458dbf29698f9cfb920d7db",
+              "challenge_root": "sha256:3c952fc25b8815436dda862fcdd9c64c9e0b279192707fde0114b63a0250be0f",
+              "challenge_coverage_fingerprint": "sha256:7dd82c926916c59e8c58213133dedff8784e8b18a045c775341e454041cdbb72",
+              "lease_root": "sha256:2f013236b977c2caf9ef0664d5044f0b4351e8989937f335b126228b7d620fe6",
+              "support_replay_scope_root": "sha256:975db17f96a65d37af7da2691a441610f441a298a5085f421fa3f6c66b6d8c2e",
+              "positive_evidence": 1000000,
+              "counterevidence": 0,
+              "weighted_counterevidence": 0,
+              "net_evidence": 1000000,
+              "counterevidence_ratio_ppm": 0,
+              "active_support_clusters": 1,
+              "eligible_support_clusters": 3,
+              "support_threshold_clusters": 2,
+              "support_ratio_ppm": 333333,
+              "source_diversity": 1,
+              "margin": -1000000,
+              "missing_challenge_categories": [],
+              "blocker_references": [],
+              "equivocation_finding_ids": [],
+              "replay_conflict_references": [],
+              "roots_valid": true,
+              "positive_threshold_satisfied": false,
+              "counter_limit_satisfied": true,
+              "counter_ratio_satisfied": true,
+              "critical_counterevidence_clear": true,
+              "challenge_coverage_satisfied": true,
+              "support_cluster_satisfied": false,
+              "support_ratio_satisfied": false,
+              "source_diversity_satisfied": false,
+              "minimum_assurance_satisfied": true,
+              "margin_satisfied": false,
+              "unique_leader": false,
+              "stop_resolution_satisfied": true,
+              "commit_permission_satisfied": true,
+              "replay_clear": true,
+              "equivocation_clear": true,
+              "ready_for_stability": false,
+              "reason_codes": [
+                "positive_evidence_insufficient",
+                "not_leader",
+                "margin_insufficient",
+                "source_diversity_insufficient",
+                "support_ratio_insufficient",
+                "support_clusters_insufficient"
+              ]
+            }
+          ],
+          "leader_margin": 1000000
+        },
+        "roots": {
+          "assessment_ref": "sha256:8140553455e85f45a17f4639f1012e31498996aaba54caf97412c6a4244187cb",
+          "evidence_root": "sha256:ef774628397800f2ae239c82932d5f047106d07f7eee2b19510b4f3a6d3735dd",
+          "challenge_root": "sha256:62310418b3e0984e6950730b74b7cf45b3790788c91e3a4ea2e05c448e5e5517",
+          "lease_root": "sha256:7ee039f857dadbf29899fa680b28e0296875647610cdd272b0965ddcee620a8f"
+        },
+        "progress": null,
+        "outcome": {
+          "status": "ready",
+          "leader_candidate_id": "candidate:alpha",
+          "unique_leader": true
+        },
+        "trace_sequence": [
+          "risk_assessed"
+        ],
+        "certificate": null,
+        "failure_code": null
+      }
+    }
+  ]
+}

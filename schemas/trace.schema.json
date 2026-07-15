@@ -24,6 +24,144 @@
       "if": {
         "properties": {
           "event_type": {
+            "const": "action_permission_issued"
+          }
+        },
+        "required": [
+          "event_type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "lineage": {
+            "additionalProperties": false,
+            "properties": {
+              "action": {
+                "enum": [
+                  "commit",
+                  "epoch_transition",
+                  "execute",
+                  "publish",
+                  "recovery"
+                ]
+              },
+              "allowed": {
+                "type": "boolean"
+              },
+              "assurance": {
+                "enum": [
+                  "advisory",
+                  "certified",
+                  "distributed",
+                  "evidence_bound"
+                ]
+              },
+              "commit_policy_root": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "epoch": {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "event_id": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "expires_at_step": {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "extensions": {
+                "additionalProperties": true,
+                "propertyNames": {
+                  "pattern": "^(?!(?:x-critical|ext\\.critical))(?:x-.+|ext\\..+)$"
+                },
+                "type": "object"
+              },
+              "manifest_root": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "payload_version": {
+                "enum": [
+                  "pheroos-commit-trace-payload-v1"
+                ]
+              },
+              "permission_ref": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "previous_event_ids": {
+                "items": {
+                  "pattern": "^sha256:[0-9a-f]{64}$",
+                  "type": "string"
+                },
+                "type": "array",
+                "uniqueItems": true
+              },
+              "profile": {
+                "enum": [
+                  "pheroos-certified-commit-v1",
+                  "pheroos-commit-integrity-v1",
+                  "pheroos-distributed-commit-v1",
+                  "pheroos-hybrid-commit-v1"
+                ]
+              },
+              "record_payload": {
+                "type": "object"
+              },
+              "record_ref": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "record_schema": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "run_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "step": {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              }
+            },
+            "required": [
+              "action",
+              "allowed",
+              "assurance",
+              "commit_policy_root",
+              "epoch",
+              "event_id",
+              "expires_at_step",
+              "manifest_root",
+              "payload_version",
+              "permission_ref",
+              "previous_event_ids",
+              "profile",
+              "record_payload",
+              "record_ref",
+              "record_schema",
+              "run_id",
+              "step"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "lineage"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
             "const": "candidate_score"
           }
         },
@@ -88,6 +226,303 @@
       "if": {
         "properties": {
           "event_type": {
+            "const": "certificate_conflict"
+          }
+        },
+        "required": [
+          "event_type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "lineage": {
+            "additionalProperties": false,
+            "properties": {
+              "assurance": {
+                "enum": [
+                  "advisory",
+                  "certified",
+                  "distributed",
+                  "evidence_bound"
+                ]
+              },
+              "commit_policy_root": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "commit_value_roots": {
+                "items": {
+                  "pattern": "^sha256:[0-9a-f]{64}$",
+                  "type": "string"
+                },
+                "type": "array",
+                "uniqueItems": true
+              },
+              "distributed_state_ref": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "epoch": {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "event_id": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "extensions": {
+                "additionalProperties": true,
+                "propertyNames": {
+                  "pattern": "^(?!(?:x-critical|ext\\.critical))(?:x-.+|ext\\..+)$"
+                },
+                "type": "object"
+              },
+              "finding_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "finding_ref": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "frozen": {
+                "type": "boolean"
+              },
+              "left_certificate_ref": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "manifest_root": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "payload_version": {
+                "enum": [
+                  "pheroos-commit-trace-payload-v1"
+                ]
+              },
+              "previous_event_ids": {
+                "items": {
+                  "pattern": "^sha256:[0-9a-f]{64}$",
+                  "type": "string"
+                },
+                "type": "array",
+                "uniqueItems": true
+              },
+              "profile": {
+                "enum": [
+                  "pheroos-certified-commit-v1",
+                  "pheroos-commit-integrity-v1",
+                  "pheroos-distributed-commit-v1",
+                  "pheroos-hybrid-commit-v1"
+                ]
+              },
+              "record_payload": {
+                "type": "object"
+              },
+              "record_ref": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "record_schema": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "right_certificate_ref": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "run_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "step": {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              }
+            },
+            "required": [
+              "assurance",
+              "commit_policy_root",
+              "commit_value_roots",
+              "distributed_state_ref",
+              "epoch",
+              "event_id",
+              "finding_id",
+              "finding_ref",
+              "frozen",
+              "left_certificate_ref",
+              "manifest_root",
+              "payload_version",
+              "previous_event_ids",
+              "profile",
+              "record_payload",
+              "record_ref",
+              "record_schema",
+              "right_certificate_ref",
+              "run_id",
+              "step"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "lineage"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "challenge_recorded"
+          }
+        },
+        "required": [
+          "event_type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "lineage": {
+            "additionalProperties": false,
+            "properties": {
+              "assurance": {
+                "enum": [
+                  "advisory",
+                  "certified",
+                  "distributed",
+                  "evidence_bound"
+                ]
+              },
+              "candidate_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "category": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "challenge_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "challenge_ref": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "commit_policy_root": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "epoch": {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "event_id": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "extensions": {
+                "additionalProperties": true,
+                "propertyNames": {
+                  "pattern": "^(?!(?:x-critical|ext\\.critical))(?:x-.+|ext\\..+)$"
+                },
+                "type": "object"
+              },
+              "manifest_root": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "payload_version": {
+                "enum": [
+                  "pheroos-commit-trace-payload-v1"
+                ]
+              },
+              "previous_event_ids": {
+                "items": {
+                  "pattern": "^sha256:[0-9a-f]{64}$",
+                  "type": "string"
+                },
+                "type": "array",
+                "uniqueItems": true
+              },
+              "principal_verification_ref": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "profile": {
+                "enum": [
+                  "pheroos-certified-commit-v1",
+                  "pheroos-commit-integrity-v1",
+                  "pheroos-distributed-commit-v1",
+                  "pheroos-hybrid-commit-v1"
+                ]
+              },
+              "record_payload": {
+                "type": "object"
+              },
+              "record_ref": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "record_schema": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "result": {
+                "enum": [
+                  "counterevidence_found",
+                  "inconclusive",
+                  "no_counterevidence"
+                ]
+              },
+              "run_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "step": {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              }
+            },
+            "required": [
+              "assurance",
+              "candidate_id",
+              "category",
+              "challenge_id",
+              "challenge_ref",
+              "commit_policy_root",
+              "epoch",
+              "event_id",
+              "manifest_root",
+              "payload_version",
+              "previous_event_ids",
+              "principal_verification_ref",
+              "profile",
+              "record_payload",
+              "record_ref",
+              "record_schema",
+              "result",
+              "run_id",
+              "step"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "lineage"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
             "const": "commit"
           }
         },
@@ -126,6 +561,805 @@
               "decision_reason",
               "target",
               "upstream_score_lineage"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "lineage"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "commit_certificate_issued"
+          }
+        },
+        "required": [
+          "event_type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "lineage": {
+            "additionalProperties": false,
+            "properties": {
+              "assurance": {
+                "enum": [
+                  "advisory",
+                  "certified",
+                  "distributed",
+                  "evidence_bound"
+                ]
+              },
+              "candidate_id": {
+                "type": "string"
+              },
+              "certificate_kind": {
+                "enum": [
+                  "distributed_commit",
+                  "evidence_commit",
+                  "local_receipt",
+                  "outcome"
+                ]
+              },
+              "certificate_ref": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "claim_fingerprint": {
+                "type": "string"
+              },
+              "commit_policy_root": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "commit_value_root": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "epoch": {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "event_id": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "extensions": {
+                "additionalProperties": true,
+                "propertyNames": {
+                  "pattern": "^(?!(?:x-critical|ext\\.critical))(?:x-.+|ext\\..+)$"
+                },
+                "type": "object"
+              },
+              "final": {
+                "type": "boolean"
+              },
+              "issuer_attestation_ref": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "manifest_root": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "output_fingerprint": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "payload_version": {
+                "enum": [
+                  "pheroos-commit-trace-payload-v1"
+                ]
+              },
+              "previous_event_ids": {
+                "items": {
+                  "pattern": "^sha256:[0-9a-f]{64}$",
+                  "type": "string"
+                },
+                "type": "array",
+                "uniqueItems": true
+              },
+              "profile": {
+                "enum": [
+                  "pheroos-certified-commit-v1",
+                  "pheroos-commit-integrity-v1",
+                  "pheroos-distributed-commit-v1",
+                  "pheroos-hybrid-commit-v1"
+                ]
+              },
+              "record_payload": {
+                "type": "object"
+              },
+              "record_ref": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "record_schema": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "run_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "step": {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              }
+            },
+            "required": [
+              "assurance",
+              "candidate_id",
+              "certificate_kind",
+              "certificate_ref",
+              "claim_fingerprint",
+              "commit_policy_root",
+              "epoch",
+              "event_id",
+              "final",
+              "manifest_root",
+              "output_fingerprint",
+              "payload_version",
+              "previous_event_ids",
+              "profile",
+              "record_payload",
+              "record_ref",
+              "record_schema",
+              "run_id",
+              "step"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "lineage"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "commit_metrics"
+          }
+        },
+        "required": [
+          "event_type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "lineage": {
+            "additionalProperties": false,
+            "properties": {
+              "assessment_ref": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "assurance": {
+                "enum": [
+                  "advisory",
+                  "certified",
+                  "distributed",
+                  "evidence_bound"
+                ]
+              },
+              "candidate_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "commit_policy_root": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "epoch": {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "event_id": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "extensions": {
+                "additionalProperties": true,
+                "propertyNames": {
+                  "pattern": "^(?!(?:x-critical|ext\\.critical))(?:x-.+|ext\\..+)$"
+                },
+                "type": "object"
+              },
+              "manifest_root": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "margin": {
+                "maximum": 9007199254740991,
+                "minimum": -9007199254740991,
+                "type": "integer"
+              },
+              "metrics_ref": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "net_evidence": {
+                "maximum": 9007199254740991,
+                "minimum": -9007199254740991,
+                "type": "integer"
+              },
+              "payload_version": {
+                "enum": [
+                  "pheroos-commit-trace-payload-v1"
+                ]
+              },
+              "previous_event_ids": {
+                "items": {
+                  "pattern": "^sha256:[0-9a-f]{64}$",
+                  "type": "string"
+                },
+                "type": "array",
+                "uniqueItems": true
+              },
+              "profile": {
+                "enum": [
+                  "pheroos-certified-commit-v1",
+                  "pheroos-commit-integrity-v1",
+                  "pheroos-distributed-commit-v1",
+                  "pheroos-hybrid-commit-v1"
+                ]
+              },
+              "ready_for_stability": {
+                "type": "boolean"
+              },
+              "record_payload": {
+                "type": "object"
+              },
+              "record_ref": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "record_schema": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "run_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "source_diversity": {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "step": {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "support_clusters": {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              }
+            },
+            "required": [
+              "assessment_ref",
+              "assurance",
+              "candidate_id",
+              "commit_policy_root",
+              "epoch",
+              "event_id",
+              "manifest_root",
+              "margin",
+              "metrics_ref",
+              "net_evidence",
+              "payload_version",
+              "previous_event_ids",
+              "profile",
+              "ready_for_stability",
+              "record_payload",
+              "record_ref",
+              "record_schema",
+              "run_id",
+              "source_diversity",
+              "step",
+              "support_clusters"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "lineage"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "commit_provisional"
+          }
+        },
+        "required": [
+          "event_type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "lineage": {
+            "additionalProperties": false,
+            "allOf": [
+              {
+                "else": {
+                  "required": [
+                    "commit_value_root",
+                    "proposal_digest"
+                  ]
+                },
+                "if": {
+                  "properties": {
+                    "witness_count": {
+                      "const": 0
+                    }
+                  },
+                  "required": [
+                    "witness_count"
+                  ]
+                },
+                "then": {
+                  "not": {
+                    "anyOf": [
+                      {
+                        "required": [
+                          "commit_value_root"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "proposal_digest"
+                        ]
+                      }
+                    ]
+                  }
+                }
+              }
+            ],
+            "properties": {
+              "assurance": {
+                "enum": [
+                  "advisory",
+                  "certified",
+                  "distributed",
+                  "evidence_bound"
+                ]
+              },
+              "candidate_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "commit_policy_root": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "commit_value_root": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "epoch": {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "event_id": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "extensions": {
+                "additionalProperties": true,
+                "propertyNames": {
+                  "pattern": "^(?!(?:x-critical|ext\\.critical))(?:x-.+|ext\\..+)$"
+                },
+                "type": "object"
+              },
+              "final": {
+                "type": "boolean"
+              },
+              "manifest_root": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "payload_version": {
+                "enum": [
+                  "pheroos-commit-trace-payload-v1"
+                ]
+              },
+              "portable_certificate_ref": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "previous_event_ids": {
+                "items": {
+                  "pattern": "^sha256:[0-9a-f]{64}$",
+                  "type": "string"
+                },
+                "type": "array",
+                "uniqueItems": true
+              },
+              "profile": {
+                "enum": [
+                  "pheroos-certified-commit-v1",
+                  "pheroos-commit-integrity-v1",
+                  "pheroos-distributed-commit-v1",
+                  "pheroos-hybrid-commit-v1"
+                ]
+              },
+              "proposal_digest": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "record_payload": {
+                "type": "object"
+              },
+              "record_ref": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "record_schema": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "run_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "state_ref": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "step": {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "witness_count": {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "witness_quorum": {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              }
+            },
+            "required": [
+              "assurance",
+              "candidate_id",
+              "commit_policy_root",
+              "epoch",
+              "event_id",
+              "final",
+              "manifest_root",
+              "payload_version",
+              "portable_certificate_ref",
+              "previous_event_ids",
+              "profile",
+              "record_payload",
+              "record_ref",
+              "record_schema",
+              "run_id",
+              "state_ref",
+              "step",
+              "witness_count",
+              "witness_quorum"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "lineage"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "commit_window_advanced"
+          }
+        },
+        "required": [
+          "event_type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "lineage": {
+            "additionalProperties": false,
+            "properties": {
+              "assessment_ref": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "assurance": {
+                "enum": [
+                  "advisory",
+                  "certified",
+                  "distributed",
+                  "evidence_bound"
+                ]
+              },
+              "commit_policy_root": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "epoch": {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "event_id": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "extensions": {
+                "additionalProperties": true,
+                "propertyNames": {
+                  "pattern": "^(?!(?:x-critical|ext\\.critical))(?:x-.+|ext\\..+)$"
+                },
+                "type": "object"
+              },
+              "leader_candidate_id": {
+                "type": "string"
+              },
+              "manifest_root": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "payload_version": {
+                "enum": [
+                  "pheroos-commit-trace-payload-v1"
+                ]
+              },
+              "previous_event_ids": {
+                "items": {
+                  "pattern": "^sha256:[0-9a-f]{64}$",
+                  "type": "string"
+                },
+                "type": "array",
+                "uniqueItems": true
+              },
+              "profile": {
+                "enum": [
+                  "pheroos-certified-commit-v1",
+                  "pheroos-commit-integrity-v1",
+                  "pheroos-distributed-commit-v1",
+                  "pheroos-hybrid-commit-v1"
+                ]
+              },
+              "record_payload": {
+                "type": "object"
+              },
+              "record_ref": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "record_schema": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "required_stability_steps": {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "reset_count": {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "run_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "sealed_window_ref": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "stability_count": {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "step": {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "window_ref": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "window_root": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              }
+            },
+            "required": [
+              "assessment_ref",
+              "assurance",
+              "commit_policy_root",
+              "epoch",
+              "event_id",
+              "leader_candidate_id",
+              "manifest_root",
+              "payload_version",
+              "previous_event_ids",
+              "profile",
+              "record_payload",
+              "record_ref",
+              "record_schema",
+              "required_stability_steps",
+              "reset_count",
+              "run_id",
+              "stability_count",
+              "step",
+              "window_ref",
+              "window_root"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "lineage"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "commit_window_reset"
+          }
+        },
+        "required": [
+          "event_type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "lineage": {
+            "additionalProperties": false,
+            "properties": {
+              "assessment_ref": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "assurance": {
+                "enum": [
+                  "advisory",
+                  "certified",
+                  "distributed",
+                  "evidence_bound"
+                ]
+              },
+              "commit_policy_root": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "epoch": {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "event_id": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "extensions": {
+                "additionalProperties": true,
+                "propertyNames": {
+                  "pattern": "^(?!(?:x-critical|ext\\.critical))(?:x-.+|ext\\..+)$"
+                },
+                "type": "object"
+              },
+              "manifest_root": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "payload_version": {
+                "enum": [
+                  "pheroos-commit-trace-payload-v1"
+                ]
+              },
+              "previous_event_ids": {
+                "items": {
+                  "pattern": "^sha256:[0-9a-f]{64}$",
+                  "type": "string"
+                },
+                "type": "array",
+                "uniqueItems": true
+              },
+              "prior_window_ref": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "profile": {
+                "enum": [
+                  "pheroos-certified-commit-v1",
+                  "pheroos-commit-integrity-v1",
+                  "pheroos-distributed-commit-v1",
+                  "pheroos-hybrid-commit-v1"
+                ]
+              },
+              "reason_codes": {
+                "items": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "type": "array",
+                "uniqueItems": true
+              },
+              "record_payload": {
+                "type": "object"
+              },
+              "record_ref": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "record_schema": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "remaining_reset_budget": {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "reset_count": {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "run_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "step": {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "window_ref": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              }
+            },
+            "required": [
+              "assessment_ref",
+              "assurance",
+              "commit_policy_root",
+              "epoch",
+              "event_id",
+              "manifest_root",
+              "payload_version",
+              "previous_event_ids",
+              "prior_window_ref",
+              "profile",
+              "reason_codes",
+              "record_payload",
+              "record_ref",
+              "record_schema",
+              "remaining_reset_budget",
+              "reset_count",
+              "run_id",
+              "step",
+              "window_ref"
             ],
             "type": "object"
           }
@@ -565,6 +1799,617 @@
       "if": {
         "properties": {
           "event_type": {
+            "const": "counterevidence_disposed"
+          }
+        },
+        "required": [
+          "event_type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "lineage": {
+            "additionalProperties": false,
+            "properties": {
+              "assurance": {
+                "enum": [
+                  "advisory",
+                  "certified",
+                  "distributed",
+                  "evidence_bound"
+                ]
+              },
+              "candidate_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "commit_policy_root": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "counter_observation_ref": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "disposition": {
+                "enum": [
+                  "accepted",
+                  "immaterial",
+                  "rebutted",
+                  "unresolved"
+                ]
+              },
+              "disposition_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "disposition_ref": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "epoch": {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "event_id": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "extensions": {
+                "additionalProperties": true,
+                "propertyNames": {
+                  "pattern": "^(?!(?:x-critical|ext\\.critical))(?:x-.+|ext\\..+)$"
+                },
+                "type": "object"
+              },
+              "manifest_root": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "payload_version": {
+                "enum": [
+                  "pheroos-commit-trace-payload-v1"
+                ]
+              },
+              "previous_event_ids": {
+                "items": {
+                  "pattern": "^sha256:[0-9a-f]{64}$",
+                  "type": "string"
+                },
+                "type": "array",
+                "uniqueItems": true
+              },
+              "profile": {
+                "enum": [
+                  "pheroos-certified-commit-v1",
+                  "pheroos-commit-integrity-v1",
+                  "pheroos-distributed-commit-v1",
+                  "pheroos-hybrid-commit-v1"
+                ]
+              },
+              "rebuttal_refs": {
+                "items": {
+                  "pattern": "^sha256:[0-9a-f]{64}$",
+                  "type": "string"
+                },
+                "type": "array",
+                "uniqueItems": true
+              },
+              "record_payload": {
+                "type": "object"
+              },
+              "record_ref": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "record_schema": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "resolution_ref": {
+                "type": "string"
+              },
+              "run_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "step": {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              }
+            },
+            "required": [
+              "assurance",
+              "candidate_id",
+              "commit_policy_root",
+              "counter_observation_ref",
+              "disposition",
+              "disposition_id",
+              "disposition_ref",
+              "epoch",
+              "event_id",
+              "manifest_root",
+              "payload_version",
+              "previous_event_ids",
+              "profile",
+              "rebuttal_refs",
+              "record_payload",
+              "record_ref",
+              "record_schema",
+              "resolution_ref",
+              "run_id",
+              "step"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "lineage"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "decision_outcome"
+          }
+        },
+        "required": [
+          "event_type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "lineage": {
+            "additionalProperties": false,
+            "properties": {
+              "assessment_ref": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "assurance": {
+                "enum": [
+                  "advisory",
+                  "certified",
+                  "distributed",
+                  "evidence_bound"
+                ]
+              },
+              "authoritative_commit": {
+                "type": "boolean"
+              },
+              "candidate_id": {
+                "type": "string"
+              },
+              "certificate_ref": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "commit_policy_root": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "epistemically_committed": {
+                "type": "boolean"
+              },
+              "epoch": {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "event_id": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "extensions": {
+                "additionalProperties": true,
+                "propertyNames": {
+                  "pattern": "^(?!(?:x-critical|ext\\.critical))(?:x-.+|ext\\..+)$"
+                },
+                "type": "object"
+              },
+              "kind": {
+                "enum": [
+                  "advisory",
+                  "blocked",
+                  "evidence_commit",
+                  "finality_unavailable",
+                  "invalid",
+                  "safe_fallback",
+                  "safety_violation"
+                ]
+              },
+              "manifest_root": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "outcome_ref": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "payload_version": {
+                "enum": [
+                  "pheroos-commit-trace-payload-v1"
+                ]
+              },
+              "previous_event_ids": {
+                "items": {
+                  "pattern": "^sha256:[0-9a-f]{64}$",
+                  "type": "string"
+                },
+                "type": "array",
+                "uniqueItems": true
+              },
+              "profile": {
+                "enum": [
+                  "pheroos-certified-commit-v1",
+                  "pheroos-commit-integrity-v1",
+                  "pheroos-distributed-commit-v1",
+                  "pheroos-hybrid-commit-v1"
+                ]
+              },
+              "reason_codes": {
+                "items": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "type": "array",
+                "uniqueItems": true
+              },
+              "record_payload": {
+                "type": "object"
+              },
+              "record_ref": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "record_schema": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "run_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "sealed_window_ref": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "step": {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              }
+            },
+            "required": [
+              "assurance",
+              "authoritative_commit",
+              "candidate_id",
+              "commit_policy_root",
+              "epistemically_committed",
+              "epoch",
+              "event_id",
+              "kind",
+              "manifest_root",
+              "outcome_ref",
+              "payload_version",
+              "previous_event_ids",
+              "profile",
+              "reason_codes",
+              "record_payload",
+              "record_ref",
+              "record_schema",
+              "run_id",
+              "step"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "lineage"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "epoch_certificate"
+          }
+        },
+        "required": [
+          "event_type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "lineage": {
+            "additionalProperties": false,
+            "properties": {
+              "assurance": {
+                "enum": [
+                  "advisory",
+                  "certified",
+                  "distributed",
+                  "evidence_bound"
+                ]
+              },
+              "certificate_ref": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "commit_policy_root": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "epoch": {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "event_id": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "extensions": {
+                "additionalProperties": true,
+                "propertyNames": {
+                  "pattern": "^(?!(?:x-critical|ext\\.critical))(?:x-.+|ext\\..+)$"
+                },
+                "type": "object"
+              },
+              "manifest_root": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "new_epoch": {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "new_membership_root": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "payload_version": {
+                "enum": [
+                  "pheroos-commit-trace-payload-v1"
+                ]
+              },
+              "previous_event_ids": {
+                "items": {
+                  "pattern": "^sha256:[0-9a-f]{64}$",
+                  "type": "string"
+                },
+                "type": "array",
+                "uniqueItems": true
+              },
+              "prior_epoch": {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "profile": {
+                "enum": [
+                  "pheroos-certified-commit-v1",
+                  "pheroos-commit-integrity-v1",
+                  "pheroos-distributed-commit-v1",
+                  "pheroos-hybrid-commit-v1"
+                ]
+              },
+              "record_payload": {
+                "type": "object"
+              },
+              "record_ref": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "record_schema": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "recovery_ref": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "run_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "step": {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              }
+            },
+            "required": [
+              "assurance",
+              "certificate_ref",
+              "commit_policy_root",
+              "epoch",
+              "event_id",
+              "manifest_root",
+              "new_epoch",
+              "new_membership_root",
+              "payload_version",
+              "previous_event_ids",
+              "prior_epoch",
+              "profile",
+              "record_payload",
+              "record_ref",
+              "record_schema",
+              "recovery_ref",
+              "run_id",
+              "step"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "lineage"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "evidence_bound"
+          }
+        },
+        "required": [
+          "event_type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "lineage": {
+            "additionalProperties": false,
+            "properties": {
+              "assurance": {
+                "enum": [
+                  "advisory",
+                  "certified",
+                  "distributed",
+                  "evidence_bound"
+                ]
+              },
+              "binding_ref": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "candidate_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "challenge_root": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "claim_fingerprint": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "commit_policy_root": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "counter_root": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "disposition_root": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "epoch": {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "event_id": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "evidence_root": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "extensions": {
+                "additionalProperties": true,
+                "propertyNames": {
+                  "pattern": "^(?!(?:x-critical|ext\\.critical))(?:x-.+|ext\\..+)$"
+                },
+                "type": "object"
+              },
+              "manifest_root": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "payload_version": {
+                "enum": [
+                  "pheroos-commit-trace-payload-v1"
+                ]
+              },
+              "positive_root": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "previous_event_ids": {
+                "items": {
+                  "pattern": "^sha256:[0-9a-f]{64}$",
+                  "type": "string"
+                },
+                "type": "array",
+                "uniqueItems": true
+              },
+              "profile": {
+                "enum": [
+                  "pheroos-certified-commit-v1",
+                  "pheroos-commit-integrity-v1",
+                  "pheroos-distributed-commit-v1",
+                  "pheroos-hybrid-commit-v1"
+                ]
+              },
+              "record_payload": {
+                "type": "object"
+              },
+              "record_ref": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "record_schema": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "run_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "step": {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              }
+            },
+            "required": [
+              "assurance",
+              "binding_ref",
+              "candidate_id",
+              "challenge_root",
+              "claim_fingerprint",
+              "commit_policy_root",
+              "counter_root",
+              "disposition_root",
+              "epoch",
+              "event_id",
+              "evidence_root",
+              "manifest_root",
+              "payload_version",
+              "positive_root",
+              "previous_event_ids",
+              "profile",
+              "record_payload",
+              "record_ref",
+              "record_schema",
+              "run_id",
+              "step"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "lineage"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
             "const": "explore"
           }
         },
@@ -844,6 +2689,436 @@
       "if": {
         "properties": {
           "event_type": {
+            "const": "membership_snapshot"
+          }
+        },
+        "required": [
+          "event_type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "lineage": {
+            "additionalProperties": false,
+            "properties": {
+              "assurance": {
+                "enum": [
+                  "advisory",
+                  "certified",
+                  "distributed",
+                  "evidence_bound"
+                ]
+              },
+              "cluster_count": {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "commit_policy_root": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "epoch": {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "event_id": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "expires_at_step": {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "extensions": {
+                "additionalProperties": true,
+                "propertyNames": {
+                  "pattern": "^(?!(?:x-critical|ext\\.critical))(?:x-.+|ext\\..+)$"
+                },
+                "type": "object"
+              },
+              "manifest_root": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "membership_root": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "payload_version": {
+                "enum": [
+                  "pheroos-commit-trace-payload-v1"
+                ]
+              },
+              "previous_event_ids": {
+                "items": {
+                  "pattern": "^sha256:[0-9a-f]{64}$",
+                  "type": "string"
+                },
+                "type": "array",
+                "uniqueItems": true
+              },
+              "profile": {
+                "enum": [
+                  "pheroos-certified-commit-v1",
+                  "pheroos-commit-integrity-v1",
+                  "pheroos-distributed-commit-v1",
+                  "pheroos-hybrid-commit-v1"
+                ]
+              },
+              "record_payload": {
+                "type": "object"
+              },
+              "record_ref": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "record_schema": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "run_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "snapshot_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "snapshot_ref": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "step": {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              }
+            },
+            "required": [
+              "assurance",
+              "cluster_count",
+              "commit_policy_root",
+              "epoch",
+              "event_id",
+              "expires_at_step",
+              "manifest_root",
+              "membership_root",
+              "payload_version",
+              "previous_event_ids",
+              "profile",
+              "record_payload",
+              "record_ref",
+              "record_schema",
+              "run_id",
+              "snapshot_id",
+              "snapshot_ref",
+              "step"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "lineage"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "observation_recorded"
+          }
+        },
+        "required": [
+          "event_type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "lineage": {
+            "additionalProperties": false,
+            "properties": {
+              "assurance": {
+                "enum": [
+                  "advisory",
+                  "certified",
+                  "distributed",
+                  "evidence_bound"
+                ]
+              },
+              "attestation_fingerprint": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "candidate_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "commit_policy_root": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "epoch": {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "event_id": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "extensions": {
+                "additionalProperties": true,
+                "propertyNames": {
+                  "pattern": "^(?!(?:x-critical|ext\\.critical))(?:x-.+|ext\\..+)$"
+                },
+                "type": "object"
+              },
+              "manifest_root": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "nonce": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "observation_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "payload_version": {
+                "enum": [
+                  "pheroos-commit-trace-payload-v1"
+                ]
+              },
+              "polarity": {
+                "enum": [
+                  "contradict",
+                  "support"
+                ]
+              },
+              "previous_event_ids": {
+                "items": {
+                  "pattern": "^sha256:[0-9a-f]{64}$",
+                  "type": "string"
+                },
+                "type": "array",
+                "uniqueItems": true
+              },
+              "principal_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "profile": {
+                "enum": [
+                  "pheroos-certified-commit-v1",
+                  "pheroos-commit-integrity-v1",
+                  "pheroos-distributed-commit-v1",
+                  "pheroos-hybrid-commit-v1"
+                ]
+              },
+              "record_payload": {
+                "type": "object"
+              },
+              "record_ref": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "record_schema": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "run_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "step": {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              }
+            },
+            "required": [
+              "assurance",
+              "attestation_fingerprint",
+              "candidate_id",
+              "commit_policy_root",
+              "epoch",
+              "event_id",
+              "manifest_root",
+              "nonce",
+              "observation_id",
+              "payload_version",
+              "polarity",
+              "previous_event_ids",
+              "principal_id",
+              "profile",
+              "record_payload",
+              "record_ref",
+              "record_schema",
+              "run_id",
+              "step"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "lineage"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "observation_verified"
+          }
+        },
+        "required": [
+          "event_type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "lineage": {
+            "additionalProperties": false,
+            "properties": {
+              "assurance": {
+                "enum": [
+                  "advisory",
+                  "certified",
+                  "distributed",
+                  "evidence_bound"
+                ]
+              },
+              "candidate_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "commit_policy_root": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "epoch": {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "event_id": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "extensions": {
+                "additionalProperties": true,
+                "propertyNames": {
+                  "pattern": "^(?!(?:x-critical|ext\\.critical))(?:x-.+|ext\\..+)$"
+                },
+                "type": "object"
+              },
+              "manifest_root": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "observation_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "observation_ref": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "payload_version": {
+                "enum": [
+                  "pheroos-commit-trace-payload-v1"
+                ]
+              },
+              "polarity": {
+                "enum": [
+                  "contradict",
+                  "support"
+                ]
+              },
+              "previous_event_ids": {
+                "items": {
+                  "pattern": "^sha256:[0-9a-f]{64}$",
+                  "type": "string"
+                },
+                "type": "array",
+                "uniqueItems": true
+              },
+              "principal_cluster_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "principal_verification_ref": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "profile": {
+                "enum": [
+                  "pheroos-certified-commit-v1",
+                  "pheroos-commit-integrity-v1",
+                  "pheroos-distributed-commit-v1",
+                  "pheroos-hybrid-commit-v1"
+                ]
+              },
+              "record_payload": {
+                "type": "object"
+              },
+              "record_ref": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "record_schema": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "run_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "step": {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              }
+            },
+            "required": [
+              "assurance",
+              "candidate_id",
+              "commit_policy_root",
+              "epoch",
+              "event_id",
+              "manifest_root",
+              "observation_id",
+              "observation_ref",
+              "payload_version",
+              "polarity",
+              "previous_event_ids",
+              "principal_cluster_id",
+              "principal_verification_ref",
+              "profile",
+              "record_payload",
+              "record_ref",
+              "record_schema",
+              "run_id",
+              "step"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "lineage"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
             "const": "output"
           }
         },
@@ -939,6 +3214,158 @@
               "evidence_provenance",
               "publication_permission",
               "stop_resolution"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "lineage"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "output_decided"
+          }
+        },
+        "required": [
+          "event_type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "lineage": {
+            "additionalProperties": false,
+            "properties": {
+              "assurance": {
+                "enum": [
+                  "advisory",
+                  "certified",
+                  "distributed",
+                  "evidence_bound"
+                ]
+              },
+              "authorization_ref": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "certificate_ref": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "commit_policy_root": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "deliver": {
+                "type": "boolean"
+              },
+              "distributed_state_ref": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "epoch": {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "event_id": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "execute": {
+                "type": "boolean"
+              },
+              "extensions": {
+                "additionalProperties": true,
+                "propertyNames": {
+                  "pattern": "^(?!(?:x-critical|ext\\.critical))(?:x-.+|ext\\..+)$"
+                },
+                "type": "object"
+              },
+              "manifest_root": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "outcome_ref": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "payload_version": {
+                "enum": [
+                  "pheroos-commit-trace-payload-v1"
+                ]
+              },
+              "previous_event_ids": {
+                "items": {
+                  "pattern": "^sha256:[0-9a-f]{64}$",
+                  "type": "string"
+                },
+                "type": "array",
+                "uniqueItems": true
+              },
+              "profile": {
+                "enum": [
+                  "pheroos-certified-commit-v1",
+                  "pheroos-commit-integrity-v1",
+                  "pheroos-distributed-commit-v1",
+                  "pheroos-hybrid-commit-v1"
+                ]
+              },
+              "publish": {
+                "type": "boolean"
+              },
+              "reason_codes": {
+                "items": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "type": "array",
+                "uniqueItems": true
+              },
+              "record_payload": {
+                "type": "object"
+              },
+              "record_ref": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "record_schema": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "run_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "step": {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              }
+            },
+            "required": [
+              "assurance",
+              "authorization_ref",
+              "commit_policy_root",
+              "deliver",
+              "epoch",
+              "event_id",
+              "execute",
+              "manifest_root",
+              "outcome_ref",
+              "payload_version",
+              "previous_event_ids",
+              "profile",
+              "publish",
+              "reason_codes",
+              "record_payload",
+              "record_ref",
+              "record_schema",
+              "run_id",
+              "step"
             ],
             "type": "object"
           }
@@ -3025,6 +5452,570 @@
       "if": {
         "properties": {
           "event_type": {
+            "const": "principal_attested"
+          }
+        },
+        "required": [
+          "event_type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "lineage": {
+            "additionalProperties": false,
+            "properties": {
+              "assurance": {
+                "enum": [
+                  "advisory",
+                  "certified",
+                  "distributed",
+                  "evidence_bound"
+                ]
+              },
+              "attestation_fingerprint": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "commit_policy_root": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "epoch": {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "event_id": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "extensions": {
+                "additionalProperties": true,
+                "propertyNames": {
+                  "pattern": "^(?!(?:x-critical|ext\\.critical))(?:x-.+|ext\\..+)$"
+                },
+                "type": "object"
+              },
+              "manifest_root": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "nonce": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "payload_version": {
+                "enum": [
+                  "pheroos-commit-trace-payload-v1"
+                ]
+              },
+              "previous_event_ids": {
+                "items": {
+                  "pattern": "^sha256:[0-9a-f]{64}$",
+                  "type": "string"
+                },
+                "type": "array",
+                "uniqueItems": true
+              },
+              "principal_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "profile": {
+                "enum": [
+                  "pheroos-certified-commit-v1",
+                  "pheroos-commit-integrity-v1",
+                  "pheroos-distributed-commit-v1",
+                  "pheroos-hybrid-commit-v1"
+                ]
+              },
+              "record_payload": {
+                "type": "object"
+              },
+              "record_ref": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "record_schema": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "run_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "step": {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              }
+            },
+            "required": [
+              "assurance",
+              "attestation_fingerprint",
+              "commit_policy_root",
+              "epoch",
+              "event_id",
+              "manifest_root",
+              "nonce",
+              "payload_version",
+              "previous_event_ids",
+              "principal_id",
+              "profile",
+              "record_payload",
+              "record_ref",
+              "record_schema",
+              "run_id",
+              "step"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "lineage"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "principal_verified"
+          }
+        },
+        "required": [
+          "event_type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "lineage": {
+            "additionalProperties": false,
+            "properties": {
+              "assurance": {
+                "enum": [
+                  "advisory",
+                  "certified",
+                  "distributed",
+                  "evidence_bound"
+                ]
+              },
+              "attestation_ref": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "cluster_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "commit_policy_root": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "epoch": {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "event_id": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "extensions": {
+                "additionalProperties": true,
+                "propertyNames": {
+                  "pattern": "^(?!(?:x-critical|ext\\.critical))(?:x-.+|ext\\..+)$"
+                },
+                "type": "object"
+              },
+              "manifest_root": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "payload_version": {
+                "enum": [
+                  "pheroos-commit-trace-payload-v1"
+                ]
+              },
+              "previous_event_ids": {
+                "items": {
+                  "pattern": "^sha256:[0-9a-f]{64}$",
+                  "type": "string"
+                },
+                "type": "array",
+                "uniqueItems": true
+              },
+              "principal_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "profile": {
+                "enum": [
+                  "pheroos-certified-commit-v1",
+                  "pheroos-commit-integrity-v1",
+                  "pheroos-distributed-commit-v1",
+                  "pheroos-hybrid-commit-v1"
+                ]
+              },
+              "record_payload": {
+                "type": "object"
+              },
+              "record_ref": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "record_schema": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "run_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "step": {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "verification_ref": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              }
+            },
+            "required": [
+              "assurance",
+              "attestation_ref",
+              "cluster_id",
+              "commit_policy_root",
+              "epoch",
+              "event_id",
+              "manifest_root",
+              "payload_version",
+              "previous_event_ids",
+              "principal_id",
+              "profile",
+              "record_payload",
+              "record_ref",
+              "record_schema",
+              "run_id",
+              "step",
+              "verification_ref"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "lineage"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "quorum_pending"
+          }
+        },
+        "required": [
+          "event_type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "lineage": {
+            "additionalProperties": false,
+            "properties": {
+              "absolute_deadline_step": {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "assessment_ref": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "assurance": {
+                "enum": [
+                  "advisory",
+                  "certified",
+                  "distributed",
+                  "evidence_bound"
+                ]
+              },
+              "commit_policy_root": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "epoch": {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "event_id": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "extensions": {
+                "additionalProperties": true,
+                "propertyNames": {
+                  "pattern": "^(?!(?:x-critical|ext\\.critical))(?:x-.+|ext\\..+)$"
+                },
+                "type": "object"
+              },
+              "manifest_root": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "payload_version": {
+                "enum": [
+                  "pheroos-commit-trace-payload-v1"
+                ]
+              },
+              "phase": {
+                "enum": [
+                  "deliberate",
+                  "provisional",
+                  "quorum_pending",
+                  "search"
+                ]
+              },
+              "previous_event_ids": {
+                "items": {
+                  "pattern": "^sha256:[0-9a-f]{64}$",
+                  "type": "string"
+                },
+                "type": "array",
+                "uniqueItems": true
+              },
+              "previous_progress_ref": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "profile": {
+                "enum": [
+                  "pheroos-certified-commit-v1",
+                  "pheroos-commit-integrity-v1",
+                  "pheroos-distributed-commit-v1",
+                  "pheroos-hybrid-commit-v1"
+                ]
+              },
+              "progress_ref": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "record_payload": {
+                "type": "object"
+              },
+              "record_ref": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "record_schema": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "run_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "sealed_window_ref": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "step": {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "unmet_gates": {
+                "items": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "type": "array",
+                "uniqueItems": true
+              }
+            },
+            "required": [
+              "absolute_deadline_step",
+              "assessment_ref",
+              "assurance",
+              "commit_policy_root",
+              "epoch",
+              "event_id",
+              "manifest_root",
+              "payload_version",
+              "phase",
+              "previous_event_ids",
+              "profile",
+              "progress_ref",
+              "record_payload",
+              "record_ref",
+              "record_schema",
+              "run_id",
+              "step",
+              "unmet_gates"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "lineage"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "quorum_witness"
+          }
+        },
+        "required": [
+          "event_type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "lineage": {
+            "additionalProperties": false,
+            "properties": {
+              "assurance": {
+                "enum": [
+                  "advisory",
+                  "certified",
+                  "distributed",
+                  "evidence_bound"
+                ]
+              },
+              "commit_policy_root": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "commit_value_root": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "epoch": {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "event_id": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "expires_at_step": {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "extensions": {
+                "additionalProperties": true,
+                "propertyNames": {
+                  "pattern": "^(?!(?:x-critical|ext\\.critical))(?:x-.+|ext\\..+)$"
+                },
+                "type": "object"
+              },
+              "failure_domain": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "manifest_root": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "payload_version": {
+                "enum": [
+                  "pheroos-commit-trace-payload-v1"
+                ]
+              },
+              "previous_event_ids": {
+                "items": {
+                  "pattern": "^sha256:[0-9a-f]{64}$",
+                  "type": "string"
+                },
+                "type": "array",
+                "uniqueItems": true
+              },
+              "principal_cluster_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "profile": {
+                "enum": [
+                  "pheroos-certified-commit-v1",
+                  "pheroos-commit-integrity-v1",
+                  "pheroos-distributed-commit-v1",
+                  "pheroos-hybrid-commit-v1"
+                ]
+              },
+              "proposal_digest": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "record_payload": {
+                "type": "object"
+              },
+              "record_ref": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "record_schema": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "run_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "step": {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "verified": {
+                "type": "boolean"
+              },
+              "witness_ref": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              }
+            },
+            "required": [
+              "assurance",
+              "commit_policy_root",
+              "commit_value_root",
+              "epoch",
+              "event_id",
+              "expires_at_step",
+              "failure_domain",
+              "manifest_root",
+              "payload_version",
+              "previous_event_ids",
+              "principal_cluster_id",
+              "profile",
+              "proposal_digest",
+              "record_payload",
+              "record_ref",
+              "record_schema",
+              "run_id",
+              "step",
+              "verified",
+              "witness_ref"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "lineage"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
             "const": "recruit"
           }
         },
@@ -3069,6 +6060,144 @@
               "source_trace_event_id",
               "strength",
               "verification_trace_event_id"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "lineage"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "risk_assessed"
+          }
+        },
+        "required": [
+          "event_type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "lineage": {
+            "additionalProperties": false,
+            "properties": {
+              "assurance": {
+                "enum": [
+                  "advisory",
+                  "certified",
+                  "distributed",
+                  "evidence_bound"
+                ]
+              },
+              "commit_policy_root": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "epoch": {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "event_id": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "extensions": {
+                "additionalProperties": true,
+                "propertyNames": {
+                  "pattern": "^(?!(?:x-critical|ext\\.critical))(?:x-.+|ext\\..+)$"
+                },
+                "type": "object"
+              },
+              "manifest_root": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "payload_version": {
+                "enum": [
+                  "pheroos-commit-trace-payload-v1"
+                ]
+              },
+              "previous_event_ids": {
+                "items": {
+                  "pattern": "^sha256:[0-9a-f]{64}$",
+                  "type": "string"
+                },
+                "type": "array",
+                "uniqueItems": true
+              },
+              "profile": {
+                "enum": [
+                  "pheroos-certified-commit-v1",
+                  "pheroos-commit-integrity-v1",
+                  "pheroos-distributed-commit-v1",
+                  "pheroos-hybrid-commit-v1"
+                ]
+              },
+              "record_payload": {
+                "type": "object"
+              },
+              "record_ref": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "record_schema": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "risk_band": {
+                "enum": [
+                  "CRITICAL",
+                  "HIGH",
+                  "LOW",
+                  "MODERATE"
+                ]
+              },
+              "risk_chain_revision": {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "risk_ref": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "run_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "step": {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "threshold_ref": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              }
+            },
+            "required": [
+              "assurance",
+              "commit_policy_root",
+              "epoch",
+              "event_id",
+              "manifest_root",
+              "payload_version",
+              "previous_event_ids",
+              "profile",
+              "record_payload",
+              "record_ref",
+              "record_schema",
+              "risk_band",
+              "risk_chain_revision",
+              "risk_ref",
+              "run_id",
+              "step",
+              "threshold_ref"
             ],
             "type": "object"
           }
@@ -3139,6 +6268,714 @@
           "lineage"
         ]
       }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "stop_resolution_verified"
+          }
+        },
+        "required": [
+          "event_type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "lineage": {
+            "additionalProperties": false,
+            "properties": {
+              "action": {
+                "enum": [
+                  "commit",
+                  "epoch_transition",
+                  "execute",
+                  "publish",
+                  "recovery"
+                ]
+              },
+              "assurance": {
+                "enum": [
+                  "advisory",
+                  "certified",
+                  "distributed",
+                  "evidence_bound"
+                ]
+              },
+              "blocked": {
+                "type": "boolean"
+              },
+              "commit_policy_root": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "epoch": {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "event_id": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "expires_at_step": {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "extensions": {
+                "additionalProperties": true,
+                "propertyNames": {
+                  "pattern": "^(?!(?:x-critical|ext\\.critical))(?:x-.+|ext\\..+)$"
+                },
+                "type": "object"
+              },
+              "manifest_root": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "payload_version": {
+                "enum": [
+                  "pheroos-commit-trace-payload-v1"
+                ]
+              },
+              "previous_event_ids": {
+                "items": {
+                  "pattern": "^sha256:[0-9a-f]{64}$",
+                  "type": "string"
+                },
+                "type": "array",
+                "uniqueItems": true
+              },
+              "profile": {
+                "enum": [
+                  "pheroos-certified-commit-v1",
+                  "pheroos-commit-integrity-v1",
+                  "pheroos-distributed-commit-v1",
+                  "pheroos-hybrid-commit-v1"
+                ]
+              },
+              "record_payload": {
+                "type": "object"
+              },
+              "record_ref": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "record_schema": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "resolution_ref": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "run_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "step": {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              }
+            },
+            "required": [
+              "action",
+              "assurance",
+              "blocked",
+              "commit_policy_root",
+              "epoch",
+              "event_id",
+              "expires_at_step",
+              "manifest_root",
+              "payload_version",
+              "previous_event_ids",
+              "profile",
+              "record_payload",
+              "record_ref",
+              "record_schema",
+              "resolution_ref",
+              "run_id",
+              "step"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "lineage"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "support_equivocation"
+          }
+        },
+        "required": [
+          "event_type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "lineage": {
+            "additionalProperties": false,
+            "properties": {
+              "assurance": {
+                "enum": [
+                  "advisory",
+                  "certified",
+                  "distributed",
+                  "evidence_bound"
+                ]
+              },
+              "commit_policy_root": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "conflicting_candidates": {
+                "items": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "type": "array",
+                "uniqueItems": true
+              },
+              "conflicting_lease_refs": {
+                "items": {
+                  "pattern": "^sha256:[0-9a-f]{64}$",
+                  "type": "string"
+                },
+                "type": "array",
+                "uniqueItems": true
+              },
+              "epoch": {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "event_id": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "extensions": {
+                "additionalProperties": true,
+                "propertyNames": {
+                  "pattern": "^(?!(?:x-critical|ext\\.critical))(?:x-.+|ext\\..+)$"
+                },
+                "type": "object"
+              },
+              "finding_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "finding_ref": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "manifest_root": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "payload_version": {
+                "enum": [
+                  "pheroos-commit-trace-payload-v1"
+                ]
+              },
+              "previous_event_ids": {
+                "items": {
+                  "pattern": "^sha256:[0-9a-f]{64}$",
+                  "type": "string"
+                },
+                "type": "array",
+                "uniqueItems": true
+              },
+              "principal_cluster_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "profile": {
+                "enum": [
+                  "pheroos-certified-commit-v1",
+                  "pheroos-commit-integrity-v1",
+                  "pheroos-distributed-commit-v1",
+                  "pheroos-hybrid-commit-v1"
+                ]
+              },
+              "record_payload": {
+                "type": "object"
+              },
+              "record_ref": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "record_schema": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "run_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "step": {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              }
+            },
+            "required": [
+              "assurance",
+              "commit_policy_root",
+              "conflicting_candidates",
+              "conflicting_lease_refs",
+              "epoch",
+              "event_id",
+              "finding_id",
+              "finding_ref",
+              "manifest_root",
+              "payload_version",
+              "previous_event_ids",
+              "principal_cluster_id",
+              "profile",
+              "record_payload",
+              "record_ref",
+              "record_schema",
+              "run_id",
+              "step"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "lineage"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "support_lease_expired"
+          }
+        },
+        "required": [
+          "event_type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "lineage": {
+            "additionalProperties": false,
+            "properties": {
+              "assurance": {
+                "enum": [
+                  "advisory",
+                  "certified",
+                  "distributed",
+                  "evidence_bound"
+                ]
+              },
+              "commit_policy_root": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "epoch": {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "event_id": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "expiration_ref": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "expired_at_step": {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "extensions": {
+                "additionalProperties": true,
+                "propertyNames": {
+                  "pattern": "^(?!(?:x-critical|ext\\.critical))(?:x-.+|ext\\..+)$"
+                },
+                "type": "object"
+              },
+              "lease_ref": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "manifest_root": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "payload_version": {
+                "enum": [
+                  "pheroos-commit-trace-payload-v1"
+                ]
+              },
+              "previous_event_ids": {
+                "items": {
+                  "pattern": "^sha256:[0-9a-f]{64}$",
+                  "type": "string"
+                },
+                "type": "array",
+                "uniqueItems": true
+              },
+              "profile": {
+                "enum": [
+                  "pheroos-certified-commit-v1",
+                  "pheroos-commit-integrity-v1",
+                  "pheroos-distributed-commit-v1",
+                  "pheroos-hybrid-commit-v1"
+                ]
+              },
+              "record_payload": {
+                "type": "object"
+              },
+              "record_ref": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "record_schema": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "run_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "step": {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              }
+            },
+            "required": [
+              "assurance",
+              "commit_policy_root",
+              "epoch",
+              "event_id",
+              "expiration_ref",
+              "expired_at_step",
+              "lease_ref",
+              "manifest_root",
+              "payload_version",
+              "previous_event_ids",
+              "profile",
+              "record_payload",
+              "record_ref",
+              "record_schema",
+              "run_id",
+              "step"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "lineage"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "support_lease_issued"
+          }
+        },
+        "required": [
+          "event_type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "lineage": {
+            "additionalProperties": false,
+            "properties": {
+              "assurance": {
+                "enum": [
+                  "advisory",
+                  "certified",
+                  "distributed",
+                  "evidence_bound"
+                ]
+              },
+              "candidate_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "commit_policy_root": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "epoch": {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "event_id": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "evidence_refs": {
+                "items": {
+                  "pattern": "^sha256:[0-9a-f]{64}$",
+                  "type": "string"
+                },
+                "type": "array",
+                "uniqueItems": true
+              },
+              "expires_at_step": {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "extensions": {
+                "additionalProperties": true,
+                "propertyNames": {
+                  "pattern": "^(?!(?:x-critical|ext\\.critical))(?:x-.+|ext\\..+)$"
+                },
+                "type": "object"
+              },
+              "lease_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "lease_ref": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "manifest_root": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "payload_version": {
+                "enum": [
+                  "pheroos-commit-trace-payload-v1"
+                ]
+              },
+              "previous_event_ids": {
+                "items": {
+                  "pattern": "^sha256:[0-9a-f]{64}$",
+                  "type": "string"
+                },
+                "type": "array",
+                "uniqueItems": true
+              },
+              "principal_cluster_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "profile": {
+                "enum": [
+                  "pheroos-certified-commit-v1",
+                  "pheroos-commit-integrity-v1",
+                  "pheroos-distributed-commit-v1",
+                  "pheroos-hybrid-commit-v1"
+                ]
+              },
+              "record_payload": {
+                "type": "object"
+              },
+              "record_ref": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "record_schema": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "run_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "step": {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              }
+            },
+            "required": [
+              "assurance",
+              "candidate_id",
+              "commit_policy_root",
+              "epoch",
+              "event_id",
+              "evidence_refs",
+              "expires_at_step",
+              "lease_id",
+              "lease_ref",
+              "manifest_root",
+              "payload_version",
+              "previous_event_ids",
+              "principal_cluster_id",
+              "profile",
+              "record_payload",
+              "record_ref",
+              "record_schema",
+              "run_id",
+              "step"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "lineage"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "support_lease_revoked"
+          }
+        },
+        "required": [
+          "event_type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "lineage": {
+            "additionalProperties": false,
+            "properties": {
+              "assurance": {
+                "enum": [
+                  "advisory",
+                  "certified",
+                  "distributed",
+                  "evidence_bound"
+                ]
+              },
+              "candidate_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "commit_policy_root": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "epoch": {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "event_id": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "extensions": {
+                "additionalProperties": true,
+                "propertyNames": {
+                  "pattern": "^(?!(?:x-critical|ext\\.critical))(?:x-.+|ext\\..+)$"
+                },
+                "type": "object"
+              },
+              "lease_ref": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "manifest_root": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "payload_version": {
+                "enum": [
+                  "pheroos-commit-trace-payload-v1"
+                ]
+              },
+              "previous_event_ids": {
+                "items": {
+                  "pattern": "^sha256:[0-9a-f]{64}$",
+                  "type": "string"
+                },
+                "type": "array",
+                "uniqueItems": true
+              },
+              "principal_cluster_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "profile": {
+                "enum": [
+                  "pheroos-certified-commit-v1",
+                  "pheroos-commit-integrity-v1",
+                  "pheroos-distributed-commit-v1",
+                  "pheroos-hybrid-commit-v1"
+                ]
+              },
+              "reason_codes": {
+                "items": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "type": "array",
+                "uniqueItems": true
+              },
+              "record_payload": {
+                "type": "object"
+              },
+              "record_ref": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "record_schema": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "revocation_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "revocation_ref": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "run_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "step": {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              }
+            },
+            "required": [
+              "assurance",
+              "candidate_id",
+              "commit_policy_root",
+              "epoch",
+              "event_id",
+              "lease_ref",
+              "manifest_root",
+              "payload_version",
+              "previous_event_ids",
+              "principal_cluster_id",
+              "profile",
+              "reason_codes",
+              "record_payload",
+              "record_ref",
+              "record_schema",
+              "revocation_id",
+              "revocation_ref",
+              "run_id",
+              "step"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "lineage"
+        ]
+      }
     }
   ],
   "properties": {
@@ -3147,13 +6984,25 @@
       "oneOf": [
         {
           "enum": [
+            "action_permission_issued",
             "block",
             "candidate_score",
+            "certificate_conflict",
+            "challenge_recorded",
             "commit",
+            "commit_certificate_issued",
+            "commit_metrics",
+            "commit_provisional",
+            "commit_window_advanced",
+            "commit_window_reset",
             "consensus_check",
             "coordination_assess",
             "coordination_resolve",
+            "counterevidence_disposed",
+            "decision_outcome",
+            "epoch_certificate",
             "evidence",
+            "evidence_bound",
             "explore",
             "expose",
             "fallback",
@@ -3161,7 +7010,11 @@
             "inhibit",
             "invoke",
             "layer_proposal",
+            "membership_snapshot",
+            "observation_recorded",
+            "observation_verified",
             "output",
+            "output_decided",
             "pheromone_clip",
             "pheromone_deposit",
             "pheromone_diffuse",
@@ -3174,10 +7027,20 @@
             "pheromone_score",
             "plan",
             "policy_adjustment",
+            "principal_attested",
+            "principal_verified",
+            "quorum_pending",
+            "quorum_witness",
             "recovery",
             "recruit",
+            "risk_assessed",
             "scout_report",
-            "signal"
+            "signal",
+            "stop_resolution_verified",
+            "support_equivocation",
+            "support_lease_expired",
+            "support_lease_issued",
+            "support_lease_revoked"
           ]
         },
         {

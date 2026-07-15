@@ -1,7 +1,20 @@
 from __future__ import annotations
 
 from typing import Any
+import unicodedata
 
+from pheroos.protocol.commit_models import (
+    MAX_AUTHORITY_INTEGER,
+    SUPPORTED_RISK_BANDS,
+    CertificatePolicy,
+    CollectiveCommitPolicy,
+    CommitWindowPolicy,
+    DistributedCommitPolicy,
+    EvidenceQualificationPolicy,
+    RiskBandPolicy,
+    SupportLeasePolicy,
+    TerminalOutcomePolicy,
+)
 from pheroos.protocol.extensions import collect_extensions, reject_secret_like_fields
 from pheroos.protocol.models import (
     CandidateSpec,
@@ -60,6 +73,9 @@ def protocol_manifest_from_dict(payload: dict[str, Any]) -> ProtocolManifest:
         evidence_policy=evidence_policy_from_dict(object_payload(payload.get("evidence_policy"), default={})),
         signals=[signal_from_dict(item) for item in payload.get("signals", [])],
         collective_decision_policy=collective_decision_policy_from_dict(payload.get("collective_decision_policy")),
+        collective_commit_policy=collective_commit_policy_from_dict(
+            payload.get("collective_commit_policy")
+        ),
         extensions=collect_extensions(payload),
     )
 
@@ -153,6 +169,202 @@ def collective_decision_policy_from_dict(value: Any) -> CollectiveDecisionPolicy
     )
 
 
+def collective_commit_policy_from_dict(value: Any) -> CollectiveCommitPolicy | None:
+    if value is None:
+        return None
+    payload = object_payload(value)
+    risk_payload = strict_object_field(payload, "risk_bands")
+    return CollectiveCommitPolicy(
+        policy_version=strict_text_field(payload, "policy_version"),
+        model=strict_text_field(payload, "model"),
+        assurance=strict_text_field(payload, "assurance"),
+        target=strict_text_field(payload, "target"),
+        evidence_qualification=evidence_qualification_policy_from_dict(
+            strict_object_field(payload, "evidence_qualification")
+        ),
+        support_lease=support_lease_policy_from_dict(
+            strict_object_field(payload, "support_lease")
+        ),
+        risk_bands={
+            band: risk_band_policy_from_dict(strict_object_field(risk_payload, band))
+            for band in SUPPORTED_RISK_BANDS
+        },
+        commit_window=commit_window_policy_from_dict(
+            strict_object_field(payload, "commit_window")
+        ),
+        terminal_outcome=terminal_outcome_policy_from_dict(
+            strict_object_field(payload, "terminal_outcome")
+        ),
+        certificate=certificate_policy_from_dict(
+            strict_object_field(payload, "certificate")
+        ),
+        distributed=distributed_commit_policy_from_value(
+            required_commit_field(payload, "distributed")
+        ),
+        extensions=collect_extensions(payload),
+    )
+
+
+def evidence_qualification_policy_from_dict(
+    payload: dict[str, Any],
+) -> EvidenceQualificationPolicy:
+    return EvidenceQualificationPolicy(
+        numeric_scale=strict_integer_field(payload, "numeric_scale"),
+        minimum_quality_ppm=strict_integer_field(payload, "minimum_quality_ppm"),
+        minimum_relevance_ppm=strict_integer_field(payload, "minimum_relevance_ppm"),
+        positive_group_cap=strict_integer_field(payload, "positive_group_cap"),
+        counter_group_cap=strict_integer_field(payload, "counter_group_cap"),
+        counter_weight_ppm=strict_integer_field(payload, "counter_weight_ppm"),
+        minimum_positive_evidence=strict_integer_field(
+            payload, "minimum_positive_evidence"
+        ),
+        maximum_counterevidence=strict_integer_field(
+            payload, "maximum_counterevidence"
+        ),
+        maximum_counterevidence_ratio_ppm=strict_integer_field(
+            payload, "maximum_counterevidence_ratio_ppm"
+        ),
+        domain_contribution_floor=strict_integer_field(
+            payload, "domain_contribution_floor"
+        ),
+        minimum_source_diversity=strict_integer_field(
+            payload, "minimum_source_diversity"
+        ),
+        required_challenge_categories=strict_text_list_field(
+            payload, "required_challenge_categories"
+        ),
+        observation_ttl_steps=strict_integer_field(payload, "observation_ttl_steps"),
+        require_provenance=strict_bool_field(payload, "require_provenance"),
+        require_trace=strict_bool_field(payload, "require_trace"),
+        extensions=collect_extensions(payload),
+    )
+
+
+def support_lease_policy_from_dict(payload: dict[str, Any]) -> SupportLeasePolicy:
+    return SupportLeasePolicy(
+        minimum_support_clusters=strict_integer_field(
+            payload, "minimum_support_clusters"
+        ),
+        support_ratio_ppm=strict_integer_field(payload, "support_ratio_ppm"),
+        lease_ttl_steps=strict_integer_field(payload, "lease_ttl_steps"),
+        membership_mode=strict_text_field(payload, "membership_mode"),
+        switch_mode=strict_text_field(payload, "switch_mode"),
+        equivocation_mode=strict_text_field(payload, "equivocation_mode"),
+        evidence_reference_required=strict_bool_field(
+            payload, "evidence_reference_required"
+        ),
+        cluster_verification_required=strict_bool_field(
+            payload, "cluster_verification_required"
+        ),
+        extensions=collect_extensions(payload),
+    )
+
+
+def risk_band_policy_from_dict(payload: dict[str, Any]) -> RiskBandPolicy:
+    return RiskBandPolicy(
+        minimum_positive_evidence=strict_integer_field(
+            payload, "minimum_positive_evidence"
+        ),
+        maximum_counterevidence=strict_integer_field(
+            payload, "maximum_counterevidence"
+        ),
+        maximum_counterevidence_ratio_ppm=strict_integer_field(
+            payload, "maximum_counterevidence_ratio_ppm"
+        ),
+        minimum_support_clusters=strict_integer_field(
+            payload, "minimum_support_clusters"
+        ),
+        minimum_support_ratio_ppm=strict_integer_field(
+            payload, "minimum_support_ratio_ppm"
+        ),
+        minimum_source_diversity=strict_integer_field(
+            payload, "minimum_source_diversity"
+        ),
+        minimum_margin=strict_integer_field(payload, "minimum_margin"),
+        stability_steps=strict_integer_field(payload, "stability_steps"),
+        required_challenge_categories=strict_text_list_field(
+            payload, "required_challenge_categories"
+        ),
+        minimum_assurance=strict_text_field(payload, "minimum_assurance"),
+        publishable_outcomes=strict_text_list_field(payload, "publishable_outcomes"),
+        executable_outcomes=strict_text_list_field(payload, "executable_outcomes"),
+        extensions=collect_extensions(payload),
+    )
+
+
+def commit_window_policy_from_dict(payload: dict[str, Any]) -> CommitWindowPolicy:
+    return CommitWindowPolicy(
+        minimum_stability_steps=strict_integer_field(
+            payload, "minimum_stability_steps"
+        ),
+        deliberation_deadline_steps=strict_integer_field(
+            payload, "deliberation_deadline_steps"
+        ),
+        maximum_leader_resets=strict_integer_field(payload, "maximum_leader_resets"),
+        maximum_epoch_restarts=strict_integer_field(payload, "maximum_epoch_restarts"),
+        run_deadline_steps=strict_integer_field(payload, "run_deadline_steps"),
+        reset_rules=strict_text_list_field(payload, "reset_rules"),
+        extensions=collect_extensions(payload),
+    )
+
+
+def terminal_outcome_policy_from_dict(
+    payload: dict[str, Any],
+) -> TerminalOutcomePolicy:
+    return TerminalOutcomePolicy(
+        safe_fallback_candidate=strict_text_field(payload, "safe_fallback_candidate"),
+        deadline_outcome=strict_text_field(payload, "deadline_outcome"),
+        policy_incomplete_outcome=strict_text_field(
+            payload, "policy_incomplete_outcome"
+        ),
+        finality_unavailable_outcome=strict_text_field(
+            payload, "finality_unavailable_outcome"
+        ),
+        deliverable_outcomes=strict_text_list_field(payload, "deliverable_outcomes"),
+        publishable_outcomes=strict_text_list_field(payload, "publishable_outcomes"),
+        executable_outcomes=strict_text_list_field(payload, "executable_outcomes"),
+        extensions=collect_extensions(payload),
+    )
+
+
+def certificate_policy_from_dict(payload: dict[str, Any]) -> CertificatePolicy:
+    return CertificatePolicy(
+        mode=strict_text_field(payload, "mode"),
+        wire_version=strict_text_field(payload, "wire_version"),
+        canonicalization=strict_text_field(payload, "canonicalization"),
+        hash_algorithm=strict_text_field(payload, "hash_algorithm"),
+        issuer_attestation_required=strict_bool_field(
+            payload, "issuer_attestation_required"
+        ),
+        independent_verification_required=strict_bool_field(
+            payload, "independent_verification_required"
+        ),
+        extensions=collect_extensions(payload),
+    )
+
+
+def distributed_commit_policy_from_value(value: Any) -> DistributedCommitPolicy | None:
+    if value is None:
+        return None
+    payload = object_payload(value)
+    return DistributedCommitPolicy(
+        fault_model=strict_text_field(payload, "fault_model"),
+        membership_mode=strict_text_field(payload, "membership_mode"),
+        membership_size=strict_integer_field(payload, "membership_size"),
+        max_byzantine_faults=strict_integer_field(
+            payload, "max_byzantine_faults"
+        ),
+        witness_quorum=strict_integer_field(payload, "witness_quorum"),
+        witness_ttl_steps=strict_integer_field(payload, "witness_ttl_steps"),
+        minimum_failure_domain_diversity=strict_integer_field(
+            payload, "minimum_failure_domain_diversity"
+        ),
+        epoch_transition_rule=strict_text_field(payload, "epoch_transition_rule"),
+        conflict_rule=strict_text_field(payload, "conflict_rule"),
+        extensions=collect_extensions(payload),
+    )
+
+
 def pheromone_kind_profiles_from_dict(value: Any) -> dict[str, PheromoneKindProfile]:
     if value is None:
         return {}
@@ -225,6 +437,66 @@ def evidence_policy_from_dict(payload: dict[str, Any]) -> EvidencePolicy:
         allow_agent_fact_creation=bool_field(payload, "allow_agent_fact_creation", default=False),
         extensions=collect_extensions(payload),
     )
+
+
+def strict_object_field(payload: dict[str, Any], key: str) -> dict[str, Any]:
+    if key not in payload or not isinstance(payload[key], dict):
+        raise ValueError(f"commit policy field must be an object: {key}")
+    return payload[key]
+
+
+def required_commit_field(payload: dict[str, Any], key: str) -> Any:
+    if key not in payload:
+        raise ValueError(f"missing required commit policy field: {key}")
+    return payload[key]
+
+
+def strict_text_field(payload: dict[str, Any], key: str) -> str:
+    if key not in payload:
+        raise ValueError(f"missing required commit policy field: {key}")
+    value = payload[key]
+    if (
+        not isinstance(value, str)
+        or not value
+        or value != value.strip()
+        or value != unicodedata.normalize("NFC", value)
+    ):
+        raise ValueError(f"commit policy field must be a canonical non-blank string: {key}")
+    return value
+
+
+def strict_text_list_field(payload: dict[str, Any], key: str) -> list[str]:
+    if key not in payload or not isinstance(payload[key], list):
+        raise ValueError(f"commit policy field must be a string list: {key}")
+    values = payload[key]
+    if any(
+        not isinstance(value, str)
+        or not value
+        or value != value.strip()
+        or value != unicodedata.normalize("NFC", value)
+        for value in values
+    ):
+        raise ValueError(f"commit policy field must contain canonical strings: {key}")
+    if len(values) != len(set(values)):
+        raise ValueError(f"commit policy field must not contain duplicates: {key}")
+    return list(values)
+
+
+def strict_integer_field(payload: dict[str, Any], key: str) -> int:
+    if key not in payload:
+        raise ValueError(f"missing required commit policy field: {key}")
+    value = payload[key]
+    if type(value) is not int:
+        raise ValueError(f"commit policy field must be an integer: {key}")
+    if value < 0 or value > MAX_AUTHORITY_INTEGER:
+        raise ValueError(f"commit policy integer is outside the authority bound: {key}")
+    return value
+
+
+def strict_bool_field(payload: dict[str, Any], key: str) -> bool:
+    if key not in payload or type(payload[key]) is not bool:
+        raise ValueError(f"commit policy field must be a boolean: {key}")
+    return payload[key]
 
 
 def required_text(payload: dict[str, Any], key: str) -> str:

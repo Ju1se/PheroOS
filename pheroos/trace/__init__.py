@@ -10,6 +10,18 @@ from numbers import Real
 from types import MappingProxyType
 from typing import Any, Iterable
 
+from pheroos.trace.commit_contracts import (
+    COMMIT_EVENT_TYPES,
+    COMMIT_TRACE_EVENT_SCHEMA,
+    COMMIT_TRACE_PAYLOAD_VERSION,
+    CommitTraceReplay,
+    build_commit_trace_lineage,
+    commit_trace_event_id,
+    commit_trace_required_fields,
+    replay_commit_trace,
+    validate_commit_trace_event,
+)
+
 
 VALID_EVENT_TYPES = frozenset(
     {
@@ -45,7 +57,7 @@ VALID_EVENT_TYPES = frozenset(
         "recovery",
         "output",
     }
-)
+) | COMMIT_EVENT_TYPES
 
 EXTENSION_EVENT_PREFIXES = ("x-", "ext.")
 PHEROMONE_CLIP_PAYLOAD_VERSION = "pheroos-pheromone-clip-payload-v1"
@@ -374,6 +386,10 @@ EVENT_LINEAGE_CONTRACTS: Mapping[str, frozenset[str]] = MappingProxyType({
             "authorized",
         }
     ),
+    **{
+        event_type: commit_trace_required_fields(event_type)
+        for event_type in sorted(COMMIT_EVENT_TYPES)
+    },
 })
 
 
@@ -403,6 +419,55 @@ class TraceEvent:
         validate_event_lineage(self)
 
 
+def make_commit_trace_event(
+    *,
+    event_type: str,
+    protocol_id: str,
+    target: str,
+    reason: str,
+    profile: str,
+    assurance: str,
+    manifest_root: str,
+    commit_policy_root: str,
+    run_id: str,
+    epoch: int,
+    step: int,
+    record_schema: str,
+    record_payload: Mapping[str, Any],
+    previous_event_ids: Iterable[str] = (),
+    details: Mapping[str, Any],
+    extensions: Mapping[str, Any] | None = None,
+) -> TraceEvent:
+    """Build and validate one canonical commit-specific Trace ABI event."""
+
+    event = TraceEvent(
+        event_type=event_type,
+        protocol_id=protocol_id,
+        target=target,
+        reason=reason,
+        lineage=build_commit_trace_lineage(
+            event_type=event_type,
+            protocol_id=protocol_id,
+            target=target,
+            reason=reason,
+            profile=profile,
+            assurance=assurance,
+            manifest_root=manifest_root,
+            commit_policy_root=commit_policy_root,
+            run_id=run_id,
+            epoch=epoch,
+            step=step,
+            record_schema=record_schema,
+            record_payload=record_payload,
+            previous_event_ids=previous_event_ids,
+            details=details,
+            extensions=extensions,
+        ),
+    )
+    event.validate()
+    return event
+
+
 @dataclass(frozen=True)
 class TraceRecord:
     sequence: int
@@ -421,6 +486,18 @@ class InMemoryTraceStore:
         # input event nor a returned lineage container can rewrite history.
         snapshot = deepcopy(event)
         snapshot.validate()
+        if snapshot.event_type in COMMIT_EVENT_TYPES:
+            event_id = snapshot.lineage["event_id"]
+            for existing in self.__records:
+                if (
+                    existing.event.event_type in COMMIT_EVENT_TYPES
+                    and existing.event.lineage["event_id"] == event_id
+                ):
+                    if existing.event != snapshot:
+                        raise ValueError(
+                            "commit trace event id replay changed its payload"
+                        )
+                    return deepcopy(existing)
         record = TraceRecord(sequence=len(self.__records), event=snapshot)
         self.__records = (*self.__records, record)
         return deepcopy(record)
@@ -468,6 +545,15 @@ def validate_event_lineage(event: TraceEvent) -> None:
 
     if not isinstance(event.lineage, dict):
         raise ValueError("trace event lineage must be an object")
+    if event.event_type in COMMIT_EVENT_TYPES:
+        validate_commit_trace_event(
+            event_type=event.event_type,
+            protocol_id=event.protocol_id,
+            target=event.target,
+            reason=event.reason,
+            lineage=event.lineage,
+        )
+        return
     if event.event_type not in EVENT_LINEAGE_CONTRACTS:
         return
     required = required_lineage_fields(event.event_type)
@@ -2143,6 +2229,10 @@ def _require_subject(event_type: str, lineage: dict[str, Any], field_name: str) 
 
 
 __all__ = [
+    "COMMIT_EVENT_TYPES",
+    "COMMIT_TRACE_EVENT_SCHEMA",
+    "COMMIT_TRACE_PAYLOAD_VERSION",
+    "CommitTraceReplay",
     "EVENT_LINEAGE_CONTRACTS",
     "PHEROMONE_CLIP_PAYLOAD_VERSION",
     "InMemoryTraceStore",
@@ -2151,9 +2241,12 @@ __all__ = [
     "EXTENSION_EVENT_PREFIXES",
     "VALID_EVENT_TYPES",
     "canonical_pheromone_clip_payload",
+    "commit_trace_event_id",
     "is_extension_event_type",
+    "make_commit_trace_event",
     "missing_required_events",
     "pheromone_clip_payload_fingerprint",
     "required_lineage_fields",
+    "replay_commit_trace",
     "validate_event_lineage",
 ]

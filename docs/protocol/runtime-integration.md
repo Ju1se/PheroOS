@@ -107,6 +107,69 @@ lineage. Public frozen records defensively snapshot nested lists and mappings
 at their trust boundary; a runtime should still treat submitted records as
 immutable.
 
+## Optional Optimal Commit Workflow
+
+Optimal Commit is activated only when a manifest declares
+`collective_commit_policy`. Manifests that omit it continue to use their
+existing core, swarm, or Hybrid profile and result/trace behavior.
+
+For an activated policy, the external runtime is responsible for collecting
+proposals and asking governance to issue the exact principal, risk,
+membership, observation, challenge, evidence, support-lease, stop, permission,
+and replay heads required by the declared assurance. It then assesses the
+candidate set, advances the returned commit window with monotonic logical
+steps, and calls `evaluate_hybrid_commit_step(request=...)` with the exact
+authoritative heads. Hybrid pheromone and layer inputs may guide the next
+exploration request, but they cannot enter commit metrics or certificate
+truth.
+
+Attention is advisory availability, not a commit gate. If an attention record,
+exploration directive, step binding, or candidate coverage is missing or
+invalid, the total evaluator returns `attention_status=unavailable`, removes
+the advisory projection, and emits a nonfatal structured diagnostic. It still
+evaluates the independently valid authority envelope. A runtime may repair the
+attention channel at a later step without reopening or downgrading a commit.
+
+Each `CommitEvaluationContext` is an immutable authority snapshot. When
+governance accepts new evidence or leases, the runtime first advances the
+append-only replay head and then asks governance to issue a new context and
+current action gates. The old context never accepts a descendant implicitly.
+This snapshot rollover can preserve a ready window when the leader and every
+gate remain continuous; replay deletion, substitution, stale use, or a fork is
+rejected.
+
+If the evaluator returns `DecisionProgress`, the runtime persists the returned
+window/replay/progress heads and follows `next_required_inputs`; it must not
+synthesize a heartbeat or extend the absolute deadline. Certified and
+distributed runtimes transport issuer or witness attestations externally and
+submit them for deterministic verification. The core does not collect
+witnesses, poll agents, schedule another step, or advance a clock.
+
+Distributed witnesses sign the full proposal envelope and its semantic
+commit-value root. Retrying the same candidate/claim/output and authority roots
+with a new proposal or proof-envelope identifier is not equivocation and does
+not freeze the epoch. A changed semantic root is a distinct value and remains
+subject to quorum-intersection conflict detection and recovery.
+
+Agents may still explore and transport records concurrently. A runtime should
+snapshot the governance-issued records accepted for one evaluation into an
+immutable step envelope and let one run-scoped coordinator advance the logical
+step. Records that arrive after that snapshot are considered for a later step;
+they do not mutate an already issued assessment or progress heartbeat. This
+serializes only the authority projection, not the agents or their exploration.
+
+Bounded liveness therefore means that continued calls with monotonic logical
+steps cannot remain pending beyond the declared deadline. It does not mean
+that the core runs in the background, and it does not force an evidence
+commit. The terminal result may instead be `safe_fallback`, `advisory`,
+`blocked`, `invalid`, `finality_unavailable`, or `safety_violation`. Every
+governance-issued terminal outcome can be delivered; publication and execution
+still require fresh, action-scoped authority and any assurance-specific
+certificate or distributed-finality proof.
+
+The exact activation and call sequence is documented in
+[optimal-commit-v1-migration.md](optimal-commit-v1-migration.md).
+
 ## Trace Extensions
 
 Trace events use canonical built-in event types or namespaced extension event types.

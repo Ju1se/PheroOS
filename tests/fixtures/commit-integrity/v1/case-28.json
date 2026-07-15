@@ -1,0 +1,294 @@
+{
+  "id": "commit-integrity-v1-case-28",
+  "tck_version": "pheroos-commit-integrity-tck-v1",
+  "matrix_case": 28,
+  "title": "Sub-quorum partitions cannot finalize",
+  "manifest": {
+    "id": "distributed-commit-protocol",
+    "name": "Distributed Commit Protocol",
+    "version": "0.1.0",
+    "permissions": [],
+    "required_connections": [],
+    "drivers": [],
+    "protocol": {
+      "protocol_version": "pheroos.protocol.v1",
+      "id": "collective.distributed-commit",
+      "targets": [
+        {
+          "id": "decision:collective",
+          "description": "A provider-free static-epoch Byzantine Optimal Commit target."
+        }
+      ],
+      "signals": [
+        {
+          "type": "proposal",
+          "target": "decision:collective",
+          "authority_required": "governance"
+        }
+      ],
+      "candidates": [
+        {
+          "id": "candidate:alpha",
+          "target": "decision:collective",
+          "label": "Alpha"
+        },
+        {
+          "id": "candidate:beta",
+          "target": "decision:collective",
+          "label": "Beta"
+        },
+        {
+          "id": "candidate:safe_fallback",
+          "target": "decision:collective",
+          "label": "Safe Fallback",
+          "safe_fallback": true
+        }
+      ],
+      "quorum_policy": {
+        "target": "decision:collective",
+        "fallback_candidate": "candidate:safe_fallback",
+        "commit_threshold": 3
+      },
+      "recovery_protocols": [
+        {
+          "id": "recovery:distributed_conflict",
+          "trigger_targets": [
+            "decision:collective"
+          ],
+          "allowed_roles": [
+            "reviewer"
+          ],
+          "allowed_tags": [
+            "distributed",
+            "commit"
+          ],
+          "required_tools": [],
+          "failure_candidate": "candidate:safe_fallback"
+        }
+      ],
+      "evidence_policy": {
+        "require_provenance": true,
+        "allow_agent_fact_creation": false
+      },
+      "output_policy": {
+        "writer_may_create_facts": false,
+        "requires_committed_candidate": true,
+        "requires_evidence_contract": true,
+        "requires_stop_resolution": true,
+        "requires_publication_permission": true
+      },
+      "trace_policy": {
+        "required_events": [
+          "block",
+          "commit",
+          "recovery",
+          "output"
+        ]
+      },
+      "collective_commit_policy": {
+        "policy_version": "pheroos-collective-commit-policy-v1",
+        "model": "optimal_evidence_v1",
+        "assurance": "distributed",
+        "target": "decision:collective",
+        "evidence_qualification": {
+          "numeric_scale": 1000000,
+          "minimum_quality_ppm": 500000,
+          "minimum_relevance_ppm": 500000,
+          "positive_group_cap": 1000000,
+          "counter_group_cap": 1000000,
+          "counter_weight_ppm": 1000000,
+          "minimum_positive_evidence": 2000000,
+          "maximum_counterevidence": 500000,
+          "maximum_counterevidence_ratio_ppm": 200000,
+          "domain_contribution_floor": 250000,
+          "minimum_source_diversity": 2,
+          "required_challenge_categories": [
+            "independent_replication"
+          ],
+          "observation_ttl_steps": 32,
+          "require_provenance": true,
+          "require_trace": true
+        },
+        "support_lease": {
+          "minimum_support_clusters": 2,
+          "support_ratio_ppm": 500000,
+          "lease_ttl_steps": 16,
+          "membership_mode": "verified_snapshot_v1",
+          "switch_mode": "revoke_then_issue_v1",
+          "equivocation_mode": "exclude_conflicts_v1",
+          "evidence_reference_required": true,
+          "cluster_verification_required": true
+        },
+        "risk_bands": {
+          "LOW": {
+            "minimum_positive_evidence": 2000000,
+            "maximum_counterevidence": 500000,
+            "maximum_counterevidence_ratio_ppm": 200000,
+            "minimum_support_clusters": 2,
+            "minimum_support_ratio_ppm": 500000,
+            "minimum_source_diversity": 2,
+            "minimum_margin": 250000,
+            "stability_steps": 2,
+            "required_challenge_categories": [
+              "independent_replication"
+            ],
+            "minimum_assurance": "evidence_bound",
+            "publishable_outcomes": [
+              "evidence_commit"
+            ],
+            "executable_outcomes": []
+          },
+          "MODERATE": {
+            "minimum_positive_evidence": 2500000,
+            "maximum_counterevidence": 400000,
+            "maximum_counterevidence_ratio_ppm": 150000,
+            "minimum_support_clusters": 2,
+            "minimum_support_ratio_ppm": 600000,
+            "minimum_source_diversity": 2,
+            "minimum_margin": 300000,
+            "stability_steps": 3,
+            "required_challenge_categories": [
+              "independent_replication"
+            ],
+            "minimum_assurance": "evidence_bound",
+            "publishable_outcomes": [
+              "evidence_commit"
+            ],
+            "executable_outcomes": []
+          },
+          "HIGH": {
+            "minimum_positive_evidence": 3000000,
+            "maximum_counterevidence": 300000,
+            "maximum_counterevidence_ratio_ppm": 100000,
+            "minimum_support_clusters": 3,
+            "minimum_support_ratio_ppm": 700000,
+            "minimum_source_diversity": 3,
+            "minimum_margin": 400000,
+            "stability_steps": 4,
+            "required_challenge_categories": [
+              "independent_replication",
+              "counter_search"
+            ],
+            "minimum_assurance": "certified",
+            "publishable_outcomes": [
+              "evidence_commit"
+            ],
+            "executable_outcomes": []
+          },
+          "CRITICAL": {
+            "minimum_positive_evidence": 4000000,
+            "maximum_counterevidence": 200000,
+            "maximum_counterevidence_ratio_ppm": 50000,
+            "minimum_support_clusters": 4,
+            "minimum_support_ratio_ppm": 800000,
+            "minimum_source_diversity": 4,
+            "minimum_margin": 500000,
+            "stability_steps": 5,
+            "required_challenge_categories": [
+              "independent_replication",
+              "counter_search",
+              "failure_domain_review"
+            ],
+            "minimum_assurance": "distributed",
+            "publishable_outcomes": [
+              "evidence_commit"
+            ],
+            "executable_outcomes": []
+          }
+        },
+        "commit_window": {
+          "minimum_stability_steps": 2,
+          "deliberation_deadline_steps": 12,
+          "maximum_leader_resets": 4,
+          "maximum_epoch_restarts": 1,
+          "run_deadline_steps": 24,
+          "reset_rules": [
+            "epoch_change",
+            "gate_failure",
+            "leader_change",
+            "membership_change",
+            "policy_change",
+            "risk_change",
+            "step_gap"
+          ]
+        },
+        "terminal_outcome": {
+          "safe_fallback_candidate": "candidate:safe_fallback",
+          "deadline_outcome": "safe_fallback",
+          "policy_incomplete_outcome": "invalid",
+          "finality_unavailable_outcome": "finality_unavailable",
+          "deliverable_outcomes": [
+            "evidence_commit",
+            "safe_fallback",
+            "advisory",
+            "blocked",
+            "invalid",
+            "finality_unavailable",
+            "safety_violation"
+          ],
+          "publishable_outcomes": [
+            "evidence_commit",
+            "safe_fallback"
+          ],
+          "executable_outcomes": []
+        },
+        "certificate": {
+          "mode": "distributed",
+          "wire_version": "pheroos-commit-wire-v1",
+          "canonicalization": "pheroos-commit-canonical-v1",
+          "hash_algorithm": "sha256",
+          "issuer_attestation_required": true,
+          "independent_verification_required": true
+        },
+        "distributed": {
+          "fault_model": "byzantine_static_v1",
+          "membership_mode": "static_epoch_verified_clusters_v1",
+          "membership_size": 4,
+          "max_byzantine_faults": 1,
+          "witness_quorum": 3,
+          "witness_ttl_steps": 8,
+          "minimum_failure_domain_diversity": 2,
+          "epoch_transition_rule": "prior_quorum_certificate_v1",
+          "conflict_rule": "freeze_v1"
+        }
+      }
+    }
+  },
+  "profile": "pheroos-distributed-commit-v1",
+  "prior_authoritative_state": {
+    "kind": "declared-empty-authority-head",
+    "revision": 0
+  },
+  "inputs": {
+    "operation": "matrix_case"
+  },
+  "expected": {
+    "metrics": {
+      "partition_a_witnesses": 2,
+      "partition_b_witnesses": 2,
+      "required_quorum": 3
+    },
+    "roots": {
+      "proposal_digest": "sha256:275858b4a03efcb3c2430d33afa95fe23d894d6c808dec3cf5b0aac94e04dce9",
+      "certificate_ref": "sha256:a4130e113516f422bd17b6fa6b85879dab4ce6cec1ec2f42ad30aa4db850ec10"
+    },
+    "progress": null,
+    "outcome": {
+      "certificate_status": "provisional",
+      "finality_kind": "provisional",
+      "partition_a_final": false,
+      "partition_b_final": false,
+      "authoritative_commit": false
+    },
+    "trace_sequence": [
+      "risk_assessed"
+    ],
+    "certificate": {
+      "kind": "distributed_commit",
+      "status": "provisional"
+    },
+    "failure_code": "insufficient_witness_quorum"
+  },
+  "mutations": [],
+  "permutations": []
+}

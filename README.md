@@ -14,7 +14,8 @@ PheroOS is a draft ABI.
 
 Public interfaces are conformance-backed, but not yet stable. Compatibility changes should be additive where possible and should keep baseline protocols working without swarm-specific requirements.
 
-Checked-in schema artifacts include the full capability manifest shape and the protocol, kernel, driver, and trace ABI surfaces.
+Checked-in schema artifacts include the full capability manifest shape and the
+protocol, kernel, driver, trace, Commit Wire, and Commit TCK ABI surfaces.
 
 Bee-swarm, ant-colony, and Hybrid collective signals require a
 governance-issued `SignalVerification`. Hybrid pheromone manifests use the
@@ -24,6 +25,12 @@ output requires a target-scoped stop resolution in addition to commit,
 evidence provenance, and publication permission; any blocked resolution for
 that target denies output.
 
+The optional Optimal Commit Draft ABI adds evidence/counterevidence,
+challenge, support-lease, risk, stability, bounded-liveness, portable
+certificate, and Byzantine distributed-finality contracts. It keeps Hybrid
+pheromone and layer behavior in an attention-only channel: changing attention
+alone cannot change a commit or certificate.
+
 ## Documentation
 
 - [SPEC.md](SPEC.md) - protocol-core specification.
@@ -32,6 +39,9 @@ that target denies output.
 - [docs/process/index.md](docs/process/index.md) - source-tree process entry point.
 - [docs/protocol/runtime-integration.md](docs/protocol/runtime-integration.md) - how external runtimes compose with PheroOS.
 - [docs/protocol/hybrid-pheromone-v1-migration.md](docs/protocol/hybrid-pheromone-v1-migration.md) - draft Hybrid v1 migration notes.
+- [docs/protocol/optimal-commit-abi.md](docs/protocol/optimal-commit-abi.md) - complete Optimal Commit Draft ABI semantics.
+- [docs/protocol/optimal-commit-v1-migration.md](docs/protocol/optimal-commit-v1-migration.md) - opt-in runtime and manifest migration.
+- [docs/protocol/optimal-commit-full-hardening-plan.md](docs/protocol/optimal-commit-full-hardening-plan.md) - completed WP-A–K plan, adversarial matrix, and Definition of Done.
 - [docs/protocol/runtime-adapter-guide.md](docs/protocol/runtime-adapter-guide.md) - mapping `DriverSpec` to external adapters.
 - [docs/protocol/extension-points.md](docs/protocol/extension-points.md) - extension boundaries.
 - [docs/process/api-lifecycle.md](docs/process/api-lifecycle.md) - public API and ABI lifecycle.
@@ -58,6 +68,9 @@ examples/
   swarm-protocol/  Swarm-native collective decision example.
   hybrid-pheromone-protocol/  Full Hybrid Pheromone ABI example.
   adaptive-pheromone-replay/  Trace-like adaptive input replay example.
+  hybrid-commit-protocol/     Hybrid attention plus evidence-governed commit examples.
+  commit-certificate-replay/  Portable certificate reconstruction and mutation rejection.
+  distributed-commit-protocol/  Byzantine quorum, provisional, conflict, and deadline examples.
 
 schemas/           Exported ABI schema artifacts.
 docs/              Protocol and process documentation.
@@ -147,6 +160,10 @@ Hybrid declarations select `pheroos-hybrid-swarm-v1`, which includes the core,
 swarm, and Hybrid required checks. Baseline quorum and basic swarm protocols do
 not acquire Hybrid-only required fields or checks.
 
+Optimal Commit is also opt-in. Only a manifest with
+`collective_commit_policy` selects a Commit profile; baseline, swarm, and
+Hybrid v1 manifests keep their existing profile and result/trace behavior.
+
 ## Hybrid Pheromone Draft ABI
 
 The complete Hybrid reference path is implemented as a deterministic,
@@ -171,6 +188,56 @@ Run the provider-free references with:
 .venv/bin/python -m pheroos.cli.main conformance examples/hybrid-pheromone-protocol
 .venv/bin/python examples/hybrid-pheromone-protocol/run.py
 .venv/bin/python examples/adaptive-pheromone-replay/replay.py
+```
+
+## Optimal Commit Draft ABI
+
+Optimal Commit separates exploration pressure from truth authority. Verified
+principal, risk, membership, observation, counterevidence, challenge, support
+lease, stop, permission, replay, and prior-window heads determine exact
+fixed-point commit metrics. A unique leader must satisfy every declared gate
+for a continuous stability window; identifier order never breaks a tie.
+
+The manifest chooses `advisory`, `evidence_bound`, `certified`, or
+`distributed` assurance. Missing proof cannot silently produce a lower-level
+commit. The absolute deadline cannot be extended by new attention, evidence,
+leader changes, resets, or finality delay.
+
+This liveness guarantee requires the external runtime to advance monotonic
+logical steps and continue evaluation. It guarantees a terminal response, not
+a forced evidence commit: `safe_fallback`, `advisory`, `blocked`, `invalid`,
+`finality_unavailable`, and `safety_violation` remain explicit non-commit
+outcomes.
+
+`evaluate_hybrid_commit_step(request=...)` returns an authoritative progress or
+terminal outcome when the governance envelope is usable, plus the exact
+window/replay heads, required certificate/finality records, terminal output
+decisions when applicable, canonical trace, diagnostics, and a root binding
+every authority leaf.
+Malformed authority facts fail closed. A missing, malformed, or mismatched
+attention channel is quarantined as non-authoritative diagnostic metadata; it
+cannot veto an otherwise valid commit path. Every issued terminal outcome is
+deliverable; publication and execution remain separate, current action gates.
+
+Distributed assurance verifies `n >= 3f + 1` and `2q - n > f`, exact witness
+proposal digests, semantic commit-value roots, membership/epoch scope,
+replay/equivocation, and conflict freeze. Equivalent proof-envelope retries do
+not freeze an epoch; distinct candidate, claim, output, or authority roots do.
+The core defines records and deterministic governance only; networking, witness
+collection, scheduling, providers, and storage stay external.
+
+The implementation-neutral JSON TCK contains 38 exact adversarial cases with
+mutation/permutation execution. Active Commit conformance has no skip or N/A
+path. Run it with:
+
+```bash
+.venv/bin/python -c \
+  'from pheroos.conformance import run_commit_tck; assert run_commit_tck().ok'
+.venv/bin/python -m pheroos.cli.main conformance examples/hybrid-commit-protocol
+.venv/bin/python -m pheroos.cli.main conformance examples/distributed-commit-protocol
+.venv/bin/python examples/hybrid-commit-protocol/run.py
+.venv/bin/python examples/commit-certificate-replay/replay.py
+.venv/bin/python examples/distributed-commit-protocol/run.py
 ```
 
 Manifest extensions are metadata unless a protocol invariant adopts them. Extension metadata does not create evidence, permission, quorum, commit authority, or output authority.

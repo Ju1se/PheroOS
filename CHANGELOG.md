@@ -8,6 +8,38 @@ The project is currently pre-stable. Until the first stable ABI release, entries
 
 ### Added
 
+- Optional, profile-selected Optimal Commit Draft ABI with fixed-point evidence
+  qualification, counterevidence disposition, challenge coverage, verified
+  principal clusters, eligible membership, evidence-bound support leases,
+  monotonic risk heads, unique-leader margin, and stable commit windows.
+- Bounded commit liveness with immutable deadlines, receipt-backed window
+  seals, exact late-finality heartbeats, typed progress/outcomes, and mandatory
+  terminal delivery separated from publication and execution.
+- Local receipts, independently verifiable evidence certificates, outcome
+  certificates, action-scoped stop/permission authority, and complete
+  certificate/output leaf verification.
+- Static-epoch Byzantine distributed finality with `n >= 3f + 1`, quorum
+  intersection, exact witness proposal digests, witness replay/equivocation,
+  provisional state, conflict freeze, recovery, and epoch-transition proofs.
+- Hybrid attention-only projection, exploration directives, channel binding,
+  and the total `evaluate_hybrid_commit_step(request=...)` finalization path;
+  attention cannot directly affect commit truth or certificates.
+- Explicit Hybrid attention availability isolates malformed or mismatched
+  advisory inputs from commit liveness while retaining a bound diagnostic.
+- Distributed witnesses bind full proposal envelopes and semantic commit-value
+  roots, so equivalent retries do not masquerade as split-brain conflicts.
+- Strict 51-branch Commit Wire schema, exported `schemas/commit.schema.json`,
+  and CLI `schema export commit` support.
+- Event-specific Optimal Commit Trace ABI and replay from principal/risk/
+  evidence/lease lineage through metrics, window, certificate/finality,
+  outcome, and output action decisions.
+- Implementation-neutral 38-case JSON Commit TCK, checked-in aggregate/split
+  vectors, exact mutation/permutation runner, and public conformance API.
+- Commit integrity, Hybrid Commit, certified, and distributed conformance
+  profiles with 20 complete active checks and no skip/N/A path.
+- Provider-free Hybrid Commit, certificate replay, and distributed-finality
+  examples plus Optimal Commit ABI and migration documentation.
+
 - Formal protocol-core specification in `SPEC.md`.
 - API and ABI lifecycle policy in `docs/process/api-lifecycle.md`.
 - Extension boundary guidance in `docs/protocol/extension-points.md`.
@@ -52,6 +84,15 @@ The project is currently pre-stable. Until the first stable ABI release, entries
 - Provider-free Hybrid Pheromone and adaptive-record replay examples.
 
 ### Changed
+
+- `collective_commit_policy`, when explicitly declared, now takes profile
+  precedence over legacy swarm selection without changing manifests that omit
+  it.
+- Hybrid pheromone, recruitment, inhibition, and layer contributions are
+  commitment-independent attention inputs under active Commit profiles; only
+  newly governance-verified evidence can affect a later assessment.
+- Public Protocol, Governance, Trace, and Conformance exports now include the
+  complete Optimal Commit wire, authority, finality, replay, and TCK surfaces.
 
 - Source-tree documentation is organized around stable protocol, process, security, and conformance documents.
 - `CONTRIBUTING.md` now contains the protocol change proposal requirements.
@@ -150,6 +191,18 @@ The project is currently pre-stable. Until the first stable ABI release, entries
 - Unused protocol composition helper, unused protocol error shim, unused driver result re-export, and unused stop-signal manifest parser.
 
 ### Compatibility
+
+- Optimal Commit is opt-in. Baseline toy/e2e, basic swarm, and Hybrid Pheromone
+  v1 manifests keep their prior profile, result, and trace behavior when they
+  do not declare `collective_commit_policy`.
+- An active assurance never falls back to a lower proof. Missing proof produces
+  progress or a declared terminal non-commit outcome.
+- Every issued terminal outcome remains deliverable; fallback, advisory,
+  invalid, blocked, finality-unavailable, and safety-violation outcomes are not
+  evidence commits.
+- Unknown critical Commit fields or versions fail closed. Noncritical extension
+  metadata remains open but cannot create evidence, authority, or output
+  permission.
 
 - Baseline toy and e2e protocols remain compatible without declaring swarm behavior.
 - Swarm-specific validation and conformance apply only when a manifest declares swarm collective behavior.

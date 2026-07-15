@@ -14,7 +14,8 @@ PheroOS 当前是 draft ABI。
 
 公共接口由 conformance 支撑，但尚未稳定。兼容性变更应尽量保持 additive，并且不应强迫 baseline protocol 满足 swarm-specific requirements。
 
-仓库内的 schema artifact 覆盖完整 capability manifest 形状，以及 protocol、kernel、driver 和 trace ABI surface。
+仓库内的 schema artifact 覆盖完整 capability manifest 形状，以及 protocol、
+kernel、driver、trace、Commit Wire 和 Commit TCK ABI surface。
 
 Bee-swarm、ant-colony 和 Hybrid 的 collective signal 都必须携带由 governance
 签发的 `SignalVerification`。Hybrid pheromone manifest 使用
@@ -22,6 +23,11 @@ Bee-swarm、ant-colony 和 Hybrid 的 collective signal 都必须携带由 gover
 必须是有限数，并且 output 除 commit、
 evidence provenance 和 publication permission 外，还必须具备 target-scoped stop
 resolution；当前 target 的任一 blocked resolution 都会拒绝 output。
+
+可选的 Optimal Commit Draft ABI 进一步提供 evidence/counterevidence、challenge、
+support lease、risk、稳定窗口、有界 liveness、可移植证书和 Byzantine distributed
+finality contract。Hybrid pheromone 与 layer 行为只进入 attention channel；单独改变
+attention 不能改变 commit 或 certificate。
 
 ## 文档
 
@@ -31,6 +37,9 @@ resolution；当前 target 的任一 blocked resolution 都会拒绝 output。
 - [docs/process/index.md](docs/process/index.md) - 源树 process 入口。
 - [docs/protocol/runtime-integration.md](docs/protocol/runtime-integration.md) - 外部 runtime 如何与 PheroOS 组合。
 - [docs/protocol/hybrid-pheromone-v1-migration.md](docs/protocol/hybrid-pheromone-v1-migration.md) - draft Hybrid v1 迁移说明。
+- [docs/protocol/optimal-commit-abi.md](docs/protocol/optimal-commit-abi.md) - 完整 Optimal Commit Draft ABI 语义。
+- [docs/protocol/optimal-commit-v1-migration.md](docs/protocol/optimal-commit-v1-migration.md) - opt-in manifest 与 runtime 迁移。
+- [docs/protocol/optimal-commit-full-hardening-plan.md](docs/protocol/optimal-commit-full-hardening-plan.md) - 已完成的 WP-A–K、对抗矩阵与 Definition of Done。
 - [docs/protocol/runtime-adapter-guide.md](docs/protocol/runtime-adapter-guide.md) - 如何将 `DriverSpec` 映射到外部 adapter。
 - [docs/protocol/extension-points.md](docs/protocol/extension-points.md) - 扩展边界。
 - [docs/process/api-lifecycle.md](docs/process/api-lifecycle.md) - 公共 API 与 ABI 生命周期。
@@ -57,6 +66,9 @@ examples/
   swarm-protocol/  Swarm-native collective decision example.
   hybrid-pheromone-protocol/  完整 Hybrid Pheromone ABI 示例。
   adaptive-pheromone-replay/  trace-like adaptive input replay 示例。
+  hybrid-commit-protocol/     Hybrid attention 与 evidence-governed commit 示例。
+  commit-certificate-replay/  可移植证书重建与 mutation 拒绝示例。
+  distributed-commit-protocol/  Byzantine quorum、provisional、conflict 与 deadline 示例。
 
 schemas/           Exported ABI schema artifacts.
 docs/              Protocol and process documentation.
@@ -143,6 +155,10 @@ Hybrid declaration 选择 `pheroos-hybrid-swarm-v1`，其中包含 core、swarm 
 required checks。Baseline quorum 和 basic swarm protocol 不会因此增加 Hybrid-only required
 field 或 check。
 
+Optimal Commit 同样是 opt-in。只有显式声明 `collective_commit_policy` 的 manifest
+才选择 Commit profile；baseline、swarm 与 Hybrid v1 manifest 保持原有 profile、result
+和 trace 行为。
+
 ## Hybrid Pheromone Draft ABI
 
 完整 Hybrid reference path 已作为确定性、provider-free 的 protocol-core vertical slice
@@ -165,6 +181,49 @@ collision，以及缺少匹配 issued prior state 的 replay claim。详见
 .venv/bin/python -m pheroos.cli.main conformance examples/hybrid-pheromone-protocol
 .venv/bin/python examples/hybrid-pheromone-protocol/run.py
 .venv/bin/python examples/adaptive-pheromone-replay/replay.py
+```
+
+## Optimal Commit Draft ABI
+
+Optimal Commit 将探索压力与事实权威分离。通过治理验证的 principal、risk、membership、
+observation、counterevidence、challenge、support lease、stop、permission、replay 和
+prior-window head 共同决定精确的 fixed-point commit metrics。唯一 leader 必须在连续稳定
+窗口内满足全部声明 gate；candidate identifier 不会用于打破 tie。
+
+Manifest 可选择 `advisory`、`evidence_bound`、`certified` 或 `distributed`
+assurance。缺少当前 assurance 所需证明时，不会静默产生低等级 commit。新 attention、
+evidence、leader 变化、reset 或 finality delay 都不能延长 absolute deadline。
+
+这个 liveness 保证的前提是外部 runtime 持续推进单调 logical step 并重复调用
+evaluator。它保证终态响应，而不是强制 evidence commit：`safe_fallback`、
+`advisory`、`blocked`、`invalid`、`finality_unavailable` 与
+`safety_violation` 仍是显式 non-commit outcome。
+
+`evaluate_hybrid_commit_step(request=...)` 在 governance envelope 可用时返回权威 progress
+或 terminal outcome，并携带精确 window/replay head、所需 certificate/finality record、
+terminal 时适用的 output decision、canonical trace、diagnostics，以及绑定全部
+authority leaf 的 root。
+Malformed authority fact 会 fail closed。缺失、畸形或与当前 step 不匹配的 attention
+会被隔离为非权威诊断，不能否决本来有效的 commit path。每个已签发 terminal outcome
+都能 deliver；publish 与 execute 仍需独立、当前 action authority。
+
+Distributed assurance 验证 `n >= 3f + 1` 与 `2q - n > f`、精确 witness proposal
+digest、semantic commit-value root、membership/epoch scope、replay/equivocation 和
+conflict freeze。同一语义值的 proof-envelope 重试不会冻结 epoch；candidate、claim、
+output 或任一 authority root 不同才构成冲突。Core 只定义 record 与确定性 governance；
+network、witness collector、scheduler、provider 和 storage 留在外部。
+
+Implementation-neutral JSON TCK 覆盖 38 个精确对抗 case，并真实执行 mutation 与
+permutation。Active Commit conformance 没有 skip 或 N/A 路径。运行方式：
+
+```bash
+.venv/bin/python -c \
+  'from pheroos.conformance import run_commit_tck; assert run_commit_tck().ok'
+.venv/bin/python -m pheroos.cli.main conformance examples/hybrid-commit-protocol
+.venv/bin/python -m pheroos.cli.main conformance examples/distributed-commit-protocol
+.venv/bin/python examples/hybrid-commit-protocol/run.py
+.venv/bin/python examples/commit-certificate-replay/replay.py
+.venv/bin/python examples/distributed-commit-protocol/run.py
 ```
 
 Manifest extension 是 metadata，除非被协议不变量正式采用。Extension metadata 不创建 evidence、permission、quorum、commit authority 或 output authority。

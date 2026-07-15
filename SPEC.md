@@ -19,7 +19,8 @@ PheroOS protocol-core defines:
 - Trace ABI: canonical provider-neutral trace events and append-only test stores.
 - Conformance Suite: deterministic checks that prove protocol-core compatibility.
 - Provider-free examples: deterministic compatibility examples for baseline,
-  e2e, basic swarm, Hybrid Pheromone, and adaptive-record replay behavior.
+  e2e, basic swarm, Hybrid Pheromone, adaptive-record replay, Hybrid Commit,
+  portable certificate replay, and distributed-finality behavior.
 
 PheroOS protocol-core does not define:
 
@@ -53,8 +54,12 @@ The public schema artifacts are:
 - `schemas/kernel.schema.json`
 - `schemas/driver.schema.json`
 - `schemas/trace.schema.json`
+- `schemas/commit.schema.json`
+- `schemas/commit-tck.schema.json`
 
-The public CLI surfaces cover manifest validation, conformance evaluation, and ABI schema export for capability, protocol, kernel, driver, and trace artifacts.
+The public CLI surfaces cover manifest validation, conformance evaluation, and
+ABI schema export for capability, protocol, kernel, driver, trace, and commit
+artifacts.
 
 ### Strict ABI loading
 
@@ -119,6 +124,24 @@ A compatible implementation should satisfy these requirements:
 21. `pheroos.protocol.PheromoneKindProfile` is the canonical manifest ABI
     declaration. Any `pheroos.governance.PheromoneKindProfile` compatibility
     export resolves to that same type.
+22. Optimal Commit applies only when `collective_commit_policy` is declared;
+    manifests without it retain their previous profile and behavior.
+23. An active Commit profile derives truth only from governance-issued
+    principal, risk, membership, observation, challenge, evidence, lease,
+    stop, permission, replay, and prior-state records. Hybrid attention has
+    zero direct commit or certificate authority.
+24. The declared assurance never downgrades. Missing local, portable, or
+    distributed proof yields progress or a declared terminal non-commit
+    outcome.
+25. Bounded liveness has an immutable absolute deadline. No active evaluation
+    remains pending after that deadline, and every issued terminal outcome is
+    deliverable.
+26. Publication and execution are independent current actions; a historical
+    commit certificate does not bypass their target/action/epoch-scoped stop,
+    permission, freshness, or conflict gates.
+27. Distributed finality verifies the declared Byzantine quorum intersection,
+    exact proposal digest, membership epoch, witness replay/equivocation, and
+    conflict freeze semantics.
 
 ## Swarm-Native Semantics
 
@@ -210,6 +233,60 @@ snapshots, and strategy biases so the reference path can validate bounds and
 lineage and recompute the state. See
 [`docs/protocol/hybrid-pheromone-v1-migration.md`](docs/protocol/hybrid-pheromone-v1-migration.md).
 
+## Optimal Commit Reference Semantics
+
+An optional `collective_commit_policy` selects one of `advisory`,
+`evidence_bound`, `certified`, or `distributed` assurance. The policy declares
+fixed-point evidence qualification, counterevidence and challenge rules,
+support-lease and membership requirements, monotonic risk bands, a stability
+window, an absolute deadline, terminal outcomes, certificate mode, and any
+distributed fault model.
+
+Governance computes capped positive evidence, capped counterevidence, net
+evidence, unique active support clusters, qualifying source diversity, and the
+leader margin. A substantive candidate becomes ready only when every declared
+risk-adjusted gate passes. A tie or insufficient margin is not resolved by
+candidate identifier or arrival order.
+
+The first ready step is pending. A receipt-backed seal freezes the exact window
+and authority roots. Evidence-bound finality is same-step; later certified or
+distributed finality requires the exact next-step progress heartbeat. Leader,
+gate, policy, epoch, risk, or membership changes reset the window according to
+declared bounds. A monotonic replay append requires a freshly issued immutable
+evaluation context and action gates and may preserve a continuous ready leader;
+replay deletion, substitution, stale use, or a fork is invalid.
+
+`evaluate_hybrid_commit_step(request=...)` is a total finalization boundary for
+governance-issued upstream heads. It returns a `HybridCommitEvaluation` with
+exactly one progress or outcome record, required proof records, terminal
+delivery and current output-action decisions for governance-issued outcomes,
+canonical trace, diagnostics, and a root over every authority leaf. A
+diagnosable malformed runtime fact does not enter a legacy evaluator or escape
+as an uncaught governance decision error. Attention is explicitly
+non-authoritative: an invalid or unavailable attention/directive binding emits
+a structured diagnostic and empty attention projection without changing the
+commit liveness, certificate, output, or trace decision.
+
+The absolute deadline produces one of `evidence_commit`, `safe_fallback`,
+`advisory`, `blocked`, `invalid`, `finality_unavailable`, or
+`safety_violation`. Only `evidence_commit` is an epistemic commit. All issued
+terminal outcomes are deliverable; publication and execution remain separate
+current-action decisions.
+
+Distributed assurance uses static verified membership and requires
+`n >= 3f + 1` and `2q - n > f`. Witnesses bind both the full proposal digest
+and its semantic commit-value root, plus exact target/candidate/epoch/
+membership/failure-domain/nonce/expiry leaves. Different envelopes that prove
+the same value are retries, not safety conflicts. Two final certificates with
+different candidate, claim, output, or authority-root values freeze the epoch
+and require declared recovery plus an epoch-transition certificate.
+
+Hybrid pheromone, recruitment, inhibition, and layer proposals continue to
+drive attention and external evidence collection, but do not enter commit
+metrics or certificate truth roots. See
+[`docs/protocol/optimal-commit-abi.md`](docs/protocol/optimal-commit-abi.md) and
+[`docs/protocol/optimal-commit-v1-migration.md`](docs/protocol/optimal-commit-v1-migration.md).
+
 ## Extension Rules
 
 Extensions should preserve low coupling and provider neutrality.
@@ -252,6 +329,8 @@ Before the first stable ABI release, changes may still refine dataclass fields, 
 
 The fail-closed Hybrid v1 tightening and consumer actions are recorded in
 [`docs/protocol/hybrid-pheromone-v1-migration.md`](docs/protocol/hybrid-pheromone-v1-migration.md).
+The opt-in Optimal Commit activation and no-downgrade migration are recorded in
+[`docs/protocol/optimal-commit-v1-migration.md`](docs/protocol/optimal-commit-v1-migration.md).
 
 After a stable ABI release, incompatible changes should require:
 
@@ -282,9 +361,21 @@ Reports include the applicable profile version:
   trace lineage, and authority boundaries.
 - `pheroos-source-v1` for the separate protocol-core source-surface and import
   boundary proof.
+- `pheroos-commit-integrity-v1` for advisory or evidence-bound Optimal Commit.
+- `pheroos-hybrid-commit-v1` for evidence-bound Optimal Commit with Hybrid
+  attention semantics.
+- `pheroos-certified-commit-v1` for independently verifiable portable proof.
+- `pheroos-distributed-commit-v1` for Byzantine quorum finality and conflict
+  handling.
 
 The applied profile is a gate: required checks must be present and passing for
 the profile contract to pass.
+
+The implementation-neutral Commit TCK contains 38 exact JSON vectors plus
+executed mutation/permutation variants. Active Commit checks return PASS or
+FAIL; skip/N/A is not a compatibility result. The TCK must produce the same
+roots and results from source, an isolated wheel, and an external working
+directory.
 
 Release validation is enforced by CI and release governance. The specification defines the invariants and compatibility expectations; it is not a local runbook.
 

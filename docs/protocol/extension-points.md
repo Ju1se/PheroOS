@@ -112,8 +112,11 @@ An extension should not force existing baseline protocols to opt into new behavi
 
 When an extension is optional:
 
-- validation should skip extension-specific requirements unless the manifest opts in
-- conformance should skip extension-specific checks unless the manifest declares the behavior
+- extension-specific validation does not apply until the manifest opts in
+- extension-specific conformance checks are not selected until the manifest
+  declares the behavior
+- once behavior is declared, every required check must return PASS or FAIL;
+  skip/N/A is not an active compatibility result
 - examples should be added separately rather than rewriting baseline examples
 
 ## Pheromone Extension Example
@@ -127,3 +130,23 @@ The pheromone layer is an example of an acceptable protocol-core extension:
 - examples remain provider-free
 
 Pheromone remains collective memory. It is not evidence, quorum, permission, or output authority.
+
+## Optimal Commit Extension Boundary
+
+Optimal Commit shows how strict authority can coexist with runtime
+extensibility:
+
+- `collective_commit_policy` is optional, so baseline and legacy Hybrid
+  manifests remain unchanged;
+- noncritical extension metadata may carry adapter hints but stays outside
+  metrics, certificates, permissions, and output authority;
+- an extension that changes commit truth is critical and must declare a
+  supported version, canonical wire form, validation invariant, trace lineage,
+  conformance check, and exact TCK vector;
+- unknown critical extensions fail closed instead of being treated as metadata;
+- external MCP, A2A, provenance, policy, identity, and witness transports map
+  into governance proposal/verification records outside protocol-core.
+
+The adapter may change how evidence is collected or transported. It cannot
+change what counts as verified evidence or silently create a lower-assurance
+commit.

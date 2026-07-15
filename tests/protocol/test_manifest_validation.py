@@ -139,6 +139,21 @@ def test_manifest_file_loader_rejects_non_finite_json_constants(tmp_path: Path, 
         load_capability_manifest(path)
 
 
+def test_manifest_file_loader_rejects_duplicate_json_object_keys(
+    tmp_path: Path,
+) -> None:
+    raw = Path("examples/toy-protocol/capability.json").read_text()
+    raw = raw.replace(
+        '"name": "Toy Protocol",',
+        '"name": "Toy Protocol", "name": "Duplicate",',
+    )
+    path = tmp_path / "capability.json"
+    path.write_text(raw, encoding="utf-8")
+
+    with pytest.raises(ValueError, match="duplicate JSON object key"):
+        load_capability_manifest(path)
+
+
 @pytest.mark.parametrize("extension_style", ["extensions", "namespaced"])
 def test_manifest_loader_rejects_exponent_overflow_in_extension_metadata(
     tmp_path: Path,
