@@ -1510,6 +1510,7 @@ def _hybrid_step_trace_events(
     state: CollectiveDecisionState,
     decision: QuorumDecision,
     current_step: int,
+    include_legacy_decision: bool = True,
 ) -> list[TraceEvent]:
     events = _input_trace_events(
         protocol_id=protocol_id,
@@ -1968,6 +1969,12 @@ def _hybrid_step_trace_events(
             lineage=score_lineage,
         )
     )
+    if not include_legacy_decision:
+        # The same Hybrid memory pipeline is also the attention plane for the
+        # Optimal Commit ABI.  In that mode candidate scores are exploration
+        # priorities only: emitting the legacy consensus/commit pair would
+        # falsely suggest that blended attention carried commit authority.
+        return events
     events.append(
         _trace_event(
             "consensus_check",
@@ -2204,6 +2211,7 @@ def evaluate_hybrid_collective_step(
     processed_adjustment_ids: frozenset[str] = frozenset(),
     replay_state: HybridReplayState | None = None,
     fallback_candidate_id: str | None = None,
+    attention_only: bool = False,
 ) -> HybridCollectiveStep:
     """Evaluate one complete, deterministic Hybrid Pheromone governance step.
 
@@ -2214,6 +2222,8 @@ def evaluate_hybrid_collective_step(
     """
 
     validate_collective_runtime_policy(policy)
+    if type(attention_only) is not bool:
+        raise GovernanceError("hybrid attention_only must be boolean")
     if any(
         (
             processed_pheromone_event_ids,
@@ -2477,13 +2487,26 @@ def evaluate_hybrid_collective_step(
         pheromone_trails=list(active_trails),
     )
     state = merge_governed_layer_coordination(base_state, layer_state)
-    decision = _decide_collective_state(
-        candidate_set=candidate_set,
-        policy=effective_policy,
-        target=target,
-        state=state,
-        fallback_candidate_id=fallback.id,
-    )
+    if attention_only:
+        # This is deliberately not a commit result.  The full memory,
+        # diffusion, feedback, nonlinear response, layer coordination and
+        # bounded adjustment pipeline above remains shared with the legacy
+        # Hybrid ABI, while the Optimal Commit evaluator receives only an
+        # explicitly non-authoritative attention ranking.
+        decision = _issue_quorum_decision(
+            target=target,
+            candidate_id=fallback.id,
+            committed=False,
+            reason="attention_only_no_commit_authority",
+        )
+    else:
+        decision = _decide_collective_state(
+            candidate_set=candidate_set,
+            policy=effective_policy,
+            target=target,
+            state=state,
+            fallback_candidate_id=fallback.id,
+        )
 
     events = _hybrid_step_trace_events(
         protocol_id=protocol_id,
@@ -2517,6 +2540,7 @@ def evaluate_hybrid_collective_step(
         state=state,
         decision=decision,
         current_step=current_step,
+        include_legacy_decision=not attention_only,
     )
 
     return _issue_hybrid_collective_step(HybridCollectiveStep(

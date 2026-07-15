@@ -20,6 +20,8 @@ def validate_json_schema(value: Any, schema: dict[str, Any], *, path: str = "$")
     expected_type = schema.get("type")
     if expected_type is not None and not type_matches(value, str(expected_type)):
         return [f"{path}: expected {expected_type}"]
+    if schema.get("x-pheroos-exact-integer") is True and type(value) is not int:
+        return [f"{path}: must be an integer without numeric coercion"]
 
     if "enum" in schema and value not in schema["enum"]:
         allowed = ", ".join(str(item) for item in schema["enum"])
@@ -31,6 +33,8 @@ def validate_json_schema(value: Any, schema: dict[str, Any], *, path: str = "$")
         errors.extend(validate_object(value, schema, path=path))
     elif isinstance(value, list):
         errors.extend(validate_array(value, schema, path=path))
+    elif isinstance(value, str):
+        errors.extend(validate_string(value, schema, path=path))
     elif isinstance(value, (int, float)) and not isinstance(value, bool):
         errors.extend(validate_number(value, schema, path=path))
     return errors
@@ -70,10 +74,26 @@ def validate_array(value: list[Any], schema: dict[str, Any], *, path: str) -> li
         errors.append(f"{path}: must contain at least {schema['minItems']} items")
     if "maxItems" in schema and len(value) > schema["maxItems"]:
         errors.append(f"{path}: must contain at most {schema['maxItems']} items")
+    if schema.get("uniqueItems") is True:
+        for index, item in enumerate(value):
+            if any(item == previous for previous in value[:index]):
+                errors.append(f"{path}[{index}]: duplicate array item")
     item_schema = schema.get("items")
     if isinstance(item_schema, dict):
         for index, item in enumerate(value):
             errors.extend(validate_json_schema(item, item_schema, path=f"{path}[{index}]"))
+    return errors
+
+
+def validate_string(value: str, schema: dict[str, Any], *, path: str) -> list[str]:
+    errors: list[str] = []
+    if "minLength" in schema and len(value) < schema["minLength"]:
+        errors.append(f"{path}: must contain at least {schema['minLength']} characters")
+    if "maxLength" in schema and len(value) > schema["maxLength"]:
+        errors.append(f"{path}: must contain at most {schema['maxLength']} characters")
+    pattern = schema.get("pattern")
+    if isinstance(pattern, str) and re.search(pattern, value) is None:
+        errors.append(f"{path}: does not match required pattern")
     return errors
 
 

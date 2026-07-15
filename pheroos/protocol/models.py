@@ -6,6 +6,8 @@ from dataclasses import dataclass, field, is_dataclass
 from types import MappingProxyType
 from typing import Any
 
+from pheroos.protocol.commit_models import CollectiveCommitPolicy
+
 
 SUPPORTED_COLLECTIVE_MODES = frozenset({"quorum", "bee_swarm", "ant_colony", "hybrid"})
 SWARM_COLLECTIVE_MODES = frozenset({"bee_swarm", "ant_colony", "hybrid"})
@@ -254,6 +256,7 @@ class ProtocolManifest:
     evidence_policy: EvidencePolicy = field(default_factory=EvidencePolicy)
     signals: list[SignalSpec] = field(default_factory=list)
     collective_decision_policy: CollectiveDecisionPolicy | None = None
+    collective_commit_policy: CollectiveCommitPolicy | None = None
     extensions: dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self) -> None:

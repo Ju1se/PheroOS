@@ -4,17 +4,18 @@ from hashlib import sha256
 from importlib import import_module
 
 import pheroos.governance as governance
+import pheroos.conformance as conformance
 import pheroos.protocol as protocol
 import pheroos.trace as trace
 
 
 EXPECTED_PUBLIC_API = {
-    "pheroos.protocol": (27, "4a019a816c812913dc891a3aae744dc1c1b03b008887214b0dbfcc35d51ef7e7"),
-    "pheroos.governance": (108, "3bd0b7b919905eaada029125e66bfee91a2a5ca25c1c92bb766aed321256bb7a"),
+    "pheroos.protocol": (64, "844b9d33022ae16dba67552541f5ebb9af23fb04a13c2c061629824e8ed6ff8c"),
+    "pheroos.governance": (507, "667cc811791387860abb8a8f68cd25accc4afd233236229142362c45a2376caf"),
     "pheroos.kernel": (14, "f195fda8c36d48bb30c4fdbc6eb69ffe38db26958f60925eb5c7f9952cb500d1"),
     "pheroos.drivers": (20, "b3c27fe18c2a1a9c8ddcbbb30f8fe2ad5a8a2b32606eaedd168b690823fc0da4"),
-    "pheroos.trace": (13, "12e4b3ef5cab6c366e14630e3c646c4128ffae25a22775793238cd75b2f443f6"),
-    "pheroos.conformance": (5, "e471adab090a6e74b3b0bbb002f08cb3082b1ac52120668da26baafb4cb94185"),
+    "pheroos.trace": (20, "dbe97b0f5d49e7d849cd13a06f2ec1eac4572678b90757ec2ebf66df8695620e"),
+    "pheroos.conformance": (17, "28d225ee3f8e05586ad87a3f313d9e0c31d8f27f9b2d34555a2ef34fc53045ec"),
 }
 
 
@@ -31,6 +32,10 @@ def test_public_package_exports_match_the_intentional_abi_snapshot() -> None:
 
 
 def test_canonical_public_types_are_owned_by_their_declared_surfaces() -> None:
+    assert governance.CommitAssurance is protocol.CommitAssurance
+    assert governance.CommitAction is protocol.CommitAction
+    assert protocol.CommitAssurance.__module__ == "pheroos.protocol.commit_models"
+    assert protocol.CommitAction.__module__ == "pheroos.protocol.commit_models"
     assert governance.PheromoneKindProfile is protocol.PheromoneKindProfile
     assert protocol.PheromoneKindProfile.__module__ == "pheroos.protocol.models"
     assert governance.TraceEvent is trace.TraceEvent
@@ -40,3 +45,29 @@ def test_canonical_public_types_are_owned_by_their_declared_surfaces() -> None:
     assert governance.PolicyAdjustmentProposal.__module__ == "pheroos.governance.policy_adjustment"
     assert governance.HybridCollectiveStep.__module__ == "pheroos.governance.collective"
     assert governance.HybridReplayState.__module__ == "pheroos.governance.collective"
+    assert governance.CommitAssessment.__module__ == "pheroos.governance.commit"
+    assert governance.CommitWindowSeal.__module__ == "pheroos.governance.commit_state"
+    assert governance.DecisionOutcome.__module__ == "pheroos.governance.commit_state"
+    assert governance.LocalCommitReceipt.__module__ == "pheroos.governance.certificate"
+    assert governance.EvidenceCommitCertificate.__module__ == (
+        "pheroos.governance.certificate"
+    )
+    assert governance.OutcomeCertificate.__module__ == (
+        "pheroos.governance.certificate"
+    )
+    assert governance.DistributedCommitCertificate.__module__ == (
+        "pheroos.governance.distributed_commit"
+    )
+    assert governance.HybridCommitEvaluation.__module__ == (
+        "pheroos.governance.hybrid_commit_evaluation"
+    )
+    assert governance.HybridCommitAttentionStatus.__module__ == (
+        "pheroos.governance.hybrid_commit_evaluation"
+    )
+    assert governance.distributed_commit_value_payload.__module__ == (
+        "pheroos.governance.distributed_commit"
+    )
+    assert governance.distributed_commit_value_root.__module__ == (
+        "pheroos.governance.distributed_commit"
+    )
+    assert conformance.CommitTckVector.__module__ == "pheroos.conformance.commit_tck"

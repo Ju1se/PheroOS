@@ -28,10 +28,30 @@ The ABI artifact surface is:
 
 - checked-in JSON schemas under `schemas/`
 - full capability manifest schema under `schemas/capability.schema.json`
+- strict Commit Wire schema under `schemas/commit.schema.json`
+- implementation-neutral Commit TCK schema under
+  `schemas/commit-tck.schema.json`
+- packaged Commit TCK vectors under `pheroos/conformance/tck/`
 - provider-free examples under `examples/`
 - conformance checks under `pheroos.conformance`
 
 Submodules may be imported by advanced users, but package `__all__` exports are the preferred public entry points.
+
+Canonical public type ownership is part of the ABI. `CommitAssurance` and
+`CommitAction` are owned by `pheroos.protocol.commit_models`, while
+`TraceEvent` is owned by `pheroos.trace`. Governance compatibility exports must
+remain type-identical aliases, not parallel representations. The package
+`__all__` name sets are frozen by the public API snapshot test only after all
+release surfaces have stopped changing.
+
+For the Optimal Commit Draft, the governance package intentionally exports the
+complete authority lifecycle: canonical records, issuance and verification,
+payload/fingerprint helpers, replay/window transitions, certificates,
+distributed finality, and the total evaluator. This is a deliberately broad
+ABI surface so an external runtime or independent verifier is not forced to
+depend on private helpers. Symbols prefixed with `_` remain implementation
+details; removing or renaming an exported symbol requires the normal Draft ABI
+migration and snapshot update.
 
 ## Internal Surfaces
 
@@ -63,6 +83,7 @@ Current project status:
 - CLI commands: Supported draft.
 - Provider-free examples: Supported draft.
 - Conformance checks and profile versions: Supported draft.
+- Optimal Commit Wire and TCK artifacts: Draft, conformance-backed.
 - Full runtime infrastructure: out of scope.
 
 ## Change Rules

@@ -8,7 +8,16 @@ import pheroos.trace as trace
 from pheroos.conformance.report import CheckResult
 from pheroos.drivers import DriverDescriptor, DriverRegistry
 from pheroos.governance.candidate import Candidate, CandidateSet
+from pheroos.governance.certificate import (
+    EvidenceCommitCertificate,
+    LocalCommitReceipt,
+    OutcomeCertificate,
+)
+from pheroos.governance.commit import CommitAssessment
+from pheroos.governance.commit_state import CommitWindowSeal, DecisionOutcome
+from pheroos.governance.distributed_commit import DistributedCommitCertificate
 from pheroos.governance.evidence import EvidenceGraph, EvidenceNode
+from pheroos.governance.hybrid_commit_evaluation import HybridCommitEvaluation
 from pheroos.governance.layer_coordination import LayerProposal
 from pheroos.governance.pheromone import PheromoneTrail
 from pheroos.governance.policy_adjustment import PolicyAdjustmentProposal
@@ -16,7 +25,7 @@ from pheroos.kernel import InputEnvelope
 
 
 def check() -> CheckResult:
-    """Prove the small public ownership and snapshot boundary contract."""
+    """Prove canonical public ownership and defensive snapshot boundaries."""
 
     problems: list[str] = []
     problems.extend(public_type_ownership_problems())
@@ -27,6 +36,18 @@ def check() -> CheckResult:
 
 def public_type_ownership_problems() -> list[str]:
     expected = (
+        (
+            governance.CommitAssurance,
+            protocol.CommitAssurance,
+            "pheroos.protocol.commit_models",
+            "commit_assurance",
+        ),
+        (
+            governance.CommitAction,
+            protocol.CommitAction,
+            "pheroos.protocol.commit_models",
+            "commit_action",
+        ),
         (
             governance.PheromoneKindProfile,
             protocol.PheromoneKindProfile,
@@ -56,6 +77,54 @@ def public_type_ownership_problems() -> list[str]:
             PolicyAdjustmentProposal,
             "pheroos.governance.policy_adjustment",
             "policy_adjustment",
+        ),
+        (
+            governance.CommitAssessment,
+            CommitAssessment,
+            "pheroos.governance.commit",
+            "commit_assessment",
+        ),
+        (
+            governance.CommitWindowSeal,
+            CommitWindowSeal,
+            "pheroos.governance.commit_state",
+            "commit_window_seal",
+        ),
+        (
+            governance.DecisionOutcome,
+            DecisionOutcome,
+            "pheroos.governance.commit_state",
+            "decision_outcome",
+        ),
+        (
+            governance.LocalCommitReceipt,
+            LocalCommitReceipt,
+            "pheroos.governance.certificate",
+            "local_commit_receipt",
+        ),
+        (
+            governance.EvidenceCommitCertificate,
+            EvidenceCommitCertificate,
+            "pheroos.governance.certificate",
+            "evidence_commit_certificate",
+        ),
+        (
+            governance.OutcomeCertificate,
+            OutcomeCertificate,
+            "pheroos.governance.certificate",
+            "outcome_certificate",
+        ),
+        (
+            governance.DistributedCommitCertificate,
+            DistributedCommitCertificate,
+            "pheroos.governance.distributed_commit",
+            "distributed_commit_certificate",
+        ),
+        (
+            governance.HybridCommitEvaluation,
+            HybridCommitEvaluation,
+            "pheroos.governance.hybrid_commit_evaluation",
+            "hybrid_commit_evaluation",
         ),
     )
     problems = [

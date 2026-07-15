@@ -3,10 +3,12 @@ from __future__ import annotations
 from typing import Any
 
 from pheroos.trace import (
+    COMMIT_EVENT_TYPES,
     DECLARED_COORDINATION_LAYER_IDS,
     EVENT_LINEAGE_CONTRACTS,
     VALID_EVENT_TYPES,
 )
+from pheroos.trace.commit_contracts import commit_trace_lineage_schema
 
 
 def trace_schema() -> dict[str, Any]:
@@ -62,6 +64,8 @@ def event_lineage_condition(event_type: str, lineage_schema: dict[str, Any]) -> 
 
 
 def event_lineage_schema(event_type: str) -> dict[str, Any]:
+    if event_type in COMMIT_EVENT_TYPES:
+        return commit_trace_lineage_schema(event_type)
     if event_type == "pheromone_observe":
         return pheromone_observation_schema()
     if event_type == "pheromone_clip":

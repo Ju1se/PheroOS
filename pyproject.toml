@@ -31,6 +31,9 @@ pheroos = "pheroos.cli.main:main"
 [tool.setuptools.packages.find]
 include = ["pheroos*"]
 
+[tool.setuptools.package-data]
+"pheroos.conformance" = ["tck/*.json"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["."]

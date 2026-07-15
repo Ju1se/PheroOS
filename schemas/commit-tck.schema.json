@@ -1,0 +1,316 @@
+{
+  "$id": "https://pheroos.dev/schemas/commit-tck.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "tck_version": {
+      "const": "pheroos-commit-integrity-tck-v1"
+    },
+    "vectors": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "expected": {
+            "additionalProperties": false,
+            "properties": {
+              "certificate": {
+                "type": [
+                  "object",
+                  "null"
+                ]
+              },
+              "failure_code": {
+                "minLength": 1,
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "metrics": {
+                "type": "object"
+              },
+              "outcome": {
+                "type": [
+                  "object",
+                  "null"
+                ]
+              },
+              "progress": {
+                "type": [
+                  "object",
+                  "null"
+                ]
+              },
+              "roots": {
+                "type": "object"
+              },
+              "trace_sequence": {
+                "items": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "certificate",
+              "failure_code",
+              "metrics",
+              "outcome",
+              "progress",
+              "roots",
+              "trace_sequence"
+            ],
+            "type": "object"
+          },
+          "id": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "inputs": {
+            "type": "object"
+          },
+          "manifest": {
+            "type": [
+              "object",
+              "null"
+            ]
+          },
+          "matrix_case": {
+            "maximum": 38,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "mutations": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "authority_namespace": {
+                  "enum": [
+                    "isolated",
+                    "shared"
+                  ]
+                },
+                "expected": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "certificate": {
+                      "type": [
+                        "object",
+                        "null"
+                      ]
+                    },
+                    "failure_code": {
+                      "minLength": 1,
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "metrics": {
+                      "type": "object"
+                    },
+                    "outcome": {
+                      "type": [
+                        "object",
+                        "null"
+                      ]
+                    },
+                    "progress": {
+                      "type": [
+                        "object",
+                        "null"
+                      ]
+                    },
+                    "roots": {
+                      "type": "object"
+                    },
+                    "trace_sequence": {
+                      "items": {
+                        "minLength": 1,
+                        "type": "string"
+                      },
+                      "type": "array"
+                    }
+                  },
+                  "required": [
+                    "certificate",
+                    "failure_code",
+                    "metrics",
+                    "outcome",
+                    "progress",
+                    "roots",
+                    "trace_sequence"
+                  ],
+                  "type": "object"
+                },
+                "id": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "path": {
+                  "items": {
+                    "type": [
+                      "string",
+                      "integer"
+                    ]
+                  },
+                  "minItems": 1,
+                  "type": "array"
+                },
+                "replacement": {}
+              },
+              "required": [
+                "id",
+                "authority_namespace",
+                "path",
+                "replacement",
+                "expected"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "permutations": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "authority_namespace": {
+                  "enum": [
+                    "isolated",
+                    "shared"
+                  ]
+                },
+                "expected": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "certificate": {
+                      "type": [
+                        "object",
+                        "null"
+                      ]
+                    },
+                    "failure_code": {
+                      "minLength": 1,
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "metrics": {
+                      "type": "object"
+                    },
+                    "outcome": {
+                      "type": [
+                        "object",
+                        "null"
+                      ]
+                    },
+                    "progress": {
+                      "type": [
+                        "object",
+                        "null"
+                      ]
+                    },
+                    "roots": {
+                      "type": "object"
+                    },
+                    "trace_sequence": {
+                      "items": {
+                        "minLength": 1,
+                        "type": "string"
+                      },
+                      "type": "array"
+                    }
+                  },
+                  "required": [
+                    "certificate",
+                    "failure_code",
+                    "metrics",
+                    "outcome",
+                    "progress",
+                    "roots",
+                    "trace_sequence"
+                  ],
+                  "type": "object"
+                },
+                "id": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "order": {
+                  "oneOf": [
+                    {
+                      "const": "reverse"
+                    },
+                    {
+                      "items": {
+                        "minimum": 0,
+                        "type": "integer"
+                      },
+                      "type": "array"
+                    }
+                  ]
+                },
+                "path": {
+                  "items": {
+                    "type": [
+                      "string",
+                      "integer"
+                    ]
+                  },
+                  "minItems": 1,
+                  "type": "array"
+                }
+              },
+              "required": [
+                "id",
+                "authority_namespace",
+                "path",
+                "order",
+                "expected"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "prior_authoritative_state": {
+            "type": "object"
+          },
+          "profile": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "tck_version": {
+            "const": "pheroos-commit-integrity-tck-v1"
+          },
+          "title": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "expected",
+          "id",
+          "inputs",
+          "manifest",
+          "matrix_case",
+          "mutations",
+          "permutations",
+          "prior_authoritative_state",
+          "profile",
+          "tck_version",
+          "title"
+        ],
+        "type": "object"
+      },
+      "minItems": 1,
+      "type": "array"
+    }
+  },
+  "required": [
+    "tck_version",
+    "vectors"
+  ],
+  "type": "object"
+}

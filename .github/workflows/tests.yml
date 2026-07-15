@@ -7,7 +7,7 @@ on:
 jobs:
   python:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -36,13 +36,47 @@ jobs:
           pheroos conformance examples/swarm-protocol
           pheroos validate examples/hybrid-pheromone-protocol/capability.json
           pheroos conformance examples/hybrid-pheromone-protocol
+          pheroos validate examples/hybrid-commit-protocol/capability.json
+          pheroos conformance examples/hybrid-commit-protocol
+          pheroos validate examples/distributed-commit-protocol/capability.json
+          pheroos conformance examples/distributed-commit-protocol
           pheroos source-conformance .
           python examples/hybrid-pheromone-protocol/run.py
           python examples/adaptive-pheromone-replay/replay.py
+          python examples/hybrid-commit-protocol/run.py
+          python examples/commit-certificate-replay/replay.py
+          python examples/distributed-commit-protocol/run.py
+
+  commit-tck:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[dev]"
+
+      - name: Run Commit schema, TCK, trace, and conformance gates
+        run: |
+          python -m pytest -q tests/cli/test_schema_export.py
+          python -m pytest -q tests/conformance/test_commit_tck.py
+          python -m pytest -q tests/conformance/test_commit_integrity_conformance.py
+          python -m pytest -q tests/trace/test_commit_trace_contract.py
+          python -c "from pheroos.conformance import run_commit_tck; report = run_commit_tck(); assert report.ok, report"
+          python scripts/generate_commit_tck.py --check
+          git diff --check
 
   wheel:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -69,7 +103,18 @@ jobs:
           "$PHEROOS" conformance "$GITHUB_WORKSPACE/examples/e2e-protocol"
           "$PHEROOS" conformance "$GITHUB_WORKSPACE/examples/swarm-protocol"
           "$PHEROOS" conformance "$GITHUB_WORKSPACE/examples/hybrid-pheromone-protocol"
+          "$PHEROOS" conformance "$GITHUB_WORKSPACE/examples/hybrid-commit-protocol"
+          "$PHEROOS" conformance "$GITHUB_WORKSPACE/examples/distributed-commit-protocol"
           "$PHEROOS" source-conformance
+          for surface in capability protocol kernel driver trace commit; do
+            "$PHEROOS" schema export "$surface" > "$RUNNER_TEMP/$surface.schema.json"
+            "$PYTHON" -c 'import json, sys; assert json.load(open(sys.argv[1], encoding="utf-8")) == json.load(open(sys.argv[2], encoding="utf-8"))' "$RUNNER_TEMP/$surface.schema.json" "$GITHUB_WORKSPACE/schemas/$surface.schema.json"
+          done
+          "$PYTHON" -c 'import json, sys; from pheroos.conformance import commit_tck_schema; assert commit_tck_schema() == json.load(open(sys.argv[1], encoding="utf-8"))' "$GITHUB_WORKSPACE/schemas/commit-tck.schema.json"
+          "$PYTHON" -c "from pheroos.conformance import run_commit_tck; report = run_commit_tck(); assert report.ok, report"
           "$PYTHON" "$GITHUB_WORKSPACE/examples/hybrid-pheromone-protocol/run.py"
           "$PYTHON" "$GITHUB_WORKSPACE/examples/adaptive-pheromone-replay/replay.py"
-          "$PYTHON" -c "import pheroos.governance as g, pheroos.protocol as p; assert g.PheromoneKindProfile is p.PheromoneKindProfile"
+          "$PYTHON" "$GITHUB_WORKSPACE/examples/hybrid-commit-protocol/run.py"
+          "$PYTHON" "$GITHUB_WORKSPACE/examples/commit-certificate-replay/replay.py"
+          "$PYTHON" "$GITHUB_WORKSPACE/examples/distributed-commit-protocol/run.py"
+          "$PYTHON" -c "import pheroos.conformance as c, pheroos.governance as g, pheroos.protocol as p, pheroos.trace as t; assert g.PheromoneKindProfile is p.PheromoneKindProfile; assert g.CommitAssurance is p.CommitAssurance; assert g.CommitAction is p.CommitAction; assert g.TraceEvent is t.TraceEvent; assert p.CommitAssurance.__module__ == 'pheroos.protocol.commit_models'; assert p.CommitAction.__module__ == 'pheroos.protocol.commit_models'; assert t.TraceEvent.__module__ == 'pheroos.trace'; assert g.HybridCommitAttentionStatus.__module__ == 'pheroos.governance.hybrid_commit_evaluation'; assert g.distributed_commit_value_root.__module__ == 'pheroos.governance.distributed_commit'; assert c.CommitTckVector.__module__ == 'pheroos.conformance.commit_tck'"

@@ -1,6 +1,7 @@
 import pytest
 
 from pheroos.trace import (
+    COMMIT_EVENT_TYPES,
     EVENT_LINEAGE_CONTRACTS,
     InMemoryTraceStore,
     TraceEvent,
@@ -12,7 +13,7 @@ from pheroos.trace import (
 
 def test_trace_store_appends_records_and_validates_required_events() -> None:
     store = InMemoryTraceStore()
-    for event_type in sorted(VALID_EVENT_TYPES):
+    for event_type in sorted(VALID_EVENT_TYPES - COMMIT_EVENT_TYPES):
         store.append(
             TraceEvent(
                 event_type=event_type,
@@ -23,7 +24,9 @@ def test_trace_store_appends_records_and_validates_required_events() -> None:
             )
         )
 
-    assert [record.sequence for record in store.records] == list(range(len(VALID_EVENT_TYPES)))
+    assert [record.sequence for record in store.records] == list(
+        range(len(VALID_EVENT_TYPES - COMMIT_EVENT_TYPES))
+    )
     assert store.require_events(["plan", "invoke", "output"]) == []
 
 
@@ -330,7 +333,14 @@ def test_trace_lineage_can_carry_uniform_pheromone_subjects() -> None:
     ]
 
 
-@pytest.mark.parametrize("event_type,required", sorted(EVENT_LINEAGE_CONTRACTS.items()))
+@pytest.mark.parametrize(
+    "event_type,required",
+    sorted(
+        (event_type, required)
+        for event_type, required in EVENT_LINEAGE_CONTRACTS.items()
+        if event_type not in COMMIT_EVENT_TYPES
+    ),
+)
 def test_event_specific_lineage_contract_rejects_each_missing_field(
     event_type: str,
     required: frozenset[str],

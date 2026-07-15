@@ -1,5 +1,7 @@
 import json
 from pathlib import Path
+import subprocess
+import sys
 from typing import Any
 
 import pytest
@@ -9,7 +11,7 @@ from pheroos.trace import TraceEvent, pheromone_clip_payload_fingerprint
 
 
 def test_schema_export_matches_checked_in_surface_artifacts(capsys: Any) -> None:
-    for surface in ["capability", "protocol", "kernel", "driver", "trace"]:
+    for surface in ["capability", "protocol", "kernel", "driver", "trace", "commit"]:
         schema = exported_schema(surface, capsys)
         expected = json.loads(Path(f"schemas/{surface}.schema.json").read_text())
 
@@ -94,6 +96,91 @@ def test_schema_export_protocol_exposes_collective_policy_shape(capsys: Any) -> 
     assert properties["extensions"]["type"] == "object"
     assert schema["additionalProperties"] is False
     assert "^(x-|ext\\.).+" in schema["patternProperties"]
+
+
+def test_schema_export_commit_is_strict_and_versioned(capsys: Any) -> None:
+    schema = exported_schema("commit", capsys)
+
+    assert schema["$id"] == "https://pheroos.dev/schemas/commit.schema.json"
+    schemas = {
+        branch["properties"]["schema"]["const"] for branch in schema["oneOf"]
+    }
+    expected_schemas = {
+        "pheroos-principal-attestation-v1",
+        "pheroos-principal-verification-v1",
+        "pheroos-stop-resolution-verification-v1",
+        "pheroos-action-permission-v1",
+        "pheroos-decision-progress-v1",
+        "pheroos-decision-outcome-v1",
+        "pheroos-commit-evaluation-context-v1",
+        "pheroos-candidate-commit-metrics-v1",
+        "pheroos-optimal-commit-assessment-v1",
+        "pheroos-commit-window-state-v1",
+        "pheroos-commit-window-seal-v1",
+        "pheroos-commit-liveness-input-v1",
+        "pheroos-commit-finality-verification-v1",
+        "pheroos-commit-replay-state-v1",
+        "pheroos-commit-replay-receipt-v1",
+        "pheroos-observation-attestation-v1",
+        "pheroos-verified-observation-v1",
+        "pheroos-counterevidence-disposition-v1",
+        "pheroos-challenge-attestation-v1",
+        "pheroos-verified-challenge-v1",
+        "pheroos-challenge-coverage-v1",
+        "pheroos-evidence-binding-authority-v1",
+        "pheroos-evidence-summary-v1",
+        "pheroos-eligible-principal-snapshot-v1",
+        "pheroos-eligible-membership-epoch-state-v1",
+        "pheroos-support-lease-proposal-v1",
+        "pheroos-support-lease-replay-receipt-v1",
+        "pheroos-support-lease-replay-state-v1",
+        "pheroos-support-lease-v1",
+        "pheroos-support-lease-revocation-v1",
+        "pheroos-support-lease-evaluation-v1",
+        "pheroos-support-equivocation-finding-v1",
+        "pheroos-risk-assessment-chain-state-v1",
+        "pheroos-risk-assessment-v1",
+        "pheroos-commit-threshold-snapshot-v1",
+        "pheroos-hybrid-commit-step-v1",
+        "pheroos-hybrid-commit-evaluation-v1",
+        "pheroos-local-commit-receipt-v1",
+        "pheroos-evidence-commit-certificate-v1",
+        "pheroos-outcome-certificate-v1",
+        "pheroos-commit-output-authorization-v1",
+        "pheroos-portable-membership-snapshot-v1",
+        "pheroos-distributed-commit-proposal-v1",
+        "pheroos-distributed-commit-value-v1",
+        "pheroos-quorum-witness-v1",
+        "pheroos-witness-verification-v1",
+        "pheroos-witness-replay-receipt-v1",
+        "pheroos-distributed-commit-state-v1",
+        "pheroos-distributed-commit-certificate-v1",
+        "pheroos-epoch-transition-certificate-v1",
+        "pheroos-distributed-finality-decision-v1",
+    }
+    assert len(schema["oneOf"]) == len(expected_schemas) == 51
+    assert schemas == expected_schemas
+    assert schema["discriminator"] == {"propertyName": "schema"}
+    assert all(branch["additionalProperties"] is False for branch in schema["oneOf"])
+    assert all(
+        branch["properties"]["payload"]["additionalProperties"] is False
+        for branch in schema["oneOf"]
+    )
+
+
+def test_schema_export_commit_is_external_cwd_stable(tmp_path: Path) -> None:
+    completed = subprocess.run(
+        [sys.executable, "-m", "pheroos.cli.main", "schema", "export", "commit"],
+        cwd=tmp_path,
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+
+    assert completed.returncode == 0, completed.stderr
+    assert json.loads(completed.stdout) == json.loads(
+        Path("schemas/commit.schema.json").read_text(encoding="utf-8")
+    )
 
 
 def test_schema_export_driver_exposes_provider_neutral_driver_spec(capsys: Any) -> None:

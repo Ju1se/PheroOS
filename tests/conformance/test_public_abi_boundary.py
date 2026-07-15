@@ -24,3 +24,18 @@ def test_public_abi_boundary_rejects_noncanonical_kind_profile_export(
 
     assert result.ok is False
     assert "ownership:pheromone_kind_profile" in result.detail
+
+
+def test_public_abi_boundary_rejects_noncanonical_commit_type_export(
+    monkeypatch: object,
+) -> None:
+    monkeypatch.setattr(  # type: ignore[attr-defined]
+        governance,
+        "CommitAction",
+        object,
+    )
+
+    result = public_abi_boundary.check()
+
+    assert result.ok is False
+    assert "ownership:commit_action" in result.detail
