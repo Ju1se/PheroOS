@@ -7,7 +7,32 @@ from pathlib import Path
 from pheroos.conformance.report import CheckResult
 
 
-FORBIDDEN_IMPORT_ROOTS = {"app", "runtime", "tools", "capabilities", "fastapi", "langgraph", "litellm"}
+FORBIDDEN_IMPORT_ROOTS = {
+    "aiohttp",
+    "anthropic",
+    "app",
+    "capabilities",
+    "celery",
+    "django",
+    "fastapi",
+    "flask",
+    "httpx",
+    "kafka",
+    "langgraph",
+    "litellm",
+    "openai",
+    "psycopg",
+    "pymongo",
+    "redis",
+    "requests",
+    "runtime",
+    "sqlalchemy",
+    "sqlite3",
+    "starlette",
+    "tools",
+    "uvicorn",
+}
+ROOT_FOUNDATION_MODULES = {"_immutable", "_scope", "_version"}
 PACKAGE_IMPORT_ALLOWLIST = {
     "protocol": {"protocol"},
     "kernel": {"kernel", "protocol", "drivers"},
@@ -77,6 +102,8 @@ def record_if_forbidden(root: Path, path: Path, module: str, offenders: list[str
         return
     source_package = source_package_for(root, path)
     imported_package = module.split(".", 2)[1]
+    if imported_package in ROOT_FOUNDATION_MODULES:
+        return
     allowed = PACKAGE_IMPORT_ALLOWLIST.get(source_package)
     if allowed is not None and imported_package not in allowed:
         offenders.append(f"{path.relative_to(root).as_posix()}:{module}")

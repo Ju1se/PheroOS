@@ -1,6 +1,7 @@
 """Conformance check modules."""
 
 from pheroos.conformance.checks import (
+    authority_ledger_contract,
     certificate_conflict_contract,
     certificate_output_contract,
     challenge_coverage_contract,
@@ -20,10 +21,12 @@ from pheroos.conformance.checks import (
     observation_binding_contract,
     principal_attestation_contract,
     risk_monotonicity_contract,
+    runtime_scope_contract,
     support_lease_contract,
 )
 
 __all__ = [
+    "authority_ledger_contract",
     "certificate_conflict_contract",
     "certificate_output_contract",
     "challenge_coverage_contract",
@@ -43,5 +46,6 @@ __all__ = [
     "observation_binding_contract",
     "principal_attestation_contract",
     "risk_monotonicity_contract",
+    "runtime_scope_contract",
     "support_lease_contract",
 ]

@@ -50,16 +50,67 @@ The public Python package surfaces are:
 The public schema artifacts are:
 
 - `schemas/capability.schema.json`
+- `schemas/capability-v2.schema.json`
 - `schemas/protocol.schema.json`
+- `schemas/protocol-v2.schema.json`
 - `schemas/kernel.schema.json`
+- `schemas/kernel-v2.schema.json`
 - `schemas/driver.schema.json`
+- `schemas/driver-v2.schema.json`
 - `schemas/trace.schema.json`
 - `schemas/commit.schema.json`
 - `schemas/commit-tck.schema.json`
+- `schemas/commit-tck-v2.schema.json`
+- `schemas/commit-tck-request-v2.schema.json`
+- `schemas/commit-tck-response-v2.schema.json`
+- `schemas/conformance-report-v2.schema.json`
+- `schemas/scoped-trace-event-v1.schema.json`
+- `pheroos/conformance/abi/public-python-api-v1.json`
+- `pheroos/conformance/abi/public-python-api-lifecycle-v1.json`
 
-The public CLI surfaces cover manifest validation, conformance evaluation, and
-ABI schema export for capability, protocol, kernel, driver, trace, and commit
-artifacts.
+The public CLI surfaces cover version/profile inspection, manifest validation,
+conformance evaluation, schema list/show/export, typed wire validation, TCK
+v1/v2 execution, and public ABI show/diff operations. CLI output is versioned
+JSON; the CLI does not start a server.
+
+### Schema document versioning
+
+The original unversioned Capability, Protocol, Driver, and Kernel schema IDs
+are frozen v1 compatibility roots. Their unversioned CLI aliases remain pinned
+to the same documents and must never silently move to v2:
+
+| Surface | Frozen v1 `$id` / CLI alias | Versioned v2 document / selector |
+| --- | --- | --- |
+| Capability | `https://pheroos.dev/schemas/capability.schema.json` / `capability`, `capability-v1` | `capability-v2.schema.json` / `pheroos-capability-schema-v2` |
+| Protocol | `https://pheroos.dev/schemas/protocol.schema.json` / `protocol`, `protocol-v1` | `protocol-v2.schema.json` / `pheroos-protocol-schema-v2` |
+| Driver | `https://pheroos.dev/schemas/driver.schema.json` / `driver`, `driver-v1` | `driver-v2.schema.json` / `descriptor_version=pheroos-driver-descriptor-v2` |
+| Kernel | `https://pheroos.dev/schemas/kernel.schema.json` / `kernel`, `kernel-v1` | `kernel-v2.schema.json` / `plan_version=pheroos-kernel-plan-v2` |
+
+Capability and Protocol v2 identify stricter schema documents; accepted
+payloads continue to carry `protocol_version=pheroos.protocol.v1`. Driver's
+`descriptor_version` is distinct from the external provider version in
+`DriverDescriptor.version`. Kernel plan selection is independently controlled
+by `plan_version`. Readers must select legacy discriminator-free documents as
+v1 explicitly and must never infer an authoritative version from object shape.
+
+Typed migration is explicit and fail-closed. `upgrade_driver_descriptor_v1`
+returns a complete v2 document or raises
+`driver_descriptor_v1_not_migratable`; it does not delete duplicate or empty
+declarations. `os_plan_v1_from_dict` returns a non-authoritative
+`LegacyOSPlan`. `upgrade_os_plan_v1` requires canonical run scope, connection
+readiness, driver probes, capabilities, and provider versions from the caller;
+missing or contradictory facts reject migration rather than creating defaults.
+The normative rules are in
+[`docs/process/schema-v1-v2-migration.md`](docs/process/schema-v1-v2-migration.md).
+
+The schema drift gate is:
+
+```bash
+python scripts/generate_schema_artifacts.py --check
+```
+
+`--write` regenerates only versioned v2 artifacts and cannot rewrite the four
+frozen v1 roots.
 
 ### Strict ABI loading
 
@@ -76,6 +127,23 @@ Python records again at the trust boundary. Inputs, intermediate values,
 breakdowns, normalized scores, and final scores must remain finite. Frozen
 public records defensively snapshot nested mutable data at their validation
 boundary.
+
+### Cohesive facades and static contracts
+
+The reference package exposes cohesive package facades while keeping private
+engines low-coupled and one-way. Public records, signatures, aliases, error
+types, and canonical `__module__` ownership remain on their declared facades;
+private commit-state, support, certificate, distributed, Hybrid, swarm, and
+pheromone modules may change without becoming a second public ABI. Private
+engines must not import an aggregate facade, form dependency cycles, install a
+service locator, or acquire module-global runtime authority.
+
+Built-in Commit Wire branches and Trace event types are declared in immutable
+static contract tuples. Those declarations drive schema generation and runtime
+validation from one rule owner. Unknown built-in authority records fail closed;
+`x-*` and `ext.*` metadata stay open only as non-authoritative extensions.
+Closed diagnostic-code registries are lifecycle artifacts, not runtime plugin
+registries.
 
 ## Compatibility Requirements
 
@@ -142,6 +210,18 @@ A compatible implementation should satisfy these requirements:
 27. Distributed finality verifies the declared Byzantine quorum intersection,
     exact proposal digest, membership epoch, witness replay/equivocation, and
     conflict freeze semantics.
+28. One tenant/run `RuntimeScope` and its `scope_ref` bind Kernel plans, Driver
+    invocations/results, Governance authority domains, and scoped Trace
+    envelopes; cross-scope records fail closed.
+29. Driver registration is conflict-safe and descriptor-lossless. Invocation
+    receipts bind the exact scope, operation, request digest, invocation id,
+    and idempotency key.
+30. Durable Governance transitions use explicit current heads and
+    compare-and-swap. State and Trace publish atomically, and only a verified
+    store receipt may finalize durable output authority.
+31. Unknown protocol, wire, profile, report, schema, TCK, or lifecycle-critical
+    versions fail closed. Existing version identifiers do not change meaning
+    in place.
 
 ## Swarm-Native Semantics
 
@@ -287,6 +367,27 @@ metrics or certificate truth roots. See
 [`docs/protocol/optimal-commit-abi.md`](docs/protocol/optimal-commit-abi.md) and
 [`docs/protocol/optimal-commit-v1-migration.md`](docs/protocol/optimal-commit-v1-migration.md).
 
+## Scoped State and Atomic Trace
+
+`RuntimeScope` is the cross-surface tenant/run identity. Its canonical
+`scope_ref` is carried by Kernel runtime records, Driver invocation envelopes,
+Governance `AuthorityDomain`, and `ScopedTraceEvent`. Matching payload data in
+another scope is neither a retry nor reusable authority.
+
+`GovernanceStateStore` is a provider-neutral protocol with explicit heads,
+immutable prepared transitions, atomic state-plus-Trace batches, CAS,
+idempotent transition ids, identity claims, receipts, snapshots, rehydration,
+retirement, and tombstones. `InMemoryGovernanceStateStore` is the deterministic
+reference adapter for tests and examples. It is not a production database.
+
+The durable Hybrid Commit boundary is `prepare -> atomic_commit -> receipt
+verification -> finalize`. A prepared evaluation is a proposal. State must not
+advance without its exact Trace batch; stale heads request a retry; failures
+redact output authority; retirement is permanent for that scope. External
+runtimes may implement database-backed adapters outside protocol-core and must
+pass the same scope, restart, CAS, idempotency, atomicity, and retirement
+conformance.
+
 ## Extension Rules
 
 Extensions should preserve low coupling and provider neutrality.
@@ -325,6 +426,11 @@ Extensions should not add:
 
 The current public ABI is draft `0.1.0`.
 
+The package version has one dependency-free owner, `pheroos._version`, and is
+re-exported as `pheroos.__version__`. Protocol manifests currently accept only
+the explicitly supported `pheroos.protocol.v1`; an unknown value is not mapped
+to current defaults.
+
 Before the first stable ABI release, changes may still refine dataclass fields, schema shape, and conformance checks. Such changes should be documented in `CHANGELOG.md`, reviewed through the contribution and API lifecycle process, and backed by tests or conformance.
 
 The fail-closed Hybrid v1 tightening and consumer actions are recorded in
@@ -359,7 +465,8 @@ Reports include the applicable profile version:
   swarm, and Hybrid required checks for subject scoring, kind profiles,
   diffusion, reinforcement, response, layer coordination, adjustment bounds,
   trace lineage, and authority boundaries.
-- `pheroos-source-v1` for the separate protocol-core source-surface and import
+- `pheroos-source-v2` for the separate protocol-core source-surface, lifecycle,
+  durable-authority, scope, and import
   boundary proof.
 - `pheroos-commit-integrity-v1` for advisory or evidence-bound Optimal Commit.
 - `pheroos-hybrid-commit-v1` for evidence-bound Optimal Commit with Hybrid
@@ -371,13 +478,22 @@ Reports include the applicable profile version:
 The applied profile is a gate: required checks must be present and passing for
 the profile contract to pass.
 
-The implementation-neutral Commit TCK contains 38 exact JSON vectors plus
-executed mutation/permutation variants. Active Commit checks return PASS or
-FAIL; skip/N/A is not a compatibility result. The TCK must produce the same
-roots and results from source, an isolated wheel, and an external working
-directory.
+The frozen Commit TCK v1 contains 38 exact JSON vectors plus executed
+mutation/permutation variants. TCK v2 uses expected-free request/response
+records: adapters cannot observe expected results, and the public reference
+adapter must agree with an independent standard-library spec-model adapter on
+the same declarative cases. Echo/constant, malformed, out-of-order,
+state-leaking, and timeout adapters are rejected. Active Commit checks return
+PASS or FAIL; skip/N/A is not a compatibility result. Both TCK generations
+must run from source and from isolated wheel and sdist installations under an
+external working directory.
 
-Release validation is enforced by CI and release governance. The specification defines the invariants and compatibility expectations; it is not a local runbook.
+Release validation is enforced by CI and release governance. The exact wheel
+and sdist bytes that pass external validation feed deterministic CycloneDX and
+SPDX SBOMs and, only on a trusted main-branch push, provenance attestations.
+CI provenance does not create protocol evidence, permission, or governance
+authority. The specification defines invariants and compatibility
+expectations; it is not a local runbook.
 
 ## Governance Principle
 

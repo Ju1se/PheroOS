@@ -1,10 +1,13 @@
 from __future__ import annotations
 
 from collections.abc import Callable
+from hashlib import sha256
 from pathlib import Path
 from typing import Any
+import warnings
 
 from pheroos.conformance.checks import (
+    authority_ledger_contract,
     candidate_declaration,
     certificate_conflict_contract,
     certificate_output_contract,
@@ -48,6 +51,7 @@ from pheroos.conformance.checks import (
     quorum_policy,
     recovery_policy,
     risk_monotonicity_contract,
+    runtime_scope_contract,
     safe_fallback_collective,
     score_breakdown_contract,
     source_surface,
@@ -61,7 +65,15 @@ from pheroos.conformance.profile import (
     ConformanceProfile,
     profile_for_manifest,
 )
-from pheroos.conformance.report import CheckResult, ConformanceReport
+from pheroos.conformance._manifest_check_registry import (
+    REGISTERED_MANIFEST_CHECK_NAMES,
+)
+from pheroos.conformance.report import (
+    PHEROOS_IMPLEMENTATION_ID,
+    CheckResult,
+    ConformanceReport,
+    ConformanceSubjectKind,
+)
 from pheroos.protocol.loader import load_capability_manifest
 from pheroos.protocol.models import CapabilityManifest
 
@@ -115,6 +127,11 @@ MANIFEST_CHECKS: dict[str, ManifestCheck] = {
     "extension_contract": extension_contract.check,
 }
 
+if tuple(MANIFEST_CHECKS) != REGISTERED_MANIFEST_CHECK_NAMES:
+    raise RuntimeError(
+        "manifest check callable registry does not match its static identities"
+    )
+
 
 def validate_manifest(path: str | Path) -> ConformanceReport:
     manifest_path = Path(path)
@@ -124,6 +141,9 @@ def validate_manifest(path: str | Path) -> ConformanceReport:
         target=str(manifest_path),
         checks=checks,
         profile=MANIFEST_PROFILE.version,
+        subject_kind=ConformanceSubjectKind.MANIFEST,
+        implementation_identity=PHEROOS_IMPLEMENTATION_ID,
+        artifact_digest=artifact_digest(manifest_path),
     )
 
 
@@ -135,7 +155,13 @@ def run_conformance(path: str | Path, *, root: str | Path | None = None) -> Conf
     separate versioned profile exposed by :func:`run_source_conformance`.
     """
 
-    del root
+    if root is not None:
+        warnings.warn(
+            "run_conformance(..., root=...) is deprecated; use "
+            "run_source_conformance(root) for source proof",
+            DeprecationWarning,
+            stacklevel=2,
+        )
     target = Path(path)
     manifest_path = target / "capability.json" if target.is_dir() else target
     checks = [safe_check("manifest_schema", manifest_schema.check, manifest_path)]
@@ -156,7 +182,14 @@ def run_conformance(path: str | Path, *, root: str | Path | None = None) -> Conf
                     continue
                 checks.append(safe_check(check_name, check, manifest))
     checks.append(profile_contract_check(profile, checks))
-    return ConformanceReport(target=str(target), checks=checks, profile=profile.version)
+    return ConformanceReport(
+        target=str(target),
+        checks=checks,
+        profile=profile.version,
+        subject_kind=ConformanceSubjectKind.MANIFEST,
+        implementation_identity=PHEROOS_IMPLEMENTATION_ID,
+        artifact_digest=artifact_digest(manifest_path),
+    )
 
 
 def run_source_conformance(core_root: str | Path | None = None) -> ConformanceReport:
@@ -175,10 +208,56 @@ def run_source_conformance(core_root: str | Path | None = None) -> ConformanceRe
         safe_check("domain_neutrality_public_core", domain_neutrality.check_public_core, root),
         safe_check("package_import_boundary", kernel_import_boundary.check, root),
         safe_check("driver_lifecycle_boundary", driver_lifecycle_boundary.check),
-        safe_check("public_abi_boundary", public_abi_boundary.check),
+        safe_check("runtime_scope_contract", runtime_scope_contract.check),
+        safe_check("authority_ledger_contract", authority_ledger_contract.check),
+        safe_check("public_abi_boundary", public_abi_boundary.check, root),
     ]
     checks.append(profile_contract_check(SOURCE_PROFILE, checks))
-    return ConformanceReport(target=str(root), checks=checks, profile=SOURCE_PROFILE.version)
+    return ConformanceReport(
+        target=str(root),
+        checks=checks,
+        profile=SOURCE_PROFILE.version,
+        subject_kind=ConformanceSubjectKind.SOURCE_ABI,
+        implementation_identity=PHEROOS_IMPLEMENTATION_ID,
+        artifact_digest=artifact_digest(root, source_surface=True),
+    )
+
+
+def artifact_digest(path: str | Path, *, source_surface: bool = False) -> str:
+    """Hash the conformance subject without binding reports to an absolute CWD."""
+
+    target = Path(path).resolve()
+    digest = sha256()
+    if target.is_file():
+        digest.update(target.read_bytes())
+        return "sha256:" + digest.hexdigest()
+    if not target.is_dir():
+        digest.update(b"missing\0")
+        digest.update(str(target).encode("utf-8"))
+        return "sha256:" + digest.hexdigest()
+    if not source_surface:
+        manifest = target / "capability.json"
+        if manifest.is_file():
+            digest.update(manifest.read_bytes())
+            return "sha256:" + digest.hexdigest()
+    candidates: list[Path] = []
+    for relative_root, pattern in (
+        ("pheroos", "*.py"),
+        ("schemas", "*.json"),
+    ):
+        base = target / relative_root
+        if base.is_dir():
+            candidates.extend(base.rglob(pattern))
+    if (target / "pyproject.toml").is_file():
+        candidates.append(target / "pyproject.toml")
+    for item in sorted(set(candidates), key=lambda value: value.relative_to(target).as_posix()):
+        relative = item.relative_to(target).as_posix().encode("utf-8")
+        payload = item.read_bytes()
+        digest.update(len(relative).to_bytes(8, "big"))
+        digest.update(relative)
+        digest.update(len(payload).to_bytes(8, "big"))
+        digest.update(payload)
+    return "sha256:" + digest.hexdigest()
 
 
 def safe_check(name: str, check: Callable[..., CheckResult], *args: Any) -> CheckResult:
@@ -209,6 +288,7 @@ def profile_contract_check(profile: ConformanceProfile, checks: list[CheckResult
 
 __all__ = [
     "MANIFEST_CHECKS",
+    "artifact_digest",
     "profile_contract_check",
     "run_conformance",
     "run_source_conformance",

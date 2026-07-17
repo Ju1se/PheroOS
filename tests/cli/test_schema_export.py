@@ -11,9 +11,31 @@ from pheroos.trace import TraceEvent, pheromone_clip_payload_fingerprint
 
 
 def test_schema_export_matches_checked_in_surface_artifacts(capsys: Any) -> None:
-    for surface in ["capability", "protocol", "kernel", "driver", "trace", "commit"]:
+    artifacts = {
+        "capability": "schemas/capability.schema.json",
+        "capability-v1": "schemas/capability.schema.json",
+        "capability-v2": "schemas/capability-v2.schema.json",
+        "protocol": "schemas/protocol.schema.json",
+        "protocol-v1": "schemas/protocol.schema.json",
+        "protocol-v2": "schemas/protocol-v2.schema.json",
+        "kernel": "schemas/kernel.schema.json",
+        "kernel-v1": "schemas/kernel.schema.json",
+        "kernel-v2": "schemas/kernel-v2.schema.json",
+        "driver": "schemas/driver.schema.json",
+        "driver-v1": "schemas/driver.schema.json",
+        "driver-v2": "schemas/driver-v2.schema.json",
+        "trace": "schemas/trace.schema.json",
+        "commit": "schemas/commit.schema.json",
+        "conformance-report": "schemas/conformance-report-v2.schema.json",
+        "scoped-trace": "schemas/scoped-trace-event-v1.schema.json",
+        "commit-tck-v1": "schemas/commit-tck.schema.json",
+        "commit-tck-v2": "schemas/commit-tck-v2.schema.json",
+        "commit-tck-request-v2": "schemas/commit-tck-request-v2.schema.json",
+        "commit-tck-response-v2": "schemas/commit-tck-response-v2.schema.json",
+    }
+    for surface, artifact in artifacts.items():
         schema = exported_schema(surface, capsys)
-        expected = json.loads(Path(f"schemas/{surface}.schema.json").read_text())
+        expected = json.loads(Path(artifact).read_text())
 
         assert schema == expected
 
@@ -52,6 +74,9 @@ def test_schema_export_protocol_exposes_collective_policy_shape(capsys: Any) -> 
         "output_policy",
         "trace_policy",
     ]
+    # The original unversioned ID is the byte-frozen legacy v1 document.
+    # Strict supported-version validation is exposed as ``protocol-v2``.
+    assert properties["protocol_version"] == {"type": "string"}
     assert properties["targets"]["items"]["required"] == ["id"]
     assert properties["targets"]["items"]["properties"]["extensions"]["type"] == "object"
     assert properties["candidates"]["items"]["required"] == ["id", "target"]
@@ -96,6 +121,30 @@ def test_schema_export_protocol_exposes_collective_policy_shape(capsys: Any) -> 
     assert properties["extensions"]["type"] == "object"
     assert schema["additionalProperties"] is False
     assert "^(x-|ext\\.).+" in schema["patternProperties"]
+
+
+def test_schema_export_v2_protocol_documents_are_strict_without_changing_payload_version(
+    capsys: Any,
+) -> None:
+    capability = exported_schema("capability-v2", capsys)
+    protocol = exported_schema("protocol-v2", capsys)
+
+    assert capability["$id"] == (
+        "https://pheroos.dev/schemas/capability-v2.schema.json"
+    )
+    assert protocol["$id"] == (
+        "https://pheroos.dev/schemas/protocol-v2.schema.json"
+    )
+    assert protocol["properties"]["protocol_version"] == {
+        "type": "string",
+        "enum": ["pheroos.protocol.v1"],
+    }
+    assert capability["properties"]["protocol"]["properties"][
+        "protocol_version"
+    ] == {
+        "type": "string",
+        "enum": ["pheroos.protocol.v1"],
+    }
 
 
 def test_schema_export_commit_is_strict_and_versioned(capsys: Any) -> None:
@@ -184,10 +233,18 @@ def test_schema_export_commit_is_external_cwd_stable(tmp_path: Path) -> None:
 
 
 def test_schema_export_driver_exposes_provider_neutral_driver_spec(capsys: Any) -> None:
-    schema = exported_schema("driver", capsys)
+    schema = exported_schema("driver-v2", capsys)
     properties = schema["properties"]
 
+    assert schema["$id"] == "https://pheroos.dev/schemas/driver-v2.schema.json"
+    assert properties["descriptor_version"] == {
+        "const": "pheroos-driver-descriptor-v2"
+    }
     assert properties["permissions"]["items"]["type"] == "string"
+    assert properties["permissions"]["items"]["minLength"] == 1
+    assert properties["permissions"]["uniqueItems"] is True
+    assert properties["capabilities"]["items"]["minLength"] == 1
+    assert properties["capabilities"]["uniqueItems"] is True
     assert properties["config_ref"]["type"] == "string"
     assert properties["extensions"]["type"] == "object"
     assert schema["additionalProperties"] is False
@@ -195,26 +252,51 @@ def test_schema_export_driver_exposes_provider_neutral_driver_spec(capsys: Any) 
 
 
 def test_schema_export_kernel_exposes_strict_runtime_context_shape(capsys: Any) -> None:
-    schema = exported_schema("kernel", capsys)
+    schema = exported_schema("kernel-v2", capsys)
     properties = schema["properties"]
 
+    assert schema["$id"] == "https://pheroos.dev/schemas/kernel-v2.schema.json"
     assert schema["additionalProperties"] is False
     assert schema["required"] == [
+        "plan_version",
         "tenant_id",
         "request_id",
+        "run_id",
+        "scope_ref",
         "capability_resolutions",
         "permission_grants",
         "connection_requirements",
+        "connection_readiness",
+        "driver_probe_snapshots",
         "driver_exposures",
         "tool_exposures",
         "diagnostics",
         "runtime_ready",
         "degraded",
     ]
+    assert properties["plan_version"] == {"const": "pheroos-kernel-plan-v2"}
+    assert properties["scope_ref"] == {
+        "type": "string",
+        "pattern": "^sha256:[0-9a-f]{64}$",
+    }
     assert properties["capability_resolutions"]["items"]["required"] == ["capability_id", "available"]
     assert properties["permission_grants"]["items"]["required"] == ["capability_id", "permission"]
     assert properties["connection_requirements"]["items"]["required"] == ["capability_id", "connection"]
+    assert properties["connection_readiness"]["items"]["required"] == [
+        "connection",
+        "available",
+    ]
+    assert properties["driver_probe_snapshots"]["items"]["required"] == [
+        "driver_id",
+        "available",
+        "version",
+        "capabilities",
+    ]
     assert properties["driver_exposures"]["items"]["required"] == ["driver_id", "capability_id"]
+    assert (
+        properties["driver_exposures"]["items"]["properties"]["capabilities"]
+        == {"type": "array", "items": {"type": "string"}}
+    )
     assert properties["tool_exposures"]["items"]["required"] == ["tool_id", "capability_id"]
     assert properties["diagnostics"]["items"]["required"] == ["code", "message"]
 

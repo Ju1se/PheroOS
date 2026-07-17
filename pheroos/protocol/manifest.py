@@ -31,13 +31,18 @@ from pheroos.protocol.models import (
     TargetSpec,
     TracePolicy,
 )
-from pheroos.protocol.schema import capability_schema
+from pheroos.protocol.schema import (
+    capability_schema_v2,
+)
 from pheroos.protocol.schema_validation import validate_json_schema
 
 
 def capability_manifest_from_dict(payload: dict[str, Any]) -> CapabilityManifest:
     reject_secret_like_fields(payload)
-    schema_errors = validate_json_schema(payload, capability_schema())
+    # The typed loader is an authority boundary, not a legacy schema viewer.
+    # Keep its existing fail-closed behavior while the original unversioned
+    # schema bytes remain available for compatibility inspection.
+    schema_errors = validate_json_schema(payload, capability_schema_v2())
     if schema_errors:
         raise ValueError(f"manifest schema invalid: {'; '.join(schema_errors)}")
     protocol_payload = object_payload(payload.get("protocol"))

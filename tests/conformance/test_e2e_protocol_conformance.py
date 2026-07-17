@@ -1,9 +1,19 @@
 import json
 from pathlib import Path
 
+import pytest
+
 from pheroos.conformance import run_conformance, validate_manifest
 from pheroos.conformance.checks import driver_contract, kernel_contract
-from pheroos.kernel import DriverExposure, OSPlan
+from pheroos.drivers import DriverResult
+from pheroos.kernel import (
+    DriverExposure,
+    DriverInvokeReply,
+    DriverInvokeRequest,
+    KernelSyscalls,
+    OSPlan,
+    RuntimeContext,
+)
 from pheroos.protocol import (
     CandidateSpec,
     CapabilityManifest,
@@ -104,3 +114,44 @@ def test_kernel_contract_reports_bad_plan_shape() -> None:
     problems = kernel_contract.plan_authority_problems(bad_plan)
 
     assert "plan:unpermissioned_driver_exposure" in problems
+
+
+@pytest.mark.parametrize(
+    ("bypass", "expected_problem"),
+    [
+        ("result_scope", "syscall:result_scope_mismatch"),
+        ("operation", "syscall:operation_not_granted"),
+        ("capability", "syscall:capability_not_exposed"),
+        ("request_digest", "syscall:request_digest_mismatch"),
+        ("result_digest", "syscall:result_digest_mismatch"),
+    ],
+)
+def test_kernel_contract_detects_driver_invocation_binding_bypasses(
+    monkeypatch: pytest.MonkeyPatch,
+    bypass: str,
+    expected_problem: str,
+) -> None:
+    original = KernelSyscalls.invoke_driver
+
+    def invoke_with_one_bypass(
+        self: KernelSyscalls,
+        context: RuntimeContext,
+        request: DriverInvokeRequest,
+        result: DriverResult,
+    ) -> DriverInvokeReply:
+        active = {
+            "result_scope": result.scope_ref != request.scope_ref,
+            "operation": request.operation == "driver:admin",
+            "capability": request.capability == "evidence:write",
+            "request_digest": request.request_digest == "sha256:" + "0" * 64,
+            "result_digest": result.request_digest == "sha256:" + "0" * 64,
+        }[bypass]
+        if active:
+            return DriverInvokeReply(request=request, result=result)
+        return original(self, context, request, result)
+
+    monkeypatch.setattr(KernelSyscalls, "invoke_driver", invoke_with_one_bypass)
+
+    problems = kernel_contract.syscall_boundary_problems()
+
+    assert expected_problem in problems

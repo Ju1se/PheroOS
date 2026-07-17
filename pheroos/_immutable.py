@@ -7,6 +7,8 @@ from typing import Any
 
 
 def freeze_abi_value(value: Any) -> Any:
+    """Return a detached immutable snapshot of a provider-neutral ABI value."""
+
     if isinstance(value, Mapping):
         return MappingProxyType(
             {deepcopy(key): freeze_abi_value(item) for key, item in value.items()}

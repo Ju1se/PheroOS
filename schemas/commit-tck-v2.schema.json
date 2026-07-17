@@ -1,0 +1,102 @@
+{
+  "$id": "https://pheroos.dev/schemas/commit-tck-v2.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "adapter_protocol": {"const": "pheroos-commit-tck-jsonl-v2"},
+    "cases": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "expected": {
+            "additionalProperties": false,
+            "properties": {
+              "certificate": {"type": ["object", "null"]},
+              "failure_code": {
+                "minLength": 1,
+                "type": ["string", "null"]
+              },
+              "metrics": {"type": "object"},
+              "outcome": {"type": ["object", "null"]},
+              "progress": {"type": ["object", "null"]},
+              "roots": {"type": "object"},
+              "trace_sequence": {
+                "items": {"minLength": 1, "type": "string"},
+                "type": "array"
+              }
+            },
+            "required": [
+              "metrics",
+              "roots",
+              "progress",
+              "outcome",
+              "trace_sequence",
+              "certificate",
+              "failure_code"
+            ],
+            "type": "object"
+          },
+          "id": {"minLength": 1, "type": "string"},
+          "inputs": {
+            "properties": {
+              "operation": {"minLength": 1, "type": "string"}
+            },
+            "required": ["operation"],
+            "type": "object"
+          },
+          "manifest_patches": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "path": {
+                  "items": {"type": ["string", "integer"]},
+                  "minItems": 1,
+                  "type": "array"
+                },
+                "replacement": {}
+              },
+              "required": ["path", "replacement"],
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "manifest_template": {
+            "minLength": 1,
+            "type": ["string", "null"]
+          },
+          "matrix_case": {"minimum": 1, "type": "integer"},
+          "prior_authoritative_state": {"type": "object"},
+          "profile": {"minLength": 1, "type": "string"},
+          "title": {"minLength": 1, "type": "string"}
+        },
+        "required": [
+          "expected",
+          "id",
+          "inputs",
+          "manifest_patches",
+          "manifest_template",
+          "matrix_case",
+          "prior_authoritative_state",
+          "profile",
+          "title"
+        ],
+        "type": "object"
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "manifest_templates": {
+      "additionalProperties": {"type": "object"},
+      "minProperties": 1,
+      "type": "object"
+    },
+    "tck_version": {"const": "pheroos-commit-integrity-tck-v2"}
+  },
+  "required": [
+    "adapter_protocol",
+    "cases",
+    "manifest_templates",
+    "tck_version"
+  ],
+  "type": "object"
+}

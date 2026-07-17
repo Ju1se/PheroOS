@@ -12,23 +12,39 @@ from pheroos.conformance.commit_tck import (
     load_commit_tck_vectors,
     run_commit_tck,
 )
-from pheroos.conformance.report import CheckResult, ConformanceReport
+from pheroos.conformance.report import (
+    CONFORMANCE_REPORT_SCHEMA_ID,
+    CONFORMANCE_REPORT_VERSION,
+    PHEROOS_IMPLEMENTATION_ID,
+    CheckResult,
+    ConformanceReport,
+    ConformanceSubjectKind,
+    conformance_report_schema,
+)
+from pheroos.conformance.profile import ConformanceProfile, profile_for_manifest
 from pheroos.conformance.runner import run_conformance, run_source_conformance, validate_manifest
 
 __all__ = [
     "COMMIT_TCK_ARTIFACT",
     "COMMIT_TCK_SCHEMA_ID",
     "COMMIT_TCK_VERSION",
+    "CONFORMANCE_REPORT_SCHEMA_ID",
+    "CONFORMANCE_REPORT_VERSION",
     "CheckResult",
     "CommitTckAdapter",
     "CommitTckReport",
     "CommitTckResult",
     "CommitTckVector",
     "ConformanceReport",
+    "ConformanceProfile",
+    "ConformanceSubjectKind",
+    "PHEROOS_IMPLEMENTATION_ID",
     "ReferenceCommitTckAdapter",
     "commit_tck_artifact_root",
     "commit_tck_schema",
+    "conformance_report_schema",
     "load_commit_tck_vectors",
+    "profile_for_manifest",
     "run_commit_tck",
     "run_conformance",
     "run_source_conformance",

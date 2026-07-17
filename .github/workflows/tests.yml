@@ -4,117 +4,476 @@ on:
   push:
   pull_request:
 
+permissions:
+  contents: read
+
+env:
+  PIP_CONSTRAINT: ${{ github.workspace }}/requirements/ci-constraints.txt
+  PIP_DISABLE_PIP_VERSION_CHECK: "1"
+  PYTHONHASHSEED: "0"
+  # ZIP timestamps cannot represent dates before 1980. Keep release builds
+  # reproducible without relying on backend-specific timestamp clamping.
+  SOURCE_DATE_EPOCH: "315532800"
+
 jobs:
-  python:
+  python-tests:
+    name: Python ${{ matrix.python-version }} deterministic suite
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.12", "3.13", "3.14"]
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
-
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
-          python-version: "3.12"
-
-      - name: Install Python dependencies
+          python-version: ${{ matrix.python-version }}
+      - name: Verify reproducible toolchain constraints
+        run: sha256sum --check requirements/ci-constraints.sha256
+      - name: Install provider-free core and test dependencies
         run: |
-          python -m pip install --upgrade pip
-          python -m pip install -e ".[dev]"
-
-      - name: Run tests
+          python -m pip install --constraint requirements/ci-constraints.txt setuptools==80.9.0 wheel==0.45.1
+          python -m pip install --no-build-isolation --constraint requirements/ci-constraints.txt -e ".[dev]"
+      - name: Run deterministic test suite
         run: python -m pytest -q
 
-      - name: Check CLI
+  lint-and-typing:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.12"
+      - name: Verify reproducible toolchain constraints
+        run: sha256sum --check requirements/ci-constraints.sha256
+      - name: Install exact lint and type tools
+        run: >-
+          python -m pip install --constraint requirements/ci-constraints.txt
+          ruff==0.13.3 mypy==1.18.2
+      - name: Reject critical Python defects
+        run: python -m ruff check --select E9,F63,F7,F82 pheroos scripts tests
+      - name: Incrementally type-check stable ABI boundaries
+        run: >-
+          python -m mypy --incremental --cache-dir .mypy_cache
+          --follow-imports=skip --ignore-missing-imports --check-untyped-defs
+          pheroos/_immutable.py pheroos/_scope.py pheroos/drivers/invocation.py
+          pheroos/kernel/run_scope.py pheroos/conformance/report.py
+
+  schema-version-drift:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.12"
+      - name: Install test dependencies
         run: |
+          python -m pip install --constraint requirements/ci-constraints.txt setuptools==80.9.0 wheel==0.45.1
+          python -m pip install --no-build-isolation --constraint requirements/ci-constraints.txt -e ".[dev]"
+      - name: Check schema, report, and static contract drift
+        run: >-
+          python -m pytest -q tests/cli/test_schema_export.py
+          tests/governance/test_schema_static_contracts.py
+          tests/trace/test_static_contracts.py
+          tests/conformance/test_report_v2.py
+      - name: Check generated TCK and ABI artifacts
+        run: |
+          python scripts/generate_schema_artifacts.py --check
+          python scripts/generate_commit_tck.py --check
+          python scripts/generate_public_api_inventory.py --check
+          python scripts/generate_governance_public_api.py --check
           git diff --check
+
+  public-abi-shape-drift:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.14"
+      - name: Install test dependencies
+        run: |
+          python -m pip install --constraint requirements/ci-constraints.txt setuptools==80.9.0 wheel==0.45.1
+          python -m pip install --no-build-isolation --constraint requirements/ci-constraints.txt -e ".[dev]"
+      - name: Verify public shape, lifecycle, aliases, and ownership
+        run: >-
+          python -m pytest -q tests/test_public_api_inventory.py
+          tests/test_public_api_contract.py
+          tests/conformance/test_public_abi_boundary.py
+          tests/conformance/test_public_api_lifecycle.py
+
+  manifest-negative:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.12"
+      - name: Install test dependencies
+        run: |
+          python -m pip install --constraint requirements/ci-constraints.txt setuptools==80.9.0 wheel==0.45.1
+          python -m pip install --no-build-isolation --constraint requirements/ci-constraints.txt -e ".[dev]"
+      - name: Reject malformed, duplicate, non-finite, and unknown-version input
+        run: >-
+          python -m pytest -q tests/protocol/test_manifest_validation.py
+          tests/conformance/test_protocol_version_fail_closed.py
+
+  tck-v1-legacy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.12"
+      - name: Install test dependencies
+        run: |
+          python -m pip install --constraint requirements/ci-constraints.txt setuptools==80.9.0 wheel==0.45.1
+          python -m pip install --no-build-isolation --constraint requirements/ci-constraints.txt -e ".[dev]"
+      - name: Run frozen 38-case legacy TCK and adversarial mutations
+        run: |
+          python -m pytest -q tests/conformance/test_commit_tck.py
+          python -m pheroos.cli.main tck run --version v1
+
+  tck-v2-reference:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.12"
+      - name: Install test dependencies
+        run: |
+          python -m pip install --constraint requirements/ci-constraints.txt setuptools==80.9.0 wheel==0.45.1
+          python -m pip install --no-build-isolation --constraint requirements/ci-constraints.txt -e ".[dev]"
+      - name: Run declarative v2 reference and manifest-derived proof
+        run: |
+          python -m pheroos.cli.main tck run --version v2
+          python -m pytest -q tests/conformance/test_commit_tck_v2.py -k "schemas_are_public or declarative_golden or manifest_sensitive or manifest_threshold or manifest_assurance or attention_changes or scalar_leaf"
+
+  tck-v2-independent:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.12"
+      - name: Install test dependencies
+        run: |
+          python -m pip install --constraint requirements/ci-constraints.txt setuptools==80.9.0 wheel==0.45.1
+          python -m pip install --no-build-isolation --constraint requirements/ci-constraints.txt -e ".[dev]"
+      - name: Run independent JSONL spec model from an external cwd
+        run: |
+          python -m pheroos.cli.main tck run --version v2 --adapter "python -I -m pheroos.conformance.commit_tck_v2_spec_adapter"
+          python -m pytest -q tests/conformance/test_commit_tck_v2.py -k "independent_spec_model or real_jsonl_handshake or no_governance"
+
+  external-adapter-adversarial:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.12"
+      - name: Install test dependencies
+        run: |
+          python -m pip install --constraint requirements/ci-constraints.txt setuptools==80.9.0 wheel==0.45.1
+          python -m pip install --no-build-isolation --constraint requirements/ci-constraints.txt -e ".[dev]"
+      - name: Prove malicious and stateful adapters fail closed
+        run: >-
+          python -m pytest -q tests/conformance/test_commit_tck_v2.py
+          -k "hard_coded or expected_echo or malformed_out_of_order or state_leakage or versions_are_distinct or incompatible_handshake"
+
+  consumer-compat:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.12"
+      - name: Install test dependencies
+        run: |
+          python -m pip install --constraint requirements/ci-constraints.txt setuptools==80.9.0 wheel==0.45.1
+          python -m pip install --no-build-isolation --constraint requirements/ci-constraints.txt -e ".[dev]"
+      - name: Verify consumers, lazy facade, identities, and provider-free examples
+        run: >-
+          python -m pytest -q tests/e2e tests/test_public_api_contract.py
+          tests/governance/test_lazy_facade.py
+          tests/governance/test_static_engine_compatibility.py
+          tests/governance/test_lifecycle_module_decomposition.py
+      - name: Run maintained protocol examples
+        run: |
           pheroos validate examples/toy-protocol/capability.json
           pheroos conformance examples/toy-protocol
-          pheroos validate examples/e2e-protocol/capability.json
           pheroos conformance examples/e2e-protocol
-          pheroos validate examples/swarm-protocol/capability.json
           pheroos conformance examples/swarm-protocol
-          pheroos validate examples/hybrid-pheromone-protocol/capability.json
           pheroos conformance examples/hybrid-pheromone-protocol
-          pheroos validate examples/hybrid-commit-protocol/capability.json
           pheroos conformance examples/hybrid-commit-protocol
-          pheroos validate examples/distributed-commit-protocol/capability.json
           pheroos conformance examples/distributed-commit-protocol
-          pheroos source-conformance .
-          python examples/hybrid-pheromone-protocol/run.py
-          python examples/adaptive-pheromone-replay/replay.py
-          python examples/hybrid-commit-protocol/run.py
-          python examples/commit-certificate-replay/replay.py
-          python examples/distributed-commit-protocol/run.py
 
-  commit-tck:
+  scope-concurrency-lifecycle:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
-
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: "3.12"
-
-      - name: Install Python dependencies
+      - name: Install test dependencies
         run: |
-          python -m pip install --upgrade pip
-          python -m pip install -e ".[dev]"
+          python -m pip install --constraint requirements/ci-constraints.txt setuptools==80.9.0 wheel==0.45.1
+          python -m pip install --no-build-isolation --constraint requirements/ci-constraints.txt -e ".[dev]"
+      - name: Verify opaque scope, cross-scope denial, and concurrent idempotency
+        run: >-
+          python -m pytest -q tests/kernel/test_runtime_scope.py
+          tests/kernel/test_driver_syscalls.py
+          tests/drivers/test_driver_invocation.py
+          tests/conformance/test_runtime_scope_contract.py
+          tests/governance/test_legacy_authority_isolation.py
 
-      - name: Run Commit schema, TCK, trace, and conformance gates
-        run: |
-          python -m pytest -q tests/cli/test_schema_export.py
-          python -m pytest -q tests/conformance/test_commit_tck.py
-          python -m pytest -q tests/conformance/test_commit_integrity_conformance.py
-          python -m pytest -q tests/trace/test_commit_trace_contract.py
-          python -c "from pheroos.conformance import run_commit_tck; report = run_commit_tck(); assert report.ok, report"
-          python scripts/generate_commit_tck.py --check
-          git diff --check
-
-  wheel:
+  authority-restart-atomicity:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
-
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: "3.12"
-
-      - name: Build and install isolated wheel
+      - name: Install test dependencies
         run: |
-          python -m pip install --upgrade pip build
-          python -m build --wheel
+          python -m pip install --constraint requirements/ci-constraints.txt setuptools==80.9.0 wheel==0.45.1
+          python -m pip install --no-build-isolation --constraint requirements/ci-constraints.txt -e ".[dev]"
+      - name: Verify restart, CAS, atomic state-plus-trace, and 32-worker races
+        run: >-
+          python -m pytest -q tests/governance/test_authority_ledger.py
+          tests/governance/test_atomic_hybrid_commit.py
+          tests/conformance/test_authority_ledger_contract.py
+
+  wheel-sdist-external-cwd:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.12"
+      - name: Verify reproducible toolchain constraints
+        run: sha256sum --check requirements/ci-constraints.sha256
+      - name: Install exact build backend
+        run: >-
+          python -m pip install --constraint requirements/ci-constraints.txt
+          build==1.3.0 setuptools==80.9.0 wheel==0.45.1
+      - name: Build reproducible wheel and sdist without an unpinned resolver
+        run: |
+          python -m build --no-isolation
+          python scripts/normalize_sdist.py dist/*.tar.gz --source-date-epoch "$SOURCE_DATE_EPOCH"
+          python -m build --no-isolation --outdir "$RUNNER_TEMP/pheroos-repro"
+          python scripts/normalize_sdist.py "$RUNNER_TEMP"/pheroos-repro/*.tar.gz --source-date-epoch "$SOURCE_DATE_EPOCH"
+          python scripts/check_distribution_reproducibility.py dist "$RUNNER_TEMP/pheroos-repro"
+      - name: Install both distributions into isolated environments
+        run: |
           python -m venv "$RUNNER_TEMP/pheroos-wheel"
-          "$RUNNER_TEMP/pheroos-wheel/bin/python" -m pip install dist/*.whl
-
-      - name: Verify installed package outside source cwd
+          "$RUNNER_TEMP/pheroos-wheel/bin/python" -m pip install --no-deps dist/*.whl
+          python -m venv "$RUNNER_TEMP/pheroos-sdist"
+          "$RUNNER_TEMP/pheroos-sdist/bin/python" -m pip install --constraint requirements/ci-constraints.txt setuptools==80.9.0 wheel==0.45.1
+          "$RUNNER_TEMP/pheroos-sdist/bin/python" -m pip install --no-build-isolation --no-deps dist/*.tar.gz
+      - name: Verify installed artifacts outside the source working directory
         run: |
           cd "$RUNNER_TEMP"
-          PHEROOS="$RUNNER_TEMP/pheroos-wheel/bin/pheroos"
-          PYTHON="$RUNNER_TEMP/pheroos-wheel/bin/python"
-          "$PHEROOS" validate "$GITHUB_WORKSPACE/examples/toy-protocol/capability.json"
-          "$PHEROOS" conformance "$GITHUB_WORKSPACE/examples/toy-protocol"
-          "$PHEROOS" conformance "$GITHUB_WORKSPACE/examples/e2e-protocol"
-          "$PHEROOS" conformance "$GITHUB_WORKSPACE/examples/swarm-protocol"
-          "$PHEROOS" conformance "$GITHUB_WORKSPACE/examples/hybrid-pheromone-protocol"
-          "$PHEROOS" conformance "$GITHUB_WORKSPACE/examples/hybrid-commit-protocol"
-          "$PHEROOS" conformance "$GITHUB_WORKSPACE/examples/distributed-commit-protocol"
-          "$PHEROOS" source-conformance
-          for surface in capability protocol kernel driver trace commit; do
-            "$PHEROOS" schema export "$surface" > "$RUNNER_TEMP/$surface.schema.json"
-            "$PYTHON" -c 'import json, sys; assert json.load(open(sys.argv[1], encoding="utf-8")) == json.load(open(sys.argv[2], encoding="utf-8"))' "$RUNNER_TEMP/$surface.schema.json" "$GITHUB_WORKSPACE/schemas/$surface.schema.json"
+          for ENVIRONMENT in pheroos-wheel pheroos-sdist; do
+            PYTHON="$RUNNER_TEMP/$ENVIRONMENT/bin/python"
+            PHEROOS="$RUNNER_TEMP/$ENVIRONMENT/bin/pheroos"
+            "$PYTHON" -m pip check
+            "$PHEROOS" version
+            "$PHEROOS" validate "$GITHUB_WORKSPACE/examples/toy-protocol/capability.json"
+            "$PHEROOS" conformance "$GITHUB_WORKSPACE/examples/toy-protocol"
+            "$PHEROOS" conformance "$GITHUB_WORKSPACE/examples/swarm-protocol"
+            "$PHEROOS" conformance "$GITHUB_WORKSPACE/examples/hybrid-pheromone-protocol"
+            "$PHEROOS" source-conformance
+            "$PHEROOS" schema list
+            "$PHEROOS" tck run --version v1
+            "$PHEROOS" tck run --version v2
           done
-          "$PYTHON" -c 'import json, sys; from pheroos.conformance import commit_tck_schema; assert commit_tck_schema() == json.load(open(sys.argv[1], encoding="utf-8"))' "$GITHUB_WORKSPACE/schemas/commit-tck.schema.json"
-          "$PYTHON" -c "from pheroos.conformance import run_commit_tck; report = run_commit_tck(); assert report.ok, report"
-          "$PYTHON" "$GITHUB_WORKSPACE/examples/hybrid-pheromone-protocol/run.py"
-          "$PYTHON" "$GITHUB_WORKSPACE/examples/adaptive-pheromone-replay/replay.py"
-          "$PYTHON" "$GITHUB_WORKSPACE/examples/hybrid-commit-protocol/run.py"
-          "$PYTHON" "$GITHUB_WORKSPACE/examples/commit-certificate-replay/replay.py"
-          "$PYTHON" "$GITHUB_WORKSPACE/examples/distributed-commit-protocol/run.py"
-          "$PYTHON" -c "import pheroos.conformance as c, pheroos.governance as g, pheroos.protocol as p, pheroos.trace as t; assert g.PheromoneKindProfile is p.PheromoneKindProfile; assert g.CommitAssurance is p.CommitAssurance; assert g.CommitAction is p.CommitAction; assert g.TraceEvent is t.TraceEvent; assert p.CommitAssurance.__module__ == 'pheroos.protocol.commit_models'; assert p.CommitAction.__module__ == 'pheroos.protocol.commit_models'; assert t.TraceEvent.__module__ == 'pheroos.trace'; assert g.HybridCommitAttentionStatus.__module__ == 'pheroos.governance.hybrid_commit_evaluation'; assert g.distributed_commit_value_root.__module__ == 'pheroos.governance.distributed_commit'; assert c.CommitTckVector.__module__ == 'pheroos.conformance.commit_tck'"
+      - name: Preserve the exact distributions that passed external validation
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
+        with:
+          name: pheroos-distributions
+          path: dist/*
+          if-no-files-found: error
+          retention-days: 14
+
+  import-dag-and-cold-import:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.12"
+      - name: Install test dependencies
+        run: |
+          python -m pip install --constraint requirements/ci-constraints.txt setuptools==80.9.0 wheel==0.45.1
+          python -m pip install --no-build-isolation --constraint requirements/ci-constraints.txt -e ".[dev]"
+      - name: Verify static DAG, unique owners, and absence of hidden registries
+        run: >-
+          python -m pytest -q tests/kernel/test_kernel_import_boundary.py
+          tests/conformance/test_package_import_graph.py
+          tests/governance/test_private_import_graph.py
+          tests/governance/test_swarm_domain_structure.py
+          tests/governance/test_lazy_facade.py
+          tests/trace/test_static_contracts.py
+      - name: Enforce governance cold-import budget
+        run: python scripts/benchmark_governance_import.py --samples 5 --check
+
+  reference-performance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.12"
+      - name: Install test dependencies
+        run: |
+          python -m pip install --constraint requirements/ci-constraints.txt setuptools==80.9.0 wheel==0.45.1
+          python -m pip install --no-build-isolation --constraint requirements/ci-constraints.txt -e ".[dev]"
+      - name: Verify immutable reference budgets
+        run: |
+          python -m pytest -q tests/performance/test_reference_performance_contract.py
+          python scripts/check_reference_performance.py --check --quick
+
+  supply-chain:
+    needs: [wheel-sdist-external-cwd]
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.12"
+      - name: Verify action, permission, constraint, and provenance policy
+        run: |
+          sha256sum --check requirements/ci-constraints.sha256
+          python scripts/check_ci_supply_chain.py --check
+      - name: Download the exact externally validated distributions
+        uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
+        with:
+          name: pheroos-distributions
+          path: dist
+      - name: Generate deterministic CycloneDX and SPDX SBOMs
+        run: >-
+          python scripts/generate_release_sbom.py dist
+          --cyclonedx sbom/pheroos.cdx.json --spdx sbom/pheroos.spdx.json
+          --source-date-epoch "$SOURCE_DATE_EPOCH"
+      - name: Validate release metadata and SBOM content
+        run: python -m unittest -q tests.ci.test_supply_chain
+      - name: Upload distributions and SBOMs
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
+        with:
+          name: pheroos-release-artifacts
+          path: |
+            dist/*
+            sbom/*.json
+          if-no-files-found: error
+          retention-days: 14
+
+  provenance:
+    if: >-
+      github.event_name == 'push' &&
+      github.ref == 'refs/heads/main' &&
+      github.repository == 'Ju1se/PheroOS'
+    needs:
+      - python-tests
+      - lint-and-typing
+      - schema-version-drift
+      - public-abi-shape-drift
+      - manifest-negative
+      - tck-v1-legacy
+      - tck-v2-reference
+      - tck-v2-independent
+      - external-adapter-adversarial
+      - consumer-compat
+      - scope-concurrency-lifecycle
+      - authority-restart-atomicity
+      - wheel-sdist-external-cwd
+      - import-dag-and-cold-import
+      - reference-performance
+      - supply-chain
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      id-token: write
+      attestations: write
+      artifact-metadata: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.12"
+      - name: Download the exact release subjects produced by supply-chain
+        uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
+        with:
+          name: pheroos-release-artifacts
+          path: .
+      - name: Verify downloaded distribution hashes and SBOM content
+        run: |
+          sha256sum --check requirements/ci-constraints.sha256
+          python scripts/check_ci_supply_chain.py --check
+          python -m unittest -q tests.ci.test_supply_chain
+      - name: Attest release build provenance
+        uses: actions/attest@59d89421af93a897026c735860bf21b6eb4f7b26 # v4.1.0
+        with:
+          subject-path: dist/*
+      - name: Attest CycloneDX SBOM
+        uses: actions/attest@59d89421af93a897026c735860bf21b6eb4f7b26 # v4.1.0
+        with:
+          subject-path: dist/*
+          sbom-path: sbom/pheroos.cdx.json
+      - name: Attest SPDX SBOM
+        uses: actions/attest@59d89421af93a897026c735860bf21b6eb4f7b26 # v4.1.0
+        with:
+          subject-path: dist/*
+          sbom-path: sbom/pheroos.spdx.json

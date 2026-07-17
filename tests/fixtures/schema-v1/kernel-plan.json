@@ -1,0 +1,31 @@
+{
+  "capability_resolutions": [
+    {
+      "available": true,
+      "capability_id": "capability:legacy"
+    }
+  ],
+  "connection_requirements": [
+    {
+      "capability_id": "capability:legacy",
+      "connection": "connection:evidence",
+      "required": true
+    }
+  ],
+  "degraded": false,
+  "diagnostics": [],
+  "driver_exposures": [
+    {
+      "capability_id": "capability:legacy",
+      "driver_id": "driver:legacy",
+      "permissions": [
+        "driver:invoke"
+      ]
+    }
+  ],
+  "permission_grants": [],
+  "request_id": "request:legacy",
+  "runtime_ready": true,
+  "tenant_id": "tenant:legacy",
+  "tool_exposures": []
+}

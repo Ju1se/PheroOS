@@ -247,7 +247,7 @@ def _manifest(
         name="Optimal Commit Test",
         version="1.0.0",
         protocol=ProtocolManifest(
-            protocol_version="1.0.0",
+            protocol_version="pheroos.protocol.v1",
             id=PROTOCOL_ID,
             targets=[TargetSpec(id=TARGET)],
             candidates=[

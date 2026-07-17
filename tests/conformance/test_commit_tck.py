@@ -124,6 +124,140 @@ def test_tck_exact_comparison_catches_reference_drift() -> None:
     assert report.results[0].actual["metrics"] == {"value": 375_001}
 
 
+@pytest.mark.parametrize("protocol_version", ["pheroos.protocol.v999", ""])
+def test_tck_manifest_validation_fails_closed_for_unsupported_protocol_versions(
+    protocol_version: str,
+) -> None:
+    base = load_commit_tck_vectors()[0]
+    manifest = deepcopy(base.manifest)
+    assert manifest is not None
+    manifest["protocol"]["protocol_version"] = protocol_version
+    item = replace(
+        base,
+        id="unsupported-protocol-version",
+        manifest=manifest,
+        inputs={"operation": "manifest_validation"},
+        expected=expected(failure_code="load:ValueError"),
+        mutations=(),
+        permutations=(),
+    )
+
+    report = run_commit_tck((item,))
+
+    assert report.ok is True
+    assert report.results[0].actual["failure_code"] == "load:ValueError"
+
+
+def test_tck_adapter_receives_only_a_fresh_input_request() -> None:
+    item = vector(
+        vector_id="adapter-input-only",
+        matrix_case=17,
+        inputs={
+            "operation": "canonical_set_fingerprint",
+            "schema": "tck-canonical-set-v1",
+            "values": [{"id": "b"}, {"id": "a"}],
+        },
+        result=expected(
+            roots={
+                "fingerprint": "sha256:e85ef9c1e93ddb2ddf10294a23d16a127ee294d30010b5c64c9cc57cfd3661d4"
+            },
+            outcome={"canonical_values": [{"id": "a"}, {"id": "b"}]},
+        ),
+    )
+
+    class InspectingAdapter:
+        def __init__(self) -> None:
+            self.reference = ReferenceCommitTckAdapter()
+            self.requests: list[object] = []
+
+        def evaluate(self, request: object) -> dict[str, object]:
+            assert getattr(request, "request_version") == (
+                "pheroos-commit-tck-request-v2"
+            )
+            assert not hasattr(request, "expected")
+            assert not hasattr(request, "mutations")
+            assert not hasattr(request, "permutations")
+            self.requests.append(request)
+            result = dict(self.reference.evaluate(request))  # type: ignore[arg-type]
+            getattr(request, "inputs")["values"].append({"id": "forged"})
+            return result
+
+    adapter = InspectingAdapter()
+    report = run_commit_tck((item,), adapter=adapter)
+
+    assert report.ok is True
+    assert len(adapter.requests) == 2
+    assert adapter.requests[0] is not adapter.requests[1]
+    assert item.inputs["values"] == [{"id": "b"}, {"id": "a"}]
+    assert item.expected["outcome"] == {
+        "canonical_values": [{"id": "a"}, {"id": "b"}]
+    }
+
+
+def test_tck_rejects_an_adapter_that_echoes_harness_expected() -> None:
+    item = vector(
+        vector_id="expected-echo-isolation",
+        matrix_case=1,
+        inputs={
+            "operation": "fixed_point_multiply",
+            "left": 2,
+            "right": 3,
+            "scale": 1,
+        },
+        result=expected(metrics={"value": 6}),
+    )
+
+    class EchoExpectedAdapter:
+        def evaluate(self, request: object) -> dict[str, object]:
+            return getattr(request, "expected")
+
+    report = run_commit_tck((item,), adapter=EchoExpectedAdapter())
+
+    assert report.ok is False
+    assert report.results[0].variant_failures == ("base",)
+    assert report.results[0].actual["failure_code"].startswith(
+        "exception:AttributeError:"
+    )
+
+
+def test_tck_rejects_a_constant_base_pass_for_a_mutated_request() -> None:
+    base = vector(
+        vector_id="constant-pass-isolation",
+        matrix_case=1,
+        inputs={
+            "operation": "fixed_point_multiply",
+            "left": 2,
+            "right": 3,
+            "scale": 1,
+        },
+        result=expected(metrics={"value": 6}),
+    )
+    item = replace(
+        base,
+        mutations=(
+            {
+                "id": "change-right-operand",
+                "authority_namespace": "isolated",
+                "path": ["inputs", "right"],
+                "replacement": 4,
+                "expected": expected(metrics={"value": 8}),
+            },
+        ),
+    )
+
+    class ConstantBaseAdapter:
+        def evaluate(self, _request: object) -> dict[str, object]:
+            return deepcopy(base.expected)
+
+    report = run_commit_tck((item,), adapter=ConstantBaseAdapter())
+
+    assert report.ok is False
+    assert report.results[0].actual == base.expected
+    assert report.results[0].variant_failures == (
+        "mutation:change-right-operand",
+    )
+
+
 def test_tck_executes_declared_mutations_and_permutations_exactly() -> None:
     base = vector(
         vector_id="canonical-set-variants",

@@ -16,9 +16,18 @@ from pheroos.protocol.commit_models import (
     SUPPORTED_TERMINAL_OUTCOMES,
     WEIGHT_SCALE,
 )
+from pheroos.protocol.models import SUPPORTED_PROTOCOL_VERSIONS
 
 
 EXTENSION_KEY_PATTERN = r"^(x-|ext\.).+"
+PROTOCOL_SCHEMA_V1_ID = "https://pheroos.dev/schemas/protocol.schema.json"
+PROTOCOL_SCHEMA_V2_ID = "https://pheroos.dev/schemas/protocol-v2.schema.json"
+CAPABILITY_SCHEMA_V1_ID = "https://pheroos.dev/schemas/capability.schema.json"
+CAPABILITY_SCHEMA_V2_ID = "https://pheroos.dev/schemas/capability-v2.schema.json"
+PROTOCOL_SCHEMA_V1 = "pheroos-protocol-schema-v1"
+PROTOCOL_SCHEMA_V2 = "pheroos-protocol-schema-v2"
+CAPABILITY_SCHEMA_V1 = "pheroos-capability-schema-v1"
+CAPABILITY_SCHEMA_V2 = "pheroos-capability-schema-v2"
 SUPPORTED_PHEROMONE_KINDS = ("positive", "negative", "cautionary", "alarm", "novelty", "stale")
 SUPPORTED_LAYER_IDS = ("reactive", "learned", "evolutionary", "metacognitive")
 ADJUSTABLE_LAYER_IDS = ("learned", "evolutionary", "metacognitive")
@@ -451,6 +460,13 @@ def collective_commit_policy_schema() -> dict[str, Any]:
 
 
 def protocol_schema() -> dict[str, Any]:
+    """Return the byte-frozen legacy v1 schema document.
+
+    The original unversioned ``$id`` is a de-facto v1 compatibility surface.
+    Runtime readers still reject unsupported protocol versions; the stricter
+    standalone schema is published separately by :func:`protocol_schema_v2`.
+    """
+
     return object_schema(
         {
             "protocol_version": {"type": "string"},
@@ -598,11 +614,13 @@ def protocol_schema() -> dict[str, Any]:
         required=["protocol_version", "id", "targets", "candidates", "quorum_policy", "output_policy", "trace_policy"],
     ) | {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "$id": "https://pheroos.dev/schemas/protocol.schema.json",
+        "$id": PROTOCOL_SCHEMA_V1_ID,
     }
 
 
 def capability_schema() -> dict[str, Any]:
+    """Return the byte-frozen legacy v1 capability schema document."""
+
     return object_schema(
         {
             "id": {"type": "string"},
@@ -617,8 +635,29 @@ def capability_schema() -> dict[str, Any]:
         required=["id", "name", "version", "protocol"],
     ) | {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "$id": "https://pheroos.dev/schemas/capability.schema.json",
+        "$id": CAPABILITY_SCHEMA_V1_ID,
     }
+
+
+def protocol_schema_v2() -> dict[str, Any]:
+    """Return the versioned strict schema for supported protocol payloads."""
+
+    schema = protocol_schema()
+    schema["$id"] = PROTOCOL_SCHEMA_V2_ID
+    schema["properties"]["protocol_version"] = {
+        "type": "string",
+        "enum": sorted(SUPPORTED_PROTOCOL_VERSIONS),
+    }
+    return schema
+
+
+def capability_schema_v2() -> dict[str, Any]:
+    """Return the versioned strict capability schema document."""
+
+    schema = capability_schema()
+    schema["$id"] = CAPABILITY_SCHEMA_V2_ID
+    schema["properties"]["protocol"] = protocol_schema_v2()
+    return schema
 
 
 def driver_spec_schema() -> dict[str, Any]:

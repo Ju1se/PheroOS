@@ -1,0 +1,45 @@
+{
+  "$id": "https://pheroos.dev/schemas/commit-tck-response-v2.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "actual": {
+      "additionalProperties": false,
+      "properties": {
+        "certificate": {"type": ["object", "null"]},
+        "failure_code": {
+          "minLength": 1,
+          "type": ["string", "null"]
+        },
+        "metrics": {"type": "object"},
+        "outcome": {"type": ["object", "null"]},
+        "progress": {"type": ["object", "null"]},
+        "roots": {"type": "object"},
+        "trace_sequence": {
+          "items": {"minLength": 1, "type": "string"},
+          "type": "array"
+        }
+      },
+      "required": [
+        "certificate",
+        "failure_code",
+        "metrics",
+        "outcome",
+        "progress",
+        "roots",
+        "trace_sequence"
+      ],
+      "type": "object"
+    },
+    "implementation_id": {"minLength": 1, "type": "string"},
+    "request_id": {"minLength": 1, "type": "string"},
+    "response_version": {"const": "pheroos-commit-tck-response-v2"}
+  },
+  "required": [
+    "actual",
+    "implementation_id",
+    "request_id",
+    "response_version"
+  ],
+  "type": "object"
+}

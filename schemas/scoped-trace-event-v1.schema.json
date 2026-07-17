@@ -1,0 +1,77 @@
+{
+  "$id": "https://pheroos.dev/schemas/scoped-trace-event-v1.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "event": {
+      "additionalProperties": false,
+      "properties": {
+        "event_type": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "lineage": {
+          "type": "object"
+        },
+        "protocol_id": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "reason": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "target": {
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "event_type",
+        "protocol_id",
+        "target",
+        "reason",
+        "lineage"
+      ],
+      "type": "object"
+    },
+    "event_root": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "envelope_root": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "scope_ref": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "stream": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "trace_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "transition_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "version": {
+      "const": "pheroos-scoped-trace-event-v1"
+    }
+  },
+  "required": [
+    "version",
+    "scope_ref",
+    "stream",
+    "transition_id",
+    "trace_id",
+    "event",
+    "event_root",
+    "envelope_root"
+  ],
+  "type": "object"
+}

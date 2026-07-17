@@ -1,11 +1,15 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
-from copy import deepcopy
-from dataclasses import dataclass, field, is_dataclass
+from dataclasses import dataclass, field
 from enum import StrEnum
 from types import MappingProxyType
 from typing import Any
+
+from pheroos.protocol._immutable import (
+    deep_freeze as _deep_freeze,
+    snapshot_fields as _snapshot_fields,
+)
 
 
 COMMIT_POLICY_VERSION = "pheroos-collective-commit-policy-v1"
@@ -260,43 +264,6 @@ class CollectiveCommitPolicy:
             self,
             mappings=("risk_bands", "extensions"),
         )
-
-
-def _snapshot_fields(
-    value: object,
-    *,
-    sequences: tuple[str, ...] = (),
-    mappings: tuple[str, ...] = (),
-) -> None:
-    for name in sequences:
-        object.__setattr__(
-            value,
-            name,
-            tuple(_deep_freeze(item) for item in getattr(value, name)),
-        )
-    for name in mappings:
-        source = getattr(value, name)
-        object.__setattr__(
-            value,
-            name,
-            MappingProxyType(
-                {deepcopy(key): _deep_freeze(item) for key, item in source.items()}
-            ),
-        )
-
-
-def _deep_freeze(value: Any) -> Any:
-    if isinstance(value, Mapping):
-        return MappingProxyType(
-            {deepcopy(key): _deep_freeze(item) for key, item in value.items()}
-        )
-    if isinstance(value, (list, tuple)):
-        return tuple(_deep_freeze(item) for item in value)
-    if isinstance(value, (set, frozenset)):
-        return frozenset(_deep_freeze(item) for item in value)
-    if is_dataclass(value):
-        return value
-    return deepcopy(value)
 
 
 __all__ = [

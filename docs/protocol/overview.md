@@ -6,18 +6,13 @@ governed runtimes.
 The formal protocol-core specification is [SPEC.md](../../SPEC.md). Extension
 boundaries are described in [extension-points.md](extension-points.md).
 External runtime composition is described in
-[runtime-integration.md](runtime-integration.md). Pheromone core simplification
-and future adaptive runtime boundaries are described in
-[adaptive-pheromone-core-plan.md](adaptive-pheromone-core-plan.md). The complete
-audit-driven hardening and delivery plan is documented in
-[hybrid-pheromone-full-hardening-plan.md](hybrid-pheromone-full-hardening-plan.md).
-The implemented Draft Optimal Commit evolution that separates Hybrid attention
-and memory from commit authority is specified in
-[optimal-commit-abi.md](optimal-commit-abi.md). Its design record is documented in
-[commit-integrity-abi-plan.md](commit-integrity-abi-plan.md).
-The complete no-downgrade implementation, liveness, certificate, and
-distributed-finality hardening record is documented in
-[optimal-commit-full-hardening-plan.md](optimal-commit-full-hardening-plan.md).
+[runtime-integration.md](runtime-integration.md). The normative swarm-memory
+contract is [hybrid-pheromone-abi.md](hybrid-pheromone-abi.md). The implemented
+Draft Optimal Commit evolution that separates Hybrid attention and memory from
+commit authority is specified in [optimal-commit-abi.md](optimal-commit-abi.md).
+Migration rules live in the corresponding Hybrid and Optimal Commit migration
+documents. Completed execution plans remain as short link-compatible history
+stubs and are not active specifications.
 
 Protocol code is contract code. It declares what exists and validates whether a
 manifest is structurally compatible with the protocol.
@@ -79,5 +74,11 @@ Protocol ABI changes should follow
 
 Schema changes should keep checked-in artifacts under `schemas/` aligned with
 schema export behavior.
+
+The original Capability and Protocol schema IDs are frozen legacy v1 document
+contracts. Their strict v2 schema-document versions still validate payload
+`protocol_version=pheroos.protocol.v1`; schema-document selection and protocol
+meaning are separate version axes. See the
+[schema migration](../process/schema-v1-v2-migration.md).
 
 Baseline protocols must not be forced to opt into swarm-specific behavior.

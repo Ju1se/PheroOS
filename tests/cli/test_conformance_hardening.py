@@ -21,7 +21,7 @@ def test_source_conformance_cli_is_cwd_independent(tmp_path: Path) -> None:
     payload = json.loads(completed.stdout)
     assert completed.returncode == 0
     assert payload["ok"] is True
-    assert payload["profile"] == "pheroos-source-v1"
+    assert payload["profile"] == "pheroos-source-v2"
 
 
 def test_source_conformance_cli_missing_surface_is_structured_failure(tmp_path: Path) -> None:
@@ -36,7 +36,7 @@ def test_source_conformance_cli_missing_surface_is_structured_failure(tmp_path: 
     payload = json.loads(completed.stdout)
     assert completed.returncode == 1
     assert payload["ok"] is False
-    assert payload["profile"] == "pheroos-source-v1"
+    assert payload["profile"] == "pheroos-source-v2"
     assert "Traceback" not in completed.stderr
 
 

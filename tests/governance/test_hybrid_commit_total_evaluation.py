@@ -61,6 +61,7 @@ from pheroos.governance.hybrid_commit import (
     HybridCommitAttentionStatus,
     HybridCommitEvaluationRequest,
     HybridCommitEvaluationStatus,
+    evaluate_hybrid_commit_evaluation,
     evaluate_hybrid_commit_step,
     hybrid_commit_evaluation_is_authoritative,
     hybrid_commit_evaluation_payload,
@@ -296,7 +297,7 @@ def _manifest_payload(
         "name": "Hybrid Total Evaluation Reference",
         "version": "1.0.0",
         "protocol": {
-            "protocol_version": "1.0.0",
+            "protocol_version": "pheroos.protocol.v1",
             "id": "protocol:tck:optimal-commit",
             "targets": [{"id": "decision:optimal"}],
             "candidates": [
@@ -1046,6 +1047,18 @@ def _action_facts(
         trace_event_id=f"trace:{outcome.run_id}:permission:{suffix}",
     )
     return stop, permission
+
+
+def test_deprecated_total_entry_is_only_a_warning_alias() -> None:
+    request = object()
+
+    with pytest.warns(DeprecationWarning, match="evaluate_hybrid_commit_step"):
+        legacy = evaluate_hybrid_commit_evaluation(request)
+    canonical = evaluate_hybrid_commit_step(request=request)
+
+    assert hybrid_commit_evaluation_payload(legacy) == hybrid_commit_evaluation_payload(
+        canonical
+    )
 
 
 def test_total_entry_returns_authoritative_progress_without_assurance_downgrade() -> None:

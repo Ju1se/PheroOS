@@ -1,0 +1,1589 @@
+{
+  "tck_version": "pheroos-commit-integrity-tck-v2",
+  "adapter_protocol": "pheroos-commit-tck-jsonl-v2",
+  "manifest_templates": {
+    "commit-v1": {
+      "id": "commit-tck-v2-manifest",
+      "name": "Commit TCK v2 Manifest",
+      "version": "0.1.0",
+      "permissions": [],
+      "required_connections": [],
+      "drivers": [],
+      "protocol": {
+        "protocol_version": "pheroos.protocol.v1",
+        "id": "commit.tck.v2",
+        "targets": [
+          {
+            "id": "decision:collective",
+            "description": "A provider-free Optimal Commit TCK target."
+          }
+        ],
+        "signals": [
+          {
+            "type": "proposal",
+            "target": "decision:collective",
+            "authority_required": "governance"
+          }
+        ],
+        "candidates": [
+          {
+            "id": "candidate:alpha",
+            "target": "decision:collective",
+            "label": "Alpha"
+          },
+          {
+            "id": "candidate:beta",
+            "target": "decision:collective",
+            "label": "Beta"
+          },
+          {
+            "id": "candidate:safe_fallback",
+            "target": "decision:collective",
+            "label": "Safe Fallback",
+            "safe_fallback": true
+          }
+        ],
+        "quorum_policy": {
+          "target": "decision:collective",
+          "fallback_candidate": "candidate:safe_fallback",
+          "commit_threshold": 3
+        },
+        "collective_decision_policy": {
+          "mode": "quorum",
+          "pheromone_positive_weight": 1
+        },
+        "recovery_protocols": [
+          {
+            "id": "recovery:commit_tck",
+            "trigger_targets": [
+              "decision:collective"
+            ],
+            "allowed_roles": [
+              "reviewer"
+            ],
+            "allowed_tags": [
+              "commit",
+              "tck"
+            ],
+            "required_tools": [],
+            "failure_candidate": "candidate:safe_fallback"
+          }
+        ],
+        "evidence_policy": {
+          "require_provenance": true,
+          "allow_agent_fact_creation": false
+        },
+        "output_policy": {
+          "writer_may_create_facts": false,
+          "requires_committed_candidate": true,
+          "requires_evidence_contract": true,
+          "requires_stop_resolution": true,
+          "requires_publication_permission": true
+        },
+        "trace_policy": {
+          "required_events": [
+            "block",
+            "commit",
+            "recovery",
+            "output"
+          ]
+        },
+        "collective_commit_policy": {
+          "policy_version": "pheroos-collective-commit-policy-v1",
+          "model": "optimal_evidence_v1",
+          "assurance": "evidence_bound",
+          "target": "decision:collective",
+          "evidence_qualification": {
+            "numeric_scale": 1000000,
+            "minimum_quality_ppm": 500000,
+            "minimum_relevance_ppm": 500000,
+            "positive_group_cap": 1000000,
+            "counter_group_cap": 1000000,
+            "counter_weight_ppm": 1000000,
+            "minimum_positive_evidence": 2000000,
+            "maximum_counterevidence": 500000,
+            "maximum_counterevidence_ratio_ppm": 200000,
+            "domain_contribution_floor": 250000,
+            "minimum_source_diversity": 2,
+            "required_challenge_categories": [
+              "independent_replication"
+            ],
+            "observation_ttl_steps": 32,
+            "require_provenance": true,
+            "require_trace": true
+          },
+          "support_lease": {
+            "minimum_support_clusters": 2,
+            "support_ratio_ppm": 500000,
+            "lease_ttl_steps": 16,
+            "membership_mode": "verified_snapshot_v1",
+            "switch_mode": "revoke_then_issue_v1",
+            "equivocation_mode": "exclude_conflicts_v1",
+            "evidence_reference_required": true,
+            "cluster_verification_required": true
+          },
+          "risk_bands": {
+            "LOW": {
+              "minimum_positive_evidence": 2000000,
+              "maximum_counterevidence": 500000,
+              "maximum_counterevidence_ratio_ppm": 200000,
+              "minimum_support_clusters": 2,
+              "minimum_support_ratio_ppm": 500000,
+              "minimum_source_diversity": 2,
+              "minimum_margin": 250000,
+              "stability_steps": 2,
+              "required_challenge_categories": [
+                "independent_replication"
+              ],
+              "minimum_assurance": "evidence_bound",
+              "publishable_outcomes": [
+                "evidence_commit"
+              ],
+              "executable_outcomes": []
+            },
+            "MODERATE": {
+              "minimum_positive_evidence": 2500000,
+              "maximum_counterevidence": 400000,
+              "maximum_counterevidence_ratio_ppm": 150000,
+              "minimum_support_clusters": 2,
+              "minimum_support_ratio_ppm": 600000,
+              "minimum_source_diversity": 2,
+              "minimum_margin": 300000,
+              "stability_steps": 3,
+              "required_challenge_categories": [
+                "independent_replication"
+              ],
+              "minimum_assurance": "evidence_bound",
+              "publishable_outcomes": [
+                "evidence_commit"
+              ],
+              "executable_outcomes": []
+            },
+            "HIGH": {
+              "minimum_positive_evidence": 3000000,
+              "maximum_counterevidence": 300000,
+              "maximum_counterevidence_ratio_ppm": 100000,
+              "minimum_support_clusters": 3,
+              "minimum_support_ratio_ppm": 700000,
+              "minimum_source_diversity": 3,
+              "minimum_margin": 400000,
+              "stability_steps": 4,
+              "required_challenge_categories": [
+                "independent_replication",
+                "counter_search"
+              ],
+              "minimum_assurance": "certified",
+              "publishable_outcomes": [
+                "evidence_commit"
+              ],
+              "executable_outcomes": []
+            },
+            "CRITICAL": {
+              "minimum_positive_evidence": 4000000,
+              "maximum_counterevidence": 200000,
+              "maximum_counterevidence_ratio_ppm": 50000,
+              "minimum_support_clusters": 4,
+              "minimum_support_ratio_ppm": 800000,
+              "minimum_source_diversity": 4,
+              "minimum_margin": 500000,
+              "stability_steps": 5,
+              "required_challenge_categories": [
+                "independent_replication",
+                "counter_search",
+                "failure_domain_review"
+              ],
+              "minimum_assurance": "distributed",
+              "publishable_outcomes": [
+                "evidence_commit"
+              ],
+              "executable_outcomes": []
+            }
+          },
+          "commit_window": {
+            "minimum_stability_steps": 2,
+            "deliberation_deadline_steps": 12,
+            "maximum_leader_resets": 4,
+            "maximum_epoch_restarts": 1,
+            "run_deadline_steps": 24,
+            "reset_rules": [
+              "epoch_change",
+              "gate_failure",
+              "leader_change",
+              "membership_change",
+              "policy_change",
+              "risk_change",
+              "step_gap"
+            ]
+          },
+          "terminal_outcome": {
+            "safe_fallback_candidate": "candidate:safe_fallback",
+            "deadline_outcome": "safe_fallback",
+            "policy_incomplete_outcome": "invalid",
+            "finality_unavailable_outcome": "finality_unavailable",
+            "deliverable_outcomes": [
+              "evidence_commit",
+              "safe_fallback",
+              "advisory",
+              "blocked",
+              "invalid",
+              "finality_unavailable",
+              "safety_violation"
+            ],
+            "publishable_outcomes": [
+              "evidence_commit",
+              "safe_fallback"
+            ],
+            "executable_outcomes": []
+          },
+          "certificate": {
+            "mode": "local_receipt",
+            "wire_version": "pheroos-commit-wire-v1",
+            "canonicalization": "pheroos-commit-canonical-v1",
+            "hash_algorithm": "sha256",
+            "issuer_attestation_required": false,
+            "independent_verification_required": false
+          },
+          "distributed": null
+        }
+      }
+    }
+  },
+  "cases": [
+    {
+      "id": "fixed-point-multiply-floor",
+      "matrix_case": 1,
+      "title": "Fixed-point multiplication floors only after the full product",
+      "manifest_template": null,
+      "manifest_patches": [],
+      "profile": "pheroos-commit-integrity-v1",
+      "prior_authoritative_state": {},
+      "inputs": {
+        "operation": "fixed_point_multiply",
+        "left": 750001,
+        "right": 500001,
+        "scale": 1000000
+      },
+      "expected": {
+        "metrics": {
+          "value": 375001
+        },
+        "roots": {},
+        "progress": null,
+        "outcome": null,
+        "trace_sequence": [],
+        "certificate": null,
+        "failure_code": null
+      }
+    },
+    {
+      "id": "fixed-point-ratio-floor",
+      "matrix_case": 2,
+      "title": "Fixed-point ratio uses deterministic integer floor semantics",
+      "manifest_template": null,
+      "manifest_patches": [],
+      "profile": "pheroos-commit-integrity-v1",
+      "prior_authoritative_state": {},
+      "inputs": {
+        "operation": "fixed_point_ratio",
+        "numerator": 2,
+        "denominator": 3,
+        "scale": 1000000
+      },
+      "expected": {
+        "metrics": {
+          "value": 666666
+        },
+        "roots": {},
+        "progress": null,
+        "outcome": null,
+        "trace_sequence": [],
+        "certificate": null,
+        "failure_code": null
+      }
+    },
+    {
+      "id": "manifest-deadline-before-boundary",
+      "matrix_case": 3,
+      "title": "Manifest run deadline remains pending before its declared boundary",
+      "manifest_template": "commit-v1",
+      "manifest_patches": [],
+      "profile": "pheroos-commit-integrity-v1",
+      "prior_authoritative_state": {},
+      "inputs": {
+        "operation": "manifest_deadline_outcome",
+        "elapsed_steps": 23,
+        "invalid": false,
+        "safety_violation": false,
+        "blocked": false,
+        "evidence_commit_ready": false,
+        "finality_unavailable": false
+      },
+      "expected": {
+        "metrics": {},
+        "roots": {},
+        "progress": {
+          "elapsed_steps": 23,
+          "run_deadline_steps": 24,
+          "deadline_reached": false
+        },
+        "outcome": {
+          "kind": null
+        },
+        "trace_sequence": [],
+        "certificate": null,
+        "failure_code": null
+      }
+    },
+    {
+      "id": "manifest-deadline-at-boundary",
+      "matrix_case": 4,
+      "title": "Manifest safe fallback becomes terminal exactly at its run deadline",
+      "manifest_template": "commit-v1",
+      "manifest_patches": [],
+      "profile": "pheroos-commit-integrity-v1",
+      "prior_authoritative_state": {},
+      "inputs": {
+        "operation": "manifest_deadline_outcome",
+        "elapsed_steps": 24,
+        "invalid": false,
+        "safety_violation": false,
+        "blocked": false,
+        "evidence_commit_ready": false,
+        "finality_unavailable": false
+      },
+      "expected": {
+        "metrics": {},
+        "roots": {},
+        "progress": {
+          "elapsed_steps": 24,
+          "run_deadline_steps": 24,
+          "deadline_reached": true
+        },
+        "outcome": {
+          "kind": "safe_fallback"
+        },
+        "trace_sequence": [],
+        "certificate": null,
+        "failure_code": null
+      }
+    },
+    {
+      "id": "manifest-patched-run-deadline",
+      "matrix_case": 5,
+      "title": "A declared run deadline patch changes the same boundary decision",
+      "manifest_template": "commit-v1",
+      "manifest_patches": [
+        {
+          "path": [
+            "protocol",
+            "collective_commit_policy",
+            "commit_window",
+            "run_deadline_steps"
+          ],
+          "replacement": 25
+        }
+      ],
+      "profile": "pheroos-commit-integrity-v1",
+      "prior_authoritative_state": {},
+      "inputs": {
+        "operation": "manifest_deadline_outcome",
+        "elapsed_steps": 24,
+        "invalid": false,
+        "safety_violation": false,
+        "blocked": false,
+        "evidence_commit_ready": false,
+        "finality_unavailable": false
+      },
+      "expected": {
+        "metrics": {},
+        "roots": {},
+        "progress": {
+          "elapsed_steps": 24,
+          "run_deadline_steps": 25,
+          "deadline_reached": false
+        },
+        "outcome": {
+          "kind": null
+        },
+        "trace_sequence": [],
+        "certificate": null,
+        "failure_code": null
+      }
+    },
+    {
+      "id": "manifest-patched-deadline-outcome",
+      "matrix_case": 6,
+      "title": "A declared terminal policy patch changes the deadline outcome",
+      "manifest_template": "commit-v1",
+      "manifest_patches": [
+        {
+          "path": [
+            "protocol",
+            "collective_commit_policy",
+            "terminal_outcome",
+            "deadline_outcome"
+          ],
+          "replacement": "advisory"
+        }
+      ],
+      "profile": "pheroos-commit-integrity-v1",
+      "prior_authoritative_state": {},
+      "inputs": {
+        "operation": "manifest_deadline_outcome",
+        "elapsed_steps": 24,
+        "invalid": false,
+        "safety_violation": false,
+        "blocked": false,
+        "evidence_commit_ready": false,
+        "finality_unavailable": false
+      },
+      "expected": {
+        "metrics": {},
+        "roots": {},
+        "progress": {
+          "elapsed_steps": 24,
+          "run_deadline_steps": 24,
+          "deadline_reached": true
+        },
+        "outcome": {
+          "kind": "advisory"
+        },
+        "trace_sequence": [],
+        "certificate": null,
+        "failure_code": null
+      }
+    },
+    {
+      "id": "terminal-priority-invalid",
+      "matrix_case": 7,
+      "title": "Invalid dominates lower-priority terminal conditions",
+      "manifest_template": "commit-v1",
+      "manifest_patches": [],
+      "profile": "pheroos-commit-integrity-v1",
+      "prior_authoritative_state": {},
+      "inputs": {
+        "operation": "manifest_deadline_outcome",
+        "elapsed_steps": 24,
+        "invalid": true,
+        "safety_violation": true,
+        "blocked": true,
+        "evidence_commit_ready": true,
+        "finality_unavailable": true
+      },
+      "expected": {
+        "metrics": {},
+        "roots": {},
+        "progress": {
+          "elapsed_steps": 24,
+          "run_deadline_steps": 24,
+          "deadline_reached": true
+        },
+        "outcome": {
+          "kind": "invalid"
+        },
+        "trace_sequence": [],
+        "certificate": null,
+        "failure_code": null
+      }
+    },
+    {
+      "id": "manifest-threshold-ready",
+      "matrix_case": 8,
+      "title": "All declared LOW risk thresholds admit the observed evidence",
+      "manifest_template": "commit-v1",
+      "manifest_patches": [],
+      "profile": "pheroos-commit-integrity-v1",
+      "prior_authoritative_state": {},
+      "inputs": {
+        "operation": "manifest_threshold_assessment",
+        "risk_band": "LOW",
+        "positive_evidence": 2000000,
+        "counterevidence": 500000,
+        "counterevidence_ratio_ppm": 200000,
+        "support_clusters": 2,
+        "support_ratio_ppm": 500000,
+        "source_diversity": 2,
+        "leader_margin": 250000,
+        "challenge_categories": [
+          "independent_replication"
+        ]
+      },
+      "expected": {
+        "metrics": {
+          "minimum_positive_evidence": 2000000,
+          "maximum_counterevidence": 500000,
+          "maximum_counterevidence_ratio_ppm": 200000,
+          "minimum_support_clusters": 2,
+          "minimum_support_ratio_ppm": 500000,
+          "minimum_source_diversity": 2,
+          "minimum_margin": 250000
+        },
+        "roots": {},
+        "progress": null,
+        "outcome": {
+          "risk_band": "LOW",
+          "positive_evidence_satisfied": true,
+          "counterevidence_satisfied": true,
+          "counter_ratio_satisfied": true,
+          "support_clusters_satisfied": true,
+          "support_ratio_satisfied": true,
+          "source_diversity_satisfied": true,
+          "margin_satisfied": true,
+          "challenge_coverage_satisfied": true,
+          "ready": true
+        },
+        "trace_sequence": [],
+        "certificate": null,
+        "failure_code": null
+      }
+    },
+    {
+      "id": "manifest-threshold-positive-evidence-patched",
+      "matrix_case": 9,
+      "title": "A manifest evidence threshold patch denies the same observation",
+      "manifest_template": "commit-v1",
+      "manifest_patches": [
+        {
+          "path": [
+            "protocol",
+            "collective_commit_policy",
+            "risk_bands",
+            "LOW",
+            "minimum_positive_evidence"
+          ],
+          "replacement": 2000001
+        }
+      ],
+      "profile": "pheroos-commit-integrity-v1",
+      "prior_authoritative_state": {},
+      "inputs": {
+        "operation": "manifest_threshold_assessment",
+        "risk_band": "LOW",
+        "positive_evidence": 2000000,
+        "counterevidence": 500000,
+        "counterevidence_ratio_ppm": 200000,
+        "support_clusters": 2,
+        "support_ratio_ppm": 500000,
+        "source_diversity": 2,
+        "leader_margin": 250000,
+        "challenge_categories": [
+          "independent_replication"
+        ]
+      },
+      "expected": {
+        "metrics": {
+          "minimum_positive_evidence": 2000001,
+          "maximum_counterevidence": 500000,
+          "maximum_counterevidence_ratio_ppm": 200000,
+          "minimum_support_clusters": 2,
+          "minimum_support_ratio_ppm": 500000,
+          "minimum_source_diversity": 2,
+          "minimum_margin": 250000
+        },
+        "roots": {},
+        "progress": null,
+        "outcome": {
+          "risk_band": "LOW",
+          "positive_evidence_satisfied": false,
+          "counterevidence_satisfied": true,
+          "counter_ratio_satisfied": true,
+          "support_clusters_satisfied": true,
+          "support_ratio_satisfied": true,
+          "source_diversity_satisfied": true,
+          "margin_satisfied": true,
+          "challenge_coverage_satisfied": true,
+          "ready": false
+        },
+        "trace_sequence": [],
+        "certificate": null,
+        "failure_code": null
+      }
+    },
+    {
+      "id": "manifest-threshold-support-patched",
+      "matrix_case": 10,
+      "title": "A manifest support threshold patch denies the same observation",
+      "manifest_template": "commit-v1",
+      "manifest_patches": [
+        {
+          "path": [
+            "protocol",
+            "collective_commit_policy",
+            "support_lease",
+            "minimum_support_clusters"
+          ],
+          "replacement": 3
+        },
+        {
+          "path": [
+            "protocol",
+            "collective_commit_policy",
+            "risk_bands",
+            "LOW",
+            "minimum_support_clusters"
+          ],
+          "replacement": 3
+        },
+        {
+          "path": [
+            "protocol",
+            "collective_commit_policy",
+            "risk_bands",
+            "MODERATE",
+            "minimum_support_clusters"
+          ],
+          "replacement": 3
+        }
+      ],
+      "profile": "pheroos-commit-integrity-v1",
+      "prior_authoritative_state": {},
+      "inputs": {
+        "operation": "manifest_threshold_assessment",
+        "risk_band": "LOW",
+        "positive_evidence": 2000000,
+        "counterevidence": 500000,
+        "counterevidence_ratio_ppm": 200000,
+        "support_clusters": 2,
+        "support_ratio_ppm": 500000,
+        "source_diversity": 2,
+        "leader_margin": 250000,
+        "challenge_categories": [
+          "independent_replication"
+        ]
+      },
+      "expected": {
+        "metrics": {
+          "minimum_positive_evidence": 2000000,
+          "maximum_counterevidence": 500000,
+          "maximum_counterevidence_ratio_ppm": 200000,
+          "minimum_support_clusters": 3,
+          "minimum_support_ratio_ppm": 500000,
+          "minimum_source_diversity": 2,
+          "minimum_margin": 250000
+        },
+        "roots": {},
+        "progress": null,
+        "outcome": {
+          "risk_band": "LOW",
+          "positive_evidence_satisfied": true,
+          "counterevidence_satisfied": true,
+          "counter_ratio_satisfied": true,
+          "support_clusters_satisfied": false,
+          "support_ratio_satisfied": true,
+          "source_diversity_satisfied": true,
+          "margin_satisfied": true,
+          "challenge_coverage_satisfied": true,
+          "ready": false
+        },
+        "trace_sequence": [],
+        "certificate": null,
+        "failure_code": null
+      }
+    },
+    {
+      "id": "manifest-threshold-diversity-patched",
+      "matrix_case": 11,
+      "title": "A manifest diversity threshold patch denies the same observation",
+      "manifest_template": "commit-v1",
+      "manifest_patches": [
+        {
+          "path": [
+            "protocol",
+            "collective_commit_policy",
+            "evidence_qualification",
+            "minimum_source_diversity"
+          ],
+          "replacement": 3
+        },
+        {
+          "path": [
+            "protocol",
+            "collective_commit_policy",
+            "risk_bands",
+            "LOW",
+            "minimum_source_diversity"
+          ],
+          "replacement": 3
+        },
+        {
+          "path": [
+            "protocol",
+            "collective_commit_policy",
+            "risk_bands",
+            "MODERATE",
+            "minimum_source_diversity"
+          ],
+          "replacement": 3
+        }
+      ],
+      "profile": "pheroos-commit-integrity-v1",
+      "prior_authoritative_state": {},
+      "inputs": {
+        "operation": "manifest_threshold_assessment",
+        "risk_band": "LOW",
+        "positive_evidence": 2000000,
+        "counterevidence": 500000,
+        "counterevidence_ratio_ppm": 200000,
+        "support_clusters": 2,
+        "support_ratio_ppm": 500000,
+        "source_diversity": 2,
+        "leader_margin": 250000,
+        "challenge_categories": [
+          "independent_replication"
+        ]
+      },
+      "expected": {
+        "metrics": {
+          "minimum_positive_evidence": 2000000,
+          "maximum_counterevidence": 500000,
+          "maximum_counterevidence_ratio_ppm": 200000,
+          "minimum_support_clusters": 2,
+          "minimum_support_ratio_ppm": 500000,
+          "minimum_source_diversity": 3,
+          "minimum_margin": 250000
+        },
+        "roots": {},
+        "progress": null,
+        "outcome": {
+          "risk_band": "LOW",
+          "positive_evidence_satisfied": true,
+          "counterevidence_satisfied": true,
+          "counter_ratio_satisfied": true,
+          "support_clusters_satisfied": true,
+          "support_ratio_satisfied": true,
+          "source_diversity_satisfied": false,
+          "margin_satisfied": true,
+          "challenge_coverage_satisfied": true,
+          "ready": false
+        },
+        "trace_sequence": [],
+        "certificate": null,
+        "failure_code": null
+      }
+    },
+    {
+      "id": "manifest-threshold-margin-patched",
+      "matrix_case": 12,
+      "title": "A manifest margin threshold patch denies the same observation",
+      "manifest_template": "commit-v1",
+      "manifest_patches": [
+        {
+          "path": [
+            "protocol",
+            "collective_commit_policy",
+            "risk_bands",
+            "LOW",
+            "minimum_margin"
+          ],
+          "replacement": 300000
+        }
+      ],
+      "profile": "pheroos-commit-integrity-v1",
+      "prior_authoritative_state": {},
+      "inputs": {
+        "operation": "manifest_threshold_assessment",
+        "risk_band": "LOW",
+        "positive_evidence": 2000000,
+        "counterevidence": 500000,
+        "counterevidence_ratio_ppm": 200000,
+        "support_clusters": 2,
+        "support_ratio_ppm": 500000,
+        "source_diversity": 2,
+        "leader_margin": 250000,
+        "challenge_categories": [
+          "independent_replication"
+        ]
+      },
+      "expected": {
+        "metrics": {
+          "minimum_positive_evidence": 2000000,
+          "maximum_counterevidence": 500000,
+          "maximum_counterevidence_ratio_ppm": 200000,
+          "minimum_support_clusters": 2,
+          "minimum_support_ratio_ppm": 500000,
+          "minimum_source_diversity": 2,
+          "minimum_margin": 300000
+        },
+        "roots": {},
+        "progress": null,
+        "outcome": {
+          "risk_band": "LOW",
+          "positive_evidence_satisfied": true,
+          "counterevidence_satisfied": true,
+          "counter_ratio_satisfied": true,
+          "support_clusters_satisfied": true,
+          "support_ratio_satisfied": true,
+          "source_diversity_satisfied": true,
+          "margin_satisfied": false,
+          "challenge_coverage_satisfied": true,
+          "ready": false
+        },
+        "trace_sequence": [],
+        "certificate": null,
+        "failure_code": null
+      }
+    },
+    {
+      "id": "manifest-assurance-evidence-bound",
+      "matrix_case": 13,
+      "title": "Evidence-bound assurance declares local receipt proof",
+      "manifest_template": "commit-v1",
+      "manifest_patches": [],
+      "profile": "pheroos-commit-integrity-v1",
+      "prior_authoritative_state": {},
+      "inputs": {
+        "operation": "manifest_assurance_requirements"
+      },
+      "expected": {
+        "metrics": {
+          "proof_rank": 1,
+          "distributed_membership_size": 0
+        },
+        "roots": {},
+        "progress": null,
+        "outcome": {
+          "assurance": "evidence_bound",
+          "profile": "pheroos-commit-integrity-v1",
+          "certificate_mode": "local_receipt",
+          "issuer_attestation_required": false,
+          "independent_verification_required": false,
+          "distributed_finality_required": false
+        },
+        "trace_sequence": [],
+        "certificate": null,
+        "failure_code": null
+      }
+    },
+    {
+      "id": "manifest-assurance-advisory",
+      "matrix_case": 14,
+      "title": "Advisory assurance removes publication and certificate authority",
+      "manifest_template": "commit-v1",
+      "manifest_patches": [
+        {
+          "path": [
+            "protocol",
+            "collective_commit_policy",
+            "assurance"
+          ],
+          "replacement": "advisory"
+        },
+        {
+          "path": [
+            "protocol",
+            "collective_commit_policy",
+            "certificate",
+            "mode"
+          ],
+          "replacement": "none"
+        },
+        {
+          "path": [
+            "protocol",
+            "collective_commit_policy",
+            "terminal_outcome",
+            "publishable_outcomes"
+          ],
+          "replacement": []
+        },
+        {
+          "path": [
+            "protocol",
+            "collective_commit_policy",
+            "risk_bands",
+            "LOW",
+            "publishable_outcomes"
+          ],
+          "replacement": []
+        },
+        {
+          "path": [
+            "protocol",
+            "collective_commit_policy",
+            "risk_bands",
+            "MODERATE",
+            "publishable_outcomes"
+          ],
+          "replacement": []
+        },
+        {
+          "path": [
+            "protocol",
+            "collective_commit_policy",
+            "risk_bands",
+            "HIGH",
+            "publishable_outcomes"
+          ],
+          "replacement": []
+        },
+        {
+          "path": [
+            "protocol",
+            "collective_commit_policy",
+            "risk_bands",
+            "CRITICAL",
+            "publishable_outcomes"
+          ],
+          "replacement": []
+        }
+      ],
+      "profile": "pheroos-commit-integrity-v1",
+      "prior_authoritative_state": {},
+      "inputs": {
+        "operation": "manifest_assurance_requirements"
+      },
+      "expected": {
+        "metrics": {
+          "proof_rank": 0,
+          "distributed_membership_size": 0
+        },
+        "roots": {},
+        "progress": null,
+        "outcome": {
+          "assurance": "advisory",
+          "profile": "pheroos-commit-integrity-v1",
+          "certificate_mode": "none",
+          "issuer_attestation_required": false,
+          "independent_verification_required": false,
+          "distributed_finality_required": false
+        },
+        "trace_sequence": [],
+        "certificate": null,
+        "failure_code": null
+      }
+    },
+    {
+      "id": "manifest-assurance-certified",
+      "matrix_case": 15,
+      "title": "Certified assurance requires portable independently verified proof",
+      "manifest_template": "commit-v1",
+      "manifest_patches": [
+        {
+          "path": [
+            "protocol",
+            "collective_commit_policy",
+            "assurance"
+          ],
+          "replacement": "certified"
+        },
+        {
+          "path": [
+            "protocol",
+            "collective_commit_policy",
+            "certificate",
+            "mode"
+          ],
+          "replacement": "portable"
+        },
+        {
+          "path": [
+            "protocol",
+            "collective_commit_policy",
+            "certificate",
+            "issuer_attestation_required"
+          ],
+          "replacement": true
+        },
+        {
+          "path": [
+            "protocol",
+            "collective_commit_policy",
+            "certificate",
+            "independent_verification_required"
+          ],
+          "replacement": true
+        }
+      ],
+      "profile": "pheroos-certified-commit-v1",
+      "prior_authoritative_state": {},
+      "inputs": {
+        "operation": "manifest_assurance_requirements"
+      },
+      "expected": {
+        "metrics": {
+          "proof_rank": 2,
+          "distributed_membership_size": 0
+        },
+        "roots": {},
+        "progress": null,
+        "outcome": {
+          "assurance": "certified",
+          "profile": "pheroos-certified-commit-v1",
+          "certificate_mode": "portable",
+          "issuer_attestation_required": true,
+          "independent_verification_required": true,
+          "distributed_finality_required": false
+        },
+        "trace_sequence": [],
+        "certificate": null,
+        "failure_code": null
+      }
+    },
+    {
+      "id": "manifest-assurance-distributed",
+      "matrix_case": 16,
+      "title": "Distributed assurance declares Byzantine membership and finality proof",
+      "manifest_template": "commit-v1",
+      "manifest_patches": [
+        {
+          "path": [
+            "protocol",
+            "collective_commit_policy",
+            "assurance"
+          ],
+          "replacement": "distributed"
+        },
+        {
+          "path": [
+            "protocol",
+            "collective_commit_policy",
+            "certificate"
+          ],
+          "replacement": {
+            "mode": "distributed",
+            "wire_version": "pheroos-commit-wire-v1",
+            "canonicalization": "pheroos-commit-canonical-v1",
+            "hash_algorithm": "sha256",
+            "issuer_attestation_required": true,
+            "independent_verification_required": true
+          }
+        },
+        {
+          "path": [
+            "protocol",
+            "collective_commit_policy",
+            "distributed"
+          ],
+          "replacement": {
+            "fault_model": "byzantine_static_v1",
+            "membership_mode": "static_epoch_verified_clusters_v1",
+            "membership_size": 4,
+            "max_byzantine_faults": 1,
+            "witness_quorum": 3,
+            "witness_ttl_steps": 8,
+            "minimum_failure_domain_diversity": 2,
+            "epoch_transition_rule": "prior_quorum_certificate_v1",
+            "conflict_rule": "freeze_v1"
+          }
+        }
+      ],
+      "profile": "pheroos-distributed-commit-v1",
+      "prior_authoritative_state": {},
+      "inputs": {
+        "operation": "manifest_assurance_requirements"
+      },
+      "expected": {
+        "metrics": {
+          "proof_rank": 3,
+          "distributed_membership_size": 4
+        },
+        "roots": {},
+        "progress": null,
+        "outcome": {
+          "assurance": "distributed",
+          "profile": "pheroos-distributed-commit-v1",
+          "certificate_mode": "distributed",
+          "issuer_attestation_required": true,
+          "independent_verification_required": true,
+          "distributed_finality_required": true
+        },
+        "trace_sequence": [],
+        "certificate": null,
+        "failure_code": null
+      }
+    },
+    {
+      "id": "manifest-distributed-quorum-ready",
+      "matrix_case": 17,
+      "title": "A declared n=4 f=1 Byzantine quorum reaches distributed finality",
+      "manifest_template": "commit-v1",
+      "manifest_patches": [
+        {
+          "path": [
+            "protocol",
+            "collective_commit_policy",
+            "assurance"
+          ],
+          "replacement": "distributed"
+        },
+        {
+          "path": [
+            "protocol",
+            "collective_commit_policy",
+            "certificate"
+          ],
+          "replacement": {
+            "mode": "distributed",
+            "wire_version": "pheroos-commit-wire-v1",
+            "canonicalization": "pheroos-commit-canonical-v1",
+            "hash_algorithm": "sha256",
+            "issuer_attestation_required": true,
+            "independent_verification_required": true
+          }
+        },
+        {
+          "path": [
+            "protocol",
+            "collective_commit_policy",
+            "distributed"
+          ],
+          "replacement": {
+            "fault_model": "byzantine_static_v1",
+            "membership_mode": "static_epoch_verified_clusters_v1",
+            "membership_size": 4,
+            "max_byzantine_faults": 1,
+            "witness_quorum": 3,
+            "witness_ttl_steps": 8,
+            "minimum_failure_domain_diversity": 2,
+            "epoch_transition_rule": "prior_quorum_certificate_v1",
+            "conflict_rule": "freeze_v1"
+          }
+        }
+      ],
+      "profile": "pheroos-distributed-commit-v1",
+      "prior_authoritative_state": {},
+      "inputs": {
+        "operation": "manifest_distributed_quorum",
+        "observed_witnesses": 3,
+        "observed_failure_domains": 2
+      },
+      "expected": {
+        "metrics": {
+          "membership_size": 4,
+          "max_byzantine_faults": 1,
+          "witness_quorum": 3,
+          "required_membership_size": 4,
+          "maximum_safe_quorum": 3,
+          "intersection_margin": 1,
+          "observed_witnesses": 3,
+          "observed_failure_domains": 2
+        },
+        "roots": {},
+        "progress": null,
+        "outcome": {
+          "fault_model_valid": true,
+          "membership_sufficient": true,
+          "intersection_safe": true,
+          "quorum_reached": true,
+          "failure_domain_diverse": true,
+          "policy_valid": true,
+          "finality_ready": true,
+          "diagnostic_codes": []
+        },
+        "trace_sequence": [],
+        "certificate": null,
+        "failure_code": null
+      }
+    },
+    {
+      "id": "manifest-distributed-membership-scaled",
+      "matrix_case": 18,
+      "title": "Scaling membership to n=7 f=2 raises quorum and domain requirements",
+      "manifest_template": "commit-v1",
+      "manifest_patches": [
+        {
+          "path": [
+            "protocol",
+            "collective_commit_policy",
+            "assurance"
+          ],
+          "replacement": "distributed"
+        },
+        {
+          "path": [
+            "protocol",
+            "collective_commit_policy",
+            "certificate"
+          ],
+          "replacement": {
+            "mode": "distributed",
+            "wire_version": "pheroos-commit-wire-v1",
+            "canonicalization": "pheroos-commit-canonical-v1",
+            "hash_algorithm": "sha256",
+            "issuer_attestation_required": true,
+            "independent_verification_required": true
+          }
+        },
+        {
+          "path": [
+            "protocol",
+            "collective_commit_policy",
+            "distributed"
+          ],
+          "replacement": {
+            "fault_model": "byzantine_static_v1",
+            "membership_mode": "static_epoch_verified_clusters_v1",
+            "membership_size": 7,
+            "max_byzantine_faults": 2,
+            "witness_quorum": 5,
+            "witness_ttl_steps": 8,
+            "minimum_failure_domain_diversity": 3,
+            "epoch_transition_rule": "prior_quorum_certificate_v1",
+            "conflict_rule": "freeze_v1"
+          }
+        }
+      ],
+      "profile": "pheroos-distributed-commit-v1",
+      "prior_authoritative_state": {},
+      "inputs": {
+        "operation": "manifest_distributed_quorum",
+        "observed_witnesses": 3,
+        "observed_failure_domains": 2
+      },
+      "expected": {
+        "metrics": {
+          "membership_size": 7,
+          "max_byzantine_faults": 2,
+          "witness_quorum": 5,
+          "required_membership_size": 7,
+          "maximum_safe_quorum": 5,
+          "intersection_margin": 1,
+          "observed_witnesses": 3,
+          "observed_failure_domains": 2
+        },
+        "roots": {},
+        "progress": null,
+        "outcome": {
+          "fault_model_valid": true,
+          "membership_sufficient": true,
+          "intersection_safe": true,
+          "quorum_reached": false,
+          "failure_domain_diverse": false,
+          "policy_valid": true,
+          "finality_ready": false,
+          "diagnostic_codes": []
+        },
+        "trace_sequence": [],
+        "certificate": null,
+        "failure_code": null
+      }
+    },
+    {
+      "id": "manifest-distributed-fault-model-invalid",
+      "matrix_case": 19,
+      "title": "An undeclared crash-only fault model cannot authorize Byzantine finality",
+      "manifest_template": "commit-v1",
+      "manifest_patches": [
+        {
+          "path": [
+            "protocol",
+            "collective_commit_policy",
+            "assurance"
+          ],
+          "replacement": "distributed"
+        },
+        {
+          "path": [
+            "protocol",
+            "collective_commit_policy",
+            "certificate"
+          ],
+          "replacement": {
+            "mode": "distributed",
+            "wire_version": "pheroos-commit-wire-v1",
+            "canonicalization": "pheroos-commit-canonical-v1",
+            "hash_algorithm": "sha256",
+            "issuer_attestation_required": true,
+            "independent_verification_required": true
+          }
+        },
+        {
+          "path": [
+            "protocol",
+            "collective_commit_policy",
+            "distributed"
+          ],
+          "replacement": {
+            "fault_model": "crash_static_v1",
+            "membership_mode": "static_epoch_verified_clusters_v1",
+            "membership_size": 4,
+            "max_byzantine_faults": 1,
+            "witness_quorum": 3,
+            "witness_ttl_steps": 8,
+            "minimum_failure_domain_diversity": 2,
+            "epoch_transition_rule": "prior_quorum_certificate_v1",
+            "conflict_rule": "freeze_v1"
+          }
+        }
+      ],
+      "profile": "pheroos-distributed-commit-v1",
+      "prior_authoritative_state": {},
+      "inputs": {
+        "operation": "manifest_distributed_quorum",
+        "observed_witnesses": 3,
+        "observed_failure_domains": 2
+      },
+      "expected": {
+        "metrics": {
+          "membership_size": 4,
+          "max_byzantine_faults": 1,
+          "witness_quorum": 3,
+          "required_membership_size": 4,
+          "maximum_safe_quorum": 3,
+          "intersection_margin": 1,
+          "observed_witnesses": 3,
+          "observed_failure_domains": 2
+        },
+        "roots": {},
+        "progress": null,
+        "outcome": {
+          "fault_model_valid": false,
+          "membership_sufficient": true,
+          "intersection_safe": true,
+          "quorum_reached": true,
+          "failure_domain_diverse": true,
+          "policy_valid": false,
+          "finality_ready": false,
+          "diagnostic_codes": [
+            "commit_fault_model_invalid"
+          ]
+        },
+        "trace_sequence": [],
+        "certificate": null,
+        "failure_code": "commit_fault_model_invalid"
+      }
+    },
+    {
+      "id": "attention-truth-invariant-weight-one",
+      "matrix_case": 20,
+      "title": "Attention can favor beta while evidence truth commits alpha",
+      "manifest_template": "commit-v1",
+      "manifest_patches": [],
+      "profile": "pheroos-commit-integrity-v1",
+      "prior_authoritative_state": {},
+      "inputs": {
+        "operation": "attention_truth_invariance",
+        "candidate_evidence": {
+          "candidate:alpha": 2000000,
+          "candidate:beta": 1000000
+        },
+        "attention_candidate": "candidate:beta",
+        "attention_strength": 750000
+      },
+      "expected": {
+        "metrics": {
+          "leader_margin": 1000000,
+          "attention_score": 750000,
+          "positive_weight_ppm": 1000000
+        },
+        "roots": {
+          "commit_truth_root": "sha256:42c4fc95a413bf3c9d4d8440bd6fc2f4178243ff5014b9846c9bbeca568f2bac",
+          "attention_root": "sha256:d7f5bf90600e16cf85b4c870c346f72e929284efe3afc882435c9c1217fe94d6"
+        },
+        "progress": null,
+        "outcome": {
+          "commit_leader": "candidate:alpha",
+          "unique_leader": true,
+          "attention_top_candidate": "candidate:beta",
+          "attention_commit_authority": false,
+          "truth_invariant": true
+        },
+        "trace_sequence": [],
+        "certificate": null,
+        "failure_code": null
+      }
+    },
+    {
+      "id": "attention-truth-invariant-weight-two",
+      "matrix_case": 21,
+      "title": "An attention weight patch changes attention but not evidence truth",
+      "manifest_template": "commit-v1",
+      "manifest_patches": [
+        {
+          "path": [
+            "protocol",
+            "collective_decision_policy",
+            "pheromone_positive_weight"
+          ],
+          "replacement": 2
+        }
+      ],
+      "profile": "pheroos-commit-integrity-v1",
+      "prior_authoritative_state": {},
+      "inputs": {
+        "operation": "attention_truth_invariance",
+        "candidate_evidence": {
+          "candidate:alpha": 2000000,
+          "candidate:beta": 1000000
+        },
+        "attention_candidate": "candidate:beta",
+        "attention_strength": 750000
+      },
+      "expected": {
+        "metrics": {
+          "leader_margin": 1000000,
+          "attention_score": 1500000,
+          "positive_weight_ppm": 2000000
+        },
+        "roots": {
+          "commit_truth_root": "sha256:42c4fc95a413bf3c9d4d8440bd6fc2f4178243ff5014b9846c9bbeca568f2bac",
+          "attention_root": "sha256:be7f3e8d7c09e865d7e8883ab31fd63fc79e4674f1f99049330b029887fabdf6"
+        },
+        "progress": null,
+        "outcome": {
+          "commit_leader": "candidate:alpha",
+          "unique_leader": true,
+          "attention_top_candidate": "candidate:beta",
+          "attention_commit_authority": false,
+          "truth_invariant": true
+        },
+        "trace_sequence": [],
+        "certificate": null,
+        "failure_code": null
+      }
+    },
+    {
+      "id": "certificate-authority-leaf-binding",
+      "matrix_case": 22,
+      "title": "Every scalar authority leaf in a portable commit certificate is bound",
+      "manifest_template": null,
+      "manifest_patches": [],
+      "profile": "pheroos-certified-commit-v1",
+      "prior_authoritative_state": {},
+      "inputs": {
+        "operation": "certificate_leaf_binding",
+        "certificate_payload": {
+          "schema_discriminator": "evidence_commit_certificate",
+          "certificate_version": "pheroos-evidence-commit-certificate-v1",
+          "wire_version": "pheroos-commit-wire-v1",
+          "canonicalization": "pheroos-commit-canonical-v1",
+          "hash_algorithm": "sha256",
+          "certificate_id": "certificate:tck:commit-integrity-v1-case-25:base:manifest-427dd8a854a19aae:policy-546a1883fdb0a467:9727f334c5337e1e:case-25",
+          "profile": "pheroos-certified-commit-v1",
+          "assurance": "certified",
+          "authority_scope": "certified",
+          "manifest_root": "sha256:427dd8a854a19aaedaa7eda45e1d11bdd4f65364b92ca00bc65b537309a7638b",
+          "commit_policy_root": "sha256:546a1883fdb0a467fa713fc8593ecf2e7c5d11a1287a4aa4e0edfae3381c377e",
+          "protocol_id": "swarm.hybrid-commit",
+          "run_id": "run:tck:commit-integrity-v1-case-25:base:manifest-427dd8a854a19aae:policy-546a1883fdb0a467:9727f334c5337e1e",
+          "target": "decision:collective",
+          "epoch": 3,
+          "candidate_id": "candidate:alpha",
+          "claim_fingerprint": "sha256:6d2dbd648b97e48a33887e503c3859df86947ec6e146fb5b8639e7356d15857a",
+          "output_payload_fingerprint": "sha256:689d42f30189e96e2f0d87c36b9fb1f2b74b92784368cad2c00fdaba95fee3af",
+          "risk_chain_state_root": "sha256:67acb978c1998ae59de45591342160e92d8e9daba34802eec54610fe72429176",
+          "risk_assessment_root": "sha256:14b746234d7486265775267394a54bedc4281648149e37c0d04cf8d16f78d288",
+          "risk_policy_root": "sha256:c84511677319cac66b5117724b1398bd0af967e9fa3ab3d93b3fe10c18194932",
+          "membership_snapshot_root": "sha256:c44f1075a8c77515ee0c0965c41303eb1bfc6e6dce6d0249ec0eed19ef84bf18",
+          "membership_epoch_state_root": "sha256:2486ec897d9ce1b9518adda2acc400405ff1b6b0049be0d33b3f5284c883b688",
+          "membership_root": "sha256:9819ec0bba0b82fba1d6b7d026065125f59fde4aa2fd92ed8644b43dc4461ad4",
+          "threshold_root": "sha256:17bce2de522e6337c6fcaebb8f320edaf9a530232a4306323f734bfe0157820c",
+          "replay_state_root": "sha256:d0ea66c1527569691df74b8883caafcd6144816d87adb532bfc53401307803fc",
+          "replay_root": "sha256:4db644c91940b84d156289deb2044454c3fc7fb10a2ea786395e9cbd8578c686",
+          "support_replay_state_root": "sha256:c24598500280e4834bc22aee6526d89b8f1cc677bd68108b67170dbd7b6429fd",
+          "support_replay_root": "sha256:b8783bc33c5266dfa50b2884b475b5ea2a018146efa942fdb80c2479eafedc00",
+          "candidate_evidence_root": "sha256:f7694d9f8f6846afc5f98feb11a3c02f092eee838cc4ba02b80ba7a5823be86a",
+          "candidate_challenge_root": "sha256:1360a051e253371154574483d4b047889ac0ae8a6656311356203598109107fa",
+          "candidate_lease_root": "sha256:db80e83cb84a13436663d4457fe68fa0105141fbd8777965d4e821842fea90e4",
+          "evidence_root": "sha256:a21f8687a928eba83eab16cfa90740f8826eb6d2da9d94324060875c6168ce5f",
+          "challenge_root": "sha256:1a60696fb450734c09eccf0b4ff5855f3c8c242dd3204513f9b16da9bc138e0b",
+          "lease_root": "sha256:a826f532663c25bd0dd2436788e18fea7b5a130a76bbad54a46e54991a258c99",
+          "window_state_root": "sha256:cfc7cf2e94ea32eeade134437d4d0eb7ff0f98f97fb57a795a4e730059c8ad80",
+          "window_root": "sha256:3b32f571285ad3051362f7cf971cf2b7bc41e19bb57ceb63537f6b9725175fdf",
+          "stop_resolution_root": "sha256:b48e9c1e32b13e3ab9451d4db4e46d7df51043220455cb79d0c0b3ca8fc2faf4",
+          "permission_root": "sha256:ba9562983b105c3bd76cc64775ca3719292cbf53a4ff3c575c9095ee542ea2ec",
+          "context_root": "sha256:9a1010a0adb5c8d46fbef635729bb4a506c37eda60702c3d6b8de69d7c3f593a",
+          "assessment_root": "sha256:a1f7540c430e03fb83ce4da73eb026940529a8808558311deeebf249789acaa6",
+          "local_receipt_ref": "sha256:ae070957c4d4fa1f5ab268513ae0c56ceb9b1951c769f1064f7b528989075085",
+          "issuer_id": "governance:tck:portable-certificate",
+          "authority": 4,
+          "issued_at_step": 6,
+          "provenance": "urn:pheroos:tck:tck:commit-integrity-v1-case-25:base:manifest-427dd8a854a19aae:policy-546a1883fdb0a467:9727f334c5337e1e:certificate:case-25",
+          "trace_event_id": "trace:tck:commit-integrity-v1-case-25:base:manifest-427dd8a854a19aae:policy-546a1883fdb0a467:9727f334c5337e1e:certificate:case-25",
+          "issuer_attestation_refs": [
+            "attestation:portable:tck:commit-integrity-v1-case-25:base:manifest-427dd8a854a19aae:policy-546a1883fdb0a467:9727f334c5337e1e:case-25:backup",
+            "attestation:portable:tck:commit-integrity-v1-case-25:base:manifest-427dd8a854a19aae:policy-546a1883fdb0a467:9727f334c5337e1e:case-25:primary"
+          ],
+          "certificate_body_root": "sha256:7f7bf4f769b1a928286a4817abbe82ec498394eb3f2f0c35963b421b2ca04921",
+          "certificate_root": "sha256:335300c5339cc6d12866b8cc47f9988318c5695a54be0320408918bcbe125f2d"
+        },
+        "trusted_issuer_attestations": {
+          "attestation:portable:tck:commit-integrity-v1-case-25:base:manifest-427dd8a854a19aae:policy-546a1883fdb0a467:9727f334c5337e1e:case-25:backup": "sha256:7f7bf4f769b1a928286a4817abbe82ec498394eb3f2f0c35963b421b2ca04921",
+          "attestation:portable:tck:commit-integrity-v1-case-25:base:manifest-427dd8a854a19aae:policy-546a1883fdb0a467:9727f334c5337e1e:case-25:primary": "sha256:7f7bf4f769b1a928286a4817abbe82ec498394eb3f2f0c35963b421b2ca04921"
+        }
+      },
+      "expected": {
+        "metrics": {
+          "authority_leaf_count": 51,
+          "rejected_mutation_count": 51
+        },
+        "roots": {
+          "base_root": "sha256:44c0dbc05cf67d20b98543fd0d4bac665bda70c04591437ab0f857386e6a3bd4",
+          "mutation_set_root": "sha256:fd3d3aa83e534c8d6e402b1d80c6b2164a3ef20c70e5b6d2879321501c60b163"
+        },
+        "progress": null,
+        "outcome": {
+          "base_valid": true,
+          "all_authority_leaf_mutations_rejected": true,
+          "payload_kind": "evidence_commit_certificate"
+        },
+        "trace_sequence": [],
+        "certificate": {
+          "kind": "evidence_commit",
+          "verified": true
+        },
+        "failure_code": null
+      }
+    },
+    {
+      "id": "trace-authority-leaf-binding",
+      "matrix_case": 23,
+      "title": "Every scalar authority leaf in a commit trace event is bound",
+      "manifest_template": null,
+      "manifest_patches": [],
+      "profile": "pheroos-certified-commit-v1",
+      "prior_authoritative_state": {},
+      "inputs": {
+        "operation": "trace_leaf_binding",
+        "event_type": "risk_assessed",
+        "protocol_id": "swarm.hybrid-commit",
+        "target": "decision:collective",
+        "reason": "tck_risk_assessed",
+        "lineage": {
+          "payload_version": "pheroos-commit-trace-payload-v1",
+          "run_id": "run:tck:commit-integrity-v1-case-25:base:manifest-427dd8a854a19aae:policy-546a1883fdb0a467:9727f334c5337e1e",
+          "profile": "pheroos-certified-commit-v1",
+          "assurance": "certified",
+          "step": 2,
+          "epoch": 3,
+          "manifest_root": "sha256:427dd8a854a19aaedaa7eda45e1d11bdd4f65364b92ca00bc65b537309a7638b",
+          "commit_policy_root": "sha256:546a1883fdb0a467fa713fc8593ecf2e7c5d11a1287a4aa4e0edfae3381c377e",
+          "record_schema": "pheroos-tck-risk-observation-v1",
+          "record_payload": {
+            "risk_band": "LOW",
+            "threshold_ref": "sha256:17bce2de522e6337c6fcaebb8f320edaf9a530232a4306323f734bfe0157820c",
+            "risk_chain_revision": 1
+          },
+          "record_ref": "sha256:f09b891dd8c960191d6ed7b5929d196d21a36d2a941dd3d9fce3cf94bd4de316",
+          "previous_event_ids": [],
+          "risk_band": "LOW",
+          "risk_ref": "sha256:f09b891dd8c960191d6ed7b5929d196d21a36d2a941dd3d9fce3cf94bd4de316",
+          "threshold_ref": "sha256:17bce2de522e6337c6fcaebb8f320edaf9a530232a4306323f734bfe0157820c",
+          "risk_chain_revision": 1,
+          "event_id": "sha256:bed1c4218b36829c47d3b61b94e83b86376a42483749b5fcb55da0006d64d2bf"
+        }
+      },
+      "expected": {
+        "metrics": {
+          "authority_leaf_count": 18,
+          "rejected_mutation_count": 18
+        },
+        "roots": {
+          "base_root": "sha256:bed1c4218b36829c47d3b61b94e83b86376a42483749b5fcb55da0006d64d2bf",
+          "mutation_set_root": "sha256:6a7675e27fa08029692955dcf874848c7ed36608448e1f46d48486b89f19d671"
+        },
+        "progress": null,
+        "outcome": {
+          "base_valid": true,
+          "all_authority_leaf_mutations_rejected": true,
+          "payload_kind": "commit_trace_lineage"
+        },
+        "trace_sequence": [
+          "risk_assessed"
+        ],
+        "certificate": null,
+        "failure_code": null
+      }
+    }
+  ]
+}

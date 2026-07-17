@@ -4,7 +4,7 @@ from collections.abc import Mapping
 from dataclasses import dataclass, field
 from typing import Any
 
-from pheroos.kernel._immutable import freeze_abi_value
+from pheroos._immutable import freeze_abi_value
 
 
 @dataclass(frozen=True)

@@ -1,4 +1,21 @@
 from pheroos.protocol.loader import load_capability_manifest
+from pheroos.protocol.schema_document import (
+    ProtocolSchemaVersionError,
+    read_capability_manifest,
+    read_protocol_manifest,
+)
+from pheroos.protocol.schema import (
+    CAPABILITY_SCHEMA_V1,
+    CAPABILITY_SCHEMA_V1_ID,
+    CAPABILITY_SCHEMA_V2,
+    CAPABILITY_SCHEMA_V2_ID,
+    PROTOCOL_SCHEMA_V1,
+    PROTOCOL_SCHEMA_V1_ID,
+    PROTOCOL_SCHEMA_V2,
+    PROTOCOL_SCHEMA_V2_ID,
+    capability_schema_v2,
+    protocol_schema_v2,
+)
 from pheroos.protocol.commit_models import (
     COMMIT_CANONICAL_VERSION,
     COMMIT_AUTHORITY_SCOPE_BY_ASSURANCE,
@@ -69,6 +86,10 @@ from pheroos.protocol.models import (
 from pheroos.protocol.validation import validate_capability_manifest, validate_ok
 
 __all__ = [
+    "CAPABILITY_SCHEMA_V1",
+    "CAPABILITY_SCHEMA_V1_ID",
+    "CAPABILITY_SCHEMA_V2",
+    "CAPABILITY_SCHEMA_V2_ID",
     "COMMIT_CANONICAL_VERSION",
     "COMMIT_AUTHORITY_SCOPE_BY_ASSURANCE",
     "COMMIT_PROFILES_BY_ASSURANCE",
@@ -95,6 +116,11 @@ __all__ = [
     "MAX_AUTHORITY_INTEGER",
     "OutputPolicy",
     "PheromoneKindProfile",
+    "PROTOCOL_SCHEMA_V1",
+    "PROTOCOL_SCHEMA_V1_ID",
+    "PROTOCOL_SCHEMA_V2",
+    "PROTOCOL_SCHEMA_V2_ID",
+    "ProtocolSchemaVersionError",
     "ProtocolManifest",
     "QuorumPolicy",
     "REQUIRED_COMMIT_RESET_RULES",
@@ -118,6 +144,7 @@ __all__ = [
     "ValidationDiagnostic",
     "canonical_commit_payload",
     "canonical_commit_set",
+    "capability_schema_v2",
     "commit_manifest_authority_payload",
     "commit_manifest_fingerprint",
     "collective_fallback_id",
@@ -129,6 +156,9 @@ __all__ = [
     "is_scored_pheromone_subject_type",
     "is_swarm_policy",
     "load_capability_manifest",
+    "protocol_schema_v2",
+    "read_capability_manifest",
+    "read_protocol_manifest",
     "required_swarm_trace_events",
     "validate_capability_manifest",
     "validate_ok",

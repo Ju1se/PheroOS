@@ -76,6 +76,28 @@ They describe what a capability exposes, not how a provider is called.
 
 The adapter mapping contract is described in [runtime-adapter-guide.md](runtime-adapter-guide.md).
 
+The hardened Driver ABI normalizes declarations into one immutable
+`DriverDescriptor`; registration is idempotent only for the same canonical
+descriptor and rejects a conflicting reuse of `driver_id`. A provider-neutral
+probe reports availability, version, and capabilities before Kernel planning
+can mark a runtime context ready.
+
+For invocation, Kernel `DriverInvokeRequest`/`DriverInvokeReply` and Driver
+receipts bind `scope_ref`, invocation id, driver id, operation, required
+capability, idempotency key, canonical request digest, result status/payload,
+provenance, and digest echo. A result from another scope or request fails
+closed, and the same idempotency key cannot be reused with different bytes.
+These contracts validate an externally performed call; protocol-core still
+does not invoke a provider.
+
+## Management and Service Boundary
+
+“API” in protocol-core means Python ABI, checked JSON schemas, the local CLI,
+and the provider-neutral TCK JSONL protocol. The repository exposes no HTTP,
+REST, RPC, authentication, rate-limit, remote-routing, or service-discovery
+server. An external gateway may provide those facilities, but transport
+success never creates evidence, permission, commit, or output authority.
+
 ## Extensions
 
 Manifest extensions are metadata.
@@ -169,6 +191,45 @@ certificate or distributed-finality proof.
 
 The exact activation and call sequence is documented in
 [optimal-commit-v1-migration.md](optimal-commit-v1-migration.md).
+
+## Scoped Durable Authority
+
+Each external request should create
+`RuntimeScope(tenant_id, run_id, request_id)`. The required `request_id`
+identifies that request, while the canonical `scope_ref` is derived from the
+tenant/run pair and remains stable across the run. Carry `scope_ref` through
+Kernel plans, Driver requests/results, Governance authority domains, and scoped
+Trace envelopes. A result from a different scope is not reusable authority,
+even when its payload is otherwise byte-identical.
+
+Durable Governance integration uses the provider-neutral
+`GovernanceStateStore` protocol. The core supplies
+`InMemoryGovernanceStateStore` only as a deterministic reference and test
+adapter; production databases, transactions, replication, retention, and
+backup remain external runtime responsibilities.
+
+The authoritative publication sequence is:
+
+```text
+evaluate_hybrid_commit_step
+-> prepare_hybrid_commit_transition against the current scoped head
+-> GovernanceStateStore.atomic_commit(state + trace)
+-> verify the store-issued receipt and current head
+-> finalize_hybrid_commit_transition
+-> expose output only from AtomicHybridCommitStatus.COMMITTED
+```
+
+`evaluate_and_commit_hybrid_step(...)` composes that sequence for an explicit
+`AuthorityDomain` and store. A stale compare-and-swap head returns
+`retry_required`; injected persistence failure cannot advance state without
+Trace; a retired scope stays retired; checkpoint rehydration must reproduce
+the same heads, batches, receipts, and tombstones. Non-committed results redact
+the proposed evaluation, receipt, and output authority while remaining
+diagnostically deliverable when declared.
+
+This ABI is intentionally not a database manager or transaction server. An
+external store adapter implements the protocol and must pass the restart,
+scope-isolation, idempotency, CAS, atomicity, and retirement conformance matrix.
 
 ## Trace Extensions
 

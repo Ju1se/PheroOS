@@ -19,6 +19,8 @@ class RuntimeMaterializer:
         return RuntimeContext(
             tenant_id=plan.tenant_id,
             request_id=plan.request_id,
+            run_id=plan.run_id,
+            scope_ref=plan.scope_ref,
             permission_grants=[grant for grant in plan.permission_grants if grant.granted],
             driver_exposures=allowed_drivers,
             tool_exposures=allowed_tools,

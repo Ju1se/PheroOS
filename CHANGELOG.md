@@ -8,6 +8,64 @@ The project is currently pre-stable. Until the first stable ABI release, entries
 
 ### Added
 
+- Four explicit schema-document tracks with byte-frozen v1 `$id`/CLI aliases
+  and separate versioned v2 artifacts: `capability.schema.json`/`capability`
+  to `capability-v2.schema.json`, `protocol.schema.json`/`protocol` to
+  `protocol-v2.schema.json`, `driver.schema.json`/`driver` to
+  `driver-v2.schema.json`, and `kernel.schema.json`/`kernel` to
+  `kernel-v2.schema.json`. Unversioned aliases never move to v2 silently.
+- Strict Capability and Protocol v2 documents retain payload
+  `protocol_version=pheroos.protocol.v1`. Driver v2 uses the independent
+  `descriptor_version=pheroos-driver-descriptor-v2` discriminator rather than
+  `DriverDescriptor.version`; Kernel v2 independently requires
+  `plan_version=pheroos-kernel-plan-v2`.
+- Exact typed reader selection and non-lossy v1 migration: Driver upgrade
+  rejects non-migratable declarations, while Kernel v1 parses only to
+  `LegacyOSPlan` and requires caller-supplied scope, readiness, probe,
+  capability, and provider-version facts before v2 authority can exist.
+- One schema drift generator that verifies four frozen v1 SHA-256 roots and
+  four checked-in v2 artifacts without ever rewriting v1 compatibility files;
+  use `python scripts/generate_schema_artifacts.py --check` for the drift gate.
+- Cross-surface `RuntimeScope`/`scope_ref` binding for Kernel plans, Driver
+  invocation, Governance authority domains, scoped Trace, and conformance.
+- Driver ABI v2 descriptors, conflict-safe registration, readiness probes, and
+  invocation/result receipts bound to scope, operation, request digest,
+  invocation id, and idempotency key without descriptor field loss.
+- Provider-neutral `GovernanceStateStore` with CAS heads, immutable prepared
+  transitions, atomic state-plus-Trace batches, identity claims, receipts,
+  checkpoint rehydration, permanent retirement, and tombstones, plus a
+  deterministic in-memory reference adapter.
+- Atomic Hybrid Commit `prepare -> commit -> receipt verification -> finalize`
+  boundary. Failed or stale transitions cannot expose the proposed evaluation,
+  receipt, or durable output authority.
+- Versioned Conformance Report v2 with subject kind, implementation identity,
+  artifact digest, and stable check projection; manifest and source proof are
+  separate subjects.
+- Expected-free Commit TCK v2 request/response and JSONL adapter protocol, 23
+  declarative cases, an independent standard-library spec model, and negative
+  echo/constant/malformed/order/state/timeout harness tests. TCK v1 roots remain
+  frozen.
+- Checked-in Python public-shape and lifecycle artifacts covering six package
+  facades, signatures, dataclass/default/enum/constant/alias shapes,
+  compatibility modules, diagnostics, replacements, and removal versions.
+- Thin management CLI commands for `version`, `profile`, `schema`, typed
+  `wire validate`, TCK v1/v2, and ABI show/diff operations.
+- Static Trace event-contract registry and decomposed event/store/validation/
+  lineage modules with exactly one validator for every built-in event while
+  keeping namespaced non-authoritative extensions open.
+- Reference performance budgets for cold imports, manifest validation, TCK,
+  Trace append, scope retirement, and diffusion scaling, with hard ceilings
+  that baseline refresh cannot relax.
+- Reproducible CI/release gates spanning Python 3.12 through 3.14, critical
+  lint and incremental typing, ABI/schema/TCK/scope/atomicity checks, isolated
+  wheel and sdist consumers, exact CI-tool constraints, deterministic
+  CycloneDX/SPDX SBOMs, pinned Actions, and trusted-main provenance
+  attestations without requiring write tokens on fork pull requests.
+- Legacy pheromone migration APIs: explicit trail lineage normalization and a
+  single versioned per-kind runtime profile map.
+- Machine-readable D-01 through D-18 removal lifecycle and a human-readable
+  architecture removal ledger.
+
 - Optional, profile-selected Optimal Commit Draft ABI with fixed-point evidence
   qualification, counterevidence disposition, challenge coverage, verified
   principal clusters, eligible membership, evidence-bound support leases,
@@ -84,6 +142,24 @@ The project is currently pre-stable. Until the first stable ABI release, entries
 - Provider-free Hybrid Pheromone and adaptive-record replay examples.
 
 ### Changed
+
+- Unknown protocol and other critical ABI versions now fail closed instead of
+  falling through to current defaults.
+- Governance is a generated static lazy facade; importing a submodule no longer
+  eagerly imports the complete commit/swarm engine graph.
+- Legacy process authority registries are quarantined behind one private
+  compatibility adapter. New durable authority modules cannot import it.
+- Hybrid pheromone scalar/profile double writes now have one deterministic
+  rule: an explicit per-kind profile wins in full and legacy scalars synthesize
+  only missing built-in kinds.
+- `evaluate_hybrid_commit_step(request=...)` is the single total evaluator
+  entry. `evaluate_hybrid_commit_evaluation(...)` is a warning compatibility
+  alias over the same engine.
+- Package import conformance now rejects database, web-server, provider SDK,
+  queue/worker, and removed runtime framework roots from protocol-core.
+- Completed multi-thousand-line execution plans are retired to short historical
+  stubs after their normative content moved into maintained ABI, migration,
+  runtime, conformance, lifecycle, and release documents.
 
 - `collective_commit_policy`, when explicitly declared, now takes profile
   precedence over legacy swarm selection without changing manifests that omit
@@ -185,12 +261,29 @@ The project is currently pre-stable. Until the first stable ABI release, entries
 
 ### Removed
 
+- Duplicate Kernel/Driver immutable helpers, duplicate Protocol snapshot
+  helpers, scattered Governance primitive validators, the Trace store private
+  compatibility property, and the eager Governance facade implementation.
+- Scattered module-owned mutable authority dictionaries and registry locks;
+  remaining v1 compatibility state has one explicitly quarantined owner.
+
 - Historical goal, execution-plan, and migration-inventory Markdown documents from the public source tree.
 - The standalone protocol proposal stub after merging its requirements into `CONTRIBUTING.md`.
 - The standalone security overview after merging protocol security scope into `SECURITY.md`.
 - Unused protocol composition helper, unused protocol error shim, unused driver result re-export, and unused stop-signal manifest parser.
 
 ### Compatibility
+
+- Existing v1 manifest, schema, Trace, Commit Wire, profile-selection, example,
+  and TCK v1 roots remain compatibility artifacts. New semantics use new
+  version identifiers instead of changing published identifiers in place.
+- The legacy two-field `PheromoneTrail` constructor and scalar weight fields
+  remain Draft compatibility surfaces. New consumers should normalize explicit
+  lineage and consume the canonical per-kind profile map before their future
+  profile-version removal.
+- The frozen blended-score selector remains only in `_legacy/hybrid_v1.py` for
+  baseline profile compatibility and cannot issue certificate, store, Trace,
+  or output authority.
 
 - Optimal Commit is opt-in. Baseline toy/e2e, basic swarm, and Hybrid Pheromone
   v1 manifests keep their prior profile, result, and trace behavior when they
@@ -232,6 +325,19 @@ The project is currently pre-stable. Until the first stable ABI release, entries
   constructor.
 
 ### Migration Notes
+
+- Carry one `RuntimeScope` per tenant/run through Kernel, Driver, Governance,
+  and Trace. Reject rather than translate cross-scope results.
+- Production runtimes should implement `GovernanceStateStore` outside core and
+  finalize durable output only after verifying its atomic commit receipt.
+- Replace new calls to `evaluate_hybrid_commit_evaluation` with
+  `evaluate_hybrid_commit_step(request=...)`; the former is deprecated for the
+  0.3 removal window.
+- Normalize old pheromone trails with
+  `normalize_legacy_pheromone_trail(...)`; callers must supply target, source,
+  provenance, and trace identities because the migration helper invents none.
+- Use `pheroos tck run --version v2` for expected-free adapter proof and retain
+  v1 only as the frozen legacy regression generation.
 
 - Draft ABI consumers using the old `PheromoneTrail(candidate_id, strength)` shape can keep using that compatibility path.
 - New pheromone-aware consumers should prefer `subject_type` and `subject_id`.

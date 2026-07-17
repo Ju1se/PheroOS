@@ -1,10 +1,22 @@
 from __future__ import annotations
 
+from pathlib import Path
 from types import MappingProxyType
 
 import pheroos.governance as governance
 import pheroos.protocol as protocol
 import pheroos.trace as trace
+from pheroos.conformance.public_api_inventory import (
+    build_public_api_inventory,
+    load_public_api_inventory,
+    public_api_inventory_differences,
+)
+from pheroos.conformance.public_api_lifecycle import (
+    build_public_api_lifecycle,
+    load_public_api_lifecycle,
+    public_api_lifecycle_differences,
+    public_api_lifecycle_problems,
+)
 from pheroos.conformance.report import CheckResult
 from pheroos.drivers import DriverDescriptor, DriverRegistry
 from pheroos.governance.candidate import Candidate, CandidateSet
@@ -24,14 +36,62 @@ from pheroos.governance.policy_adjustment import PolicyAdjustmentProposal
 from pheroos.kernel import InputEnvelope
 
 
-def check() -> CheckResult:
+def check(root: str | Path | None = None) -> CheckResult:
     """Prove canonical public ownership and defensive snapshot boundaries."""
 
+    source_root = (
+        Path(root).resolve()
+        if root is not None
+        else Path(__file__).resolve().parents[3]
+    )
     problems: list[str] = []
     problems.extend(public_type_ownership_problems())
     problems.extend(registry_snapshot_problems())
     problems.extend(representative_snapshot_problems())
+    problems.extend(public_inventory_problems(source_root))
+    problems.extend(public_lifecycle_problems(source_root))
     return CheckResult("public_abi_boundary", not problems, ", ".join(problems))
+
+
+def public_inventory_problems(root: str | Path) -> list[str]:
+    try:
+        expected = load_public_api_inventory(root)
+    except FileNotFoundError:
+        return ["inventory:artifact_missing"]
+    except (OSError, ValueError) as exc:
+        return [f"inventory:artifact_invalid:{type(exc).__name__}"]
+    try:
+        observed = build_public_api_inventory()
+    except Exception as exc:  # total conformance boundary
+        return [f"inventory:inspection_failed:{type(exc).__name__}"]
+    return [
+        f"inventory:{path}"
+        for path in public_api_inventory_differences(expected, observed)
+    ]
+
+
+def public_lifecycle_problems(root: str | Path) -> list[str]:
+    try:
+        expected = load_public_api_lifecycle(root)
+    except FileNotFoundError:
+        return ["lifecycle:artifact_missing"]
+    except (OSError, ValueError) as exc:
+        return [f"lifecycle:artifact_invalid:{type(exc).__name__}"]
+    try:
+        structural = public_api_lifecycle_problems(expected)
+    except Exception as exc:  # total conformance boundary
+        return [f"lifecycle:inspection_failed:{type(exc).__name__}"]
+    problems = [f"lifecycle:{item}" for item in structural]
+    try:
+        observed = build_public_api_lifecycle(root)
+    except Exception as exc:  # total conformance boundary
+        problems.append(f"lifecycle:inspection_failed:{type(exc).__name__}")
+        return problems
+    problems.extend(
+        f"lifecycle:{path}"
+        for path in public_api_lifecycle_differences(expected, observed)
+    )
+    return problems
 
 
 def public_type_ownership_problems() -> list[str]:
@@ -208,7 +268,7 @@ def representative_snapshot_problems() -> list[str]:
     candidate_inputs.append(Candidate("candidate:forged", "decision:one"))
     evidence_inputs.clear()
     metadata["nested"]["values"].append("mutated")
-    trace_store._records[0].event.lineage["nested"]["values"].append("mutated")
+    trace_store.records[0].event.lineage["nested"]["values"].append("mutated")
 
     problems: list[str] = []
     if kind_profile.scored_subject_types != ("candidate",):

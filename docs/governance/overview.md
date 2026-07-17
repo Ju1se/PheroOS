@@ -7,14 +7,16 @@ and candidates; governance authority is required to verify and commit.
 
 ## Owned Surface
 
-- canonical targets
+- target-scoped candidate sets and decisions; target declarations remain owned
+  by `pheroos.protocol.TargetSpec`
 - signals
 - authority levels
 - evidence graph
 - stop signals
 - candidate sets
 - quorum decisions
-- recovery traces
+- recovery decisions and canonical `TraceEvent(event_type="recovery")`
+  lineage; `RecoveryTrace` is compatibility-only
 - output contracts
 - governance lineage and a type-identical `TraceEvent` compatibility export
 - deterministic collective decision steps
@@ -27,6 +29,8 @@ and candidates; governance authority is required to verify and commit.
 - Optimal Commit metrics, stable windows, bounded liveness, and outcomes
 - local, portable, and distributed commit certificates
 - action-scoped delivery, publication, and execution decisions
+- scoped authority domains, CAS heads, atomic state-plus-Trace batches,
+  receipts, rehydration, retirement, and tombstones
 
 ## Invariants
 
@@ -50,6 +54,9 @@ and candidates; governance authority is required to verify and commit.
   execution require separate current action authority.
 - Distributed finality enforces the declared Byzantine intersection rule;
   conflicting final certificates freeze the epoch.
+- New durable authority paths never depend on module-global mutable registries.
+  A prepared transition has no durable output authority until its exact state
+  and Trace batch receives a verified store receipt.
 
 ## Optimal Commit
 
@@ -59,6 +66,13 @@ permission, replay, and prior-window heads are exact inputs to
 `assess_optimal_commit(...)`. `evaluate_hybrid_commit_step(request=...)` then
 advances bounded liveness, verifies the declared finality level, decides output
 actions, and emits a reconstructable trace.
+
+External runtimes that need durable authority supply a
+`GovernanceStateStore`, prepare against the current scoped head, atomically
+commit state and Trace, and finalize only after receipt verification.
+`InMemoryGovernanceStateStore` is a deterministic reference adapter, not a
+database. Frozen v1 process-local issuers are quarantined under `_legacy` and
+must not gain new semantics.
 
 The complete Draft semantics are documented in
 [the Optimal Commit ABI](../protocol/optimal-commit-abi.md).
@@ -73,10 +87,27 @@ bounded contribution, source diversity, and deterministic scoring.
 
 These concepts are protocol semantics, not a swarm runtime.
 
+## Internal Composition
+
+The public Governance modules are cohesive facades over one-way private
+engines. Commit state, support, certificates, distributed finality, Hybrid
+evaluation, swarm orchestration, and pheromone lifecycle each have one
+implementation owner. Facades preserve public identity and signatures; private
+engines do not import the aggregate facade, form cycles, dynamically register
+services, or share hidden mutable authority.
+
+Commit Wire and Trace validation use immutable static contract registries.
+Adding an authoritative built-in branch requires an ABI/schema, validator,
+trace, conformance, and lifecycle change; a namespaced extension remains
+non-authoritative by default.
+
 ## Boundary
 
-Governance must not call model providers, tools, servers, databases, queues, or
-external runtimes.
+Governance must not call model providers, tools, servers, queues, or external
+runtimes. It contains no database implementation, SDK, connection, migration,
+or replication machinery. Durable paths may call only the provider-neutral
+`GovernanceStateStore` interface explicitly supplied by an outer runtime; the
+adapter and its database operations stay outside protocol-core.
 
 `pheroos.trace.TraceEvent` remains the sole canonical Trace ABI type.
 Governance may emit and re-export that type, but it does not own a second trace

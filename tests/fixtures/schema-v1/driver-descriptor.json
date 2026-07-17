@@ -1,0 +1,12 @@
+{
+  "capabilities": [
+    "tool:invoke",
+    "tool:invoke"
+  ],
+  "id": "driver:legacy",
+  "kind": "tool",
+  "permissions": [
+    ""
+  ],
+  "version": "0.1.0"
+}
