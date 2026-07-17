@@ -115,7 +115,10 @@ tests/             Provider-free deterministic tests.
 以上 package facade 是对外高聚合入口。内部实现按 commit state、support、certificate、
 distributed finality、Hybrid evaluation、swarm 和 pheromone lifecycle 拆成单向依赖的
 private engine。Private module path 不是 ABI；facade 保持 canonical object identity，
-并委托给唯一实现 owner，不使用动态 service registry。
+并委托给唯一实现 owner，不使用动态 service registry。Governance 与 Conformance 使用
+静态、线程安全的 lazy facade；Commit TCK 的 artifact 路径不会加载可选 reference
+adapter 或 Governance engine。全部 facade 导出与兼容模块仍由已检入的 API lifecycle
+artifact 管理。
 
 内置 Commit Wire 与 Trace dispatch 由 immutable static contract registry 驱动，schema
 生成与 validation 共享同一规则所有者。Namespaced extension 仍可作为非权威 metadata

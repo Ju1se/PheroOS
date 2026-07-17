@@ -164,6 +164,15 @@ _COMPATIBILITY_OVERRIDES: dict[tuple[str, str], dict[str, Any]] = {
 }
 
 
+# Only package facades with an explicit static compatibility map participate
+# here.  The order is stable so adding Conformance does not reorder the
+# existing Governance lifecycle records.
+_COMPATIBILITY_PACKAGES = (
+    "pheroos.governance",
+    "pheroos.conformance",
+)
+
+
 _VERIFICATION_PREFIXES = (
     "can_",
     "check_",
@@ -412,26 +421,28 @@ def _infer_group(name: str, kind: str) -> str:
 
 
 def _compatibility_surfaces() -> list[dict[str, Any]]:
-    governance = import_module("pheroos.governance")
-    mapping = governance.__dict__.get("_COMPATIBILITY_MODULES", {})
     surfaces: list[dict[str, Any]] = []
-    for name, target in sorted(mapping.items()):
-        entry: dict[str, Any] = {
-            "group": "compatibility",
-            "name": name,
-            "package": "pheroos.governance",
-            "remove_after": None,
-            "replacement": target,
-            "retained_with_reason": (
-                "Lazy module attribute retained for package-level import compatibility"
-            ),
-            "since": PROJECT_API_VERSION,
-            "stability": "draft",
-        }
-        entry.update(
-            _COMPATIBILITY_OVERRIDES.get(("pheroos.governance", name), {})
-        )
-        surfaces.append(entry)
+    for package_name in _COMPATIBILITY_PACKAGES:
+        package = import_module(package_name)
+        mapping = package.__dict__.get("_COMPATIBILITY_MODULES", {})
+        for name, target in sorted(mapping.items()):
+            entry: dict[str, Any] = {
+                "group": "compatibility",
+                "name": name,
+                "package": package_name,
+                "remove_after": None,
+                "replacement": target,
+                "retained_with_reason": (
+                    "Lazy module attribute retained for package-level import "
+                    "compatibility"
+                ),
+                "since": PROJECT_API_VERSION,
+                "stability": "draft",
+            }
+            entry.update(
+                _COMPATIBILITY_OVERRIDES.get((package_name, name), {})
+            )
+            surfaces.append(entry)
     return surfaces
 
 
@@ -531,22 +542,35 @@ def _entry_problems(
 def _compatibility_surface_problems(value: object) -> list[str]:
     if not isinstance(value, list):
         return ["compatibility_surfaces"]
-    governance = import_module("pheroos.governance")
-    declared = governance.__dict__.get("_COMPATIBILITY_MODULES", {})
+    declared: dict[tuple[str, str], str] = {}
+    for package_name in _COMPATIBILITY_PACKAGES:
+        package = import_module(package_name)
+        mapping = package.__dict__.get("_COMPATIBILITY_MODULES", {})
+        for name, target in mapping.items():
+            declared[(package_name, name)] = target
     entries = [item for item in value if isinstance(item, dict)]
     if len(entries) != len(value):
         return ["compatibility_surfaces:entry_invalid"]
-    names = [item.get("name") for item in entries]
+    identities = [
+        (item.get("package"), item.get("name")) for item in entries
+    ]
     problems: list[str] = []
-    if len(names) != len(set(names)):
+    if len(identities) != len(set(identities)):
         problems.append("compatibility_surfaces:duplicate")
-    for missing in sorted(set(declared) - set(names)):
-        problems.append(f"compatibility_surfaces:missing:{missing}")
-    for orphan in sorted(set(names) - set(declared)):
-        problems.append(f"compatibility_surfaces:orphan:{orphan}")
+    for package_name, name in sorted(set(declared) - set(identities)):
+        problems.append(
+            f"compatibility_surfaces:missing:{package_name}:{name}"
+        )
+    for package_name, name in sorted(set(identities) - set(declared)):
+        problems.append(
+            f"compatibility_surfaces:orphan:{package_name}:{name}"
+        )
     for entry in entries:
+        package_name = entry.get("package")
+        if package_name not in _COMPATIBILITY_PACKAGES:
+            continue
         problems.extend(
-            _entry_problems(entry, expected_package="pheroos.governance")
+            _entry_problems(entry, expected_package=package_name)
         )
     return problems
 

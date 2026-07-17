@@ -122,7 +122,10 @@ implementations are split into one-way private engines for commit state,
 support, certificates, distributed finality, Hybrid evaluation, swarm, and
 pheromone lifecycle. Private module paths are not ABI; the facades preserve
 canonical object identity and delegate to one implementation owner without a
-dynamic service registry.
+dynamic service registry. Governance and Conformance use static, thread-safe
+lazy facades, and the Commit TCK artifact path does not load the optional
+reference adapter or Governance engine. All facade exports and compatibility
+modules remain covered by the checked API lifecycle artifact.
 
 Built-in Commit Wire and Trace dispatch comes from immutable static contract
 registries shared by schema generation and validation. Namespaced extensions

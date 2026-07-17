@@ -358,6 +358,7 @@ jobs:
           tests/governance/test_private_import_graph.py
           tests/governance/test_swarm_domain_structure.py
           tests/governance/test_lazy_facade.py
+          tests/conformance/test_lazy_facade.py
           tests/trace/test_static_contracts.py
       - name: Enforce governance cold-import budget
         run: python scripts/benchmark_governance_import.py --samples 5 --check

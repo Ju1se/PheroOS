@@ -161,9 +161,11 @@ def test_commit_tck_facade_is_thin_and_contains_no_reference_semantics() -> None
     tree = ast.parse(source, filename=str(path))
 
     assert len(source.splitlines()) < 100
-    assert not any(
-        isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef))
+    definitions = {
+        node.name
         for node in tree.body
-    )
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef))
+    }
+    assert definitions <= {"__getattr__", "__dir__"}
     assert "pheroos.governance" not in source
     assert "_MATRIX_PROBES" not in source

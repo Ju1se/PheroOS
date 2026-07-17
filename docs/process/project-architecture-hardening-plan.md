@@ -31,7 +31,7 @@ provider-free examples、tests、CI、供应链和项目文档。
 | 目标 | 完成结果 |
 | --- | --- |
 | 对内低耦合 | package/private import graph 以静态 Tarjan SCC gate 保持为 DAG；records、invariants、schema、evaluation、store 和 facade 分层 |
-| 对外高聚合 | 外部 runtime 继续使用六个 package facade、版本化 schema、CLI、TCK 和 conformance；Governance 527 个兼容导出改为 lazy facade |
+| 对外高聚合 | 外部 runtime 继续使用六个 package facade、版本化 schema、CLI、TCK 和 conformance；Governance 527 个兼容导出与 Conformance 33 个导出均由静态 lazy facade 保持身份 |
 | 高可扩展性 | Driver、StateStore、TraceStore、TCK adapter 和非权威 extension 都有显式、provider-neutral contract；改变 commit truth 的扩展必须版本化 |
 | 结构整洁 | 巨型 Governance/Trace/TCK 聚合模块拆为单一职责私有域；旧全局权威隔离；D-01 至 D-18 全部有明确处置 |
 
@@ -127,8 +127,10 @@ aggregate-facade back-import 或隐藏 mutable registry 会在 CI 失败。
 - `pheroos.trace`
 - `pheroos.conformance`
 
-Governance facade 保留 527 个既有导出身份，但使用静态 lazy mapping；冷导入只加载少量模块。
-公共 API inventory 和 lifecycle artifact 固定 owner、shape、alias 与退役信息，避免内部拆分泄漏给使用者。
+Governance facade 保留 527 个既有导出身份，Conformance facade 保留 33 个既有导出身份；
+两者都使用静态、线程安全的 lazy mapping。Commit TCK artifact 路径还会延迟可选 reference
+adapter，避免为了资源校验加载 Governance engine。公共 API inventory 和 lifecycle artifact
+固定 owner、shape、alias、兼容模块与退役信息，避免内部拆分泄漏给使用者。
 
 ## 4. 数据库管理与 API 管理结论
 
@@ -192,7 +194,7 @@ server ownership 反向带入 PheroOS core。
 | WP-E Atomic transition/Trace/output | 完成 | atomic batch/receipt 与 Hybrid prepare/commit/verify/finalize；失败不能留下半状态或伪造 output |
 | WP-F Schema/Trace static contract | 完成 | 四个 frozen v1 roots、四个 strict v2 artifacts、Trace contract 拆分与生成物 drift gate |
 | WP-G Governance engine 解耦 | 完成 | risk、commit、state、support、pheromone、swarm、hybrid、distributed、certificate、schema 私有域与 DAG gate |
-| WP-H Public facade/API lifecycle | 完成 | 527-export lazy facade、六 facade inventory、shape/owner/alias/lifecycle artifacts 与 cold-import budget |
+| WP-H Public facade/API lifecycle | 完成 | Governance 527-export 与 Conformance 33-export lazy facade、六 facade inventory、shape/owner/alias/compatibility lifecycle artifacts 与 cold-import budget |
 | WP-I TCK v2/独立证明 | 完成 | expected-free JSON/JSONL protocol、独立 stdlib oracle、adversarial adapters、manifest mutation proof |
 | WP-J Legacy canonicalization/删除 | 完成 | legacy authority 隔离、canonical owner/codec、D-01 至 D-18 removal ledger、完成计划文档收口 |
 | WP-K 性能/CI/发布/供应链 | 完成 | Python 3-version matrix、lint/type、性能、wheel/sdist external-CWD、reproducibility、SBOM 和 provenance gates |
@@ -287,7 +289,7 @@ Commit 检查只在 manifest 显式声明时启用。
 
 ### 8.1 功能与结构
 
-- 全量本地 suite：`1343 passed`（包含生成发行物后的供应链绑定检查）。
+- 全量本地 suite：`1365 passed`（包含 lazy facade、跨进程 pickle、兼容生命周期与生成发行物后的供应链绑定检查）。
 - Source conformance v3：9/9 通过，包含可复用的 StateStore/TraceStore adapter 矩阵。
 - Toy、E2E、Swarm、Hybrid Pheromone、Hybrid Commit 和 Distributed examples 全部通过。
 - TCK v1 38 cases 与 TCK v2 reference/independent/adversarial matrix 全部通过。
@@ -302,7 +304,7 @@ Commit 检查只在 manifest 显式声明时启用。
 ### 8.2 性能与生命周期
 
 - Governance cold import median 约 3 ms，低于 120 ms hard budget；只加载少量实现模块。
-- manifest reference check 约 1 ms；TCK v1 约 1.66 s；TCK v2 约 0.04 s。
+- manifest reference check 约 1 ms；完整 92-evaluation TCK v1 约 1.42 s；TCK v2 约 0.04 s。
 - append 10k Trace 约 0.10 s；retire 10k scopes 约 0.13 s。
 - diffusion double-size ratio 约 1.99，未出现非预期超线性退化。
 - Hybrid/Distributed conformance 均低于冻结 hard ceiling；性能基线不能通过提高 ceiling 静默放宽。
@@ -333,7 +335,7 @@ Commit 检查只在 manifest 显式声明时启用。
 | DoD 要求 | 当前权威证据 |
 | --- | --- |
 | Package/private graph 无未批准 SCC | `tests/conformance/test_package_import_graph.py`、`tests/governance/test_private_import_graph.py`、`tests/trace/test_static_contracts.py` |
-| Facade 不拥有算法且保持 lazy/identity | `tests/governance/test_lifecycle_module_decomposition.py`、`tests/governance/test_lazy_facade.py`、public API artifacts |
+| Facade 不拥有算法且保持 lazy/identity | Governance 与 Conformance 的 lazy/decomposition tests、`tests/conformance/test_lazy_facade.py`、public API artifacts |
 | tenant/run scope 端到端隔离 | `tests/kernel/test_runtime_scope.py`、`tests/drivers/test_driver_invocation.py`、`tests/conformance/test_runtime_scope_contract.py`、`tests/trace/test_scoped_trace.py` |
 | 无新 module-global authority | `tests/governance/test_legacy_authority_isolation.py` 与 static graph/registry scans |
 | restart/rehydrate/CAS/retire/tombstone | `tests/governance/test_authority_ledger.py`、`tests/conformance/test_authority_ledger_contract.py`；同一矩阵由外部 adapter fixture 实际调用 |

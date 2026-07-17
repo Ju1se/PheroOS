@@ -207,6 +207,12 @@ but never the base expected result or mutation/permutation expectations. Exact
 expected values remain harness-owned and are compared only after the adapter
 returns.
 
+The public Conformance facade resolves exports lazily through a static mapping.
+Artifact-only Commit TCK checks likewise defer the optional reference adapter,
+so external-CWD resource proof does not import the Governance engine. This is
+an import-boundary optimization only: all 38 vectors, seven mutations, one
+permutation, repeat checks, and 92 adapter evaluations remain mandatory.
+
 ### Commit TCK v2 adapter protocol
 
 The public, provider-neutral request and response contracts are checked in as

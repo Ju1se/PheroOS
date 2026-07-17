@@ -4,6 +4,9 @@ from copy import deepcopy
 from importlib import import_module
 from pathlib import Path
 
+from pheroos.conformance._public_api import (
+    COMPATIBILITY_MODULES as CONFORMANCE_COMPATIBILITY_MODULES,
+)
 from pheroos.conformance.public_api_lifecycle import (
     DEFAULT_REMOVE_AFTER,
     PUBLIC_API_GROUPS,
@@ -97,11 +100,72 @@ def test_removal_ledger_marks_d07_through_d14_without_deprecating_valid_entrypoi
     ]
 
     compatibility = {
-        item["name"]: item for item in lifecycle["compatibility_surfaces"]
+        (item["package"], item["name"]): item
+        for item in lifecycle["compatibility_surfaces"]
     }
-    assert compatibility["trace"]["stability"] == "deprecated"
-    assert compatibility["trace"]["replacement"] == "pheroos.trace"
-    assert compatibility["trace"]["remove_after"] == DEFAULT_REMOVE_AFTER
+    trace = compatibility[("pheroos.governance", "trace")]
+    assert trace["stability"] == "deprecated"
+    assert trace["replacement"] == "pheroos.trace"
+    assert trace["remove_after"] == DEFAULT_REMOVE_AFTER
+
+    conformance_compatibility = {
+        name: item
+        for (package, name), item in compatibility.items()
+        if package == "pheroos.conformance"
+    }
+    assert set(conformance_compatibility) == {
+        "checks",
+        "commit_tck",
+        "commit_tck_v2_protocol",
+        "profile",
+        "public_api_inventory",
+        "public_api_lifecycle",
+        "report",
+        "runner",
+    }
+    assert set(conformance_compatibility) == set(
+        CONFORMANCE_COMPATIBILITY_MODULES
+    )
+    for name, target in CONFORMANCE_COMPATIBILITY_MODULES.items():
+        entry = conformance_compatibility[name]
+        assert entry["replacement"] == target
+        assert entry["stability"] == "draft"
+        assert entry["remove_after"] is None
+
+
+def test_lifecycle_rejects_missing_and_orphan_compatibility_surfaces() -> None:
+    lifecycle = build_public_api_lifecycle(ROOT)
+    malformed = deepcopy(lifecycle)
+    surfaces = malformed["compatibility_surfaces"]
+    surfaces[:] = [
+        item
+        for item in surfaces
+        if (item["package"], item["name"])
+        != ("pheroos.conformance", "checks")
+    ]
+    surfaces.append(
+        {
+            "group": "compatibility",
+            "name": "not_a_module",
+            "package": "pheroos.conformance",
+            "remove_after": None,
+            "replacement": "pheroos.conformance.not_a_module",
+            "retained_with_reason": "test-only orphan",
+            "since": "0.1.0",
+            "stability": "draft",
+        }
+    )
+
+    problems = public_api_lifecycle_problems(malformed)
+
+    assert (
+        "compatibility_surfaces:missing:pheroos.conformance:checks"
+        in problems
+    )
+    assert (
+        "compatibility_surfaces:orphan:pheroos.conformance:not_a_module"
+        in problems
+    )
 
 
 def test_lifecycle_rejects_missing_orphan_and_nonreferencable_replacement() -> None:
