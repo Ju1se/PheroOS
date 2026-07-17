@@ -29,6 +29,7 @@ from pheroos.protocol.commit_models import (
 )
 from pheroos.protocol.extensions import is_namespaced_extension, secret_like_paths
 from pheroos.protocol.models import (
+    SUPPORTED_PROTOCOL_VERSIONS,
     SUPPORTED_COLLECTIVE_MODES,
     SUPPORTED_PHEROMONE_DECAY_MODELS,
     SUPPORTED_PHEROMONE_COMPETITION_MODES,
@@ -116,6 +117,23 @@ def validate_capability_manifest(manifest: CapabilityManifest) -> list[Validatio
     candidate_ids = {candidate.id for candidate in protocol.candidates}
     candidates_by_id = {candidate.id: candidate for candidate in protocol.candidates}
     safe_candidates = {candidate.id for candidate in protocol.candidates if candidate.safe_fallback}
+
+    if not canonical_nonblank_text(protocol.protocol_version):
+        diagnostics.append(
+            error(
+                "protocol_version_invalid",
+                "protocol version must be canonical non-blank text",
+                "protocol.protocol_version",
+            )
+        )
+    elif protocol.protocol_version not in SUPPORTED_PROTOCOL_VERSIONS:
+        diagnostics.append(
+            error(
+                "protocol_version_unsupported",
+                "protocol version is not explicitly supported",
+                "protocol.protocol_version",
+            )
+        )
 
     for secret_path in secret_like_paths(manifest):
         diagnostics.append(error("secret_like_manifest_field", "manifest must not contain secret-like fields", secret_path))

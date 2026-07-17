@@ -12,25 +12,63 @@ from pheroos.conformance.commit_tck import (
     load_commit_tck_vectors,
     run_commit_tck,
 )
-from pheroos.conformance.report import CheckResult, ConformanceReport
+from pheroos.conformance.checks.authority_ledger_contract import (
+    GOVERNANCE_STATE_STORE_FAILURE_STAGES,
+    GOVERNANCE_STATE_STORE_CONFORMANCE_VERSION,
+    GovernanceStateStoreConformanceAdapter,
+    ReferenceGovernanceStateStoreConformanceAdapter,
+    run_governance_state_store_conformance,
+)
+from pheroos.conformance.checks.trace_store_contract import (
+    ReferenceTraceStoreConformanceAdapter,
+    TraceStoreConformanceAdapter,
+    TRACE_STORE_CONFORMANCE_VERSION,
+    run_trace_store_conformance,
+)
+from pheroos.conformance.report import (
+    CONFORMANCE_REPORT_SCHEMA_ID,
+    CONFORMANCE_REPORT_VERSION,
+    PHEROOS_IMPLEMENTATION_ID,
+    CheckResult,
+    ConformanceReport,
+    ConformanceSubjectKind,
+    conformance_report_schema,
+)
+from pheroos.conformance.profile import ConformanceProfile, profile_for_manifest
 from pheroos.conformance.runner import run_conformance, run_source_conformance, validate_manifest
 
 __all__ = [
     "COMMIT_TCK_ARTIFACT",
     "COMMIT_TCK_SCHEMA_ID",
     "COMMIT_TCK_VERSION",
+    "CONFORMANCE_REPORT_SCHEMA_ID",
+    "CONFORMANCE_REPORT_VERSION",
     "CheckResult",
     "CommitTckAdapter",
     "CommitTckReport",
     "CommitTckResult",
     "CommitTckVector",
     "ConformanceReport",
+    "ConformanceProfile",
+    "ConformanceSubjectKind",
+    "GovernanceStateStoreConformanceAdapter",
+    "GOVERNANCE_STATE_STORE_FAILURE_STAGES",
+    "GOVERNANCE_STATE_STORE_CONFORMANCE_VERSION",
+    "PHEROOS_IMPLEMENTATION_ID",
     "ReferenceCommitTckAdapter",
+    "ReferenceGovernanceStateStoreConformanceAdapter",
+    "ReferenceTraceStoreConformanceAdapter",
+    "TraceStoreConformanceAdapter",
+    "TRACE_STORE_CONFORMANCE_VERSION",
     "commit_tck_artifact_root",
     "commit_tck_schema",
+    "conformance_report_schema",
     "load_commit_tck_vectors",
+    "profile_for_manifest",
     "run_commit_tck",
     "run_conformance",
+    "run_governance_state_store_conformance",
+    "run_trace_store_conformance",
     "run_source_conformance",
     "validate_manifest",
 ]

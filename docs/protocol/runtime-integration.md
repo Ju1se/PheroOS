@@ -76,6 +76,28 @@ They describe what a capability exposes, not how a provider is called.
 
 The adapter mapping contract is described in [runtime-adapter-guide.md](runtime-adapter-guide.md).
 
+The hardened Driver ABI normalizes declarations into one immutable
+`DriverDescriptor`; registration is idempotent only for the same canonical
+descriptor and rejects a conflicting reuse of `driver_id`. A provider-neutral
+probe reports availability, version, and capabilities before Kernel planning
+can mark a runtime context ready.
+
+For invocation, Kernel `DriverInvokeRequest`/`DriverInvokeReply` and Driver
+receipts bind `scope_ref`, invocation id, driver id, operation, required
+capability, idempotency key, canonical request digest, result status/payload,
+provenance, and digest echo. A result from another scope or request fails
+closed, and the same idempotency key cannot be reused with different bytes.
+These contracts validate an externally performed call; protocol-core still
+does not invoke a provider.
+
+## Management and Service Boundary
+
+“API” in protocol-core means Python ABI, checked JSON schemas, the local CLI,
+and the provider-neutral TCK JSONL protocol. The repository exposes no HTTP,
+REST, RPC, authentication, rate-limit, remote-routing, or service-discovery
+server. An external gateway may provide those facilities, but transport
+success never creates evidence, permission, commit, or output authority.
+
 ## Extensions
 
 Manifest extensions are metadata.
@@ -170,9 +192,69 @@ certificate or distributed-finality proof.
 The exact activation and call sequence is documented in
 [optimal-commit-v1-migration.md](optimal-commit-v1-migration.md).
 
+## Scoped Durable Authority
+
+Each external request should create
+`RuntimeScope(tenant_id, run_id, request_id)`. The required `request_id`
+identifies that request, while the canonical `scope_ref` is derived from the
+tenant/run pair and remains stable across the run. Carry `scope_ref` through
+Kernel plans, Driver requests/results, Governance authority domains, and scoped
+Trace envelopes. A result from a different scope is not reusable authority,
+even when its payload is otherwise byte-identical.
+
+Durable Governance integration uses the provider-neutral
+`GovernanceStateStore` protocol. The core supplies
+`InMemoryGovernanceStateStore` only as a deterministic reference and test
+adapter; production databases, transactions, replication, retention, and
+backup remain external runtime responsibilities.
+
+The authoritative publication sequence is:
+
+```text
+evaluate_hybrid_commit_step
+-> prepare_hybrid_commit_transition against the current scoped head
+-> GovernanceStateStore.atomic_commit(state + trace)
+-> verify the store-issued receipt and current head
+-> finalize_hybrid_commit_transition
+-> expose output only from AtomicHybridCommitStatus.COMMITTED
+```
+
+`evaluate_and_commit_hybrid_step(...)` composes that sequence for an explicit
+`AuthorityDomain` and store. A stale compare-and-swap head returns
+`retry_required`; injected persistence failure cannot advance state without
+Trace; a retired scope stays retired; checkpoint rehydration must reproduce
+the same heads, batches, receipts, and tombstones. Non-committed results redact
+the proposed evaluation, receipt, and output authority while remaining
+diagnostically deliverable when declared.
+
+This ABI is intentionally not a database manager or transaction server. An
+external store adapter implements the protocol and must pass the restart,
+scope-isolation, idempotency, CAS, atomicity, and retirement conformance matrix.
+
+That matrix is reusable by external implementations. A
+`GovernanceStateStoreConformanceAdapter` supplies fresh, checkpoint-restored,
+snapshot-restored, and failure-injected stores to
+`run_governance_state_store_conformance(...)`. The adapter fixture is test
+plumbing only; the production store remains the small `GovernanceStateStore`
+Protocol and does not depend on conformance. Fixtures declare
+`GOVERNANCE_STATE_STORE_CONFORMANCE_VERSION`; unknown versions fail closed.
+The required deterministic injection points are published as
+`GOVERNANCE_STATE_STORE_FAILURE_STAGES` rather than hidden test strings.
+Concurrent correctness is exercised with 32 workers: all workers retrying one
+batch must receive one identical receipt, while conflicting genesis batches
+must produce exactly one commit and retry conflicts for every loser. The
+worker count is test load, not a provider ABI field.
+
 ## Trace Extensions
 
 Trace events use canonical built-in event types or namespaced extension event types.
+Persistence is supplied through the provider-neutral `TraceStore` Protocol,
+which exposes canonical append and immutable chronological snapshots. An
+external backend supplies a `TraceStoreConformanceAdapter` factory to
+`run_trace_store_conformance(...)`; the matrix verifies validation-before-write,
+ordering, immutable input/output snapshots, fresh-store isolation, and
+fail-closed malformed events. Its declared
+`TRACE_STORE_CONFORMANCE_VERSION` is exact-version dispatched.
 
 Namespaced trace events are useful for external runtime lineage, but they remain trace records only. They do not become evidence, permission, quorum, or output authority.
 

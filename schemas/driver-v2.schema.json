@@ -1,0 +1,54 @@
+{
+  "$id": "https://pheroos.dev/schemas/driver-v2.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "patternProperties": {
+    "^(x-|ext\\.).+": {}
+  },
+  "properties": {
+    "capabilities": {
+      "items": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "config_ref": {
+      "type": "string"
+    },
+    "descriptor_version": {
+      "const": "pheroos-driver-descriptor-v2"
+    },
+    "extensions": {
+      "type": "object"
+    },
+    "id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "kind": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "permissions": {
+      "items": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "version": {
+      "minLength": 1,
+      "type": "string"
+    }
+  },
+  "required": [
+    "descriptor_version",
+    "id",
+    "kind",
+    "version"
+  ],
+  "type": "object"
+}

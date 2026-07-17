@@ -3,6 +3,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import pytest
+
 from pheroos.conformance import run_conformance, run_source_conformance
 from pheroos.conformance.runner import MANIFEST_CHECKS
 
@@ -18,6 +20,16 @@ def test_manifest_conformance_executes_only_active_profile_checks() -> None:
     assert "pheromone_behavior" not in names
     assert "hybrid_trace_contract" not in names
     assert "domain_neutrality_public_core" not in names
+
+
+def test_ignored_root_parameter_is_a_warning_compatibility_alias() -> None:
+    target = ROOT / "examples/toy-protocol"
+
+    with pytest.warns(DeprecationWarning, match="run_source_conformance"):
+        legacy = run_conformance(target, root=ROOT)
+    canonical = run_conformance(target)
+
+    assert legacy.to_dict() == canonical.to_dict()
 
 
 def test_runner_converts_check_exceptions_and_continues(monkeypatch: object) -> None:
@@ -40,12 +52,14 @@ def test_source_conformance_uses_separate_versioned_profile() -> None:
     report = run_source_conformance(ROOT)
 
     assert report.ok is True, report.to_dict()
-    assert report.profile == "pheroos-source-v1"
+    assert report.profile == "pheroos-source-v3"
     assert {check.name for check in report.checks} >= {
         "source_surface",
         "domain_neutrality_public_core",
         "package_import_boundary",
         "driver_lifecycle_boundary",
+        "authority_ledger_contract",
+        "trace_store_contract",
         "public_abi_boundary",
         "profile_contract",
     }

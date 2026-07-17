@@ -87,10 +87,24 @@ their basic swarm profile without acquiring the other Hybrid fields below.
     declared `layer_weight_bounds`, and keep the cautionary override-threshold
     envelope at or below `pheromone_max_strength`. Direct governance calls now
     enforce these cross-field bounds even when no manifest loader was involved.
+17. When reading a legacy two-field trail, call
+    `normalize_legacy_pheromone_trail(...)` before deposit or scoring and supply
+    the explicit target, source, provenance, and Trace identity. The helper
+    resolves the candidate/route/tool subject, rejects conflicts and ambiguity,
+    and never invents evidence or authority.
+18. Treat `pheroos-pheromone-kind-profile-map-v1` as the single runtime kind
+    policy. `canonical_pheromone_kind_profiles(...)` applies the conflict rule:
+    an explicitly declared per-kind profile wins in full; legacy scalar weights
+    synthesize only missing built-in kinds. Extension kinds are never inferred.
 
 ## Compatibility retained
 
-- `PheromoneTrail(candidate_id, strength)` remains a supported constructor.
+- `PheromoneTrail(candidate_id, strength)` remains a supported Draft
+  constructor during the migration window, but new code should normalize it
+  immediately. Removal requires a new profile/schema and TCK generation.
+- Legacy scalar weight fields remain readable during the same window. Their
+  future removal also requires a new profile/schema; v1 double-write behavior
+  will not change in place.
 - Toy, e2e, baseline quorum, and basic swarm protocols are not forced to become
   Hybrid protocols.
 - Learned, evolutionary, reactive, and metacognitive runtimes remain external;

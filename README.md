@@ -31,6 +31,31 @@ certificate, and Byzantine distributed-finality contracts. It keeps Hybrid
 pheromone and layer behavior in an attention-only channel: changing attention
 alone cannot change a commit or certificate.
 
+## Schema Document Versions
+
+The four core schema surfaces have an immutable legacy v1 alias and a separate
+strict v2 document:
+
+| Surface | Frozen v1 `$id` and CLI alias | Strict v2 artifact and selector |
+| --- | --- | --- |
+| Capability | `https://pheroos.dev/schemas/capability.schema.json`; `capability`/`capability-v1` | `schemas/capability-v2.schema.json`; `pheroos-capability-schema-v2` |
+| Protocol | `https://pheroos.dev/schemas/protocol.schema.json`; `protocol`/`protocol-v1` | `schemas/protocol-v2.schema.json`; `pheroos-protocol-schema-v2` |
+| Driver | `https://pheroos.dev/schemas/driver.schema.json`; `driver`/`driver-v1` | `schemas/driver-v2.schema.json`; `descriptor_version=pheroos-driver-descriptor-v2` |
+| Kernel | `https://pheroos.dev/schemas/kernel.schema.json`; `kernel`/`kernel-v1` | `schemas/kernel-v2.schema.json`; `plan_version=pheroos-kernel-plan-v2` |
+
+The old unversioned `$id` values and CLI aliases are permanently pinned to v1;
+they never select v2 by shape or package version. Capability and Protocol v2
+are schema-document versions and their payloads still declare
+`protocol_version=pheroos.protocol.v1`. Driver's `descriptor_version` is
+independent of the external provider version in `DriverDescriptor.version`,
+and Kernel uses its own `plan_version` discriminator.
+
+Typed v1-to-v2 migration is explicit and non-lossy. Driver migration uses
+`upgrade_driver_descriptor_v1` and rejects non-migratable input with a typed
+error. Kernel's `os_plan_v1_from_dict` returns a non-authoritative
+`LegacyOSPlan`; `upgrade_os_plan_v1` requires caller-supplied scope, readiness,
+probe, capability, and provider-version facts instead of inventing defaults.
+
 ## Documentation
 
 - [SPEC.md](SPEC.md) - protocol-core specification.
@@ -38,13 +63,14 @@ alone cannot change a commit or certificate.
 - [SECURITY.md](SECURITY.md) - vulnerability reporting and protocol security scope.
 - [docs/process/index.md](docs/process/index.md) - source-tree process entry point.
 - [docs/protocol/runtime-integration.md](docs/protocol/runtime-integration.md) - how external runtimes compose with PheroOS.
+- [docs/protocol/hybrid-pheromone-abi.md](docs/protocol/hybrid-pheromone-abi.md) - normative Hybrid Pheromone ABI.
 - [docs/protocol/hybrid-pheromone-v1-migration.md](docs/protocol/hybrid-pheromone-v1-migration.md) - draft Hybrid v1 migration notes.
 - [docs/protocol/optimal-commit-abi.md](docs/protocol/optimal-commit-abi.md) - complete Optimal Commit Draft ABI semantics.
 - [docs/protocol/optimal-commit-v1-migration.md](docs/protocol/optimal-commit-v1-migration.md) - opt-in runtime and manifest migration.
-- [docs/protocol/optimal-commit-full-hardening-plan.md](docs/protocol/optimal-commit-full-hardening-plan.md) - completed WP-A–K plan, adversarial matrix, and Definition of Done.
 - [docs/protocol/runtime-adapter-guide.md](docs/protocol/runtime-adapter-guide.md) - mapping `DriverSpec` to external adapters.
 - [docs/protocol/extension-points.md](docs/protocol/extension-points.md) - extension boundaries.
 - [docs/process/api-lifecycle.md](docs/process/api-lifecycle.md) - public API and ABI lifecycle.
+- [docs/process/schema-v1-v2-migration.md](docs/process/schema-v1-v2-migration.md) - frozen v1 schema aliases and explicit v2 migration.
 - [docs/conformance/conformance-suite.md](docs/conformance/conformance-suite.md) - compatibility checks.
 - [docs/process/release-checklist.md](docs/process/release-checklist.md) - release gates.
 - [CHANGELOG.md](CHANGELOG.md) - draft ABI changes and migration notes.
@@ -91,9 +117,64 @@ tests/             Provider-free deterministic tests.
 
 `pheroos.conformance` proves ABI compatibility.
 
+These package facades are the cohesive external entry points. Their
+implementations are split into one-way private engines for commit state,
+support, certificates, distributed finality, Hybrid evaluation, swarm, and
+pheromone lifecycle. Private module paths are not ABI; the facades preserve
+canonical object identity and delegate to one implementation owner without a
+dynamic service registry.
+
+Built-in Commit Wire and Trace dispatch comes from immutable static contract
+registries shared by schema generation and validation. Namespaced extensions
+remain open as non-authoritative metadata; they cannot install new authority
+handlers at runtime.
+
+## Management CLI
+
+The thin, local CLI exposes versioned JSON for protocol management without
+starting an API server:
+
+```bash
+pheroos version
+pheroos profile show examples/hybrid-commit-protocol/capability.json
+pheroos schema list
+pheroos schema show commit
+pheroos schema export capability-v2
+pheroos schema export protocol-v2
+pheroos schema export driver-v2
+pheroos schema export kernel-v2
+pheroos wire validate commit record.json
+pheroos wire validate driver-v2 descriptor.json
+pheroos wire validate kernel-v2 plan.json
+pheroos tck run --version v2
+pheroos abi show
+pheroos abi diff
+```
+
+Schema drift is checked with
+`python scripts/generate_schema_artifacts.py --check`. The `--write` mode
+regenerates only v2 artifacts and never rewrites the frozen v1 files.
+
+Unknown critical versions and malformed wire records fail closed. HTTP APIs,
+authentication, rate limiting, remote routing, and service discovery belong to
+an external runtime or gateway, not protocol-core.
+
 ## Runtime Integration
 
 External runtimes may fork or depend on this repository and build their own agent loops, model calls, tool calls, databases, memory stores, scheduling, queues, servers, and secret management around the ABI.
+
+Each request constructs `RuntimeScope(tenant_id, run_id, request_id)` and
+carries its tenant/run-derived `scope_ref` through Kernel, Driver, Governance,
+and scoped Trace records. Durable authority is supplied through an external
+`GovernanceStateStore` adapter: state and Trace commit atomically,
+compare-and-swap heads reject forks, and only a verified store receipt can
+finalize durable output authority. The included in-memory store is a reference
+adapter, not a database.
+
+Append-only lineage uses the separate provider-neutral `TraceStore` Protocol.
+External StateStore and TraceStore implementations can run the public
+`run_governance_state_store_conformance(...)` and
+`run_trace_store_conformance(...)` matrices before integration.
 
 The expected composition is:
 
@@ -164,6 +245,16 @@ Optimal Commit is also opt-in. Only a manifest with
 `collective_commit_policy` selects a Commit profile; baseline, swarm, and
 Hybrid v1 manifests keep their existing profile and result/trace behavior.
 
+## Release Integrity
+
+CI checks Python 3.12 through 3.14 and exercises both the wheel and sdist from
+an external working directory. The exact distributions that pass those checks
+are the only inputs to deterministic CycloneDX/SPDX SBOM generation and
+trusted-main provenance attestations. Pull requests retain read-only
+permissions. Build provenance records artifact origin; it does not create
+protocol evidence or governance authority. See the
+[release checklist](docs/process/release-checklist.md).
+
 ## Hybrid Pheromone Draft ABI
 
 The complete Hybrid reference path is implemented as a deterministic,
@@ -178,8 +269,7 @@ External runtimes continue a Hybrid run only with the governance-issued
 receipts bind deposit, diffusion, feedback, and adjustment payloads; trace
 conformance rejects substituted payloads, cross-lifecycle identity collisions,
 and replay claims without the matching issued prior state. See the
-[full hardening plan](docs/protocol/hybrid-pheromone-full-hardening-plan.md),
-[ABI reference](docs/protocol/hybrid-pheromone-abi.md), and
+[ABI reference](docs/protocol/hybrid-pheromone-abi.md) and
 [migration note](docs/protocol/hybrid-pheromone-v1-migration.md).
 
 Run the provider-free references with:
@@ -226,13 +316,17 @@ not freeze an epoch; distinct candidate, claim, output, or authority roots do.
 The core defines records and deterministic governance only; networking, witness
 collection, scheduling, providers, and storage stay external.
 
-The implementation-neutral JSON TCK contains 38 exact adversarial cases with
-mutation/permutation execution. Active Commit conformance has no skip or N/A
-path. Run it with:
+The frozen TCK v1 contains 38 legacy adversarial vectors. TCK v2 adds 23
+expected-free declarative request cases: adapters receive only inputs, while
+the harness owns expected outcomes. The public reference adapter and an
+independent standard-library spec model must agree; echo/constant, malformed,
+out-of-order, state-leaking, and timeout adapters fail the harness. Active
+Commit conformance has no skip or N/A path. Run it with:
 
 ```bash
 .venv/bin/python -c \
   'from pheroos.conformance import run_commit_tck; assert run_commit_tck().ok'
+.venv/bin/python -m pheroos.cli.main tck run --version v2
 .venv/bin/python -m pheroos.cli.main conformance examples/hybrid-commit-protocol
 .venv/bin/python -m pheroos.cli.main conformance examples/distributed-commit-protocol
 .venv/bin/python examples/hybrid-commit-protocol/run.py

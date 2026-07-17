@@ -1,0 +1,101 @@
+{
+  "$id": "https://pheroos.dev/schemas/conformance-report-v2.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "const": "https://pheroos.dev/schemas/conformance-report-v2.schema.json"
+    },
+    "artifact_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "check_projection": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "detail": {
+            "type": "string"
+          },
+          "name": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "name",
+          "ok",
+          "detail"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "checks": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "detail": {
+            "type": "string"
+          },
+          "name": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "ok": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "name",
+          "ok",
+          "detail"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "implementation_identity": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "ok": {
+      "type": "boolean"
+    },
+    "profile": {
+      "type": "string"
+    },
+    "report_version": {
+      "const": "pheroos-conformance-report-v2"
+    },
+    "subject_kind": {
+      "enum": [
+        "manifest",
+        "reference-behavior",
+        "implementation-tck",
+        "source-abi"
+      ],
+      "type": "string"
+    },
+    "target": {
+      "minLength": 1,
+      "type": "string"
+    }
+  },
+  "required": [
+    "$schema",
+    "report_version",
+    "subject_kind",
+    "implementation_identity",
+    "target",
+    "profile",
+    "artifact_digest",
+    "ok",
+    "check_projection",
+    "checks"
+  ],
+  "type": "object"
+}

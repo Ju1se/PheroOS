@@ -6,7 +6,7 @@ import pytest
 
 from pheroos.protocol import DriverSpec, load_capability_manifest, validate_capability_manifest
 from pheroos.protocol.manifest import capability_manifest_from_dict
-from pheroos.protocol.schema import capability_schema
+from pheroos.protocol.schema import capability_schema, capability_schema_v2
 from pheroos.protocol.schema_validation import validate_json_schema
 
 
@@ -16,6 +16,69 @@ def test_toy_manifest_validates_without_errors() -> None:
     diagnostics = validate_capability_manifest(manifest)
 
     assert diagnostics == []
+
+
+@pytest.mark.parametrize("protocol_version", ["pheroos.protocol.v999", ""])
+def test_manifest_schema_and_loader_reject_unsupported_protocol_versions(
+    protocol_version: str,
+) -> None:
+    payload = json.loads(Path("examples/toy-protocol/capability.json").read_text())
+    payload["protocol"]["protocol_version"] = protocol_version
+
+    generated_errors = validate_json_schema(payload, capability_schema_v2())
+    checked_in_schema = json.loads(Path("schemas/capability-v2.schema.json").read_text())
+    artifact_errors = validate_json_schema(payload, checked_in_schema)
+
+    expected_path = "$.protocol.protocol_version"
+    assert any(expected_path in item for item in generated_errors)
+    assert any(expected_path in item for item in artifact_errors)
+    with pytest.raises(ValueError, match="manifest schema invalid") as exc:
+        capability_manifest_from_dict(payload)
+    assert expected_path in str(exc.value)
+
+
+@pytest.mark.parametrize(
+    ("protocol_version", "expected_code"),
+    [
+        ("pheroos.protocol.v999", "protocol_version_unsupported"),
+        ("", "protocol_version_invalid"),
+        ("   ", "protocol_version_invalid"),
+    ],
+)
+def test_typed_manifest_validation_rejects_unsupported_protocol_versions(
+    protocol_version: str,
+    expected_code: str,
+) -> None:
+    manifest = load_capability_manifest("examples/toy-protocol/capability.json")
+    protocol = replace(manifest.protocol, protocol_version=protocol_version)
+
+    diagnostics = validate_capability_manifest(replace(manifest, protocol=protocol))
+
+    assert [(item.code, item.path) for item in diagnostics] == [
+        (expected_code, "protocol.protocol_version")
+    ]
+
+
+def test_unknown_protocol_version_combined_with_invalid_shape_reports_all_paths() -> None:
+    payload = json.loads(Path("examples/toy-protocol/capability.json").read_text())
+    payload["protocol"]["protocol_version"] = "pheroos.protocol.v999"
+    payload["protocol"]["quorum_policy"]["commit_threshold"] = 0
+
+    expected_paths = {
+        "$.protocol.protocol_version",
+        "$.protocol.quorum_policy.commit_threshold",
+    }
+    generated_errors = validate_json_schema(payload, capability_schema_v2())
+    checked_in_schema = json.loads(Path("schemas/capability-v2.schema.json").read_text())
+    artifact_errors = validate_json_schema(payload, checked_in_schema)
+
+    for expected_path in expected_paths:
+        assert any(expected_path in item for item in generated_errors)
+        assert any(expected_path in item for item in artifact_errors)
+    with pytest.raises(ValueError, match="manifest schema invalid") as exc:
+        capability_manifest_from_dict(payload)
+    for expected_path in expected_paths:
+        assert expected_path in str(exc.value)
 
 
 def test_manifest_loader_preserves_namespaced_extension_metadata() -> None:

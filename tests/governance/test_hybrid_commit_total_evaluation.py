@@ -21,6 +21,7 @@ from pheroos.conformance._commit_reference import (
     issue_reference_semantic_conflict_certificate,
     issue_reference_witness,
 )
+import pheroos.governance._hybrid.commit as commit_module
 import pheroos.governance.hybrid_commit_evaluation as evaluation_module
 from pheroos.governance.attention import evaluate_hybrid_attention_step
 from pheroos.governance.authority import AuthorityLevel
@@ -61,6 +62,7 @@ from pheroos.governance.hybrid_commit import (
     HybridCommitAttentionStatus,
     HybridCommitEvaluationRequest,
     HybridCommitEvaluationStatus,
+    evaluate_hybrid_commit_evaluation,
     evaluate_hybrid_commit_step,
     hybrid_commit_evaluation_is_authoritative,
     hybrid_commit_evaluation_payload,
@@ -296,7 +298,7 @@ def _manifest_payload(
         "name": "Hybrid Total Evaluation Reference",
         "version": "1.0.0",
         "protocol": {
-            "protocol_version": "1.0.0",
+            "protocol_version": "pheroos.protocol.v1",
             "id": "protocol:tck:optimal-commit",
             "targets": [{"id": "decision:optimal"}],
             "candidates": [
@@ -1048,6 +1050,18 @@ def _action_facts(
     return stop, permission
 
 
+def test_deprecated_total_entry_is_only_a_warning_alias() -> None:
+    request = object()
+
+    with pytest.warns(DeprecationWarning, match="evaluate_hybrid_commit_step"):
+        legacy = evaluate_hybrid_commit_evaluation(request)
+    canonical = evaluate_hybrid_commit_step(request=request)
+
+    assert hybrid_commit_evaluation_payload(legacy) == hybrid_commit_evaluation_payload(
+        canonical
+    )
+
+
 def test_total_entry_returns_authoritative_progress_without_assurance_downgrade() -> None:
     request = _total_request(stable=False)
     result = evaluate_hybrid_commit_step(request=request)
@@ -1061,6 +1075,38 @@ def test_total_entry_returns_authoritative_progress_without_assurance_downgrade(
     assert hybrid_commit_evaluation_is_authoritative(result)
     replay = replay_commit_trace(result.trace_events, require_complete=False)
     assert replay.event_types[-1] == "quorum_pending"
+
+
+def test_authority_verifier_checks_verified_attention_channel_once(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    result = evaluate_hybrid_commit_step(request=_total_request(stable=False))
+    calls = {"attention": 0, "directive": 0}
+    original_attention = commit_module.attention_breakdown_is_authoritative
+    original_directive = commit_module.exploration_directive_is_authoritative
+
+    def check_attention(value: object) -> bool:
+        calls["attention"] += 1
+        return original_attention(value)
+
+    def check_directive(value: object, **kwargs: object) -> bool:
+        calls["directive"] += 1
+        assert kwargs == {}
+        return original_directive(value, **kwargs)
+
+    monkeypatch.setattr(
+        commit_module,
+        "attention_breakdown_is_authoritative",
+        check_attention,
+    )
+    monkeypatch.setattr(
+        commit_module,
+        "exploration_directive_is_authoritative",
+        check_directive,
+    )
+
+    assert hybrid_commit_evaluation_is_authoritative(result)
+    assert calls == {"attention": 1, "directive": 1}
 
 
 def test_total_entry_consumes_resigned_current_replay_snapshot_only() -> None:

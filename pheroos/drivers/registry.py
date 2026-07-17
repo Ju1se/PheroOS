@@ -20,7 +20,7 @@ class DriverRegistry:
             registration = register_driver(descriptor)
             if driver_id != registration.descriptor.id:
                 raise DriverError("driver registry key does not match descriptor id")
-            self.__descriptors[driver_id] = registration.descriptor
+            self.register(registration.descriptor)
 
     @property
     def descriptors(self) -> Mapping[str, DriverDescriptor]:
@@ -33,7 +33,11 @@ class DriverRegistry:
 
     def register(self, descriptor: DriverDescriptor) -> None:
         registration = register_driver(descriptor)
-        self.__descriptors[registration.descriptor.id] = registration.descriptor
+        driver_id = registration.descriptor.id
+        current = self.__descriptors.get(driver_id)
+        if current is not None and current != registration.descriptor:
+            raise DriverError(f"conflicting registration for driver: {driver_id}")
+        self.__descriptors[driver_id] = registration.descriptor
 
     def get(self, driver_id: str) -> DriverDescriptor:
         try:

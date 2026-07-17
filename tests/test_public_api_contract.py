@@ -10,12 +10,12 @@ import pheroos.trace as trace
 
 
 EXPECTED_PUBLIC_API = {
-    "pheroos.protocol": (64, "844b9d33022ae16dba67552541f5ebb9af23fb04a13c2c061629824e8ed6ff8c"),
-    "pheroos.governance": (507, "667cc811791387860abb8a8f68cd25accc4afd233236229142362c45a2376caf"),
-    "pheroos.kernel": (14, "f195fda8c36d48bb30c4fdbc6eb69ffe38db26958f60925eb5c7f9952cb500d1"),
-    "pheroos.drivers": (20, "b3c27fe18c2a1a9c8ddcbbb30f8fe2ad5a8a2b32606eaedd168b690823fc0da4"),
-    "pheroos.trace": (20, "dbe97b0f5d49e7d849cd13a06f2ec1eac4572678b90757ec2ebf66df8695620e"),
-    "pheroos.conformance": (17, "28d225ee3f8e05586ad87a3f313d9e0c31d8f27f9b2d34555a2ef34fc53045ec"),
+    "pheroos.protocol": (77, "96e546b5f54892c8251268b41b1214586f578826f3b44b7262547d13787005b4"),
+    "pheroos.governance": (527, "c59888cc742fb0dbf2eb5bf9ab62fa216e127a897ac0d675dc4ac9002b4f3ad4"),
+    "pheroos.kernel": (28, "52523a670adbde14b3bd0c3c8872095d4f08c8bc4903faa5c08a743c6f2de907"),
+    "pheroos.drivers": (37, "b551bfec64fc9fd0d5dee669897edad6045a197145e3dab9deaab44478887bde"),
+    "pheroos.trace": (25, "ebe198475258c7dc4719e0eb9c4c3d2eb1dd70bcc1fb64bd525a36d125668a68"),
+    "pheroos.conformance": (33, "0253154cabb5bcb029f1f84be01d332e37083af0fcee6e0b989fcba7d9bb1091"),
 }
 
 

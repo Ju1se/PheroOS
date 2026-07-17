@@ -88,7 +88,12 @@ def check() -> CheckResult:
     if not rejects(lambda: expose(forged)):
         problems.append("binding_mutability_bypass")
     payload = {"nested": {"values": ["original"]}}
-    result = invoke(expose(binding), payload=payload, provenance=descriptor.id)
+    result = invoke(
+        expose(binding),
+        payload=payload,
+        provenance=descriptor.id,
+        capability="invoke",
+    )
     payload["nested"]["values"].append("mutated")
     if result.payload["nested"]["values"] != ("original",):
         problems.append("result_payload_snapshot")

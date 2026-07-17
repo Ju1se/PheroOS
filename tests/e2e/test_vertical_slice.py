@@ -33,13 +33,31 @@ def test_provider_free_governed_vertical_slice() -> None:
     trace = InMemoryTraceStore()
 
     assert validate_capability_manifest(manifest) == []
+    driver_payload = manifest.drivers[0]
+    descriptor = declare(
+        DriverDescriptor(
+            id=driver_payload.id,
+            kind=driver_payload.kind,
+            version=driver_payload.version,
+            capabilities=list(driver_payload.capabilities),
+            permissions=list(driver_payload.permissions),
+            config_ref=driver_payload.config_ref,
+            extensions=driver_payload.extensions,
+        )
+    )
+    registration = register(descriptor)
+    probe_result = probe(registration)
 
     envelope = InputEnvelope(
         request="review provider free evidence",
         tenant_id="tenant-a",
         metadata={"request_id": "req-e2e"},
     )
-    plan = OSKernel().plan(envelope, [manifest])
+    plan = OSKernel().plan(
+        envelope,
+        [manifest],
+        driver_probe_snapshots=[probe_result],
+    )
     trace.append(
         TraceEvent(
             event_type="plan",
@@ -71,20 +89,14 @@ def test_provider_free_governed_vertical_slice() -> None:
     context = RuntimeMaterializer().materialize(plan)
     assert context.ready is True
 
-    driver_payload = manifest.drivers[0]
-    descriptor = declare(
-        DriverDescriptor(
-            id=driver_payload.id,
-            kind=driver_payload.kind,
-            version=driver_payload.version,
-            capabilities=list(driver_payload.capabilities),
-        )
-    )
-    registration = register(descriptor)
-    probe_result = probe(registration)
+    exposure = context.driver_exposures[0]
+    assert exposure.driver_id == driver_payload.id
+    assert exposure.permissions == driver_payload.permissions
+    assert exposure.capabilities == driver_payload.capabilities
     binding = bind(
         registration,
         tenant_id=context.tenant_id,
+        run_id=context.run_id,
         permissions=list(driver_payload.permissions),
     )
     handle = expose(binding)
@@ -92,24 +104,56 @@ def test_provider_free_governed_vertical_slice() -> None:
     assert validate(descriptor) is True
     assert probe_result.available is True
     assert handle.exposed is True
+    assert handle.binding.scope_ref == context.scope_ref
+    assert handle.binding.capabilities == exposure.capabilities
 
+    operation = driver_payload.permissions[0]
+    capability = driver_payload.capabilities[0]
+    invocation_id = "invoke:req-e2e:evidence"
+    idempotency_key = "idempotency:req-e2e:evidence"
+    invoke_payload = {
+        "request": envelope.normalized_request(),
+        "candidate": "candidate:approve",
+        "content": "provider-free evidence",
+    }
     request = DriverInvokeRequest(
         driver_id=descriptor.id,
-        payload={"request": envelope.normalized_request()},
+        scope_ref=context.scope_ref,
+        invocation_id=invocation_id,
+        operation=operation,
+        capability=capability,
+        idempotency_key=idempotency_key,
+        payload=invoke_payload,
     )
     driver_result = invoke(
         handle,
-        payload={"candidate": "candidate:approve", "content": "provider-free evidence"},
+        payload=invoke_payload,
         provenance=descriptor.id,
+        operation=operation,
+        capability=capability,
+        invocation_id=invocation_id,
+        idempotency_key=idempotency_key,
     )
     reply = KernelSyscalls().invoke_driver(context, request, driver_result)
+    assert reply.result.scope_ref == context.scope_ref
+    assert reply.result.invocation_id == request.invocation_id
+    assert reply.result.operation == request.operation
+    assert reply.result.request_digest == request.request_digest
     trace.append(
         TraceEvent(
             event_type="invoke",
             protocol_id=protocol.id,
             target=target,
             reason="driver returned deterministic evidence",
-            lineage={"driver": reply.result.driver_id, "provenance": reply.result.provenance},
+            lineage={
+                "driver": reply.result.driver_id,
+                "provenance": reply.result.provenance,
+                "scope_ref": reply.result.scope_ref,
+                "invocation_id": reply.result.invocation_id,
+                "operation": reply.result.operation,
+                "capability": reply.request.capability,
+                "request_digest": reply.result.request_digest,
+            },
         )
     )
 

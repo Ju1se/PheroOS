@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from collections import UserDict, UserList
+from enum import Enum
 import json
 import os
 from pathlib import Path
@@ -92,3 +94,75 @@ def test_canonical_wire_preserves_ordered_arrays() -> None:
     )
 
     assert first["payload"] != second["payload"]
+
+
+def test_exact_builtin_hot_path_preserves_subclass_and_custom_container_bytes() -> None:
+    class Text(str):
+        pass
+
+    class Count(int):
+        pass
+
+    class Record(dict[str, object]):
+        pass
+
+    class Values(list[object]):
+        pass
+
+    class Ordered(tuple[object, ...]):
+        pass
+
+    class Choice(str, Enum):
+        ALPHA = "alpha"
+
+    exact = {
+        "choice": "alpha",
+        "count": 7,
+        "custom_sequence": [2, "y"],
+        "mapping": {"ready": True},
+        "ordered": ["a", "b"],
+        "sequence": [1, "x"],
+        "text": "canonical",
+    }
+    specialized = Record(
+        {
+            Text("choice"): Choice.ALPHA,
+            Text("count"): Count(7),
+            Text("custom_sequence"): UserList([Count(2), Text("y")]),
+            Text("mapping"): UserDict({Text("ready"): True}),
+            Text("ordered"): Ordered((Text("a"), Text("b"))),
+            Text("sequence"): Values([Count(1), Text("x")]),
+            Text("text"): Text("canonical"),
+        }
+    )
+
+    assert canonical_commit_payload(
+        specialized,
+        schema=SCHEMA,
+        profile=PROFILE,
+    ) == canonical_commit_payload(exact, schema=SCHEMA, profile=PROFILE)
+
+
+@pytest.mark.parametrize(
+    ("exact", "specialized"),
+    [
+        (1.0, type("FloatValue", (float,), {})(1.0)),
+        (2**63, type("IntegerValue", (int,), {})(2**63)),
+        ("de\u0301composed", type("TextValue", (str,), {})("de\u0301composed")),
+    ],
+)
+def test_exact_builtin_hot_path_preserves_subclass_error_contracts(
+    exact: object,
+    specialized: object,
+) -> None:
+    messages = []
+    for value in (exact, specialized):
+        with pytest.raises(CommitWireError) as captured:
+            canonical_commit_payload(
+                {"value": value},
+                schema=SCHEMA,
+                profile=PROFILE,
+            )
+        messages.append(str(captured.value))
+
+    assert messages[0] == messages[1]

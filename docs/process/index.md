@@ -11,6 +11,12 @@ database, dashboard, or application deployment workflows.
 
 - [CONTRIBUTING.md](../../CONTRIBUTING.md) - contribution process and patch requirements.
 - [api-lifecycle.md](api-lifecycle.md) - public API and ABI lifecycle rules.
+- [schema-v1-v2-migration.md](schema-v1-v2-migration.md) - frozen legacy
+  schema roots, strict versioned documents, reader selection, and migration.
+- [project-architecture-hardening-plan.md](project-architecture-hardening-plan.md)
+  is the completed, non-normative record of the project-wide architecture
+  audit, decoupling, extensibility, cleanup, and release hardening work.
+- [removal-ledger.md](removal-ledger.md) - D-01 through D-18 disposition, replacements, and removal gates.
 - [release-checklist.md](release-checklist.md) - release validation gates.
 - [SECURITY.md](../../SECURITY.md) - vulnerability reporting and protocol security scope.
 - [AGENTS.md](../../AGENTS.md) - repository rules for coding agents.
@@ -44,9 +50,10 @@ exercised by tests, examples, or conformance.
 
 ## Release Standard
 
-A release should pass deterministic tests, schema consistency checks, baseline
-protocol compatibility, governed e2e compatibility, and swarm compatibility
-when swarm behavior is declared.
+A release should pass the Python matrix, deterministic tests, schema/static
+contract drift checks, source and selected manifest profiles, TCK v1/v2,
+separate external-CWD wheel/sdist consumers, and the exact-artifact
+SBOM/provenance gates in the release checklist.
 
 Release notes should call out public API, ABI, schema, conformance, and
 migration impact.

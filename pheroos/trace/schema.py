@@ -2,13 +2,15 @@ from __future__ import annotations
 
 from typing import Any
 
-from pheroos.trace import (
+from pheroos.trace.commit_contracts import (
     COMMIT_EVENT_TYPES,
+    commit_trace_lineage_schema,
+)
+from pheroos.trace.validation import (
     DECLARED_COORDINATION_LAYER_IDS,
     EVENT_LINEAGE_CONTRACTS,
     VALID_EVENT_TYPES,
 )
-from pheroos.trace.commit_contracts import commit_trace_lineage_schema
 
 
 def trace_schema() -> dict[str, Any]:

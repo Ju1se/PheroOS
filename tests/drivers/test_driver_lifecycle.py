@@ -25,6 +25,8 @@ def test_driver_lifecycle() -> None:
 
     assert validate(descriptor) is True
     assert probe_result.available is True
+    assert probe_result.version == "0.1.0"
+    assert probe_result.capabilities == ()
     assert handle.exposed is True
 
 

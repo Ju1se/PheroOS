@@ -26,11 +26,25 @@ does not execute provider calls.
 - The kernel does not call model providers directly.
 - The kernel does not access secrets directly.
 - Runtime context is tenant-scoped and run-scoped.
+- One canonical `RuntimeScope`/`scope_ref` binds plans, contexts, driver
+  syscalls, results, and the outer Governance/Trace composition.
 - Driver and tool exposure require granted permission.
 - Missing required capability produces a degraded or not-ready plan.
 - Driver exposure is derived from declared provider-neutral driver specs.
 - Driver exposure uses declared driver permissions only and does not inherit capability-level permissions by fallback.
-- Driver syscall replies require matching driver id and provenance.
+- Driver syscall replies require matching driver id, scope, operation,
+  invocation id, request digest, and provenance.
+- `available` and `runtime_ready` require valid declaration, required
+  connections, compatible driver version/capabilities, an available probe,
+  and complete permission/exposure grants; missing leaves are structured
+  diagnostics.
+
+The original `kernel.schema.json` remains the byte-frozen legacy v1 plan
+document. `kernel-v2.schema.json` requires `plan_version`, canonical run scope,
+readiness, and probe snapshots. Reading v1 produces a non-authoritative
+`LegacyOSPlan`; upgrading requires all missing authority facts explicitly and
+never synthesizes them. See the
+[schema migration](../process/schema-v1-v2-migration.md).
 
 ## Import Boundary
 

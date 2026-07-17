@@ -2,13 +2,15 @@ from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
 from copy import deepcopy
-from dataclasses import dataclass, field, is_dataclass
-from types import MappingProxyType
+from dataclasses import dataclass, field
 from typing import Any
+
+from pheroos.protocol._immutable import deep_freeze, snapshot_fields
 
 from pheroos.protocol.commit_models import CollectiveCommitPolicy
 
 
+SUPPORTED_PROTOCOL_VERSIONS = frozenset({"pheroos.protocol.v1"})
 SUPPORTED_COLLECTIVE_MODES = frozenset({"quorum", "bee_swarm", "ant_colony", "hybrid"})
 SWARM_COLLECTIVE_MODES = frozenset({"bee_swarm", "ant_colony", "hybrid"})
 SUPPORTED_PHEROMONE_DECAY_MODELS = frozenset({"linear", "exponential", "step"})
@@ -391,46 +393,6 @@ def effective_pheromone_scored_subject_types(
     if kind in SUPPORTED_PHEROMONE_KINDS:
         return tuple(policy_subject_types)
     return ()
-
-
-def snapshot_fields(
-    value: object,
-    *,
-    sequences: tuple[str, ...] = (),
-    mappings: tuple[str, ...] = (),
-) -> None:
-    for name in sequences:
-        object.__setattr__(
-            value,
-            name,
-            tuple(deep_freeze(item) for item in getattr(value, name)),
-        )
-    for name in mappings:
-        source = getattr(value, name)
-        object.__setattr__(
-            value,
-            name,
-            MappingProxyType(
-                {deepcopy(key): deep_freeze(item) for key, item in source.items()}
-            ),
-        )
-
-
-def deep_freeze(value: Any) -> Any:
-    """Recursively freeze caller-owned ABI containers at the protocol boundary."""
-
-    if isinstance(value, Mapping):
-        return MappingProxyType(
-            {deepcopy(key): deep_freeze(item) for key, item in value.items()}
-        )
-    if isinstance(value, (list, tuple)):
-        return tuple(deep_freeze(item) for item in value)
-    if isinstance(value, (set, frozenset)):
-        return frozenset(deep_freeze(item) for item in value)
-    if is_dataclass(value):
-        # Protocol dataclasses are frozen and recursively snapshot themselves.
-        return value
-    return deepcopy(value)
 
 
 def thaw_protocol_value(value: Any) -> Any:

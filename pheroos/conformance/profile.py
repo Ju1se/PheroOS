@@ -11,14 +11,19 @@ from pheroos.protocol.commit_models import (
     HYBRID_COMMIT_PROFILE_VERSION,
     SUPPORTED_COMMIT_ASSURANCES,
 )
-from pheroos.protocol.models import CapabilityManifest, has_hybrid_pheromone_features, is_swarm_policy
+from pheroos.protocol.models import (
+    SUPPORTED_PROTOCOL_VERSIONS,
+    CapabilityManifest,
+    has_hybrid_pheromone_features,
+    is_swarm_policy,
+)
 
 
 CORE_PROFILE_VERSION = "pheroos-core-v1"
 SWARM_PROFILE_VERSION = "pheroos-swarm-v1"
 HYBRID_SWARM_PROFILE_VERSION = "pheroos-hybrid-swarm-v1"
 MANIFEST_PROFILE_VERSION = "pheroos-manifest-v1"
-SOURCE_PROFILE_VERSION = "pheroos-source-v1"
+SOURCE_PROFILE_VERSION = "pheroos-source-v3"
 
 
 @dataclass(frozen=True)
@@ -178,12 +183,17 @@ SOURCE_PROFILE = ConformanceProfile(
         "domain_neutrality_public_core",
         "package_import_boundary",
         "driver_lifecycle_boundary",
+        "runtime_scope_contract",
+        "authority_ledger_contract",
+        "trace_store_contract",
         "public_abi_boundary",
     ),
 )
 
 
 def profile_for_manifest(manifest: CapabilityManifest) -> ConformanceProfile:
+    if manifest.protocol.protocol_version not in SUPPORTED_PROTOCOL_VERSIONS:
+        raise ValueError("protocol version is unsupported")
     commit_policy = manifest.protocol.collective_commit_policy
     if commit_policy is not None:
         if commit_policy.policy_version != COMMIT_POLICY_VERSION:

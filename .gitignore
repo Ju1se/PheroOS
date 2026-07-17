@@ -8,6 +8,10 @@ __pycache__/
 .venv/
 node_modules/
 .pytest_cache/
+.mypy_cache/
+build/
+dist/
+sbom/
 .playwright-cli/
 playwright-report/
 test-results/

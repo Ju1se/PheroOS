@@ -266,6 +266,49 @@ def _authority_projection(value: Any, *, field_name: str) -> Any:
 
 
 def _canonical_commit_value(value: Any, *, path: str) -> Any:
+    value_type = type(value)
+    # Authority payloads overwhelmingly use exact JSON-native values.  Keep
+    # subclass and custom-container behavior in the original generic branches
+    # below while avoiding repeated ABC checks for the canonical hot path.
+    if value is None or value_type is bool:
+        return value
+    if value_type is str:
+        normalized = unicodedata.normalize("NFC", value)
+        if normalized != value:
+            raise CommitWireError(f"{path} must already use NFC normalization")
+        return value
+    if value_type is int:
+        if abs(value) > MAX_AUTHORITY_INTEGER:
+            raise CommitWireError(f"{path} exceeds the authority integer bound")
+        return value
+    if value_type is float:
+        raise CommitWireError(f"{path} must not contain floating-point values")
+    if value_type is dict:
+        normalized_mapping: dict[str, Any] = {}
+        for key, item in value.items():
+            if (
+                not isinstance(key, str)
+                or not key
+                or key != key.strip()
+                or key != unicodedata.normalize("NFC", key)
+            ):
+                raise CommitWireError(
+                    f"{path} keys must be canonical non-blank NFC strings"
+                )
+            if key in normalized_mapping:
+                raise CommitWireError(f"{path} contains duplicate keys")
+            normalized_mapping[key] = _canonical_commit_value(
+                item,
+                path=f"{path}.{key}",
+            )
+        return normalized_mapping
+    if value_type is list or value_type is tuple:
+        return [
+            _canonical_commit_value(item, path=f"{path}[{index}]")
+            for index, item in enumerate(value)
+        ]
+    if value_type is set or value_type is frozenset:
+        return list(canonical_commit_set(tuple(value)))
     if isinstance(value, Enum):
         return _canonical_commit_value(value.value, path=path)
     if value is None or isinstance(value, bool):

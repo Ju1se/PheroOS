@@ -67,7 +67,10 @@ Source checks are intentionally separate from manifest checks:
 - domain-neutral public core
 - package import boundary, including relative imports
 - canonical driver lifecycle/registry validation parity
-- canonical public type ownership and representative defensive snapshots
+- cross-surface `RuntimeScope` binding
+- authority-ledger scope, CAS, atomic state-plus-Trace, and receipt behavior
+- public shape/lifecycle artifacts, canonical ownership, diagnostic registries,
+  and representative defensive snapshots
 
 ## Applicability
 
@@ -107,7 +110,9 @@ Conformance reports include the profile version that was applied.
   declared.
 - `pheroos-distributed-commit-v1` applies when distributed assurance is
   declared.
-- `pheroos-source-v1` applies only to protocol-core source cohesion.
+- `pheroos-source-v3` applies only to protocol-core source cohesion, scoped
+  cross-surface binding, authority-ledger atomicity, and the provider-neutral
+  StateStore/TraceStore adapter contracts. It supersedes source-v2.
 
 Commit profile selection takes precedence over legacy Hybrid authority and
 output checks. Certified and distributed manifests that also declare Hybrid
@@ -122,6 +127,13 @@ changelog.
 
 The `profile_contract` check fails when a required check for the applied profile
 is missing or failing.
+
+Static contract tests separately prove that each built-in Commit Wire branch
+and Trace event type has exactly one immutable schema/validator contract.
+Unknown authority-relevant built-ins fail closed, while namespaced extension
+events remain non-authoritative. Private-engine graph tests reject cycles,
+aggregate-facade back-imports, dynamic service registries, and duplicate
+algorithm owners without making private module paths part of the public ABI.
 
 Hybrid conformance proves that pheromone remains collective memory rather than
 authority: it cannot create candidates, evidence, quorum, fallback bypasses, or
@@ -188,6 +200,73 @@ python scripts/generate_commit_tck.py --write
 
 Checked conformance always reads the committed artifact; it does not generate
 expected results, memoize implementation results, or self-approve drift.
+Before invoking an adapter, the harness projects each artifact vector into a
+fresh `pheroos-commit-tck-request-v2` input-only request. The request contains
+the manifest, prior authoritative state, operation inputs, and case identity,
+but never the base expected result or mutation/permutation expectations. Exact
+expected values remain harness-owned and are compared only after the adapter
+returns.
+
+### Commit TCK v2 adapter protocol
+
+The public, provider-neutral request and response contracts are checked in as
+`schemas/commit-tck-request-v2.schema.json` and
+`schemas/commit-tck-response-v2.schema.json`. The declarations and strict JSONL
+codec live in `pheroos.conformance.commit_tck_v2_protocol`; this module uses only
+the Python standard library and does not expose Governance implementation
+objects on the wire. A request uses `pheroos-commit-tck-request-v2`, contains an
+explicit operation, and never contains `expected`. A response uses
+`pheroos-commit-tck-response-v2`, correlates by request id, identifies the
+implementation, and contains only the adapter's complete actual result.
+
+The versioned JSONL session is `pheroos-commit-tck-jsonl-v2`:
+
+1. The harness writes one `handshake` containing the session id, TCK/request/
+   response versions, and all required operations.
+2. The adapter writes one `handshake_ack` containing its stable implementation
+   id and version plus every supported TCK/request/response version and
+   operation.
+3. For each case, the harness writes an `evaluate` envelope containing only a
+   fresh request. The adapter writes one ordered `result` envelope containing a
+   correlated response.
+4. The harness writes `close`; the adapter must finish with `closed` for the
+   same session.
+
+Unknown fields, duplicate JSON keys, non-finite numbers, version mismatch,
+unsupported operations, changed implementation ids, malformed output, missing
+or reordered responses, missing close, oversized output, non-zero exit, and
+timeout all fail the session. The protocol is newline-delimited JSON on standard
+input/output; it needs no server, network, provider, or process-global state.
+
+The checked declarative slice is
+`pheroos/conformance/tck/commit-integrity-v2.json`, governed by
+`schemas/commit-tck-v2.schema.json`. Its contiguous 23-case matrix proves public
+fixed-point arithmetic; manifest-derived deadline and terminal selection;
+evidence, support, diversity, and margin threshold pairs; every assurance
+profile; Byzantine membership, quorum, and fault-model behavior; and the rule
+that attention can change prioritization without changing evidence truth or
+gaining commit authority. It also exhaustively mutates all 51 scalar authority
+leaves of a portable evidence certificate and all 18 scalar authority leaves of
+a commit trace lineage; every mutation must fail verification. Golden expected
+values are hand-reviewed artifact inputs: the generator does not compute or
+rewrite v2 expected values.
+
+Two independent implementations must match every v2 golden exactly:
+
+- `PheroosPublicCommitTckV2Adapter` composes installed public Protocol and
+  Governance ABI functions.
+- `python -I -m pheroos.conformance.commit_tck_v2_spec_adapter` is a separate
+  stdlib spec model. It does not import `pheroos.governance`, the v1 reference
+  adapter, or the PheroOS v2 subject adapter.
+
+The v2 slice is additive. The v1 artifact remains byte-frozen, its 38 cases and
+semantic root remain authoritative for v1, and `generate_commit_tck.py` still
+owns only the explicit v1 replay/refresh workflow. Direct v2 family equivalents
+now exist for v1 cases 11, 18, 20, 25, 27, and 28. A one-for-one declarative v2
+migration remains for v1 matrix cases 1-10, 12-17, 19, 21-24, 26, and 29-38;
+until those additive vectors land, the frozen v1 TCK continues to gate every one
+of them. The new manifest-derived and adversarial v2 gates therefore do not
+downgrade or replace legacy coverage.
 
 Case 35 inspects the selected profile and callable registry without invoking
 the checks, so the TCK cannot recursively call itself. Separate active-report
@@ -200,6 +279,7 @@ Run the manifest profiles and TCK independently:
 python -m pheroos.cli.main conformance examples/hybrid-commit-protocol
 python -m pheroos.cli.main conformance examples/distributed-commit-protocol
 python -m pytest -q tests/conformance/test_commit_tck.py \
+  tests/conformance/test_commit_tck_v2.py \
   tests/conformance/test_commit_integrity_conformance.py
 ```
 
@@ -209,7 +289,8 @@ Manifest conformance validates only the ABI profile selected by
 `capability.json`; its optional `root` compatibility argument is intentionally
 ignored. It must not infer source cohesion from the current working directory.
 Source ownership, package boundaries, domain neutrality, and public type
-identity are proved only by `pheroos-source-v1`:
+identity and the replaceable store contracts are proved only by
+`pheroos-source-v3`:
 
 ```bash
 python -m pheroos.cli.main source-conformance /path/to/pheroos-protocol-core
@@ -219,9 +300,34 @@ When the argument is omitted, the root is resolved from the installed package,
 never from the current working directory. Missing protocol, kernel, governance,
 drivers, trace, conformance, or CLI surfaces fail the report.
 
-Release verification runs both boundaries. It also runs the same TCK from the
-source tree and an isolated wheel under an external working directory; matching
-canonical roots and exact results are required.
+Source-v3 also runs the bundled StateStore and TraceStore reference adapters
+through the same public matrices exposed to external runtimes:
+
+```python
+from pheroos.conformance import (
+    run_governance_state_store_conformance,
+    run_trace_store_conformance,
+)
+
+state_result = run_governance_state_store_conformance(state_adapter)
+trace_result = run_trace_store_conformance(trace_adapter)
+```
+
+The StateStore fixture supplies fresh, checkpoint-restored, snapshot-restored,
+and deterministically failure-injected stores. The TraceStore fixture supplies
+fresh stores. Fixtures declare the exact
+`GOVERNANCE_STATE_STORE_CONFORMANCE_VERSION` or
+`TRACE_STORE_CONFORMANCE_VERSION`; unknown matrix versions fail closed.
+StateStore failure points come from the public
+`GOVERNANCE_STATE_STORE_FAILURE_STAGES` tuple.
+Its concurrency matrix runs 32 same-batch retries and 32 conflicting-batch
+workers. That load is not added to the provider ABI.
+Conformance never owns the provider or database lifecycle.
+
+Release verification runs both boundaries. It also runs both TCK generations
+from the source tree and from separate wheel and sdist installations under an
+external working directory; matching golden roots and exact results are
+required.
 
 ## Rules
 

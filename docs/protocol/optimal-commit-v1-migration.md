@@ -26,23 +26,29 @@ commit authority.
 An external runtime should migrate in this order:
 
 1. Load and validate the manifest and selected profile.
-2. Obtain governance-issued principal, risk, membership, replay, stop, and
+2. Create one tenant/run `RuntimeScope`; bind its `scope_ref` to the Kernel,
+   Driver, Governance `AuthorityDomain`, store, and scoped Trace path.
+3. Obtain governance-issued principal, risk, membership, replay, stop, and
    permission heads.
-3. Verify observations, counterevidence dispositions, and challenges.
-4. Bind candidate evidence and issue evidence-bound support leases.
-5. Issue a `CommitEvaluationContext` and call `assess_optimal_commit(...)`.
-6. Run Hybrid memory through `evaluate_hybrid_attention_step(...)` when Hybrid
+4. Verify observations, counterevidence dispositions, and challenges.
+5. Bind candidate evidence and issue evidence-bound support leases.
+6. Issue a `CommitEvaluationContext` and call `assess_optimal_commit(...)`.
+7. Run Hybrid memory through `evaluate_hybrid_attention_step(...)` when Hybrid
    exploration is declared.
-7. Initialize/advance the commit window with monotonic logical steps.
-8. Submit the issued heads to `evaluate_hybrid_commit_step(request=...)`.
-9. Persist the returned progress/outcome and canonical trace externally.
-10. When progress is returned, preserve its exact heads and follow
+8. Initialize/advance the commit window with monotonic logical steps.
+9. Submit the issued heads to `evaluate_hybrid_commit_step(request=...)`.
+10. Prepare the result against the exact scoped Governance head, atomically
+    commit state and Trace through a `GovernanceStateStore`, verify its receipt,
+    and finalize. `evaluate_and_commit_hybrid_step(...)` is the high-aggregation
+    helper for this explicit domain/store sequence. Only `committed` may expose
+    durable output authority; stale heads request a retry.
+11. When progress is returned, preserve its exact heads and follow
     `next_required_inputs` at the next monotonic step. Re-run the upstream
     qualification path when new evidence is required. Append its replay
     receipts, then issue a new immutable `CommitEvaluationContext` and fresh
     action gates for that current head; never mutate the prior context or
     synthesize a heartbeat for late certificate or distributed-finality input.
-11. Treat delivery, publication, and execution as three different decisions.
+12. Treat delivery, publication, and execution as three different decisions.
 
 An unavailable or invalid attention/directive binding is advisory degradation,
 not commit degradation. Preserve its structured diagnostic, continue the
@@ -99,6 +105,7 @@ Before enabling the field in production adapters:
 .venv/bin/python -m pheroos.cli.main conformance path/to/protocol-directory
 .venv/bin/python -c \
   'from pheroos.conformance import run_commit_tck; assert run_commit_tck().ok'
+.venv/bin/python -m pheroos.cli.main tck run --version v2
 ```
 
 Run the same TCK from the built wheel and an external working directory. An
@@ -108,3 +115,7 @@ PASS or FAIL; skip/N/A is not a compatibility result.
 Unknown critical fields and versions fail closed. Place non-authoritative
 adapter metadata in noncritical extension envelopes; it remains outside commit
 roots and cannot grant authority.
+
+New callers should use `evaluate_hybrid_commit_step(request=...)`.
+`evaluate_hybrid_commit_evaluation(...)` is a deprecated compatibility alias
+scheduled no earlier than the 0.3 Draft removal window.

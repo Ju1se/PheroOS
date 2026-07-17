@@ -3,6 +3,7 @@ from __future__ import annotations
 from collections.abc import Sequence
 import unicodedata
 
+from pheroos._digest import is_canonical_sha256_fingerprint
 from pheroos.governance.errors import GovernanceError
 from pheroos.protocol.commit_models import (
     MAX_AUTHORITY_INTEGER,
@@ -65,11 +66,7 @@ def require_commit_profile(value: object, field_name: str) -> str:
 
 def require_commit_fingerprint(value: object, field_name: str) -> str:
     text = require_commit_text(value, field_name)
-    if (
-        len(text) != 71
-        or not text.startswith("sha256:")
-        or any(character not in "0123456789abcdef" for character in text[7:])
-    ):
+    if not is_canonical_sha256_fingerprint(text):
         raise GovernanceError(
             f"{field_name} must be a lowercase sha256 authority fingerprint"
         )

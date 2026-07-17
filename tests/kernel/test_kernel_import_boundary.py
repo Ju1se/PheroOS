@@ -3,18 +3,31 @@ import subprocess
 import sys
 from pathlib import Path
 
-from pheroos.conformance.checks.kernel_import_boundary import check
+from pheroos.conformance.checks.kernel_import_boundary import (
+    FORBIDDEN_IMPORT_ROOTS,
+    ROOT_FOUNDATION_MODULES,
+    check,
+)
 
 
 ROOT = Path(__file__).resolve().parents[2]
-FORBIDDEN = {"app", "runtime", "tools", "capabilities", "fastapi", "langgraph", "litellm"}
+FORBIDDEN = FORBIDDEN_IMPORT_ROOTS
+
+
+def test_root_foundation_modules_are_explicit_and_small() -> None:
+    assert ROOT_FOUNDATION_MODULES == {
+        "_digest",
+        "_immutable",
+        "_scope",
+        "_version",
+    }
 
 
 def test_core_import_does_not_load_removed_runtime_modules() -> None:
     code = (
         "import sys; "
         "import pheroos, pheroos.protocol, pheroos.kernel, pheroos.governance; "
-        "forbidden={'app','runtime','tools','capabilities','fastapi','langgraph','litellm'}; "
+        f"forbidden={FORBIDDEN_IMPORT_ROOTS!r}; "
         "loaded=sorted(name for name in sys.modules if name.split('.')[0] in forbidden); "
         "assert not loaded, loaded"
     )
@@ -75,3 +88,22 @@ def test_package_import_dag_resolves_absolute_root_alias_imports(tmp_path: Path)
 
     assert result.ok is False
     assert "pheroos.governance" in result.detail
+
+
+def test_package_import_boundary_rejects_database_and_server_frameworks(
+    tmp_path: Path,
+) -> None:
+    protocol = tmp_path / "pheroos" / "protocol"
+    protocol.mkdir(parents=True)
+    (tmp_path / "pheroos" / "__init__.py").write_text("", encoding="utf-8")
+    (protocol / "__init__.py").write_text("", encoding="utf-8")
+    (protocol / "bad.py").write_text(
+        "import sqlite3\nfrom fastapi import FastAPI\n",
+        encoding="utf-8",
+    )
+
+    result = check(tmp_path)
+
+    assert result.ok is False
+    assert "sqlite3" in result.detail
+    assert "fastapi" in result.detail

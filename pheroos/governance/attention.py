@@ -5,6 +5,9 @@ from dataclasses import dataclass, field
 from math import isfinite
 from typing import Any
 
+from pheroos.governance._swarm.replay import (
+    _replay_state_from_verified_hybrid_step,
+)
 from pheroos.governance.collective import (
     HybridCollectiveStep,
     HybridReplayState,
@@ -12,7 +15,6 @@ from pheroos.governance.collective import (
     evaluate_hybrid_collective_step,
     hybrid_collective_step_is_authoritative,
     hybrid_replay_state_is_authoritative,
-    replay_state_from_hybrid_step,
 )
 from pheroos.governance.errors import GovernanceError
 from pheroos.governance.pheromone import (
@@ -247,8 +249,8 @@ def evaluate_hybrid_attention_step(
 def derive_attention_breakdown(step: HybridCollectiveStep) -> AttentionBreakdown:
     """Derive a governance-issued attention view from one Hybrid memory step."""
 
-    _require_attention_only_step(step)
-    replay_state = replay_state_from_hybrid_step(step)
+    verified_step = _require_attention_only_step(step)
+    replay_state = _replay_state_from_verified_hybrid_step(verified_step)
     current_step = _hybrid_step_current_step(step)
     roots = _hybrid_attention_roots(step, replay_state)
     candidate_pressures = _candidate_trail_pressures(step)
@@ -453,17 +455,18 @@ def attention_breakdown_is_authoritative(attention: object) -> bool:
             and issuance[1] == attention_breakdown_fingerprint(attention)
         ):
             return False
-        _require_attention_only_step(attention.source_step)
+        verified_step = _require_attention_only_step(attention.source_step)
         if not hybrid_replay_state_is_authoritative(attention.replay_state):
             return False
-        expected_replay = replay_state_from_hybrid_step(attention.source_step)
-        if _hybrid_replay_root(expected_replay) != _hybrid_replay_root(
-            attention.replay_state
-        ):
+        expected_replay = _replay_state_from_verified_hybrid_step(verified_step)
+        expected_replay_root = _hybrid_replay_root(expected_replay)
+        replay_root = _hybrid_replay_root(attention.replay_state)
+        if expected_replay_root != replay_root:
             return False
         roots = _hybrid_attention_roots(
             attention.source_step,
             attention.replay_state,
+            verified_replay_root=replay_root,
         )
         if any(
             getattr(attention, name) != value for name, value in roots.items()
@@ -670,6 +673,8 @@ def _reopen_payload(item: AttentionReopenEligibility) -> dict[str, Any]:
 def _hybrid_attention_roots(
     step: HybridCollectiveStep,
     replay_state: HybridReplayState,
+    *,
+    verified_replay_root: str | None = None,
 ) -> dict[str, str]:
     memory_root = pheromone_clip_payload_fingerprint(
         {
@@ -697,7 +702,11 @@ def _hybrid_attention_roots(
             "budget_state": _canonical_authority_value(step.budget_state),
         }
     )
-    replay_root = _hybrid_replay_root(replay_state)
+    replay_root = (
+        _hybrid_replay_root(replay_state)
+        if verified_replay_root is None
+        else verified_replay_root
+    )
     trace_root = pheromone_clip_payload_fingerprint(
         {
             "domain": "pheroos-hybrid-attention-trace-v1",

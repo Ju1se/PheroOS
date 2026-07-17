@@ -1,0 +1,1707 @@
+{
+  "$id": "https://pheroos.dev/schemas/protocol-v2.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "patternProperties": {
+    "^(x-|ext\\.).+": {}
+  },
+  "properties": {
+    "candidates": {
+      "items": {
+        "additionalProperties": false,
+        "patternProperties": {
+          "^(x-|ext\\.).+": {}
+        },
+        "properties": {
+          "extensions": {
+            "type": "object"
+          },
+          "id": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "safe_fallback": {
+            "type": "boolean"
+          },
+          "target": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "target"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "collective_commit_policy": {
+      "additionalProperties": false,
+      "patternProperties": {
+        "^(x-|ext\\.).+": {}
+      },
+      "properties": {
+        "assurance": {
+          "enum": [
+            "advisory",
+            "certified",
+            "distributed",
+            "evidence_bound"
+          ]
+        },
+        "certificate": {
+          "additionalProperties": false,
+          "patternProperties": {
+            "^(x-|ext\\.).+": {}
+          },
+          "properties": {
+            "canonicalization": {
+              "const": "pheroos-commit-canonical-v1"
+            },
+            "extensions": {
+              "type": "object"
+            },
+            "hash_algorithm": {
+              "const": "sha256"
+            },
+            "independent_verification_required": {
+              "type": "boolean"
+            },
+            "issuer_attestation_required": {
+              "type": "boolean"
+            },
+            "mode": {
+              "enum": [
+                "distributed",
+                "local_receipt",
+                "none",
+                "portable"
+              ]
+            },
+            "wire_version": {
+              "const": "pheroos-commit-wire-v1"
+            }
+          },
+          "required": [
+            "mode",
+            "wire_version",
+            "canonicalization",
+            "hash_algorithm",
+            "issuer_attestation_required",
+            "independent_verification_required"
+          ],
+          "type": "object"
+        },
+        "commit_window": {
+          "additionalProperties": false,
+          "patternProperties": {
+            "^(x-|ext\\.).+": {}
+          },
+          "properties": {
+            "deliberation_deadline_steps": {
+              "maximum": 9007199254740991,
+              "minimum": 1,
+              "type": "integer",
+              "x-pheroos-exact-integer": true
+            },
+            "extensions": {
+              "type": "object"
+            },
+            "maximum_epoch_restarts": {
+              "maximum": 9007199254740991,
+              "minimum": 0,
+              "type": "integer",
+              "x-pheroos-exact-integer": true
+            },
+            "maximum_leader_resets": {
+              "maximum": 9007199254740991,
+              "minimum": 0,
+              "type": "integer",
+              "x-pheroos-exact-integer": true
+            },
+            "minimum_stability_steps": {
+              "maximum": 9007199254740991,
+              "minimum": 1,
+              "type": "integer",
+              "x-pheroos-exact-integer": true
+            },
+            "reset_rules": {
+              "items": {
+                "enum": [
+                  "epoch_change",
+                  "gate_failure",
+                  "leader_change",
+                  "membership_change",
+                  "policy_change",
+                  "risk_change",
+                  "step_gap"
+                ]
+              },
+              "maxItems": 7,
+              "minItems": 7,
+              "type": "array",
+              "uniqueItems": true
+            },
+            "run_deadline_steps": {
+              "maximum": 9007199254740991,
+              "minimum": 1,
+              "type": "integer",
+              "x-pheroos-exact-integer": true
+            }
+          },
+          "required": [
+            "minimum_stability_steps",
+            "deliberation_deadline_steps",
+            "maximum_leader_resets",
+            "maximum_epoch_restarts",
+            "run_deadline_steps",
+            "reset_rules"
+          ],
+          "type": "object"
+        },
+        "distributed": {
+          "oneOf": [
+            {
+              "additionalProperties": false,
+              "patternProperties": {
+                "^(x-|ext\\.).+": {}
+              },
+              "properties": {
+                "conflict_rule": {
+                  "const": "freeze_v1"
+                },
+                "epoch_transition_rule": {
+                  "minLength": 1,
+                  "pattern": "^\\S(?:.*\\S)?$",
+                  "type": "string"
+                },
+                "extensions": {
+                  "type": "object"
+                },
+                "fault_model": {
+                  "const": "byzantine_static_v1"
+                },
+                "max_byzantine_faults": {
+                  "maximum": 9007199254740991,
+                  "minimum": 0,
+                  "type": "integer",
+                  "x-pheroos-exact-integer": true
+                },
+                "membership_mode": {
+                  "const": "static_epoch_verified_clusters_v1"
+                },
+                "membership_size": {
+                  "maximum": 9007199254740991,
+                  "minimum": 1,
+                  "type": "integer",
+                  "x-pheroos-exact-integer": true
+                },
+                "minimum_failure_domain_diversity": {
+                  "maximum": 9007199254740991,
+                  "minimum": 1,
+                  "type": "integer",
+                  "x-pheroos-exact-integer": true
+                },
+                "witness_quorum": {
+                  "maximum": 9007199254740991,
+                  "minimum": 1,
+                  "type": "integer",
+                  "x-pheroos-exact-integer": true
+                },
+                "witness_ttl_steps": {
+                  "maximum": 9007199254740991,
+                  "minimum": 1,
+                  "type": "integer",
+                  "x-pheroos-exact-integer": true
+                }
+              },
+              "required": [
+                "fault_model",
+                "membership_mode",
+                "membership_size",
+                "max_byzantine_faults",
+                "witness_quorum",
+                "witness_ttl_steps",
+                "minimum_failure_domain_diversity",
+                "epoch_transition_rule",
+                "conflict_rule"
+              ],
+              "type": "object"
+            },
+            {
+              "const": null
+            }
+          ]
+        },
+        "evidence_qualification": {
+          "additionalProperties": false,
+          "patternProperties": {
+            "^(x-|ext\\.).+": {}
+          },
+          "properties": {
+            "counter_group_cap": {
+              "maximum": 9007199254740991,
+              "minimum": 1,
+              "type": "integer",
+              "x-pheroos-exact-integer": true
+            },
+            "counter_weight_ppm": {
+              "maximum": 9007199254740991,
+              "minimum": 1,
+              "type": "integer",
+              "x-pheroos-exact-integer": true
+            },
+            "domain_contribution_floor": {
+              "maximum": 9007199254740991,
+              "minimum": 1,
+              "type": "integer",
+              "x-pheroos-exact-integer": true
+            },
+            "extensions": {
+              "type": "object"
+            },
+            "maximum_counterevidence": {
+              "maximum": 9007199254740991,
+              "minimum": 0,
+              "type": "integer",
+              "x-pheroos-exact-integer": true
+            },
+            "maximum_counterevidence_ratio_ppm": {
+              "maximum": 1000000,
+              "minimum": 0,
+              "type": "integer",
+              "x-pheroos-exact-integer": true
+            },
+            "minimum_positive_evidence": {
+              "maximum": 9007199254740991,
+              "minimum": 1,
+              "type": "integer",
+              "x-pheroos-exact-integer": true
+            },
+            "minimum_quality_ppm": {
+              "maximum": 1000000,
+              "minimum": 0,
+              "type": "integer",
+              "x-pheroos-exact-integer": true
+            },
+            "minimum_relevance_ppm": {
+              "maximum": 1000000,
+              "minimum": 0,
+              "type": "integer",
+              "x-pheroos-exact-integer": true
+            },
+            "minimum_source_diversity": {
+              "maximum": 9007199254740991,
+              "minimum": 1,
+              "type": "integer",
+              "x-pheroos-exact-integer": true
+            },
+            "numeric_scale": {
+              "const": 1000000,
+              "type": "integer",
+              "x-pheroos-exact-integer": true
+            },
+            "observation_ttl_steps": {
+              "maximum": 9007199254740991,
+              "minimum": 1,
+              "type": "integer",
+              "x-pheroos-exact-integer": true
+            },
+            "positive_group_cap": {
+              "maximum": 9007199254740991,
+              "minimum": 1,
+              "type": "integer",
+              "x-pheroos-exact-integer": true
+            },
+            "require_provenance": {
+              "const": true
+            },
+            "require_trace": {
+              "const": true
+            },
+            "required_challenge_categories": {
+              "items": {
+                "minLength": 1,
+                "pattern": "^\\S(?:.*\\S)?$",
+                "type": "string"
+              },
+              "minItems": 1,
+              "type": "array",
+              "uniqueItems": true
+            }
+          },
+          "required": [
+            "numeric_scale",
+            "minimum_quality_ppm",
+            "minimum_relevance_ppm",
+            "positive_group_cap",
+            "counter_group_cap",
+            "counter_weight_ppm",
+            "minimum_positive_evidence",
+            "maximum_counterevidence",
+            "maximum_counterevidence_ratio_ppm",
+            "domain_contribution_floor",
+            "minimum_source_diversity",
+            "required_challenge_categories",
+            "observation_ttl_steps",
+            "require_provenance",
+            "require_trace"
+          ],
+          "type": "object"
+        },
+        "extensions": {
+          "type": "object"
+        },
+        "model": {
+          "const": "optimal_evidence_v1"
+        },
+        "policy_version": {
+          "const": "pheroos-collective-commit-policy-v1"
+        },
+        "risk_bands": {
+          "additionalProperties": false,
+          "properties": {
+            "CRITICAL": {
+              "additionalProperties": false,
+              "patternProperties": {
+                "^(x-|ext\\.).+": {}
+              },
+              "properties": {
+                "executable_outcomes": {
+                  "items": {
+                    "enum": [
+                      "advisory",
+                      "blocked",
+                      "evidence_commit",
+                      "finality_unavailable",
+                      "invalid",
+                      "safe_fallback",
+                      "safety_violation"
+                    ]
+                  },
+                  "minItems": 0,
+                  "type": "array",
+                  "uniqueItems": true
+                },
+                "extensions": {
+                  "type": "object"
+                },
+                "maximum_counterevidence": {
+                  "maximum": 9007199254740991,
+                  "minimum": 0,
+                  "type": "integer",
+                  "x-pheroos-exact-integer": true
+                },
+                "maximum_counterevidence_ratio_ppm": {
+                  "maximum": 1000000,
+                  "minimum": 0,
+                  "type": "integer",
+                  "x-pheroos-exact-integer": true
+                },
+                "minimum_assurance": {
+                  "enum": [
+                    "advisory",
+                    "certified",
+                    "distributed",
+                    "evidence_bound"
+                  ]
+                },
+                "minimum_margin": {
+                  "maximum": 9007199254740991,
+                  "minimum": 1,
+                  "type": "integer",
+                  "x-pheroos-exact-integer": true
+                },
+                "minimum_positive_evidence": {
+                  "maximum": 9007199254740991,
+                  "minimum": 1,
+                  "type": "integer",
+                  "x-pheroos-exact-integer": true
+                },
+                "minimum_source_diversity": {
+                  "maximum": 9007199254740991,
+                  "minimum": 1,
+                  "type": "integer",
+                  "x-pheroos-exact-integer": true
+                },
+                "minimum_support_clusters": {
+                  "maximum": 9007199254740991,
+                  "minimum": 1,
+                  "type": "integer",
+                  "x-pheroos-exact-integer": true
+                },
+                "minimum_support_ratio_ppm": {
+                  "maximum": 1000000,
+                  "minimum": 1,
+                  "type": "integer",
+                  "x-pheroos-exact-integer": true
+                },
+                "publishable_outcomes": {
+                  "items": {
+                    "enum": [
+                      "advisory",
+                      "blocked",
+                      "evidence_commit",
+                      "finality_unavailable",
+                      "invalid",
+                      "safe_fallback",
+                      "safety_violation"
+                    ]
+                  },
+                  "minItems": 0,
+                  "type": "array",
+                  "uniqueItems": true
+                },
+                "required_challenge_categories": {
+                  "items": {
+                    "minLength": 1,
+                    "pattern": "^\\S(?:.*\\S)?$",
+                    "type": "string"
+                  },
+                  "minItems": 1,
+                  "type": "array",
+                  "uniqueItems": true
+                },
+                "stability_steps": {
+                  "maximum": 9007199254740991,
+                  "minimum": 1,
+                  "type": "integer",
+                  "x-pheroos-exact-integer": true
+                }
+              },
+              "required": [
+                "minimum_positive_evidence",
+                "maximum_counterevidence",
+                "maximum_counterevidence_ratio_ppm",
+                "minimum_support_clusters",
+                "minimum_support_ratio_ppm",
+                "minimum_source_diversity",
+                "minimum_margin",
+                "stability_steps",
+                "required_challenge_categories",
+                "minimum_assurance",
+                "publishable_outcomes",
+                "executable_outcomes"
+              ],
+              "type": "object"
+            },
+            "HIGH": {
+              "additionalProperties": false,
+              "patternProperties": {
+                "^(x-|ext\\.).+": {}
+              },
+              "properties": {
+                "executable_outcomes": {
+                  "items": {
+                    "enum": [
+                      "advisory",
+                      "blocked",
+                      "evidence_commit",
+                      "finality_unavailable",
+                      "invalid",
+                      "safe_fallback",
+                      "safety_violation"
+                    ]
+                  },
+                  "minItems": 0,
+                  "type": "array",
+                  "uniqueItems": true
+                },
+                "extensions": {
+                  "type": "object"
+                },
+                "maximum_counterevidence": {
+                  "maximum": 9007199254740991,
+                  "minimum": 0,
+                  "type": "integer",
+                  "x-pheroos-exact-integer": true
+                },
+                "maximum_counterevidence_ratio_ppm": {
+                  "maximum": 1000000,
+                  "minimum": 0,
+                  "type": "integer",
+                  "x-pheroos-exact-integer": true
+                },
+                "minimum_assurance": {
+                  "enum": [
+                    "advisory",
+                    "certified",
+                    "distributed",
+                    "evidence_bound"
+                  ]
+                },
+                "minimum_margin": {
+                  "maximum": 9007199254740991,
+                  "minimum": 1,
+                  "type": "integer",
+                  "x-pheroos-exact-integer": true
+                },
+                "minimum_positive_evidence": {
+                  "maximum": 9007199254740991,
+                  "minimum": 1,
+                  "type": "integer",
+                  "x-pheroos-exact-integer": true
+                },
+                "minimum_source_diversity": {
+                  "maximum": 9007199254740991,
+                  "minimum": 1,
+                  "type": "integer",
+                  "x-pheroos-exact-integer": true
+                },
+                "minimum_support_clusters": {
+                  "maximum": 9007199254740991,
+                  "minimum": 1,
+                  "type": "integer",
+                  "x-pheroos-exact-integer": true
+                },
+                "minimum_support_ratio_ppm": {
+                  "maximum": 1000000,
+                  "minimum": 1,
+                  "type": "integer",
+                  "x-pheroos-exact-integer": true
+                },
+                "publishable_outcomes": {
+                  "items": {
+                    "enum": [
+                      "advisory",
+                      "blocked",
+                      "evidence_commit",
+                      "finality_unavailable",
+                      "invalid",
+                      "safe_fallback",
+                      "safety_violation"
+                    ]
+                  },
+                  "minItems": 0,
+                  "type": "array",
+                  "uniqueItems": true
+                },
+                "required_challenge_categories": {
+                  "items": {
+                    "minLength": 1,
+                    "pattern": "^\\S(?:.*\\S)?$",
+                    "type": "string"
+                  },
+                  "minItems": 1,
+                  "type": "array",
+                  "uniqueItems": true
+                },
+                "stability_steps": {
+                  "maximum": 9007199254740991,
+                  "minimum": 1,
+                  "type": "integer",
+                  "x-pheroos-exact-integer": true
+                }
+              },
+              "required": [
+                "minimum_positive_evidence",
+                "maximum_counterevidence",
+                "maximum_counterevidence_ratio_ppm",
+                "minimum_support_clusters",
+                "minimum_support_ratio_ppm",
+                "minimum_source_diversity",
+                "minimum_margin",
+                "stability_steps",
+                "required_challenge_categories",
+                "minimum_assurance",
+                "publishable_outcomes",
+                "executable_outcomes"
+              ],
+              "type": "object"
+            },
+            "LOW": {
+              "additionalProperties": false,
+              "patternProperties": {
+                "^(x-|ext\\.).+": {}
+              },
+              "properties": {
+                "executable_outcomes": {
+                  "items": {
+                    "enum": [
+                      "advisory",
+                      "blocked",
+                      "evidence_commit",
+                      "finality_unavailable",
+                      "invalid",
+                      "safe_fallback",
+                      "safety_violation"
+                    ]
+                  },
+                  "minItems": 0,
+                  "type": "array",
+                  "uniqueItems": true
+                },
+                "extensions": {
+                  "type": "object"
+                },
+                "maximum_counterevidence": {
+                  "maximum": 9007199254740991,
+                  "minimum": 0,
+                  "type": "integer",
+                  "x-pheroos-exact-integer": true
+                },
+                "maximum_counterevidence_ratio_ppm": {
+                  "maximum": 1000000,
+                  "minimum": 0,
+                  "type": "integer",
+                  "x-pheroos-exact-integer": true
+                },
+                "minimum_assurance": {
+                  "enum": [
+                    "advisory",
+                    "certified",
+                    "distributed",
+                    "evidence_bound"
+                  ]
+                },
+                "minimum_margin": {
+                  "maximum": 9007199254740991,
+                  "minimum": 1,
+                  "type": "integer",
+                  "x-pheroos-exact-integer": true
+                },
+                "minimum_positive_evidence": {
+                  "maximum": 9007199254740991,
+                  "minimum": 1,
+                  "type": "integer",
+                  "x-pheroos-exact-integer": true
+                },
+                "minimum_source_diversity": {
+                  "maximum": 9007199254740991,
+                  "minimum": 1,
+                  "type": "integer",
+                  "x-pheroos-exact-integer": true
+                },
+                "minimum_support_clusters": {
+                  "maximum": 9007199254740991,
+                  "minimum": 1,
+                  "type": "integer",
+                  "x-pheroos-exact-integer": true
+                },
+                "minimum_support_ratio_ppm": {
+                  "maximum": 1000000,
+                  "minimum": 1,
+                  "type": "integer",
+                  "x-pheroos-exact-integer": true
+                },
+                "publishable_outcomes": {
+                  "items": {
+                    "enum": [
+                      "advisory",
+                      "blocked",
+                      "evidence_commit",
+                      "finality_unavailable",
+                      "invalid",
+                      "safe_fallback",
+                      "safety_violation"
+                    ]
+                  },
+                  "minItems": 0,
+                  "type": "array",
+                  "uniqueItems": true
+                },
+                "required_challenge_categories": {
+                  "items": {
+                    "minLength": 1,
+                    "pattern": "^\\S(?:.*\\S)?$",
+                    "type": "string"
+                  },
+                  "minItems": 1,
+                  "type": "array",
+                  "uniqueItems": true
+                },
+                "stability_steps": {
+                  "maximum": 9007199254740991,
+                  "minimum": 1,
+                  "type": "integer",
+                  "x-pheroos-exact-integer": true
+                }
+              },
+              "required": [
+                "minimum_positive_evidence",
+                "maximum_counterevidence",
+                "maximum_counterevidence_ratio_ppm",
+                "minimum_support_clusters",
+                "minimum_support_ratio_ppm",
+                "minimum_source_diversity",
+                "minimum_margin",
+                "stability_steps",
+                "required_challenge_categories",
+                "minimum_assurance",
+                "publishable_outcomes",
+                "executable_outcomes"
+              ],
+              "type": "object"
+            },
+            "MODERATE": {
+              "additionalProperties": false,
+              "patternProperties": {
+                "^(x-|ext\\.).+": {}
+              },
+              "properties": {
+                "executable_outcomes": {
+                  "items": {
+                    "enum": [
+                      "advisory",
+                      "blocked",
+                      "evidence_commit",
+                      "finality_unavailable",
+                      "invalid",
+                      "safe_fallback",
+                      "safety_violation"
+                    ]
+                  },
+                  "minItems": 0,
+                  "type": "array",
+                  "uniqueItems": true
+                },
+                "extensions": {
+                  "type": "object"
+                },
+                "maximum_counterevidence": {
+                  "maximum": 9007199254740991,
+                  "minimum": 0,
+                  "type": "integer",
+                  "x-pheroos-exact-integer": true
+                },
+                "maximum_counterevidence_ratio_ppm": {
+                  "maximum": 1000000,
+                  "minimum": 0,
+                  "type": "integer",
+                  "x-pheroos-exact-integer": true
+                },
+                "minimum_assurance": {
+                  "enum": [
+                    "advisory",
+                    "certified",
+                    "distributed",
+                    "evidence_bound"
+                  ]
+                },
+                "minimum_margin": {
+                  "maximum": 9007199254740991,
+                  "minimum": 1,
+                  "type": "integer",
+                  "x-pheroos-exact-integer": true
+                },
+                "minimum_positive_evidence": {
+                  "maximum": 9007199254740991,
+                  "minimum": 1,
+                  "type": "integer",
+                  "x-pheroos-exact-integer": true
+                },
+                "minimum_source_diversity": {
+                  "maximum": 9007199254740991,
+                  "minimum": 1,
+                  "type": "integer",
+                  "x-pheroos-exact-integer": true
+                },
+                "minimum_support_clusters": {
+                  "maximum": 9007199254740991,
+                  "minimum": 1,
+                  "type": "integer",
+                  "x-pheroos-exact-integer": true
+                },
+                "minimum_support_ratio_ppm": {
+                  "maximum": 1000000,
+                  "minimum": 1,
+                  "type": "integer",
+                  "x-pheroos-exact-integer": true
+                },
+                "publishable_outcomes": {
+                  "items": {
+                    "enum": [
+                      "advisory",
+                      "blocked",
+                      "evidence_commit",
+                      "finality_unavailable",
+                      "invalid",
+                      "safe_fallback",
+                      "safety_violation"
+                    ]
+                  },
+                  "minItems": 0,
+                  "type": "array",
+                  "uniqueItems": true
+                },
+                "required_challenge_categories": {
+                  "items": {
+                    "minLength": 1,
+                    "pattern": "^\\S(?:.*\\S)?$",
+                    "type": "string"
+                  },
+                  "minItems": 1,
+                  "type": "array",
+                  "uniqueItems": true
+                },
+                "stability_steps": {
+                  "maximum": 9007199254740991,
+                  "minimum": 1,
+                  "type": "integer",
+                  "x-pheroos-exact-integer": true
+                }
+              },
+              "required": [
+                "minimum_positive_evidence",
+                "maximum_counterevidence",
+                "maximum_counterevidence_ratio_ppm",
+                "minimum_support_clusters",
+                "minimum_support_ratio_ppm",
+                "minimum_source_diversity",
+                "minimum_margin",
+                "stability_steps",
+                "required_challenge_categories",
+                "minimum_assurance",
+                "publishable_outcomes",
+                "executable_outcomes"
+              ],
+              "type": "object"
+            }
+          },
+          "required": [
+            "LOW",
+            "MODERATE",
+            "HIGH",
+            "CRITICAL"
+          ],
+          "type": "object"
+        },
+        "support_lease": {
+          "additionalProperties": false,
+          "patternProperties": {
+            "^(x-|ext\\.).+": {}
+          },
+          "properties": {
+            "cluster_verification_required": {
+              "const": true
+            },
+            "equivocation_mode": {
+              "const": "exclude_conflicts_v1"
+            },
+            "evidence_reference_required": {
+              "const": true
+            },
+            "extensions": {
+              "type": "object"
+            },
+            "lease_ttl_steps": {
+              "maximum": 9007199254740991,
+              "minimum": 1,
+              "type": "integer",
+              "x-pheroos-exact-integer": true
+            },
+            "membership_mode": {
+              "const": "verified_snapshot_v1"
+            },
+            "minimum_support_clusters": {
+              "maximum": 9007199254740991,
+              "minimum": 1,
+              "type": "integer",
+              "x-pheroos-exact-integer": true
+            },
+            "support_ratio_ppm": {
+              "maximum": 1000000,
+              "minimum": 1,
+              "type": "integer",
+              "x-pheroos-exact-integer": true
+            },
+            "switch_mode": {
+              "const": "revoke_then_issue_v1"
+            }
+          },
+          "required": [
+            "minimum_support_clusters",
+            "support_ratio_ppm",
+            "lease_ttl_steps",
+            "membership_mode",
+            "switch_mode",
+            "equivocation_mode",
+            "evidence_reference_required",
+            "cluster_verification_required"
+          ],
+          "type": "object"
+        },
+        "target": {
+          "minLength": 1,
+          "pattern": "^\\S(?:.*\\S)?$",
+          "type": "string"
+        },
+        "terminal_outcome": {
+          "additionalProperties": false,
+          "patternProperties": {
+            "^(x-|ext\\.).+": {}
+          },
+          "properties": {
+            "deadline_outcome": {
+              "enum": [
+                "advisory",
+                "safe_fallback"
+              ]
+            },
+            "deliverable_outcomes": {
+              "items": {
+                "enum": [
+                  "advisory",
+                  "blocked",
+                  "evidence_commit",
+                  "finality_unavailable",
+                  "invalid",
+                  "safe_fallback",
+                  "safety_violation"
+                ]
+              },
+              "minItems": 7,
+              "type": "array",
+              "uniqueItems": true
+            },
+            "executable_outcomes": {
+              "items": {
+                "enum": [
+                  "advisory",
+                  "blocked",
+                  "evidence_commit",
+                  "finality_unavailable",
+                  "invalid",
+                  "safe_fallback",
+                  "safety_violation"
+                ]
+              },
+              "minItems": 0,
+              "type": "array",
+              "uniqueItems": true
+            },
+            "extensions": {
+              "type": "object"
+            },
+            "finality_unavailable_outcome": {
+              "const": "finality_unavailable"
+            },
+            "policy_incomplete_outcome": {
+              "const": "invalid"
+            },
+            "publishable_outcomes": {
+              "items": {
+                "enum": [
+                  "advisory",
+                  "blocked",
+                  "evidence_commit",
+                  "finality_unavailable",
+                  "invalid",
+                  "safe_fallback",
+                  "safety_violation"
+                ]
+              },
+              "minItems": 0,
+              "type": "array",
+              "uniqueItems": true
+            },
+            "safe_fallback_candidate": {
+              "minLength": 1,
+              "pattern": "^\\S(?:.*\\S)?$",
+              "type": "string"
+            }
+          },
+          "required": [
+            "safe_fallback_candidate",
+            "deadline_outcome",
+            "policy_incomplete_outcome",
+            "finality_unavailable_outcome",
+            "deliverable_outcomes",
+            "publishable_outcomes",
+            "executable_outcomes"
+          ],
+          "type": "object"
+        }
+      },
+      "required": [
+        "policy_version",
+        "model",
+        "assurance",
+        "target",
+        "evidence_qualification",
+        "support_lease",
+        "risk_bands",
+        "commit_window",
+        "terminal_outcome",
+        "certificate",
+        "distributed"
+      ],
+      "type": "object"
+    },
+    "collective_decision_policy": {
+      "additionalProperties": false,
+      "patternProperties": {
+        "^(x-|ext\\.).+": {}
+      },
+      "properties": {
+        "exploration_enabled": {
+          "type": "boolean"
+        },
+        "exploration_floor": {
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number"
+        },
+        "extensions": {
+          "type": "object"
+        },
+        "fallback_candidate": {
+          "type": "string"
+        },
+        "inhibition_enabled": {
+          "type": "boolean"
+        },
+        "layer_confidence_thresholds": {
+          "additionalProperties": false,
+          "patternProperties": {
+            "^(reactive|learned|evolutionary|metacognitive)$": {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            }
+          },
+          "type": "object"
+        },
+        "layer_conflict_threshold": {
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number"
+        },
+        "layer_coordination_enabled": {
+          "type": "boolean"
+        },
+        "layer_default_weights": {
+          "additionalProperties": false,
+          "patternProperties": {
+            "^(reactive|learned|evolutionary|metacognitive)$": {
+              "maximum": 10,
+              "minimum": 0,
+              "type": "number"
+            }
+          },
+          "type": "object"
+        },
+        "layer_emergency_override_threshold": {
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number"
+        },
+        "layer_fallback_on_unresolved_conflict": {
+          "type": "boolean"
+        },
+        "layer_min_provenance": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "layer_weight_bounds": {
+          "additionalProperties": false,
+          "patternProperties": {
+            "^(reactive|learned|evolutionary|metacognitive)$": {
+              "oneOf": [
+                {
+                  "items": {
+                    "maximum": 10,
+                    "minimum": 0,
+                    "type": "number"
+                  },
+                  "maxItems": 2,
+                  "minItems": 2,
+                  "type": "array"
+                },
+                {
+                  "additionalProperties": false,
+                  "patternProperties": {
+                    "^(x-|ext\\.).+": {}
+                  },
+                  "properties": {
+                    "max": {
+                      "maximum": 10,
+                      "minimum": 0,
+                      "type": "number"
+                    },
+                    "min": {
+                      "maximum": 10,
+                      "minimum": 0,
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "min",
+                    "max"
+                  ],
+                  "type": "object"
+                }
+              ]
+            }
+          },
+          "type": "object"
+        },
+        "min_independent_scouts": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "mode": {
+          "enum": [
+            "quorum",
+            "bee_swarm",
+            "ant_colony",
+            "hybrid"
+          ]
+        },
+        "novelty_decay_rate": {
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number"
+        },
+        "pheromone_activation_threshold": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "pheromone_cautionary_override_threshold": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "pheromone_cautionary_weight": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "pheromone_competition_mode": {
+          "enum": [
+            "none",
+            "normalize"
+          ]
+        },
+        "pheromone_decay_model": {
+          "enum": [
+            "linear",
+            "exponential",
+            "step"
+          ]
+        },
+        "pheromone_diffusion_attenuation": {
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number"
+        },
+        "pheromone_diffusion_enabled": {
+          "type": "boolean"
+        },
+        "pheromone_diffusion_max_hops": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "pheromone_enabled": {
+          "type": "boolean"
+        },
+        "pheromone_evaporation_rate": {
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number"
+        },
+        "pheromone_exploration_floor": {
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number"
+        },
+        "pheromone_feedback_enabled": {
+          "type": "boolean"
+        },
+        "pheromone_kind_profiles": {
+          "additionalProperties": false,
+          "patternProperties": {
+            "^(positive|negative|cautionary|alarm|novelty|stale)$": {
+              "additionalProperties": false,
+              "patternProperties": {
+                "^(x-|ext\\.).+": {}
+              },
+              "properties": {
+                "can_suppress_positive": {
+                  "type": "boolean"
+                },
+                "evaporation_rate": {
+                  "maximum": 1,
+                  "minimum": 0,
+                  "type": "number"
+                },
+                "extensions": {
+                  "type": "object"
+                },
+                "priority": {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "response_model": {
+                  "enum": [
+                    "linear",
+                    "saturating",
+                    "threshold",
+                    "competitive"
+                  ]
+                },
+                "scored_subject_types": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "ttl_steps": {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "weight": {
+                  "minimum": 0,
+                  "type": "number"
+                }
+              },
+              "required": [],
+              "type": "object"
+            },
+            "^(x-|ext\\.).+": {
+              "additionalProperties": false,
+              "patternProperties": {
+                "^(x-|ext\\.).+": {}
+              },
+              "properties": {
+                "can_suppress_positive": {
+                  "type": "boolean"
+                },
+                "evaporation_rate": {
+                  "maximum": 1,
+                  "minimum": 0,
+                  "type": "number"
+                },
+                "extensions": {
+                  "type": "object"
+                },
+                "priority": {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "response_model": {
+                  "enum": [
+                    "linear",
+                    "saturating",
+                    "threshold",
+                    "competitive"
+                  ]
+                },
+                "scored_subject_types": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "ttl_steps": {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "weight": {
+                  "minimum": 0,
+                  "type": "number"
+                }
+              },
+              "required": [],
+              "type": "object"
+            }
+          },
+          "type": "object"
+        },
+        "pheromone_max_strength": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "pheromone_min_source_diversity": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "pheromone_min_strength": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "pheromone_negative_weight": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "pheromone_novelty_weight": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "pheromone_per_round_deposit_cap": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "pheromone_per_source_cap": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "pheromone_positive_weight": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "pheromone_require_provenance": {
+          "type": "boolean"
+        },
+        "pheromone_require_trace": {
+          "type": "boolean"
+        },
+        "pheromone_response_model": {
+          "enum": [
+            "linear",
+            "saturating",
+            "threshold",
+            "competitive"
+          ]
+        },
+        "pheromone_saturation_threshold": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "pheromone_scored_subject_types": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "type": "array"
+        },
+        "policy_adjustment_bounds": {
+          "additionalProperties": false,
+          "patternProperties": {
+            "^(pheromone_evaporation_rate|pheromone_exploration_floor|layer_emergency_override_threshold)$": {
+              "oneOf": [
+                {
+                  "items": {
+                    "maximum": 1,
+                    "minimum": 0,
+                    "type": "number"
+                  },
+                  "maxItems": 2,
+                  "minItems": 2,
+                  "type": "array"
+                },
+                {
+                  "additionalProperties": false,
+                  "patternProperties": {
+                    "^(x-|ext\\.).+": {}
+                  },
+                  "properties": {
+                    "max": {
+                      "maximum": 1,
+                      "minimum": 0,
+                      "type": "number"
+                    },
+                    "min": {
+                      "maximum": 1,
+                      "minimum": 0,
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "min",
+                    "max"
+                  ],
+                  "type": "object"
+                }
+              ]
+            },
+            "^(pheromone_positive_weight|pheromone_negative_weight|pheromone_cautionary_weight|pheromone_alarm_weight|pheromone_novelty_weight|pheromone_cautionary_override_threshold|layer_learned_weight|layer_evolutionary_weight|layer_metacognitive_weight)$": {
+              "oneOf": [
+                {
+                  "items": {
+                    "maximum": 10,
+                    "minimum": 0,
+                    "type": "number"
+                  },
+                  "maxItems": 2,
+                  "minItems": 2,
+                  "type": "array"
+                },
+                {
+                  "additionalProperties": false,
+                  "patternProperties": {
+                    "^(x-|ext\\.).+": {}
+                  },
+                  "properties": {
+                    "max": {
+                      "maximum": 10,
+                      "minimum": 0,
+                      "type": "number"
+                    },
+                    "min": {
+                      "maximum": 10,
+                      "minimum": 0,
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "min",
+                    "max"
+                  ],
+                  "type": "object"
+                }
+              ]
+            },
+            "^pheromone_response_model$": {
+              "additionalProperties": false,
+              "patternProperties": {
+                "^(x-|ext\\.).+": {}
+              },
+              "properties": {
+                "allowed_values": {
+                  "items": {
+                    "enum": [
+                      "linear",
+                      "saturating",
+                      "threshold",
+                      "competitive"
+                    ]
+                  },
+                  "minItems": 1,
+                  "type": "array"
+                }
+              },
+              "required": [
+                "allowed_values"
+              ],
+              "type": "object"
+            }
+          },
+          "type": "object"
+        },
+        "quorum_threshold": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "recruitment_enabled": {
+          "type": "boolean"
+        },
+        "stale_route_reopen_threshold": {
+          "minimum": 0,
+          "type": "number"
+        }
+      },
+      "required": [],
+      "type": "object"
+    },
+    "evidence_policy": {
+      "additionalProperties": false,
+      "patternProperties": {
+        "^(x-|ext\\.).+": {}
+      },
+      "properties": {
+        "allow_agent_fact_creation": {
+          "type": "boolean"
+        },
+        "extensions": {
+          "type": "object"
+        },
+        "require_provenance": {
+          "type": "boolean"
+        }
+      },
+      "required": [],
+      "type": "object"
+    },
+    "extensions": {
+      "type": "object"
+    },
+    "id": {
+      "type": "string"
+    },
+    "output_policy": {
+      "additionalProperties": false,
+      "patternProperties": {
+        "^(x-|ext\\.).+": {}
+      },
+      "properties": {
+        "extensions": {
+          "type": "object"
+        },
+        "requires_committed_candidate": {
+          "const": true,
+          "type": "boolean"
+        },
+        "requires_evidence_contract": {
+          "const": true,
+          "type": "boolean"
+        },
+        "requires_publication_permission": {
+          "const": true,
+          "type": "boolean"
+        },
+        "requires_stop_resolution": {
+          "const": true,
+          "type": "boolean"
+        },
+        "writer_may_create_facts": {
+          "type": "boolean"
+        }
+      },
+      "required": [],
+      "type": "object"
+    },
+    "protocol_version": {
+      "enum": [
+        "pheroos.protocol.v1"
+      ],
+      "type": "string"
+    },
+    "quorum_policy": {
+      "additionalProperties": false,
+      "patternProperties": {
+        "^(x-|ext\\.).+": {}
+      },
+      "properties": {
+        "commit_threshold": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "extensions": {
+          "type": "object"
+        },
+        "fallback_candidate": {
+          "type": "string"
+        },
+        "target": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "target",
+        "fallback_candidate"
+      ],
+      "type": "object"
+    },
+    "recovery_protocols": {
+      "items": {
+        "additionalProperties": false,
+        "patternProperties": {
+          "^(x-|ext\\.).+": {}
+        },
+        "properties": {
+          "allowed_roles": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "allowed_tags": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "extensions": {
+            "type": "object"
+          },
+          "failure_candidate": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "required_tools": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "trigger_targets": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "trigger_targets"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "signals": {
+      "items": {
+        "additionalProperties": false,
+        "patternProperties": {
+          "^(x-|ext\\.).+": {}
+        },
+        "properties": {
+          "authority_required": {
+            "type": "string"
+          },
+          "extensions": {
+            "type": "object"
+          },
+          "target": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "target"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "targets": {
+      "items": {
+        "additionalProperties": false,
+        "patternProperties": {
+          "^(x-|ext\\.).+": {}
+        },
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "extensions": {
+            "type": "object"
+          },
+          "id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "trace_policy": {
+      "additionalProperties": false,
+      "patternProperties": {
+        "^(x-|ext\\.).+": {}
+      },
+      "properties": {
+        "extensions": {
+          "type": "object"
+        },
+        "required_events": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "required": [],
+      "type": "object"
+    }
+  },
+  "required": [
+    "protocol_version",
+    "id",
+    "targets",
+    "candidates",
+    "quorum_policy",
+    "output_policy",
+    "trace_policy"
+  ],
+  "type": "object"
+}

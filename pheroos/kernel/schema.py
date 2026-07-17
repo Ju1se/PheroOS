@@ -2,6 +2,12 @@ from __future__ import annotations
 
 from typing import Any
 
+from pheroos.kernel._versions import (
+    KERNEL_PLAN_VERSION_V2,
+    KERNEL_SCHEMA_V1_ID,
+    KERNEL_SCHEMA_V2_ID,
+)
+
 
 def object_schema(properties: dict[str, Any], *, required: list[str]) -> dict[str, Any]:
     return {
@@ -16,11 +22,16 @@ def string_array_schema() -> dict[str, Any]:
     return {"type": "array", "items": {"type": "string"}}
 
 
-def kernel_schema() -> dict[str, Any]:
+def _kernel_v2_shape() -> dict[str, Any]:
     return object_schema(
         {
             "tenant_id": {"type": "string"},
             "request_id": {"type": "string"},
+            "run_id": {"type": "string"},
+            "scope_ref": {
+                "type": "string",
+                "pattern": "^sha256:[0-9a-f]{64}$",
+            },
             "capability_resolutions": {
                 "type": "array",
                 "items": object_schema(
@@ -55,6 +66,30 @@ def kernel_schema() -> dict[str, Any]:
                     required=["capability_id", "connection"],
                 ),
             },
+            "connection_readiness": {
+                "type": "array",
+                "items": object_schema(
+                    {
+                        "connection": {"type": "string", "minLength": 1},
+                        "available": {"type": "boolean"},
+                        "detail": {"type": "string"},
+                    },
+                    required=["connection", "available"],
+                ),
+            },
+            "driver_probe_snapshots": {
+                "type": "array",
+                "items": object_schema(
+                    {
+                        "driver_id": {"type": "string", "minLength": 1},
+                        "available": {"type": "boolean"},
+                        "detail": {"type": "string"},
+                        "version": {"type": "string", "minLength": 1},
+                        "capabilities": string_array_schema(),
+                    },
+                    required=["driver_id", "available", "version", "capabilities"],
+                ),
+            },
             "driver_exposures": {
                 "type": "array",
                 "items": object_schema(
@@ -62,6 +97,7 @@ def kernel_schema() -> dict[str, Any]:
                         "driver_id": {"type": "string"},
                         "capability_id": {"type": "string"},
                         "permissions": string_array_schema(),
+                        "capabilities": string_array_schema(),
                     },
                     required=["driver_id", "capability_id"],
                 ),
@@ -94,9 +130,13 @@ def kernel_schema() -> dict[str, Any]:
         required=[
             "tenant_id",
             "request_id",
+            "run_id",
+            "scope_ref",
             "capability_resolutions",
             "permission_grants",
             "connection_requirements",
+            "connection_readiness",
+            "driver_probe_snapshots",
             "driver_exposures",
             "tool_exposures",
             "diagnostics",
@@ -105,5 +145,35 @@ def kernel_schema() -> dict[str, Any]:
         ],
     ) | {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "$id": "https://pheroos.dev/schemas/kernel.schema.json",
+        "$id": KERNEL_SCHEMA_V1_ID,
     }
+
+
+def kernel_schema() -> dict[str, Any]:
+    """Return the frozen legacy-v1 OSPlan schema."""
+
+    schema = _kernel_v2_shape()
+    properties = schema["properties"]
+    for name in (
+        "run_id",
+        "scope_ref",
+        "connection_readiness",
+        "driver_probe_snapshots",
+    ):
+        properties.pop(name)
+        schema["required"].remove(name)
+    properties["driver_exposures"]["items"]["properties"].pop("capabilities")
+    return schema
+
+
+def kernel_schema_v2() -> dict[str, Any]:
+    """Return the scope- and readiness-bound Kernel plan v2 schema."""
+
+    schema = _kernel_v2_shape()
+    schema["$id"] = KERNEL_SCHEMA_V2_ID
+    schema["properties"]["plan_version"] = {"const": KERNEL_PLAN_VERSION_V2}
+    schema["required"].insert(0, "plan_version")
+    return schema
+
+
+__all__ = ["kernel_schema", "kernel_schema_v2"]

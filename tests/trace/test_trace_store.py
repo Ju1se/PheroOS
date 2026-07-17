@@ -439,28 +439,6 @@ def test_trace_store_snapshots_nested_lineage_and_returned_records() -> None:
     assert store.records[0].event.lineage == {"nested": {"values": [1, 2]}}
 
 
-def test_trace_store_former_private_records_view_cannot_rewrite_history() -> None:
-    store = InMemoryTraceStore()
-    store.append(
-        TraceEvent(
-            event_type="plan",
-            protocol_id="toy.review",
-            target="decision:e2e",
-            reason="append-only private storage",
-            lineage={"state": {"values": ["original"]}},
-        )
-    )
-
-    compatibility_view = store._records
-    compatibility_view[0].event.lineage["state"]["values"].append("forged")
-    with pytest.raises(AttributeError):
-        store._records = ()
-
-    assert store.records[0].event.lineage == {
-        "state": {"values": ["original"]}
-    }
-
-
 def test_trace_validation_failure_is_atomic() -> None:
     store = InMemoryTraceStore()
     store.append(

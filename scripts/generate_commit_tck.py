@@ -21,6 +21,7 @@ from pheroos.conformance.commit_tck import (
     COMMIT_TCK_VERSION,
     CommitTckVector,
     ReferenceCommitTckAdapter,
+    _request_from_vector,
     _variant_vector,
 )
 from pheroos.conformance.profile import profile_for_manifest
@@ -317,8 +318,8 @@ def _evaluate_exact(
     adapter: ReferenceCommitTckAdapter,
     vector: CommitTckVector,
 ) -> dict[str, Any]:
-    first = dict(adapter.evaluate(vector))
-    repeated = dict(adapter.evaluate(vector))
+    first = dict(adapter.evaluate(_request_from_vector(vector)))
+    repeated = dict(adapter.evaluate(_request_from_vector(vector)))
     if repeated != first:
         raise RuntimeError(f"non-repeatable TCK probe: {vector.id}")
     return first

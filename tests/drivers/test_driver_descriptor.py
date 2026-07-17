@@ -1,6 +1,12 @@
 import pytest
 
-from pheroos.drivers import DriverDescriptor, DriverRegistry, register, validate
+from pheroos.drivers import (
+    DriverDescriptor,
+    DriverRegistry,
+    StorageDriverDescriptor,
+    register,
+    validate,
+)
 from pheroos.drivers.errors import DriverError
 
 
@@ -109,3 +115,63 @@ def test_registry_constructor_routes_initial_descriptors_through_lifecycle_valid
 
     with pytest.raises(DriverError, match="descriptor is invalid"):
         DriverRegistry({"driver:invalid": invalid})
+
+
+def test_registration_preserves_complete_canonical_descriptor_shape() -> None:
+    descriptor = DriverDescriptor(
+        id="driver:complete",
+        kind="tool",
+        version="1",
+        capabilities=["tool:invoke"],
+        permissions=["driver:invoke"],
+        config_ref="config:driver:complete",
+        extensions={"ext.acme.driver": {"mode": "strict"}},
+    )
+
+    registered = register(descriptor).descriptor
+
+    assert registered == descriptor
+    assert registered.permissions == ("driver:invoke",)
+    assert registered.config_ref == "config:driver:complete"
+    assert registered.extensions["ext.acme.driver"]["mode"] == "strict"
+
+
+def test_legacy_specialized_descriptor_is_normalized_without_field_loss() -> None:
+    registered = register(
+        StorageDriverDescriptor(
+            id="driver:storage",
+            kind="storage",
+            version="1",
+            capabilities=["trace:append"],
+            stores_trace=False,
+        )
+    ).descriptor
+
+    assert type(registered) is DriverDescriptor
+    legacy = registered.extensions["ext.pheroos.legacy_descriptor"]
+    assert legacy["type"] == "StorageDriverDescriptor"
+    assert legacy["fields"] == {"stores_trace": False}
+
+
+def test_registry_rejects_conflicting_reregistration_but_accepts_exact_retry() -> None:
+    registry = DriverRegistry()
+    original = DriverDescriptor(
+        id="driver:stable",
+        kind="storage",
+        version="1",
+        capabilities=["trace:append"],
+    )
+    registry.register(original)
+    registry.register(original)
+
+    with pytest.raises(DriverError, match="conflicting registration"):
+        registry.register(
+            DriverDescriptor(
+                id="driver:stable",
+                kind="tool",
+                version="2",
+                capabilities=["admin"],
+            )
+        )
+
+    assert registry.get("driver:stable") == original

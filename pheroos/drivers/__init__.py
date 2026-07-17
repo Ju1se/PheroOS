@@ -4,36 +4,75 @@ from pheroos.drivers.base import (
     DriverHandle,
     DriverHealth,
     DriverProbeResult,
+    DriverProbeSnapshot,
     DriverRegistration,
     DriverResult,
 )
 from pheroos.drivers.data import DataProviderDriverDescriptor
+from pheroos.drivers.document import (
+    DriverDescriptorDocument,
+    DriverSchemaVersionError,
+    driver_descriptor_from_dict,
+    driver_descriptor_v1_from_dict,
+    upgrade_driver_descriptor_v1,
+)
 from pheroos.drivers.lifecycle import bind, declare, expose, invoke, probe, register, validate
+from pheroos.drivers.invocation import (
+    DRIVER_INVOCATION_RECEIPT_VERSION,
+    DRIVER_INVOCATION_VERSION,
+    DriverInvocationLedger,
+    DriverInvocationReceipt,
+    driver_request_digest,
+    driver_result_digest,
+)
+from pheroos.drivers._versions import (
+    DRIVER_DESCRIPTOR_VERSION_V2,
+    DRIVER_SCHEMA_V1_ID,
+    DRIVER_SCHEMA_V2_ID,
+)
 from pheroos.drivers.model import ModelDriverDescriptor
 from pheroos.drivers.registry import DriverRegistry
 from pheroos.drivers.sandbox import SandboxDriverDescriptor
 from pheroos.drivers.storage import StorageDriverDescriptor
 from pheroos.drivers.tool import ToolDriverDescriptor
+from pheroos.drivers.schema import driver_schema, driver_schema_v2
 
 __all__ = [
     "DataProviderDriverDescriptor",
     "DriverBinding",
     "DriverDescriptor",
+    "DriverDescriptorDocument",
     "DriverHandle",
     "DriverHealth",
+    "DriverInvocationLedger",
+    "DriverInvocationReceipt",
     "DriverProbeResult",
+    "DriverProbeSnapshot",
     "DriverRegistration",
     "DriverRegistry",
     "DriverResult",
+    "DriverSchemaVersionError",
+    "DRIVER_DESCRIPTOR_VERSION_V2",
+    "DRIVER_INVOCATION_RECEIPT_VERSION",
+    "DRIVER_INVOCATION_VERSION",
+    "DRIVER_SCHEMA_V1_ID",
+    "DRIVER_SCHEMA_V2_ID",
     "ModelDriverDescriptor",
     "SandboxDriverDescriptor",
     "StorageDriverDescriptor",
     "ToolDriverDescriptor",
     "bind",
     "declare",
+    "driver_request_digest",
+    "driver_result_digest",
+    "driver_descriptor_from_dict",
+    "driver_descriptor_v1_from_dict",
+    "driver_schema",
+    "driver_schema_v2",
     "expose",
     "invoke",
     "probe",
     "register",
     "validate",
+    "upgrade_driver_descriptor_v1",
 ]

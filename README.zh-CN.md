@@ -29,6 +29,28 @@ support lease、risk、稳定窗口、有界 liveness、可移植证书和 Byzan
 finality contract。Hybrid pheromone 与 layer 行为只进入 attention channel；单独改变
 attention 不能改变 commit 或 certificate。
 
+## Schema 文档版本
+
+四个核心 schema surface 都具有不可变的 legacy v1 alias，以及独立的 strict v2 文档：
+
+| Surface | 冻结的 v1 `$id` 与 CLI alias | Strict v2 artifact 与 selector |
+| --- | --- | --- |
+| Capability | `https://pheroos.dev/schemas/capability.schema.json`；`capability`/`capability-v1` | `schemas/capability-v2.schema.json`；`pheroos-capability-schema-v2` |
+| Protocol | `https://pheroos.dev/schemas/protocol.schema.json`；`protocol`/`protocol-v1` | `schemas/protocol-v2.schema.json`；`pheroos-protocol-schema-v2` |
+| Driver | `https://pheroos.dev/schemas/driver.schema.json`；`driver`/`driver-v1` | `schemas/driver-v2.schema.json`；`descriptor_version=pheroos-driver-descriptor-v2` |
+| Kernel | `https://pheroos.dev/schemas/kernel.schema.json`；`kernel`/`kernel-v1` | `schemas/kernel-v2.schema.json`；`plan_version=pheroos-kernel-plan-v2` |
+
+旧的无版本 `$id` 和 CLI alias 永久固定到 v1；它们绝不会根据文档形状或 package
+版本选择 v2。Capability 与 Protocol v2 是 schema-document 版本，其 payload 仍声明
+`protocol_version=pheroos.protocol.v1`。Driver 的 `descriptor_version` 与
+`DriverDescriptor.version` 中的外部 provider 版本相互独立；Kernel 使用自己的
+`plan_version` discriminator。
+
+Typed v1-to-v2 迁移必须显式且无损。Driver 迁移使用
+`upgrade_driver_descriptor_v1`，不可迁移输入会产生 typed error。Kernel 的
+`os_plan_v1_from_dict` 返回非权威 `LegacyOSPlan`；`upgrade_os_plan_v1` 要求调用者提供
+scope、readiness、probe、capability 和 provider-version 事实，不会编造默认值。
+
 ## 文档
 
 - [SPEC.md](SPEC.md) - protocol-core 规范。
@@ -36,13 +58,14 @@ attention 不能改变 commit 或 certificate。
 - [SECURITY.md](SECURITY.md) - 漏洞报告和协议安全边界。
 - [docs/process/index.md](docs/process/index.md) - 源树 process 入口。
 - [docs/protocol/runtime-integration.md](docs/protocol/runtime-integration.md) - 外部 runtime 如何与 PheroOS 组合。
+- [docs/protocol/hybrid-pheromone-abi.md](docs/protocol/hybrid-pheromone-abi.md) - Hybrid Pheromone 的规范 ABI。
 - [docs/protocol/hybrid-pheromone-v1-migration.md](docs/protocol/hybrid-pheromone-v1-migration.md) - draft Hybrid v1 迁移说明。
 - [docs/protocol/optimal-commit-abi.md](docs/protocol/optimal-commit-abi.md) - 完整 Optimal Commit Draft ABI 语义。
 - [docs/protocol/optimal-commit-v1-migration.md](docs/protocol/optimal-commit-v1-migration.md) - opt-in manifest 与 runtime 迁移。
-- [docs/protocol/optimal-commit-full-hardening-plan.md](docs/protocol/optimal-commit-full-hardening-plan.md) - 已完成的 WP-A–K、对抗矩阵与 Definition of Done。
 - [docs/protocol/runtime-adapter-guide.md](docs/protocol/runtime-adapter-guide.md) - 如何将 `DriverSpec` 映射到外部 adapter。
 - [docs/protocol/extension-points.md](docs/protocol/extension-points.md) - 扩展边界。
 - [docs/process/api-lifecycle.md](docs/process/api-lifecycle.md) - 公共 API 与 ABI 生命周期。
+- [docs/process/schema-v1-v2-migration.md](docs/process/schema-v1-v2-migration.md) - 冻结的 v1 schema alias 与显式 v2 迁移。
 - [docs/conformance/conformance-suite.md](docs/conformance/conformance-suite.md) - 兼容性检查。
 - [docs/process/release-checklist.md](docs/process/release-checklist.md) - 发布门槛。
 - [CHANGELOG.md](CHANGELOG.md) - draft ABI 变更和迁移说明。
@@ -89,9 +112,56 @@ tests/             Provider-free deterministic tests.
 
 `pheroos.conformance` 证明 ABI compatibility。
 
+以上 package facade 是对外高聚合入口。内部实现按 commit state、support、certificate、
+distributed finality、Hybrid evaluation、swarm 和 pheromone lifecycle 拆成单向依赖的
+private engine。Private module path 不是 ABI；facade 保持 canonical object identity，
+并委托给唯一实现 owner，不使用动态 service registry。
+
+内置 Commit Wire 与 Trace dispatch 由 immutable static contract registry 驱动，schema
+生成与 validation 共享同一规则所有者。Namespaced extension 仍可作为非权威 metadata
+扩展，但不能在运行时安装新的 authority handler。
+
+## 管理 CLI
+
+本地 thin CLI 通过 versioned JSON 提供协议管理能力，不会启动 API server：
+
+```bash
+pheroos version
+pheroos profile show examples/hybrid-commit-protocol/capability.json
+pheroos schema list
+pheroos schema show commit
+pheroos schema export capability-v2
+pheroos schema export protocol-v2
+pheroos schema export driver-v2
+pheroos schema export kernel-v2
+pheroos wire validate commit record.json
+pheroos wire validate driver-v2 descriptor.json
+pheroos wire validate kernel-v2 plan.json
+pheroos tck run --version v2
+pheroos abi show
+pheroos abi diff
+```
+
+Schema drift 使用 `python scripts/generate_schema_artifacts.py --check` 检查。
+`--write` 只重新生成 v2 artifact，绝不会改写冻结的 v1 文件。
+
+未知 critical version 与畸形 wire record 会 fail closed。HTTP API、认证、限流、
+远程路由和 service discovery 属于外部 runtime/gateway，不进入 protocol-core。
+
 ## Runtime 集成
 
 外部 runtime 可以 fork 或依赖本仓库，并围绕 ABI 构建自己的 agent loop、model call、tool call、database、memory store、scheduling、queue、server 和 secret management。
+
+每个 request 都构造 `RuntimeScope(tenant_id, run_id, request_id)`，并将由 tenant/run
+派生的 `scope_ref` 贯穿 Kernel、Driver、Governance 与 scoped Trace。持久权威通过外部
+`GovernanceStateStore` adapter 提供：state 与 Trace 原子提交，compare-and-swap head
+拒绝 fork，只有验证过的 store receipt 才能完成持久 output authority。仓库内的
+in-memory store 只是 reference adapter，不是数据库。
+
+append-only lineage 使用独立且 provider-neutral 的 `TraceStore` Protocol。外部
+StateStore/TraceStore 实现可在集成前运行公开的
+`run_governance_state_store_conformance(...)` 与
+`run_trace_store_conformance(...)` 矩阵。
 
 推荐组合路径：
 
@@ -159,6 +229,14 @@ Optimal Commit 同样是 opt-in。只有显式声明 `collective_commit_policy` 
 才选择 Commit profile；baseline、swarm 与 Hybrid v1 manifest 保持原有 profile、result
 和 trace 行为。
 
+## 发布完整性
+
+CI 覆盖 Python 3.12 至 3.14，并在外部工作目录分别验证 wheel 与 sdist。只有通过这些
+检查的精确 distribution bytes 才能进入 deterministic CycloneDX/SPDX SBOM 生成和受信
+main branch provenance attestation。Pull request 始终保持 read-only permission。Build
+provenance 只说明 artifact 来源，不会创建 protocol evidence 或 governance authority。
+详见[发布检查清单](docs/process/release-checklist.md)。
+
 ## Hybrid Pheromone Draft ABI
 
 完整 Hybrid reference path 已作为确定性、provider-free 的 protocol-core vertical slice
@@ -171,8 +249,7 @@ collective memory，不会成为 evidence 或 authority。
 `HybridReplayState` 继续 Hybrid run。Replay receipt 会绑定 deposit、diffusion、feedback 和
 adjustment payload；trace conformance 会拒绝 payload substitution、跨 lifecycle identity
 collision，以及缺少匹配 issued prior state 的 replay claim。详见
-[完整加固计划](docs/protocol/hybrid-pheromone-full-hardening-plan.md)、
-[ABI 参考](docs/protocol/hybrid-pheromone-abi.md) 和
+[ABI 参考](docs/protocol/hybrid-pheromone-abi.md)和
 [迁移说明](docs/protocol/hybrid-pheromone-v1-migration.md)。
 
 可通过以下 provider-free reference 验证：
@@ -213,12 +290,16 @@ conflict freeze。同一语义值的 proof-envelope 重试不会冻结 epoch；c
 output 或任一 authority root 不同才构成冲突。Core 只定义 record 与确定性 governance；
 network、witness collector、scheduler、provider 和 storage 留在外部。
 
-Implementation-neutral JSON TCK 覆盖 38 个精确对抗 case，并真实执行 mutation 与
-permutation。Active Commit conformance 没有 skip 或 N/A 路径。运行方式：
+冻结的 TCK v1 覆盖 38 个 legacy 对抗 vector。TCK v2 新增 23 个 expected-free
+声明式 request case：adapter 只能看到 input，expected 由 harness 持有。公共 reference
+adapter 与独立 standard-library spec model 必须一致；echo/constant、malformed、乱序、
+state leakage 与 timeout adapter 都必须失败。Active Commit conformance 没有 skip 或
+N/A 路径。运行方式：
 
 ```bash
 .venv/bin/python -c \
   'from pheroos.conformance import run_commit_tck; assert run_commit_tck().ok'
+.venv/bin/python -m pheroos.cli.main tck run --version v2
 .venv/bin/python -m pheroos.cli.main conformance examples/hybrid-commit-protocol
 .venv/bin/python -m pheroos.cli.main conformance examples/distributed-commit-protocol
 .venv/bin/python examples/hybrid-commit-protocol/run.py
