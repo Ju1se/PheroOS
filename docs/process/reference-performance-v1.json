@@ -6,6 +6,12 @@
     "platform": "macOS",
     "python": "3.14.5rc1"
   },
+  "measurement_clocks": {
+    "audit_baseline_commit_tck_v1_warm": "wall",
+    "post_hardening_commit_tck_v1_warm": "process-tree-cpu",
+    "budget_commit_tck_v1_warm": "process-tree-cpu",
+    "historical_and_post_hardening_commit_tck_v1_are_directly_comparable": false
+  },
   "audit_baseline_seconds": {
     "governance_cold_import_median": 0.117,
     "manifest_load_validate_median": 0.0053,
@@ -20,7 +26,7 @@
   "post_hardening_observed_seconds": {
     "governance_cold_import_median": 0.0027,
     "manifest_load_validate_median": 0.0011,
-    "commit_tck_v1_warm": 2.406,
+    "commit_tck_v1_warm": 2.05,
     "commit_tck_v2": 0.04,
     "trace_append_10000": 0.0997,
     "authority_retire_10000": 0.146
@@ -43,6 +49,9 @@
     "budgets_are_ci_regression_gates": true,
     "third_party_conformance_requirement": false,
     "baseline_refresh_may_not_raise_locked_code_ceilings": true,
+    "commit_tck_v1_warm_clock": "process-tree-cpu",
+    "commit_tck_v1_warm_quick_samples": 3,
+    "commit_tck_v1_warm_full_samples": 5,
     "closed_scope_active_authority_records_after_retire": 0,
     "retained_tombstones_after_10000_retire": 10000
   }

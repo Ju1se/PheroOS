@@ -1,6 +1,4 @@
 #!/usr/bin/env python3
-from __future__ import annotations
-
 """Measure locked PheroOS reference-performance and lifecycle budgets.
 
 The measurements are implementation regression gates, not third-party ABI
@@ -8,10 +6,13 @@ requirements.  Budget ceilings are duplicated in code so replacing the JSON
 baseline with slower numbers cannot silently relax CI.
 """
 
+from __future__ import annotations
+
 import argparse
 from collections.abc import Callable
 from hashlib import sha256
 import json
+import os
 from pathlib import Path
 import statistics
 import subprocess
@@ -34,6 +35,9 @@ HARD_CEILINGS_SECONDS = {
 HARD_CEILINGS_RATIOS = {
     "diffusion_double_size_ratio": 3.0,
 }
+COMMIT_TCK_V1_WARM_CLOCK = "process-tree-cpu"
+COMMIT_TCK_V1_WARM_QUICK_SAMPLES = 3
+COMMIT_TCK_V1_WARM_FULL_SAMPLES = 5
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -74,7 +78,13 @@ def measure_reference_performance(*, quick: bool = False) -> dict[str, float]:
     measurements["manifest_load_validate_median"] = _manifest_median(
         5 if quick else 15
     )
-    measurements["commit_tck_v1_warm"] = _commit_tck_v1_warm()
+    measurements["commit_tck_v1_warm"] = _commit_tck_v1_warm(
+        samples=(
+            COMMIT_TCK_V1_WARM_QUICK_SAMPLES
+            if quick
+            else COMMIT_TCK_V1_WARM_FULL_SAMPLES
+        )
+    )
     measurements["commit_tck_v2"] = _commit_tck_v2()
     measurements["trace_append_10000"] = _trace_append_10000()
     measurements["authority_retire_10000"] = _authority_retire_10000()
@@ -124,18 +134,35 @@ def _manifest_median(samples: int) -> float:
     return statistics.median(values)
 
 
-def _commit_tck_v1_warm() -> float:
+def _commit_tck_v1_warm(*, samples: int) -> float:
     from pheroos.conformance.commit_tck import run_commit_tck
 
+    if type(samples) is not int or samples < 1:
+        raise ValueError("Commit TCK v1 performance samples must be positive")
     first = run_commit_tck()
     if not first.ok:
         raise RuntimeError("Commit TCK v1 reference adapter failed")
-    started = perf_counter()
-    report = run_commit_tck()
-    elapsed = perf_counter() - started
-    if not report.ok:
-        raise RuntimeError("Commit TCK v1 reference adapter failed")
-    return elapsed
+    values = []
+    for _ in range(samples):
+        started = _process_tree_cpu_seconds()
+        report = run_commit_tck()
+        elapsed = _process_tree_cpu_seconds() - started
+        if not report.ok:
+            raise RuntimeError("Commit TCK v1 reference adapter failed")
+        values.append(elapsed)
+    return statistics.median(values)
+
+
+def _process_tree_cpu_seconds() -> float:
+    """Return CPU seconds consumed by this process and completed children."""
+
+    snapshot = os.times()
+    return (
+        snapshot.user
+        + snapshot.system
+        + snapshot.children_user
+        + snapshot.children_system
+    )
 
 
 def _commit_tck_v2() -> float:
@@ -299,6 +326,18 @@ def _validate_locked_budgets(payload: dict[str, Any]) -> None:
             raise RuntimeError(
                 f"reference performance ratio exceeds locked ceiling: {name}"
             )
+    policy = payload.get("policy")
+    if not isinstance(policy, dict):
+        raise RuntimeError("reference performance policy is missing")
+    if policy.get("commit_tck_v1_warm_clock") != COMMIT_TCK_V1_WARM_CLOCK:
+        raise RuntimeError("Commit TCK v1 performance clock policy is invalid")
+    if (
+        policy.get("commit_tck_v1_warm_quick_samples")
+        != COMMIT_TCK_V1_WARM_QUICK_SAMPLES
+        or policy.get("commit_tck_v1_warm_full_samples")
+        != COMMIT_TCK_V1_WARM_FULL_SAMPLES
+    ):
+        raise RuntimeError("Commit TCK v1 performance sample policy is invalid")
 
 
 def _budget_failures(

@@ -273,7 +273,7 @@ Commit 检查只在 manifest 显式声明时启用。
 
 ### 8.1 功能与结构
 
-- 全量本地 suite：`1320 passed`（包含生成发行物后的供应链绑定检查）。
+- 全量本地 suite：`1326 passed`（包含生成发行物后的供应链绑定检查）。
 - Source conformance：8/8 通过。
 - Toy、E2E、Swarm、Hybrid Pheromone、Hybrid Commit 和 Distributed examples 全部通过。
 - TCK v1 38 cases 与 TCK v2 reference/independent/adversarial matrix 全部通过。
@@ -294,6 +294,10 @@ Commit 检查只在 manifest 显式声明时启用。
 - Hybrid/Distributed conformance 均低于冻结 hard ceiling；性能基线不能通过提高 ceiling 静默放宽。
 - authority SHA-256 校验收敛到单一严格 validator；普通字符串语义、调用方错误契约和
   TCK roots 不变；`str` 子类仍按底层纯字符串判定，不能通过覆写切片行为跨版本绕过。
+- TCK v1 gate 对 92 次 evaluation 的完整运行取中位数，并用父进程与已完成隔离子进程的
+  process-tree CPU time 判定；不取最小值、不裁向量，也不提高 3.20 秒 hard ceiling。
+- artifact 中审计前 TCK 样本保留原始 wall-clock 量纲并显式标记为不可与新的
+  process-tree CPU 样本直接比较；冻结门禁和硬阈值统一使用后者。
 
 这些数值是本机验收样本；CI 以 [reference performance artifact](reference-performance-v1.json) 的
 固定预算判定，不把单次绝对耗时当作跨平台承诺。

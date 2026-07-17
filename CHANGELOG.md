@@ -149,6 +149,11 @@ The project is currently pre-stable. Until the first stable ABI release, entries
 - Repeated SHA-256 authority validation now uses one shared, strict,
   C-backed validator. Accepted syntax and fail-closed errors are unchanged;
   the TCK performance gate is met without raising its locked ceiling.
+- The TCK v1 performance gate now uses the median process-tree CPU time of
+  complete runs, including completed child processes. This excludes hosted
+  runner scheduling waits without hiding isolated-subprocess work. Feature
+  branches run CI through the pull request event only; `push` remains enabled
+  on `main` for provenance.
 - Unknown protocol and other critical ABI versions now fail closed instead of
   falling through to current defaults.
 - Governance is a generated static lazy facade; importing a submodule no longer
