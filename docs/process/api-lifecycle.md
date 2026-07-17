@@ -52,8 +52,9 @@ remain type-identical aliases, not parallel representations. The six package
 aliases, error types, and public method/property shapes are checked by the
 shape inventory. The lifecycle registry covers every export and records its
 `group`, `stability`, `since`, `replacement`, and `remove_after`. It also
-covers Governance compatibility-module attributes and the closed Protocol,
-Kernel, Hybrid Commit, and atomic-transition diagnostic-code registries.
+covers Governance and Conformance compatibility-module attributes and the
+closed Protocol, Kernel, Hybrid Commit, and atomic-transition diagnostic-code
+registries.
 Source conformance rejects missing entries, orphans, invalid replacements, and
 unchecked drift in either artifact.
 

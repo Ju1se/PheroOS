@@ -165,6 +165,13 @@ The project is currently pre-stable. Until the first stable ABI release, entries
   falling through to current defaults.
 - Governance is a generated static lazy facade; importing a submodule no longer
   eagerly imports the complete commit/swarm engine graph.
+- Conformance now uses a static, thread-safe lazy facade with its compatibility
+  modules covered by the lifecycle artifact. The Commit TCK artifact path also
+  defers the optional reference adapter, avoiding Governance imports without
+  changing any of the 92 evaluations or the locked performance ceiling.
+- Canonical Commit TCK dataclass annotations now resolve correctly from their
+  public module on every supported Python version; identity, signatures,
+  type hints, and pickle round trips remain stable across lazy resolution.
 - Legacy process authority registries are quarantined behind one private
   compatibility adapter. New durable authority modules cannot import it.
 - Hybrid pheromone scalar/profile double writes now have one deterministic

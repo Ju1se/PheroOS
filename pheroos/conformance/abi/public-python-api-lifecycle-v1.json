@@ -360,6 +360,86 @@
       "retained_with_reason": "Thin module alias retained while imports migrate to canonical pheroos.trace",
       "since": "0.1.0",
       "stability": "deprecated"
+    },
+    {
+      "group": "compatibility",
+      "name": "checks",
+      "package": "pheroos.conformance",
+      "remove_after": null,
+      "replacement": "pheroos.conformance.checks",
+      "retained_with_reason": "Lazy module attribute retained for package-level import compatibility",
+      "since": "0.1.0",
+      "stability": "draft"
+    },
+    {
+      "group": "compatibility",
+      "name": "commit_tck",
+      "package": "pheroos.conformance",
+      "remove_after": null,
+      "replacement": "pheroos.conformance.commit_tck",
+      "retained_with_reason": "Lazy module attribute retained for package-level import compatibility",
+      "since": "0.1.0",
+      "stability": "draft"
+    },
+    {
+      "group": "compatibility",
+      "name": "commit_tck_v2_protocol",
+      "package": "pheroos.conformance",
+      "remove_after": null,
+      "replacement": "pheroos.conformance.commit_tck_v2_protocol",
+      "retained_with_reason": "Lazy module attribute retained for package-level import compatibility",
+      "since": "0.1.0",
+      "stability": "draft"
+    },
+    {
+      "group": "compatibility",
+      "name": "profile",
+      "package": "pheroos.conformance",
+      "remove_after": null,
+      "replacement": "pheroos.conformance.profile",
+      "retained_with_reason": "Lazy module attribute retained for package-level import compatibility",
+      "since": "0.1.0",
+      "stability": "draft"
+    },
+    {
+      "group": "compatibility",
+      "name": "public_api_inventory",
+      "package": "pheroos.conformance",
+      "remove_after": null,
+      "replacement": "pheroos.conformance.public_api_inventory",
+      "retained_with_reason": "Lazy module attribute retained for package-level import compatibility",
+      "since": "0.1.0",
+      "stability": "draft"
+    },
+    {
+      "group": "compatibility",
+      "name": "public_api_lifecycle",
+      "package": "pheroos.conformance",
+      "remove_after": null,
+      "replacement": "pheroos.conformance.public_api_lifecycle",
+      "retained_with_reason": "Lazy module attribute retained for package-level import compatibility",
+      "since": "0.1.0",
+      "stability": "draft"
+    },
+    {
+      "group": "compatibility",
+      "name": "report",
+      "package": "pheroos.conformance",
+      "remove_after": null,
+      "replacement": "pheroos.conformance.report",
+      "retained_with_reason": "Lazy module attribute retained for package-level import compatibility",
+      "since": "0.1.0",
+      "stability": "draft"
+    },
+    {
+      "group": "compatibility",
+      "name": "runner",
+      "package": "pheroos.conformance",
+      "remove_after": null,
+      "replacement": "pheroos.conformance.runner",
+      "retained_with_reason": "Lazy module attribute retained for package-level import compatibility",
+      "since": "0.1.0",
+      "stability": "draft"
     }
   ],
   "diagnostic_codes": [
@@ -9170,7 +9250,7 @@
     "stable"
   ],
   "summary": {
-    "compatibility_surface_count": 36,
+    "compatibility_surface_count": 44,
     "diagnostic_code_count": 208,
     "error_type_count": 5,
     "export_count": 727,
