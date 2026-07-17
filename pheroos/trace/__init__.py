@@ -31,6 +31,7 @@ from pheroos.trace.scoped import (
 from pheroos.trace.store import (
     InMemoryTraceStore as _InMemoryTraceStore,
     TraceRecord as _TraceRecord,
+    TraceStore as _TraceStore,
     missing_required_events as _missing_required_events,
 )
 from pheroos.trace.validation import (
@@ -52,6 +53,7 @@ from pheroos.trace.validation import (
 # identity for inspect, pickle, ``from`` and star imports.
 TraceEvent = _TraceEvent
 TraceRecord = _TraceRecord
+TraceStore = _TraceStore
 InMemoryTraceStore = _InMemoryTraceStore
 make_commit_trace_event = _make_commit_trace_event
 missing_required_events = _missing_required_events
@@ -85,6 +87,7 @@ __all__ = [
     "InMemoryTraceStore",
     "TraceEvent",
     "TraceRecord",
+    "TraceStore",
     "ScopedTraceEvent",
     "EXTENSION_EVENT_PREFIXES",
     "VALID_EVENT_TYPES",

@@ -196,6 +196,18 @@ def hybrid_collective_step_is_authoritative(step: object) -> bool:
 def replay_state_from_hybrid_step(step: HybridCollectiveStep) -> HybridReplayState:
     if not hybrid_collective_step_is_authoritative(step):
         raise GovernanceError("hybrid replay state requires a governance-issued step")
+    return _replay_state_from_verified_hybrid_step(step)
+
+
+def _replay_state_from_verified_hybrid_step(
+    step: HybridCollectiveStep,
+) -> HybridReplayState:
+    """Materialize replay state after the caller verified the source step.
+
+    This private path only removes a second, immediately repeated authority
+    traversal.  The public ABI above remains fail-closed for every caller.
+    """
+
     protocol_id = step._issuance[1]
     target = step._issuance[2]
     state = HybridReplayState(

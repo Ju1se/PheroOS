@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from copy import deepcopy
 from dataclasses import dataclass
-from typing import Iterable
+from typing import Iterable, Protocol, runtime_checkable
 
 from pheroos.trace.commit_contracts import COMMIT_EVENT_TYPES
 from pheroos.trace.event import TraceEvent
@@ -12,6 +12,28 @@ from pheroos.trace.event import TraceEvent
 class TraceRecord:
     sequence: int
     event: TraceEvent
+
+
+@runtime_checkable
+class TraceStore(Protocol):
+    """Provider-neutral append-only storage boundary for canonical Trace records.
+
+    Implementations may persist records however they choose, but the public
+    boundary exposes only append and an immutable chronological snapshot.  It
+    deliberately does not prescribe databases, transactions, queues, or
+    provider lifecycle.
+    """
+
+    def append(self, event: TraceEvent) -> TraceRecord:
+        """Validate and append one canonical event, returning its record."""
+
+        ...
+
+    @property
+    def records(self) -> tuple[TraceRecord, ...]:
+        """Return an immutable chronological snapshot of appended records."""
+
+        ...
 
 
 class InMemoryTraceStore:
@@ -64,6 +86,7 @@ def missing_required_events(
 
 
 TraceRecord.__module__ = "pheroos.trace"
+TraceStore.__module__ = "pheroos.trace"
 InMemoryTraceStore.__module__ = "pheroos.trace"
 missing_required_events.__module__ = "pheroos.trace"
 

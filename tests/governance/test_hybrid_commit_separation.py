@@ -5,6 +5,8 @@ from itertools import count
 
 import pytest
 
+import pheroos.governance._swarm.replay as replay_module
+import pheroos.governance.attention as attention_module
 import pheroos.governance.collective as collective_module
 from pheroos.governance.attention import (
     AttentionBreakdown,
@@ -352,6 +354,55 @@ def test_attention_reuses_one_authoritative_hybrid_memory_and_replay_lineage() -
     assert attention.replay_root != attention.trace_root
     assert directive.authority_scope == "none"
     assert directive.commit_authority is False
+
+
+def test_attention_replay_derivation_reuses_the_verified_source_step(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    scenario = _scenario()
+    step = evaluate_hybrid_collective_step(
+        **_hybrid_inputs(scenario),
+        attention_only=True,
+    )
+    calls = 0
+    original = replay_module.hybrid_collective_step_is_authoritative
+
+    def counted(value: object) -> bool:
+        nonlocal calls
+        calls += 1
+        return original(value)
+
+    monkeypatch.setattr(
+        attention_module,
+        "hybrid_collective_step_is_authoritative",
+        counted,
+    )
+    monkeypatch.setattr(
+        replay_module,
+        "hybrid_collective_step_is_authoritative",
+        counted,
+    )
+
+    attention = derive_attention_breakdown(step)
+    assert calls == 1
+
+    replay_root_calls = 0
+    original_replay_root = attention_module._hybrid_replay_root
+
+    def counted_replay_root(value: object) -> str:
+        nonlocal replay_root_calls
+        replay_root_calls += 1
+        return original_replay_root(value)
+
+    monkeypatch.setattr(
+        attention_module,
+        "_hybrid_replay_root",
+        counted_replay_root,
+    )
+
+    assert attention_breakdown_is_authoritative(attention)
+    assert calls == 2
+    assert replay_root_calls == 2
 
 
 def test_legacy_hybrid_default_result_is_unchanged_and_not_accepted_as_attention() -> None:

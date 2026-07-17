@@ -1856,7 +1856,7 @@
   ],
   "packages": {
     "pheroos.conformance": {
-      "export_count": 24,
+      "export_count": 33,
       "exports": [
         {
           "group": "record",
@@ -1990,6 +1990,36 @@
         },
         {
           "group": "record",
+          "name": "GOVERNANCE_STATE_STORE_CONFORMANCE_VERSION",
+          "package": "pheroos.conformance",
+          "remove_after": null,
+          "replacement": null,
+          "retained_with_reason": null,
+          "since": "0.1.0",
+          "stability": "draft"
+        },
+        {
+          "group": "record",
+          "name": "GOVERNANCE_STATE_STORE_FAILURE_STAGES",
+          "package": "pheroos.conformance",
+          "remove_after": null,
+          "replacement": null,
+          "retained_with_reason": null,
+          "since": "0.1.0",
+          "stability": "draft"
+        },
+        {
+          "group": "record",
+          "name": "GovernanceStateStoreConformanceAdapter",
+          "package": "pheroos.conformance",
+          "remove_after": null,
+          "replacement": null,
+          "retained_with_reason": null,
+          "since": "0.1.0",
+          "stability": "draft"
+        },
+        {
+          "group": "record",
           "name": "PHEROOS_IMPLEMENTATION_ID",
           "package": "pheroos.conformance",
           "remove_after": null,
@@ -2001,6 +2031,46 @@
         {
           "group": "record",
           "name": "ReferenceCommitTckAdapter",
+          "package": "pheroos.conformance",
+          "remove_after": null,
+          "replacement": null,
+          "retained_with_reason": null,
+          "since": "0.1.0",
+          "stability": "draft"
+        },
+        {
+          "group": "record",
+          "name": "ReferenceGovernanceStateStoreConformanceAdapter",
+          "package": "pheroos.conformance",
+          "remove_after": null,
+          "replacement": null,
+          "retained_with_reason": null,
+          "since": "0.1.0",
+          "stability": "draft"
+        },
+        {
+          "group": "record",
+          "name": "ReferenceTraceStoreConformanceAdapter",
+          "package": "pheroos.conformance",
+          "remove_after": null,
+          "replacement": null,
+          "retained_with_reason": null,
+          "since": "0.1.0",
+          "stability": "draft"
+        },
+        {
+          "group": "record",
+          "name": "TRACE_STORE_CONFORMANCE_VERSION",
+          "package": "pheroos.conformance",
+          "remove_after": null,
+          "replacement": null,
+          "retained_with_reason": null,
+          "since": "0.1.0",
+          "stability": "draft"
+        },
+        {
+          "group": "record",
+          "name": "TraceStoreConformanceAdapter",
           "package": "pheroos.conformance",
           "remove_after": null,
           "replacement": null,
@@ -2088,7 +2158,27 @@
         },
         {
           "group": "entrypoint",
+          "name": "run_governance_state_store_conformance",
+          "package": "pheroos.conformance",
+          "remove_after": null,
+          "replacement": null,
+          "retained_with_reason": null,
+          "since": "0.1.0",
+          "stability": "draft"
+        },
+        {
+          "group": "entrypoint",
           "name": "run_source_conformance",
+          "package": "pheroos.conformance",
+          "remove_after": null,
+          "replacement": null,
+          "retained_with_reason": null,
+          "since": "0.1.0",
+          "stability": "draft"
+        },
+        {
+          "group": "entrypoint",
+          "name": "run_trace_store_conformance",
           "package": "pheroos.conformance",
           "remove_after": null,
           "replacement": null,
@@ -8819,7 +8909,7 @@
       ]
     },
     "pheroos.trace": {
-      "export_count": 24,
+      "export_count": 25,
       "exports": [
         {
           "group": "record",
@@ -8953,6 +9043,16 @@
         },
         {
           "group": "record",
+          "name": "TraceStore",
+          "package": "pheroos.trace",
+          "remove_after": null,
+          "replacement": null,
+          "retained_with_reason": null,
+          "since": "0.1.0",
+          "stability": "draft"
+        },
+        {
+          "group": "record",
           "name": "VALID_EVENT_TYPES",
           "package": "pheroos.trace",
           "remove_after": null,
@@ -9073,7 +9173,7 @@
     "compatibility_surface_count": 36,
     "diagnostic_code_count": 208,
     "error_type_count": 5,
-    "export_count": 717,
+    "export_count": 727,
     "package_count": 6
   }
 }

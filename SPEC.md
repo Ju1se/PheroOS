@@ -388,6 +388,11 @@ runtimes may implement database-backed adapters outside protocol-core and must
 pass the same scope, restart, CAS, idempotency, atomicity, and retirement
 conformance.
 
+`TraceStore` is the separate provider-neutral append-only boundary. It exposes
+only canonical append and immutable chronological record snapshots. External
+StateStore and TraceStore fixtures use the public conformance-adapter Protocols
+and execute the same matrices as the bundled in-memory references.
+
 ## Extension Rules
 
 Extensions should preserve low coupling and provider neutrality.
@@ -465,9 +470,9 @@ Reports include the applicable profile version:
   swarm, and Hybrid required checks for subject scoring, kind profiles,
   diffusion, reinforcement, response, layer coordination, adjustment bounds,
   trace lineage, and authority boundaries.
-- `pheroos-source-v2` for the separate protocol-core source-surface, lifecycle,
-  durable-authority, scope, and import
-  boundary proof.
+- `pheroos-source-v3` for the separate protocol-core source-surface, lifecycle,
+  durable-authority, replaceable StateStore/TraceStore, scope, and import
+  boundary proof. It supersedes source-v2 by adding the TraceStore contract.
 - `pheroos-commit-integrity-v1` for advisory or evidence-bound Optimal Commit.
 - `pheroos-hybrid-commit-v1` for evidence-bound Optimal Commit with Hybrid
   attention semantics.

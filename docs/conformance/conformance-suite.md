@@ -110,8 +110,9 @@ Conformance reports include the profile version that was applied.
   declared.
 - `pheroos-distributed-commit-v1` applies when distributed assurance is
   declared.
-- `pheroos-source-v2` applies only to protocol-core source cohesion, scoped
-  cross-surface binding, and authority-ledger atomicity.
+- `pheroos-source-v3` applies only to protocol-core source cohesion, scoped
+  cross-surface binding, authority-ledger atomicity, and the provider-neutral
+  StateStore/TraceStore adapter contracts. It supersedes source-v2.
 
 Commit profile selection takes precedence over legacy Hybrid authority and
 output checks. Certified and distributed manifests that also declare Hybrid
@@ -288,7 +289,8 @@ Manifest conformance validates only the ABI profile selected by
 `capability.json`; its optional `root` compatibility argument is intentionally
 ignored. It must not infer source cohesion from the current working directory.
 Source ownership, package boundaries, domain neutrality, and public type
-identity are proved only by `pheroos-source-v2`:
+identity and the replaceable store contracts are proved only by
+`pheroos-source-v3`:
 
 ```bash
 python -m pheroos.cli.main source-conformance /path/to/pheroos-protocol-core
@@ -297,6 +299,30 @@ python -m pheroos.cli.main source-conformance /path/to/pheroos-protocol-core
 When the argument is omitted, the root is resolved from the installed package,
 never from the current working directory. Missing protocol, kernel, governance,
 drivers, trace, conformance, or CLI surfaces fail the report.
+
+Source-v3 also runs the bundled StateStore and TraceStore reference adapters
+through the same public matrices exposed to external runtimes:
+
+```python
+from pheroos.conformance import (
+    run_governance_state_store_conformance,
+    run_trace_store_conformance,
+)
+
+state_result = run_governance_state_store_conformance(state_adapter)
+trace_result = run_trace_store_conformance(trace_adapter)
+```
+
+The StateStore fixture supplies fresh, checkpoint-restored, snapshot-restored,
+and deterministically failure-injected stores. The TraceStore fixture supplies
+fresh stores. Fixtures declare the exact
+`GOVERNANCE_STATE_STORE_CONFORMANCE_VERSION` or
+`TRACE_STORE_CONFORMANCE_VERSION`; unknown matrix versions fail closed.
+StateStore failure points come from the public
+`GOVERNANCE_STATE_STORE_FAILURE_STAGES` tuple.
+Its concurrency matrix runs 32 same-batch retries and 32 conflicting-batch
+workers. That load is not added to the provider ABI.
+Conformance never owns the provider or database lifecycle.
 
 Release verification runs both boundaries. It also runs both TCK generations
 from the source tree and from separate wheel and sdist installations under an

@@ -171,6 +171,11 @@ compare-and-swap heads reject forks, and only a verified store receipt can
 finalize durable output authority. The included in-memory store is a reference
 adapter, not a database.
 
+Append-only lineage uses the separate provider-neutral `TraceStore` Protocol.
+External StateStore and TraceStore implementations can run the public
+`run_governance_state_store_conformance(...)` and
+`run_trace_store_conformance(...)` matrices before integration.
+
 The expected composition is:
 
 ```text

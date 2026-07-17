@@ -158,6 +158,11 @@ Schema drift 使用 `python scripts/generate_schema_artifacts.py --check` 检查
 拒绝 fork，只有验证过的 store receipt 才能完成持久 output authority。仓库内的
 in-memory store 只是 reference adapter，不是数据库。
 
+append-only lineage 使用独立且 provider-neutral 的 `TraceStore` Protocol。外部
+StateStore/TraceStore 实现可在集成前运行公开的
+`run_governance_state_store_conformance(...)` 与
+`run_trace_store_conformance(...)` 矩阵。
+
 推荐组合路径：
 
 ```text

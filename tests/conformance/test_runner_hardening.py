@@ -52,12 +52,14 @@ def test_source_conformance_uses_separate_versioned_profile() -> None:
     report = run_source_conformance(ROOT)
 
     assert report.ok is True, report.to_dict()
-    assert report.profile == "pheroos-source-v2"
+    assert report.profile == "pheroos-source-v3"
     assert {check.name for check in report.checks} >= {
         "source_surface",
         "domain_neutrality_public_core",
         "package_import_boundary",
         "driver_lifecycle_boundary",
+        "authority_ledger_contract",
+        "trace_store_contract",
         "public_abi_boundary",
         "profile_contract",
     }

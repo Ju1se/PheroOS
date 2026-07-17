@@ -207,7 +207,8 @@ Public API changes should pass CI-backed validation for:
 - swarm protocol compatibility when swarm behavior is declared
 - checked-in schema artifact consistency
 - public shape/lifecycle and static-contract consistency
-- source-v2 scope, Driver, authority-ledger, and import-boundary checks
+- source-v3 scope, Driver, reusable StateStore/TraceStore adapter, and
+  import-boundary checks
 - TCK v1/v2 through reference and independent adapters
 - separate external-CWD wheel and sdist consumers
 - documentation links and bilingual README link parity

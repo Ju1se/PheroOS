@@ -70101,7 +70101,7 @@
       ]
     },
     "pheroos.trace": {
-      "export_count": 24,
+      "export_count": 25,
       "exports": [
         {
           "aliases": [],
@@ -72082,6 +72082,74 @@
         },
         {
           "aliases": [],
+          "attribute": "TraceStore",
+          "binding_owner": "pheroos.trace",
+          "identity": "pheroos.trace:TraceStore",
+          "kind": "class",
+          "name": "TraceStore",
+          "owner": "pheroos.trace",
+          "signature": {
+            "parameters": [
+              {
+                "annotation": null,
+                "default": {
+                  "kind": "missing"
+                },
+                "kind": "VAR_POSITIONAL",
+                "name": "args",
+                "required": false
+              },
+              {
+                "annotation": null,
+                "default": {
+                  "kind": "missing"
+                },
+                "kind": "VAR_KEYWORD",
+                "name": "kwargs",
+                "required": false
+              }
+            ],
+            "return": null
+          },
+          "members": [
+            {
+              "abstract": false,
+              "kind": "method",
+              "name": "append",
+              "signature": {
+                "parameters": [
+                  {
+                    "annotation": "TraceEvent",
+                    "default": {
+                      "kind": "missing"
+                    },
+                    "kind": "POSITIONAL_OR_KEYWORD",
+                    "name": "event",
+                    "required": true
+                  }
+                ],
+                "return": "TraceRecord"
+              }
+            },
+            {
+              "abstract": false,
+              "deleter_present": false,
+              "getter_async": false,
+              "getter_present": true,
+              "getter_signature": {
+                "parameters": [],
+                "return": "tuple[TraceRecord, ...]"
+              },
+              "kind": "property",
+              "name": "records",
+              "setter_async": false,
+              "setter_present": false,
+              "setter_signature": null
+            }
+          ]
+        },
+        {
+          "aliases": [],
           "attribute": "VALID_EVENT_TYPES",
           "binding_owner": "pheroos.trace",
           "identity": null,
@@ -72573,7 +72641,7 @@
       ]
     },
     "pheroos.conformance": {
-      "export_count": 24,
+      "export_count": 33,
       "exports": [
         {
           "aliases": [],
@@ -73644,6 +73712,140 @@
         },
         {
           "aliases": [],
+          "attribute": "GOVERNANCE_STATE_STORE_CONFORMANCE_VERSION",
+          "binding_owner": "pheroos.conformance.checks.authority_ledger_contract",
+          "identity": null,
+          "kind": "constant",
+          "name": "GOVERNANCE_STATE_STORE_CONFORMANCE_VERSION",
+          "owner": "pheroos.conformance.checks.authority_ledger_contract",
+          "signature": null,
+          "constant": {
+            "type": "builtins:str",
+            "value": "pheroos-governance-state-store-conformance-v1"
+          }
+        },
+        {
+          "aliases": [],
+          "attribute": "GOVERNANCE_STATE_STORE_FAILURE_STAGES",
+          "binding_owner": "pheroos.conformance.checks.authority_ledger_contract",
+          "identity": null,
+          "kind": "constant",
+          "name": "GOVERNANCE_STATE_STORE_FAILURE_STAGES",
+          "owner": "pheroos.conformance.checks.authority_ledger_contract",
+          "signature": null,
+          "constant": {
+            "type": "builtins:tuple",
+            "value": {
+              "items": [
+                "after_state_prepare",
+                "after_trace_prepare"
+              ],
+              "kind": "tuple"
+            }
+          }
+        },
+        {
+          "aliases": [],
+          "attribute": "GovernanceStateStoreConformanceAdapter",
+          "binding_owner": "pheroos.conformance.checks.authority_ledger_contract",
+          "identity": "pheroos.conformance:GovernanceStateStoreConformanceAdapter",
+          "kind": "class",
+          "name": "GovernanceStateStoreConformanceAdapter",
+          "owner": "pheroos.conformance",
+          "signature": {
+            "parameters": [
+              {
+                "annotation": null,
+                "default": {
+                  "kind": "missing"
+                },
+                "kind": "VAR_POSITIONAL",
+                "name": "args",
+                "required": false
+              },
+              {
+                "annotation": null,
+                "default": {
+                  "kind": "missing"
+                },
+                "kind": "VAR_KEYWORD",
+                "name": "kwargs",
+                "required": false
+              }
+            ],
+            "return": null
+          },
+          "members": [
+            {
+              "abstract": false,
+              "kind": "method",
+              "name": "create_failure_injected_store",
+              "signature": {
+                "parameters": [
+                  {
+                    "annotation": "str",
+                    "default": {
+                      "kind": "missing"
+                    },
+                    "kind": "POSITIONAL_OR_KEYWORD",
+                    "name": "stage",
+                    "required": true
+                  }
+                ],
+                "return": "GovernanceStateStore"
+              }
+            },
+            {
+              "abstract": false,
+              "kind": "method",
+              "name": "create_store",
+              "signature": {
+                "parameters": [],
+                "return": "GovernanceStateStore"
+              }
+            },
+            {
+              "abstract": false,
+              "kind": "method",
+              "name": "restore_checkpoint",
+              "signature": {
+                "parameters": [
+                  {
+                    "annotation": "Mapping[str, Any]",
+                    "default": {
+                      "kind": "missing"
+                    },
+                    "kind": "POSITIONAL_OR_KEYWORD",
+                    "name": "payload",
+                    "required": true
+                  }
+                ],
+                "return": "GovernanceStateStore"
+              }
+            },
+            {
+              "abstract": false,
+              "kind": "method",
+              "name": "restore_snapshot",
+              "signature": {
+                "parameters": [
+                  {
+                    "annotation": "Mapping[str, Any]",
+                    "default": {
+                      "kind": "missing"
+                    },
+                    "kind": "POSITIONAL_OR_KEYWORD",
+                    "name": "payload",
+                    "required": true
+                  }
+                ],
+                "return": "GovernanceStateStore"
+              }
+            }
+          ]
+        },
+        {
+          "aliases": [],
           "attribute": "PHEROOS_IMPLEMENTATION_ID",
           "binding_owner": "pheroos.conformance.report",
           "identity": null,
@@ -73686,6 +73888,168 @@
                   }
                 ],
                 "return": "Mapping[str, Any]"
+              }
+            }
+          ]
+        },
+        {
+          "aliases": [],
+          "attribute": "ReferenceGovernanceStateStoreConformanceAdapter",
+          "binding_owner": "pheroos.conformance.checks.authority_ledger_contract",
+          "identity": "pheroos.conformance:ReferenceGovernanceStateStoreConformanceAdapter",
+          "kind": "class",
+          "name": "ReferenceGovernanceStateStoreConformanceAdapter",
+          "owner": "pheroos.conformance",
+          "signature": {
+            "parameters": [],
+            "return": null
+          },
+          "members": [
+            {
+              "abstract": false,
+              "kind": "method",
+              "name": "create_failure_injected_store",
+              "signature": {
+                "parameters": [
+                  {
+                    "annotation": "str",
+                    "default": {
+                      "kind": "missing"
+                    },
+                    "kind": "POSITIONAL_OR_KEYWORD",
+                    "name": "stage",
+                    "required": true
+                  }
+                ],
+                "return": "GovernanceStateStore"
+              }
+            },
+            {
+              "abstract": false,
+              "kind": "method",
+              "name": "create_store",
+              "signature": {
+                "parameters": [],
+                "return": "GovernanceStateStore"
+              }
+            },
+            {
+              "abstract": false,
+              "kind": "method",
+              "name": "restore_checkpoint",
+              "signature": {
+                "parameters": [
+                  {
+                    "annotation": "Mapping[str, Any]",
+                    "default": {
+                      "kind": "missing"
+                    },
+                    "kind": "POSITIONAL_OR_KEYWORD",
+                    "name": "payload",
+                    "required": true
+                  }
+                ],
+                "return": "GovernanceStateStore"
+              }
+            },
+            {
+              "abstract": false,
+              "kind": "method",
+              "name": "restore_snapshot",
+              "signature": {
+                "parameters": [
+                  {
+                    "annotation": "Mapping[str, Any]",
+                    "default": {
+                      "kind": "missing"
+                    },
+                    "kind": "POSITIONAL_OR_KEYWORD",
+                    "name": "payload",
+                    "required": true
+                  }
+                ],
+                "return": "GovernanceStateStore"
+              }
+            }
+          ]
+        },
+        {
+          "aliases": [],
+          "attribute": "ReferenceTraceStoreConformanceAdapter",
+          "binding_owner": "pheroos.conformance.checks.trace_store_contract",
+          "identity": "pheroos.conformance:ReferenceTraceStoreConformanceAdapter",
+          "kind": "class",
+          "name": "ReferenceTraceStoreConformanceAdapter",
+          "owner": "pheroos.conformance",
+          "signature": {
+            "parameters": [],
+            "return": null
+          },
+          "members": [
+            {
+              "abstract": false,
+              "kind": "method",
+              "name": "create_store",
+              "signature": {
+                "parameters": [],
+                "return": "TraceStore"
+              }
+            }
+          ]
+        },
+        {
+          "aliases": [],
+          "attribute": "TRACE_STORE_CONFORMANCE_VERSION",
+          "binding_owner": "pheroos.conformance.checks.trace_store_contract",
+          "identity": null,
+          "kind": "constant",
+          "name": "TRACE_STORE_CONFORMANCE_VERSION",
+          "owner": "pheroos.conformance.checks.trace_store_contract",
+          "signature": null,
+          "constant": {
+            "type": "builtins:str",
+            "value": "pheroos-trace-store-conformance-v1"
+          }
+        },
+        {
+          "aliases": [],
+          "attribute": "TraceStoreConformanceAdapter",
+          "binding_owner": "pheroos.conformance.checks.trace_store_contract",
+          "identity": "pheroos.conformance:TraceStoreConformanceAdapter",
+          "kind": "class",
+          "name": "TraceStoreConformanceAdapter",
+          "owner": "pheroos.conformance",
+          "signature": {
+            "parameters": [
+              {
+                "annotation": null,
+                "default": {
+                  "kind": "missing"
+                },
+                "kind": "VAR_POSITIONAL",
+                "name": "args",
+                "required": false
+              },
+              {
+                "annotation": null,
+                "default": {
+                  "kind": "missing"
+                },
+                "kind": "VAR_KEYWORD",
+                "name": "kwargs",
+                "required": false
+              }
+            ],
+            "return": null
+          },
+          "members": [
+            {
+              "abstract": false,
+              "kind": "method",
+              "name": "create_store",
+              "signature": {
+                "parameters": [],
+                "return": "TraceStore"
               }
             }
           ]
@@ -73856,6 +74220,29 @@
         },
         {
           "aliases": [],
+          "attribute": "run_governance_state_store_conformance",
+          "binding_owner": "pheroos.conformance.checks.authority_ledger_contract",
+          "identity": "pheroos.conformance:run_governance_state_store_conformance",
+          "kind": "function",
+          "name": "run_governance_state_store_conformance",
+          "owner": "pheroos.conformance",
+          "signature": {
+            "parameters": [
+              {
+                "annotation": "GovernanceStateStoreConformanceAdapter",
+                "default": {
+                  "kind": "missing"
+                },
+                "kind": "POSITIONAL_OR_KEYWORD",
+                "name": "adapter",
+                "required": true
+              }
+            ],
+            "return": "CheckResult"
+          }
+        },
+        {
+          "aliases": [],
           "attribute": "run_source_conformance",
           "binding_owner": "pheroos.conformance.runner",
           "identity": "pheroos.conformance.runner:run_source_conformance",
@@ -73876,6 +74263,29 @@
               }
             ],
             "return": "ConformanceReport"
+          }
+        },
+        {
+          "aliases": [],
+          "attribute": "run_trace_store_conformance",
+          "binding_owner": "pheroos.conformance.checks.trace_store_contract",
+          "identity": "pheroos.conformance:run_trace_store_conformance",
+          "kind": "function",
+          "name": "run_trace_store_conformance",
+          "owner": "pheroos.conformance",
+          "signature": {
+            "parameters": [
+              {
+                "annotation": "TraceStoreConformanceAdapter",
+                "default": {
+                  "kind": "missing"
+                },
+                "kind": "POSITIONAL_OR_KEYWORD",
+                "name": "adapter",
+                "required": true
+              }
+            ],
+            "return": "CheckResult"
           }
         },
         {
@@ -73905,7 +74315,7 @@
     }
   },
   "summary": {
-    "export_count": 717,
+    "export_count": 727,
     "package_count": 6
   }
 }

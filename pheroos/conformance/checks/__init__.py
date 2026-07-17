@@ -23,6 +23,7 @@ from pheroos.conformance.checks import (
     risk_monotonicity_contract,
     runtime_scope_contract,
     support_lease_contract,
+    trace_store_contract,
 )
 
 __all__ = [
@@ -48,4 +49,5 @@ __all__ = [
     "risk_monotonicity_contract",
     "runtime_scope_contract",
     "support_lease_contract",
+    "trace_store_contract",
 ]

@@ -1,6 +1,6 @@
-from __future__ import annotations
-
 """Commit-window progression and issued evaluation authority verification."""
+
+from __future__ import annotations
 
 from pheroos.governance._certificate.local import (
     LocalCommitReceipt,
@@ -163,18 +163,26 @@ def hybrid_commit_evaluation_is_authoritative(value: object) -> bool:
                 and hybrid_commit_step_fingerprint(value.binding_step)
                 == value.binding_step_ref
                 and value.attention_ref
+                and value.attention is not None
                 and attention_breakdown_is_authoritative(value.attention)
                 and attention_breakdown_fingerprint(value.attention)
                 == value.attention_ref
                 and value.exploration_directive_ref
+                and value.exploration_directive is not None
                 and exploration_directive_is_authoritative(
-                    value.exploration_directive,
-                    attention=value.attention,
+                    value.exploration_directive
                 )
                 and exploration_directive_fingerprint(
                     value.exploration_directive
                 )
                 == value.exploration_directive_ref
+                and value.exploration_directive.source_attention_fingerprint
+                == value.attention_ref
+                and value.exploration_directive.protocol_id
+                == value.attention.protocol_id
+                and value.exploration_directive.target == value.attention.target
+                and value.exploration_directive.current_step
+                == value.attention.current_step
                 and not any(
                     item.code == _ATTENTION_CHANNEL_DIAGNOSTIC_CODE
                     for item in value.diagnostics
@@ -183,25 +191,6 @@ def hybrid_commit_evaluation_is_authoritative(value: object) -> bool:
                 return False
         else:
             return False
-        if value.attention_status is HybridCommitAttentionStatus.VERIFIED:
-            for runtime, ref, authoritative, fingerprint in (
-                (
-                    value.attention,
-                    value.attention_ref,
-                    attention_breakdown_is_authoritative,
-                    attention_breakdown_fingerprint,
-                ),
-                (
-                    value.exploration_directive,
-                    value.exploration_directive_ref,
-                    exploration_directive_is_authoritative,
-                    exploration_directive_fingerprint,
-                ),
-            ):
-                if runtime is None:
-                    return False
-                if not (ref and authoritative(runtime) and fingerprint(runtime) == ref):
-                    return False
         if value.status is HybridCommitEvaluationStatus.PROGRESS:
             if not (
                 decision_progress_is_authoritative(value.decision_progress)

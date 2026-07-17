@@ -14,8 +14,8 @@ EXPECTED_PUBLIC_API = {
     "pheroos.governance": (527, "c59888cc742fb0dbf2eb5bf9ab62fa216e127a897ac0d675dc4ac9002b4f3ad4"),
     "pheroos.kernel": (28, "52523a670adbde14b3bd0c3c8872095d4f08c8bc4903faa5c08a743c6f2de907"),
     "pheroos.drivers": (37, "b551bfec64fc9fd0d5dee669897edad6045a197145e3dab9deaab44478887bde"),
-    "pheroos.trace": (24, "a44cd01830926773f54d60f1d9d70ebb0bea6eb621e2d0b09fc54211dfda9c2b"),
-    "pheroos.conformance": (24, "ba80447d75f1f15daa12b0b71f3a3440ebdb62259ee3ab564c7dfe594211ff23"),
+    "pheroos.trace": (25, "ebe198475258c7dc4719e0eb9c4c3d2eb1dd70bcc1fb64bd525a36d125668a68"),
+    "pheroos.conformance": (33, "0253154cabb5bcb029f1f84be01d332e37083af0fcee6e0b989fcba7d9bb1091"),
 }
 
 

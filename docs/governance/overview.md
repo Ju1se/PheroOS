@@ -74,6 +74,12 @@ commit state and Trace, and finalize only after receipt verification.
 database. Frozen v1 process-local issuers are quarantined under `_legacy` and
 must not gain new semantics.
 
+External stores provide a `GovernanceStateStoreConformanceAdapter` test fixture
+and run `run_governance_state_store_conformance(...)`; the same matrix checks
+restart, snapshot restoration, scope isolation, CAS, idempotency, atomic
+state-plus-Trace failure, retirement, and tombstones without moving database
+lifecycle into Governance.
+
 The complete Draft semantics are documented in
 [the Optimal Commit ABI](../protocol/optimal-commit-abi.md).
 

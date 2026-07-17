@@ -231,9 +231,30 @@ This ABI is intentionally not a database manager or transaction server. An
 external store adapter implements the protocol and must pass the restart,
 scope-isolation, idempotency, CAS, atomicity, and retirement conformance matrix.
 
+That matrix is reusable by external implementations. A
+`GovernanceStateStoreConformanceAdapter` supplies fresh, checkpoint-restored,
+snapshot-restored, and failure-injected stores to
+`run_governance_state_store_conformance(...)`. The adapter fixture is test
+plumbing only; the production store remains the small `GovernanceStateStore`
+Protocol and does not depend on conformance. Fixtures declare
+`GOVERNANCE_STATE_STORE_CONFORMANCE_VERSION`; unknown versions fail closed.
+The required deterministic injection points are published as
+`GOVERNANCE_STATE_STORE_FAILURE_STAGES` rather than hidden test strings.
+Concurrent correctness is exercised with 32 workers: all workers retrying one
+batch must receive one identical receipt, while conflicting genesis batches
+must produce exactly one commit and retry conflicts for every loser. The
+worker count is test load, not a provider ABI field.
+
 ## Trace Extensions
 
 Trace events use canonical built-in event types or namespaced extension event types.
+Persistence is supplied through the provider-neutral `TraceStore` Protocol,
+which exposes canonical append and immutable chronological snapshots. An
+external backend supplies a `TraceStoreConformanceAdapter` factory to
+`run_trace_store_conformance(...)`; the matrix verifies validation-before-write,
+ordering, immutable input/output snapshots, fresh-store isolation, and
+fail-closed malformed events. Its declared
+`TRACE_STORE_CONFORMANCE_VERSION` is exact-version dispatched.
 
 Namespaced trace events are useful for external runtime lineage, but they remain trace records only. They do not become evidence, permission, quorum, or output authority.
 

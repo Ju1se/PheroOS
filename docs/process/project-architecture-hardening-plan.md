@@ -70,9 +70,12 @@ flowchart LR
     CLI --> Kernel
     CLI --> Governance
     CLI --> Conformance
+    CLI --> Drivers
+    CLI --> Trace
     Kernel --> Protocol
     Kernel --> Drivers
     Governance --> Protocol
+    Governance --> Trace
     Conformance --> Protocol
     Conformance --> Kernel
     Conformance --> Governance
@@ -143,6 +146,17 @@ database migration runtime、queue 或 server 依赖。
 - snapshot 可在新进程显式 rehydrate；
 - retire 产生 tombstone，并对高基数 scope 做清理；
 - in-memory 实现仅用于 reference、tests 和 conformance，不声称是生产数据库。
+
+外部 backend 通过公开 `GovernanceStateStoreConformanceAdapter` 提供 fresh、checkpoint restore、
+snapshot restore 与确定性 failure-injection fixture，并运行与 reference 相同的
+`run_governance_state_store_conformance(...)` 矩阵。Trace 持久化则由独立 `TraceStore` Protocol
+承载；外部实现通过 `TraceStoreConformanceAdapter` 与 `run_trace_store_conformance(...)` 证明
+validation-before-write、顺序、不可变快照和 fresh-store 隔离。conformance adapter 只是测试夹具，
+不会让 core 取得数据库或 provider lifecycle ownership。
+
+StateStore 矩阵还以固定 32-worker 测试负载验证同批次幂等重试与冲突批次单一赢家；
+worker 数不进入 provider ABI。因此“外部同一矩阵”包含真实 concurrency proof，
+又不会把测试负载变成协议约束。
 
 外部 PostgreSQL、SQLite、KV 或事务日志 adapter 可以替换，但必须通过同一 CAS、atomicity、restart、
 concurrency、failure-injection 和 scope-isolation conformance。这样既补齐“数据库管理语义”，又不把
@@ -273,8 +287,8 @@ Commit 检查只在 manifest 显式声明时启用。
 
 ### 8.1 功能与结构
 
-- 全量本地 suite：`1326 passed`（包含生成发行物后的供应链绑定检查）。
-- Source conformance：8/8 通过。
+- 全量本地 suite：`1343 passed`（包含生成发行物后的供应链绑定检查）。
+- Source conformance v3：9/9 通过，包含可复用的 StateStore/TraceStore adapter 矩阵。
 - Toy、E2E、Swarm、Hybrid Pheromone、Hybrid Commit 和 Distributed examples 全部通过。
 - TCK v1 38 cases 与 TCK v2 reference/independent/adversarial matrix 全部通过。
 - 全 package、Governance private 和 Trace import SCC 检查通过。
@@ -288,7 +302,7 @@ Commit 检查只在 manifest 显式声明时启用。
 ### 8.2 性能与生命周期
 
 - Governance cold import median 约 3 ms，低于 120 ms hard budget；只加载少量实现模块。
-- manifest reference check 约 1 ms；TCK v1 约 2.04 s；TCK v2 约 0.04 s。
+- manifest reference check 约 1 ms；TCK v1 约 1.66 s；TCK v2 约 0.04 s。
 - append 10k Trace 约 0.10 s；retire 10k scopes 约 0.13 s。
 - diffusion double-size ratio 约 1.99，未出现非预期超线性退化。
 - Hybrid/Distributed conformance 均低于冻结 hard ceiling；性能基线不能通过提高 ceiling 静默放宽。
@@ -322,7 +336,8 @@ Commit 检查只在 manifest 显式声明时启用。
 | Facade 不拥有算法且保持 lazy/identity | `tests/governance/test_lifecycle_module_decomposition.py`、`tests/governance/test_lazy_facade.py`、public API artifacts |
 | tenant/run scope 端到端隔离 | `tests/kernel/test_runtime_scope.py`、`tests/drivers/test_driver_invocation.py`、`tests/conformance/test_runtime_scope_contract.py`、`tests/trace/test_scoped_trace.py` |
 | 无新 module-global authority | `tests/governance/test_legacy_authority_isolation.py` 与 static graph/registry scans |
-| restart/rehydrate/CAS/retire/tombstone | `tests/governance/test_authority_ledger.py`、`tests/conformance/test_authority_ledger_contract.py` |
+| restart/rehydrate/CAS/retire/tombstone | `tests/governance/test_authority_ledger.py`、`tests/conformance/test_authority_ledger_contract.py`；同一矩阵由外部 adapter fixture 实际调用 |
+| TraceStore 可替换且保持 append-only/快照语义 | `pheroos.trace.TraceStore`、`tests/trace/test_trace_store_protocol.py`、`tests/conformance/test_trace_store_contract.py` |
 | state 与 Trace atomic | `tests/governance/test_atomic_hybrid_commit.py` 的 success、CAS conflict、state failure 与 Trace failure matrix |
 | Core 无数据库/server/provider runtime | runtime dependency 为空；CI source-surface/domain-neutrality checks 与禁用依赖扫描 |
 | unknown critical version fail-closed | `tests/conformance/test_protocol_version_fail_closed.py`、`tests/protocol/test_schema_versioning.py` |

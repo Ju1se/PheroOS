@@ -154,6 +154,13 @@ The project is currently pre-stable. Until the first stable ABI release, entries
   runner scheduling waits without hiding isolated-subprocess work. Feature
   branches run CI through the pull request event only; `push` remains enabled
   on `main` for provenance.
+- Commit canonicalization now fast-paths exact JSON builtins, and Hybrid
+  attention/replay verification reuses already verified intermediate roots.
+  Subclasses, custom containers, public fail-closed entry points, errors, TCK
+  roots, all 92 evaluations, and isolated subprocess checks remain unchanged.
+- Source conformance is versioned as `pheroos-source-v3`; it adds a public
+  `TraceStore` Protocol and reusable external StateStore/TraceStore adapter
+  matrices instead of proving only the bundled in-memory implementations.
 - Unknown protocol and other critical ABI versions now fail closed instead of
   falling through to current defaults.
 - Governance is a generated static lazy facade; importing a submodule no longer

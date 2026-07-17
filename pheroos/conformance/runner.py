@@ -58,6 +58,7 @@ from pheroos.conformance.checks import (
     swarm_trace_contract,
     support_lease_contract,
     trace_contract,
+    trace_store_contract,
 )
 from pheroos.conformance.profile import (
     MANIFEST_PROFILE,
@@ -210,6 +211,7 @@ def run_source_conformance(core_root: str | Path | None = None) -> ConformanceRe
         safe_check("driver_lifecycle_boundary", driver_lifecycle_boundary.check),
         safe_check("runtime_scope_contract", runtime_scope_contract.check),
         safe_check("authority_ledger_contract", authority_ledger_contract.check),
+        safe_check("trace_store_contract", trace_store_contract.check),
         safe_check("public_abi_boundary", public_abi_boundary.check, root),
     ]
     checks.append(profile_contract_check(SOURCE_PROFILE, checks))

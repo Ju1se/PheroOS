@@ -23,7 +23,7 @@ CORE_PROFILE_VERSION = "pheroos-core-v1"
 SWARM_PROFILE_VERSION = "pheroos-swarm-v1"
 HYBRID_SWARM_PROFILE_VERSION = "pheroos-hybrid-swarm-v1"
 MANIFEST_PROFILE_VERSION = "pheroos-manifest-v1"
-SOURCE_PROFILE_VERSION = "pheroos-source-v2"
+SOURCE_PROFILE_VERSION = "pheroos-source-v3"
 
 
 @dataclass(frozen=True)
@@ -185,6 +185,7 @@ SOURCE_PROFILE = ConformanceProfile(
         "driver_lifecycle_boundary",
         "runtime_scope_contract",
         "authority_ledger_contract",
+        "trace_store_contract",
         "public_abi_boundary",
     ),
 )

@@ -26,7 +26,7 @@
   "post_hardening_observed_seconds": {
     "governance_cold_import_median": 0.0027,
     "manifest_load_validate_median": 0.0011,
-    "commit_tck_v1_warm": 2.05,
+    "commit_tck_v1_warm": 1.66,
     "commit_tck_v2": 0.04,
     "trace_append_10000": 0.0997,
     "authority_retire_10000": 0.146
