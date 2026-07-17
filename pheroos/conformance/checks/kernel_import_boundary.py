@@ -32,7 +32,7 @@ FORBIDDEN_IMPORT_ROOTS = {
     "tools",
     "uvicorn",
 }
-ROOT_FOUNDATION_MODULES = {"_immutable", "_scope", "_version"}
+ROOT_FOUNDATION_MODULES = {"_digest", "_immutable", "_scope", "_version"}
 PACKAGE_IMPORT_ALLOWLIST = {
     "protocol": {"protocol"},
     "kernel": {"kernel", "protocol", "drivers"},

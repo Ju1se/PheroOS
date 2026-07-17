@@ -273,23 +273,27 @@ Commit 检查只在 manifest 显式声明时启用。
 
 ### 8.1 功能与结构
 
-- 全量本地 suite：`1303 passed`（包含生成发行物后的供应链绑定检查）。
+- 全量本地 suite：`1320 passed`（包含生成发行物后的供应链绑定检查）。
 - Source conformance：8/8 通过。
 - Toy、E2E、Swarm、Hybrid Pheromone、Hybrid Commit 和 Distributed examples 全部通过。
 - TCK v1 38 cases 与 TCK v2 reference/independent/adversarial matrix 全部通过。
 - 全 package、Governance private 和 Trace import SCC 检查通过。
 - 四个 frozen v1 schema 与四个 strict v2 schema generator/drift checks 通过。
 - public API inventory、Governance export 和 Commit TCK generators 均无漂移。
+- public API type identity 在 Python 3.12、3.13、3.14 间屏蔽 `pathlib` 私有实现模块漂移，
+  冻结 artifact 保持公共类型名且不需要版本升级。
 - Critical Ruff `E9,F63,F7,F82` 与声明的 incremental Mypy scope 通过。
 - Core runtime dependencies 仍为空；数据库、HTTP server、provider SDK、queue/worker 扫描为零。
 
 ### 8.2 性能与生命周期
 
 - Governance cold import median 约 3 ms，低于 120 ms hard budget；只加载少量实现模块。
-- manifest reference check 约 1 ms；TCK v1 约 2.5 s；TCK v2 约 0.04 s。
-- append 10k Trace 约 0.11 s；retire 10k scopes 约 0.15 s。
-- diffusion double-size ratio 约 2.06，未出现非预期超线性退化。
+- manifest reference check 约 1 ms；TCK v1 约 2.04 s；TCK v2 约 0.04 s。
+- append 10k Trace 约 0.10 s；retire 10k scopes 约 0.13 s。
+- diffusion double-size ratio 约 1.99，未出现非预期超线性退化。
 - Hybrid/Distributed conformance 均低于冻结 hard ceiling；性能基线不能通过提高 ceiling 静默放宽。
+- authority SHA-256 校验收敛到单一严格 validator；普通字符串语义、调用方错误契约和
+  TCK roots 不变；`str` 子类仍按底层纯字符串判定，不能通过覆写切片行为跨版本绕过。
 
 这些数值是本机验收样本；CI 以 [reference performance artifact](reference-performance-v1.json) 的
 固定预算判定，不把单次绝对耗时当作跨平台承诺。

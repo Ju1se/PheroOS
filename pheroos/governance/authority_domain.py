@@ -8,6 +8,7 @@ from math import isfinite
 from types import MappingProxyType
 from typing import Any, Protocol, runtime_checkable
 
+from pheroos._digest import is_canonical_sha256_fingerprint
 from pheroos.governance.errors import GovernanceError
 
 
@@ -504,12 +505,7 @@ def _require_identity(value: object, field_name: str) -> str:
 
 
 def _require_digest(value: object, field_name: str) -> str:
-    if (
-        not isinstance(value, str)
-        or len(value) != 71
-        or not value.startswith("sha256:")
-        or any(character not in "0123456789abcdef" for character in value[7:])
-    ):
+    if not is_canonical_sha256_fingerprint(value):
         raise GovernanceError(f"{field_name} must be a canonical SHA-256 digest")
     return value
 

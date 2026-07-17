@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from importlib import import_module
 import os
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 import shutil
 import subprocess
 import sys
@@ -13,6 +13,7 @@ from pheroos.conformance.public_api_inventory import (
     PUBLIC_API_INVENTORY_PATH,
     PUBLIC_PACKAGES,
     _class_member_shapes,
+    _type_identity,
     build_public_api_inventory,
     load_public_api_inventory,
 )
@@ -239,6 +240,24 @@ def test_class_member_inventory_distinguishes_descriptor_and_async_kinds() -> No
         ],
         "return": "None",
     }
+
+
+def test_path_type_identity_ignores_python_313_private_storage_module() -> None:
+    private_path_type = type(
+        "PosixPath",
+        (PurePosixPath,),
+        {"__module__": "pathlib._local"},
+    )
+    unrelated_private_type = type(
+        "Opaque",
+        (),
+        {"__module__": "pathlib._local"},
+    )
+
+    assert _type_identity(private_path_type) == "pathlib:PosixPath"
+    assert _type_identity(unrelated_private_type) == "pathlib._local:Opaque"
+    assert _type_identity(type(Path())) == f"pathlib:{type(Path()).__qualname__}"
+    assert _type_identity(PurePosixPath) == "pathlib:PurePosixPath"
 
 
 def test_public_api_inventory_generator_check_mode_accepts_checked_artifact() -> None:

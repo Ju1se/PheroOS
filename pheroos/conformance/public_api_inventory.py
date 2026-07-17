@@ -381,7 +381,13 @@ def _aliases_for(
 
 
 def _type_identity(value: type[Any]) -> str:
-    return f"{value.__module__}:{value.__qualname__}"
+    module = value.__module__
+    if module.startswith("pathlib.") and issubclass(value, PurePath):
+        # Python 3.13 temporarily exposed concrete Path classes from the
+        # private ``pathlib._local`` implementation module.  ABI inventories
+        # describe the stable public type, not that version-specific detail.
+        module = "pathlib"
+    return f"{module}:{value.__qualname__}"
 
 
 def _class_member_shapes(value: type[Any]) -> list[dict[str, Any]]:

@@ -7,6 +7,7 @@ from math import isclose, isfinite
 from numbers import Real
 from typing import Any, Callable, Iterable, Protocol
 
+from pheroos._digest import is_canonical_sha256_fingerprint
 from pheroos.trace.commit_contracts import (
     COMMIT_EVENT_TYPES,
     validate_commit_trace_event,
@@ -746,12 +747,7 @@ def _require_receipt_fingerprint(
     field_name: str,
     value: Any,
 ) -> None:
-    if (
-        not isinstance(value, str)
-        or len(value) != len("sha256:") + 64
-        or not value.startswith("sha256:")
-        or any(character not in "0123456789abcdef" for character in value[7:])
-    ):
+    if not is_canonical_sha256_fingerprint(value):
         raise ValueError(
             f"{event_type} trace lineage {field_name} must be a sha256 fingerprint"
         )

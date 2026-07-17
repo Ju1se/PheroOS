@@ -143,6 +143,12 @@ The project is currently pre-stable. Until the first stable ABI release, entries
 
 ### Changed
 
+- Public API inventory canonicalizes version-specific private `pathlib`
+  storage modules to the stable public type identity, so one checked artifact
+  is valid across Python 3.12, 3.13, and 3.14.
+- Repeated SHA-256 authority validation now uses one shared, strict,
+  C-backed validator. Accepted syntax and fail-closed errors are unchanged;
+  the TCK performance gate is met without raising its locked ceiling.
 - Unknown protocol and other critical ABI versions now fail closed instead of
   falling through to current defaults.
 - Governance is a generated static lazy facade; importing a submodule no longer

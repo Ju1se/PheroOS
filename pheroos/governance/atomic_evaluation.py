@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 """Scoped, atomic publication for Hybrid Commit evaluation results.
 
 The existing Hybrid Commit evaluator produces a deterministic governance
@@ -14,6 +12,8 @@ in that proposal do not become externally authorizing merely because the
 in-process evaluator constructed them.
 """
 
+from __future__ import annotations
+
 from collections.abc import Mapping
 from dataclasses import dataclass, field
 from enum import StrEnum
@@ -22,6 +22,7 @@ import json
 from types import MappingProxyType
 from typing import Any
 
+from pheroos._digest import is_canonical_sha256_fingerprint
 from pheroos.governance.authority_domain import (
     AuthorityDomain,
     GovernanceCommitBatch,
@@ -780,12 +781,7 @@ def _require_text(value: object, field_name: str) -> str:
 
 
 def _require_digest(value: object, field_name: str) -> str:
-    if (
-        not isinstance(value, str)
-        or len(value) != 71
-        or not value.startswith("sha256:")
-        or any(character not in "0123456789abcdef" for character in value[7:])
-    ):
+    if not is_canonical_sha256_fingerprint(value):
         raise GovernanceError(f"{field_name} must be a canonical SHA-256 digest")
     return value
 

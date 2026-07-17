@@ -5,12 +5,22 @@ from pathlib import Path
 
 from pheroos.conformance.checks.kernel_import_boundary import (
     FORBIDDEN_IMPORT_ROOTS,
+    ROOT_FOUNDATION_MODULES,
     check,
 )
 
 
 ROOT = Path(__file__).resolve().parents[2]
 FORBIDDEN = FORBIDDEN_IMPORT_ROOTS
+
+
+def test_root_foundation_modules_are_explicit_and_small() -> None:
+    assert ROOT_FOUNDATION_MODULES == {
+        "_digest",
+        "_immutable",
+        "_scope",
+        "_version",
+    }
 
 
 def test_core_import_does_not_load_removed_runtime_modules() -> None:
