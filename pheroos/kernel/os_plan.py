@@ -51,11 +51,17 @@ class OSPlan:
     request_id: str
     run_id: str = ""
     scope_ref: str = ""
-    capability_resolutions: tuple[CapabilityResolution, ...] = field(default_factory=tuple)
+    capability_resolutions: tuple[CapabilityResolution, ...] = field(
+        default_factory=tuple
+    )
     permission_grants: tuple[PermissionGrant, ...] = field(default_factory=tuple)
-    connection_requirements: tuple[ConnectionRequirement, ...] = field(default_factory=tuple)
+    connection_requirements: tuple[ConnectionRequirement, ...] = field(
+        default_factory=tuple
+    )
     connection_readiness: tuple[ConnectionReadiness, ...] = field(default_factory=tuple)
-    driver_probe_snapshots: tuple[DriverProbeSnapshot, ...] = field(default_factory=tuple)
+    driver_probe_snapshots: tuple[DriverProbeSnapshot, ...] = field(
+        default_factory=tuple
+    )
     driver_exposures: tuple[DriverExposure, ...] = field(default_factory=tuple)
     tool_exposures: tuple[ToolExposure, ...] = field(default_factory=tuple)
     diagnostics: tuple[KernelDiagnostic, ...] = field(default_factory=tuple)

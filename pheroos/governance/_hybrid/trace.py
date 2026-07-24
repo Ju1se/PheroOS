@@ -1,27 +1,30 @@
-from __future__ import annotations
-
 """Authoritative Hybrid Commit trace construction and lineage helpers."""
 
+from __future__ import annotations
+
 from collections.abc import Sequence
-from typing import Any
 
 from pheroos.governance._certificate.local import (
-    LOCAL_COMMIT_RECEIPT_VERSION,
     LocalCommitReceipt,
     local_commit_receipt_fingerprint,
     local_commit_receipt_payload,
 )
 from pheroos.governance._certificate.outcome import (
-    OUTCOME_CERTIFICATE_VERSION,
     OutcomeCertificate,
     outcome_certificate_fingerprint,
     outcome_certificate_payload,
 )
 from pheroos.governance._certificate.portable import (
-    EVIDENCE_COMMIT_CERTIFICATE_VERSION,
     EvidenceCommitCertificate,
     evidence_commit_certificate_fingerprint,
     evidence_commit_certificate_payload,
+)
+from pheroos.governance._certificate.records import (
+    EVIDENCE_COMMIT_CERTIFICATE_VERSION,
+    OUTCOME_CERTIFICATE_VERSION,
+)
+from pheroos.governance._commit.certificate_contracts import (
+    LOCAL_COMMIT_RECEIPT_VERSION,
 )
 from pheroos.governance._hybrid.output import _certificate_for_outcome
 from pheroos.governance._hybrid.request import HybridCommitEvaluationRequest
@@ -49,6 +52,7 @@ from pheroos.governance.distributed_commit import (
     WITNESS_VERIFICATION_VERSION,
     DistributedCommitCertificate,
     DistributedCommitState,
+    WitnessVerification,
     distributed_commit_certificate_fingerprint,
     distributed_commit_certificate_payload,
     distributed_commit_state_fingerprint,
@@ -74,7 +78,7 @@ from pheroos.governance.stop_signal import (
     stop_resolution_verification_is_authoritative,
     stop_resolution_verification_payload,
 )
-from pheroos.protocol.commit_models import CommitAssurance
+from pheroos.protocol.commit_models import CollectiveCommitPolicy, CommitAssurance
 from pheroos.trace import TraceEvent, make_commit_trace_event
 from pheroos.trace.commit_contracts import replay_commit_trace
 
@@ -97,6 +101,9 @@ def _build_evaluation_trace(
     execute: CommitOutputAuthorization | None,
     invalid_path: bool,
 ) -> tuple[TraceEvent, ...]:
+    commit_policy = request.commit_policy
+    if type(commit_policy) is not CollectiveCommitPolicy:
+        raise GovernanceError("Hybrid Commit trace policy is not canonical")
     events = list(prior_trace)
     if invalid_path and not prior_trace:
         # No observation/evidence events are invented when the caller cannot
@@ -119,15 +126,12 @@ def _build_evaluation_trace(
             distributed_state=None,
             previous=(outcome_event,),
         )
-        result = (outcome_event, output_event)
+        result: tuple[TraceEvent, ...] = (outcome_event, output_event)
         replay_commit_trace(result, require_complete=True)
         return result
 
     metric_events: list[TraceEvent] = []
-    predecessor_ids = tuple(
-        event.lineage["event_id"]
-        for event in events
-    )
+    predecessor_ids = tuple(event.lineage["event_id"] for event in events)
     for metrics in assessment.candidate_metrics:
         metrics_ref = candidate_commit_metrics_fingerprint(
             metrics,
@@ -173,13 +177,12 @@ def _build_evaluation_trace(
     )
     if window_event is None:
         reset_count = (
-            request.commit_policy.commit_window.maximum_leader_resets
+            commit_policy.commit_window.maximum_leader_resets
             - window_state.remaining_reset_budget
         )
         is_reset = bool(
             window_state.previous_state_fingerprint
-            and window_state.reset_reason
-            not in {"", "none", "initialized"}
+            and window_state.reset_reason not in {"", "none", "initialized"}
         )
         if is_reset:
             window_event = make_commit_trace_event(
@@ -196,9 +199,7 @@ def _build_evaluation_trace(
                 step=request.current_step,
                 record_schema="pheroos-commit-window-state-v1",
                 record_payload=commit_window_state_payload(window_state),
-                previous_event_ids=tuple(
-                    event.lineage["event_id"] for event in events
-                ),
+                previous_event_ids=tuple(event.lineage["event_id"] for event in events),
                 details={
                     "assessment_ref": commit_assessment_fingerprint(assessment),
                     "prior_window_ref": window_state.previous_state_fingerprint,
@@ -375,9 +376,7 @@ def _build_evaluation_trace(
     outcome_event = _decision_outcome_trace_event(
         request,
         outcome,
-        previous=tuple(
-            (*certificate_events, *distributed_lineage, window_event)
-        ),
+        previous=tuple((*certificate_events, *distributed_lineage, window_event)),
     )
     events.append(outcome_event)
     action_authority_events = _append_current_action_authority_trace(
@@ -413,6 +412,7 @@ def _build_evaluation_trace(
         raise GovernanceError("trace replay omits the exact commit certificate")
     return result
 
+
 def _certificate_trace_event(
     request: HybridCommitEvaluationRequest,
     *,
@@ -421,6 +421,12 @@ def _certificate_trace_event(
     final: bool,
     previous: tuple[TraceEvent, ...],
 ) -> TraceEvent:
+    scope: (
+        LocalCommitReceipt
+        | EvidenceCommitCertificate
+        | DistributedCommitCertificate
+        | OutcomeCertificate
+    )
     if type(certificate) is LocalCommitReceipt:
         payload = local_commit_receipt_payload(certificate)
         schema = LOCAL_COMMIT_RECEIPT_VERSION
@@ -479,6 +485,7 @@ def _certificate_trace_event(
         details=details,
     )
 
+
 def _append_distributed_witness_trace(
     request: HybridCommitEvaluationRequest,
     *,
@@ -495,7 +502,7 @@ def _append_distributed_witness_trace(
             "distributed trace requires the exact portable certificate event"
         )
 
-    by_ref: dict[str, object] = {}
+    by_ref: dict[str, WitnessVerification] = {}
     for verification in (
         *distributed_state.witness_verifications,
         *(
@@ -528,16 +535,12 @@ def _append_distributed_witness_trace(
                 step=max(distributed_state.current_step, _last_trace_step(events)),
                 record_schema=DISTRIBUTED_STATE_VERSION,
                 record_payload=distributed_commit_state_payload(distributed_state),
-                previous_event_ids=(
-                    portable_certificate_event.lineage["event_id"],
-                ),
+                previous_event_ids=(portable_certificate_event.lineage["event_id"],),
                 details={
                     "portable_certificate_ref": portable_certificate_event.lineage[
                         "certificate_ref"
                     ],
-                    "candidate_id": portable_certificate_event.lineage[
-                        "candidate_id"
-                    ],
+                    "candidate_id": portable_certificate_event.lineage["candidate_id"],
                     "witness_count": 0,
                     "witness_quorum": distributed_state.witness_quorum,
                     "final": False,
@@ -566,9 +569,7 @@ def _append_distributed_witness_trace(
                 step=max(verification.verified_at_step, _last_trace_step(events)),
                 record_schema=WITNESS_VERIFICATION_VERSION,
                 record_payload=witness_verification_payload(verification),
-                previous_event_ids=(
-                    portable_certificate_event.lineage["event_id"],
-                ),
+                previous_event_ids=(portable_certificate_event.lineage["event_id"],),
                 details={
                     "proposal_digest": witness.proposal_digest,
                     "commit_value_root": witness.commit_value_root,
@@ -594,7 +595,7 @@ def _append_distributed_witness_trace(
                 "non-frozen distributed trace has conflicting commit values"
             )
         return tuple(witness_events)
-    grouped: dict[tuple[str, str, str], list[Any]] = {}
+    grouped: dict[tuple[str, str, str], list[WitnessVerification]] = {}
     for item in included:
         key = (
             item.witness.commit_value_root,
@@ -618,20 +619,13 @@ def _append_distributed_witness_trace(
         selected_key = min(
             grouped,
             key=lambda key: (
-                -len(
-                    {
-                        item.witness.principal_cluster_id
-                        for item in grouped[key]
-                    }
-                ),
+                -len({item.witness.principal_cluster_id for item in grouped[key]}),
                 key,
             ),
         )
     selected_group = tuple(grouped[selected_key])
     commit_value_root, proposal_digest, candidate_id = selected_key
-    witness_count = len(
-        {item.witness.principal_cluster_id for item in selected_group}
-    )
+    witness_count = len({item.witness.principal_cluster_id for item in selected_group})
     if witness_count >= distributed_state.witness_quorum:
         return tuple(witness_events)
 
@@ -669,6 +663,7 @@ def _append_distributed_witness_trace(
         )
         events.append(existing)
     return tuple((*witness_events, existing))
+
 
 def _append_distributed_conflict_trace(
     *,
@@ -744,6 +739,7 @@ def _append_distributed_conflict_trace(
         )
     return tuple(result)
 
+
 def _decision_outcome_trace_event(
     request: HybridCommitEvaluationRequest,
     outcome: DecisionOutcome,
@@ -780,6 +776,7 @@ def _decision_outcome_trace_event(
         previous_event_ids=tuple(item.lineage["event_id"] for item in previous),
         details=details,
     )
+
 
 def _append_current_action_authority_trace(
     request: HybridCommitEvaluationRequest,
@@ -865,29 +862,36 @@ def _append_current_action_authority_trace(
             seen_ids.add(event_id)
     return tuple(dependencies)
 
+
 def _action_fact_matches_trace_identity(
     fact: object,
     *,
     request: HybridCommitEvaluationRequest,
     outcome_event: TraceEvent,
 ) -> bool:
-    if type(fact) not in {StopResolutionVerification, ActionPermission}:
+    canonical: StopResolutionVerification | ActionPermission
+    if type(fact) is StopResolutionVerification:
+        canonical = fact
+    elif type(fact) is ActionPermission:
+        canonical = fact
+    else:
         return False
     lineage = outcome_event.lineage
     try:
         return bool(
-            fact.profile == lineage["profile"]
-            and fact.assurance.value == lineage["assurance"]
-            and fact.manifest_root == lineage["manifest_root"]
-            and fact.commit_policy_root == lineage["commit_policy_root"]
-            and fact.protocol_id == outcome_event.protocol_id
-            and fact.run_id == lineage["run_id"]
-            and fact.target == outcome_event.target
-            and fact.epoch == lineage["epoch"]
-            and fact.issued_at_step <= request.current_step
+            canonical.profile == lineage["profile"]
+            and canonical.assurance.value == lineage["assurance"]
+            and canonical.manifest_root == lineage["manifest_root"]
+            and canonical.commit_policy_root == lineage["commit_policy_root"]
+            and canonical.protocol_id == outcome_event.protocol_id
+            and canonical.run_id == lineage["run_id"]
+            and canonical.target == outcome_event.target
+            and canonical.epoch == lineage["epoch"]
+            and canonical.issued_at_step <= request.current_step
         )
     except (AttributeError, KeyError, TypeError, ValueError):
         return False
+
 
 def _output_trace_event(
     request: HybridCommitEvaluationRequest,
@@ -948,6 +952,7 @@ def _output_trace_event(
         details=details,
     )
 
+
 def _certificate_fingerprint(certificate: object) -> str:
     if type(certificate) is LocalCommitReceipt:
         return local_commit_receipt_fingerprint(certificate)
@@ -959,6 +964,7 @@ def _certificate_fingerprint(certificate: object) -> str:
         return outcome_certificate_fingerprint(certificate)
     raise GovernanceError("output certificate is not canonical")
 
+
 def _find_trace_record(
     events: Sequence[TraceEvent],
     event_types: str | tuple[str, ...],
@@ -969,15 +975,14 @@ def _find_trace_record(
         (
             event
             for event in events
-            if event.event_type in allowed
-            and event.lineage["record_ref"] == record_ref
+            if event.event_type in allowed and event.lineage["record_ref"] == record_ref
         ),
         None,
     )
 
+
 def _last_trace_step(events: Sequence[TraceEvent]) -> int:
     return max((event.lineage["step"] for event in events), default=0)
-
 
 
 __all__: list[str] = []

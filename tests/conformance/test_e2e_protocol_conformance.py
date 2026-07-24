@@ -59,8 +59,16 @@ def test_driver_contract_requires_declared_capabilities_and_permissions() -> Non
             protocol_version="pheroos.protocol.v1",
             id="driver.contract",
             targets=[TargetSpec(id="decision:review")],
-            candidates=[CandidateSpec(id="candidate:fallback", target="decision:review", safe_fallback=True)],
-            quorum_policy=QuorumPolicy(target="decision:review", fallback_candidate="candidate:fallback"),
+            candidates=[
+                CandidateSpec(
+                    id="candidate:fallback",
+                    target="decision:review",
+                    safe_fallback=True,
+                )
+            ],
+            quorum_policy=QuorumPolicy(
+                target="decision:review", fallback_candidate="candidate:fallback"
+            ),
             output_policy=OutputPolicy(),
             trace_policy=TracePolicy(),
         ),
@@ -91,8 +99,16 @@ def test_kernel_contract_proves_core_kernel_authority_boundaries() -> None:
             protocol_version="pheroos.protocol.v1",
             id="kernel.contract",
             targets=[TargetSpec(id="decision:review")],
-            candidates=[CandidateSpec(id="candidate:fallback", target="decision:review", safe_fallback=True)],
-            quorum_policy=QuorumPolicy(target="decision:review", fallback_candidate="candidate:fallback"),
+            candidates=[
+                CandidateSpec(
+                    id="candidate:fallback",
+                    target="decision:review",
+                    safe_fallback=True,
+                )
+            ],
+            quorum_policy=QuorumPolicy(
+                target="decision:review", fallback_candidate="candidate:fallback"
+            ),
             output_policy=OutputPolicy(),
             trace_policy=TracePolicy(),
         ),
@@ -108,7 +124,9 @@ def test_kernel_contract_reports_bad_plan_shape() -> None:
     bad_plan = OSPlan(
         tenant_id="tenant-a",
         request_id="req-1",
-        driver_exposures=[DriverExposure(driver_id="driver:bad", capability_id="capability:bad")],
+        driver_exposures=[
+            DriverExposure(driver_id="driver:bad", capability_id="capability:bad")
+        ],
     )
 
     problems = kernel_contract.plan_authority_problems(bad_plan)

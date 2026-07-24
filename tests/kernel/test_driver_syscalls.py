@@ -4,7 +4,13 @@ from dataclasses import replace
 import pytest
 
 from pheroos.drivers import DriverInvocationLedger, DriverResult
-from pheroos.kernel import DriverExposure, DriverInvokeRequest, KernelSyscalls, RuntimeContext, ToolExposure
+from pheroos.kernel import (
+    DriverExposure,
+    DriverInvokeRequest,
+    KernelSyscalls,
+    RuntimeContext,
+    ToolExposure,
+)
 from pheroos.kernel.errors import KernelError
 
 
@@ -51,7 +57,14 @@ def test_driver_invoke_requires_exposed_driver() -> None:
     context = RuntimeContext(
         tenant_id="tenant-a",
         request_id="req-1",
-        driver_exposures=[DriverExposure(driver_id="driver:toy", capability_id="toy", permissions=["driver:invoke"], capabilities=["tool:invoke"])],
+        driver_exposures=[
+            DriverExposure(
+                driver_id="driver:toy",
+                capability_id="toy",
+                permissions=["driver:invoke"],
+                capabilities=["tool:invoke"],
+            )
+        ],
     )
     request = invocation_request(context, payload={"input": "ping"})
     result = invocation_result(request, payload={"output": "pong"})
@@ -75,7 +88,14 @@ def test_driver_invoke_rejects_not_ready_context() -> None:
     context = RuntimeContext(
         tenant_id="tenant-a",
         request_id="req-1",
-        driver_exposures=[DriverExposure(driver_id="driver:toy", capability_id="toy", permissions=["driver:invoke"], capabilities=["tool:invoke"])],
+        driver_exposures=[
+            DriverExposure(
+                driver_id="driver:toy",
+                capability_id="toy",
+                permissions=["driver:invoke"],
+                capabilities=["tool:invoke"],
+            )
+        ],
         ready=False,
     )
     request = invocation_request(context)
@@ -89,7 +109,13 @@ def test_driver_invoke_rejects_unpermissioned_exposure() -> None:
     context = RuntimeContext(
         tenant_id="tenant-a",
         request_id="req-1",
-        driver_exposures=[DriverExposure(driver_id="driver:toy", capability_id="toy", capabilities=["tool:invoke"])],
+        driver_exposures=[
+            DriverExposure(
+                driver_id="driver:toy",
+                capability_id="toy",
+                capabilities=["tool:invoke"],
+            )
+        ],
     )
     request = invocation_request(context)
     result = invocation_result(request)
@@ -102,10 +128,19 @@ def test_driver_invoke_rejects_mismatched_result_driver() -> None:
     context = RuntimeContext(
         tenant_id="tenant-a",
         request_id="req-1",
-        driver_exposures=[DriverExposure(driver_id="driver:toy", capability_id="toy", permissions=["driver:invoke"], capabilities=["tool:invoke"])],
+        driver_exposures=[
+            DriverExposure(
+                driver_id="driver:toy",
+                capability_id="toy",
+                permissions=["driver:invoke"],
+                capabilities=["tool:invoke"],
+            )
+        ],
     )
     request = invocation_request(context)
-    result = invocation_result(request, driver_id="driver:other", provenance="driver:other")
+    result = invocation_result(
+        request, driver_id="driver:other", provenance="driver:other"
+    )
 
     with pytest.raises(KernelError, match="does not match"):
         KernelSyscalls().invoke_driver(context, request, result)
@@ -115,7 +150,14 @@ def test_driver_invoke_rejects_missing_result_provenance() -> None:
     context = RuntimeContext(
         tenant_id="tenant-a",
         request_id="req-1",
-        driver_exposures=[DriverExposure(driver_id="driver:toy", capability_id="toy", permissions=["driver:invoke"], capabilities=["tool:invoke"])],
+        driver_exposures=[
+            DriverExposure(
+                driver_id="driver:toy",
+                capability_id="toy",
+                permissions=["driver:invoke"],
+                capabilities=["tool:invoke"],
+            )
+        ],
     )
     request = invocation_request(context)
     result = invocation_result(request, provenance="")
@@ -320,14 +362,20 @@ def test_tool_exposure_requires_ready_context_and_permissions() -> None:
         tenant_id="tenant-a",
         request_id="req-1",
         tool_exposures=[
-            ToolExposure(tool_id="tool:allowed", capability_id="toy", permissions=["tool:use"]),
+            ToolExposure(
+                tool_id="tool:allowed", capability_id="toy", permissions=["tool:use"]
+            ),
             ToolExposure(tool_id="tool:hidden", capability_id="toy"),
         ],
     )
     not_ready_context = RuntimeContext(
         tenant_id="tenant-a",
         request_id="req-1",
-        tool_exposures=[ToolExposure(tool_id="tool:allowed", capability_id="toy", permissions=["tool:use"])],
+        tool_exposures=[
+            ToolExposure(
+                tool_id="tool:allowed", capability_id="toy", permissions=["tool:use"]
+            )
+        ],
         ready=False,
     )
 

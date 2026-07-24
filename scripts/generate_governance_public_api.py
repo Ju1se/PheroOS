@@ -14,27 +14,101 @@ ROOT = Path(__file__).resolve().parents[1]
 INVENTORY = ROOT / "pheroos/conformance/abi/public-python-api-v1.json"
 FACADE = ROOT / "pheroos/governance/__init__.py"
 TARGET = ROOT / "pheroos/governance/_public_api.py"
-EXPECTED_EXPORT_ORDER_SHA256 = (
-    "c1fe92393513b8b3e2aa956d3fcfae0ee49285a89e30bcda11fe8514603f054d"
+PREDECESSOR_EXPORT_ORDER_SHA256 = (
+    "8dbeb2fccde028655b1090abfe7682ac37594920df45ce60cbf1d1c85bde98f9"
 )
+EXPECTED_EXPORT_ORDER_SHA256 = (
+    "607d19b60814e1486080a405460163a94752caa384974625f06738f480b4a85e"
+)
+REMOVED_EXPORTS = frozenset({"commit_replay_receipt_v2_from_v1"})
+PUBLIC_API_EXTENSION_MODULES = (
+    "pheroos.governance.baseline_output_v2",
+    "pheroos.governance.risk_v2",
+    "pheroos.governance.support_v2",
+    "pheroos.governance.commit_gate_v2",
+    "pheroos.governance.commit_evidence_v2",
+    "pheroos.governance.commit_finality_v2",
+    "pheroos.governance.commit_decision_v2",
+    "pheroos.governance.commit_certificate_v2",
+    "pheroos.governance.distributed_commit_v2",
+)
+PUBLIC_API_SHARED_ALIASES = {
+    "COMMIT_FINALITY_INPUT_SCHEMA_V2": "pheroos.governance.commit_finality_v2",
+    "COMMIT_FINALITY_PROJECTION_SCHEMA_V2": "pheroos.governance.commit_finality_v2",
+    "CommitFinalityOwnerV2": "pheroos.governance.commit_finality_v2",
+    "CommitFinalityProjectionV2": "pheroos.governance.commit_finality_v2",
+    "CommitFinalityStatusV2": "pheroos.governance.commit_finality_v2",
+    "RiskBand": "pheroos.governance.risk",
+    "VerifiedCommitFinalityInputV2": "pheroos.governance.commit_finality_v2",
+    "commit_finality_owner_genesis_snapshot_root_v2": (
+        "pheroos.governance.commit_finality_v2"
+    ),
+    "commit_finality_owner_stream_ref_v2": "pheroos.governance.commit_finality_v2",
+}
+PUBLIC_API_BINDING_OVERRIDES = {
+    # These are the exact same vocabulary objects exposed by the frozen v1
+    # facades.  Route root lookup through registry-free v2 facades so a v2
+    # consumer does not initialize process-local legacy authority merely by
+    # asking for shared data vocabulary.
+    "ReplayNamespace": ("pheroos.governance.commit_state_v2", "ReplayNamespace"),
+    "RiskBand": ("pheroos.governance.risk_v2", "RiskBand"),
+    "EvidenceCommitCertificate": (
+        "pheroos.governance.historical_certificate",
+        "EvidenceCommitCertificate",
+    ),
+    "evidence_commit_certificate_fingerprint": (
+        "pheroos.governance.historical_certificate",
+        "evidence_commit_certificate_fingerprint",
+    ),
+    "evidence_commit_certificate_from_payload": (
+        "pheroos.governance.historical_certificate",
+        "evidence_commit_certificate_from_payload",
+    ),
+    "evidence_commit_certificate_payload": (
+        "pheroos.governance.historical_certificate",
+        "evidence_commit_certificate_payload",
+    ),
+    "select_terminal_outcome_kind": (
+        "pheroos.governance.commit_semantics",
+        "select_terminal_outcome_kind",
+    ),
+    "verify_evidence_commit_certificate": (
+        "pheroos.governance.historical_certificate",
+        "verify_evidence_commit_certificate",
+    ),
+}
+LINE_LENGTH = 88
 COMPATIBILITY_MODULES = (
     "attention",
     "atomic_evaluation",
     "authority",
     "authority_domain",
+    "authority_session_v2",
+    "authority_store_v2",
+    "baseline_output_v2",
     "candidate",
     "certificate",
     "challenge",
     "collective",
     "commit",
+    "commit_semantics",
     "commit_numeric",
+    "commit_certificate_v2",
+    "commit_decision_v2",
+    "commit_evidence_v2",
+    "commit_finality_v2",
+    "commit_gate_v2",
     "commit_state",
+    "commit_state_v2",
     "distributed_commit",
+    "distributed_commit_v2",
     "errors",
     "evidence",
     "evidence_binding",
+    "historical_certificate",
     "hybrid_commit",
     "hybrid_commit_evaluation",
+    "hybrid_replay_v2",
     "layer_coordination",
     "observation",
     "output",
@@ -47,11 +121,13 @@ COMPATIBILITY_MODULES = (
     "recovery",
     "replay",
     "risk",
+    "risk_v2",
     "runtime_policy",
     "schema",
     "signal",
     "stop_signal",
     "support_lease",
+    "support_v2",
     "target",
     "trace",
 )
@@ -64,8 +140,16 @@ def main() -> int:
     mode.add_argument("--check", action="store_true")
     args = parser.parse_args()
 
-    order = _checked_export_order()
-    bindings = _inventory_bindings()
+    source_order = _checked_export_order()
+    order, bindings = _configured_public_api(
+        source_order,
+        _inventory_bindings(),
+    )
+    configured_hash = sha256("\n".join(order).encode("utf-8")).hexdigest()
+    if configured_hash != EXPECTED_EXPORT_ORDER_SHA256:
+        raise ValueError(
+            "configured Governance export order changed; update the reviewed hash"
+        )
     if set(order) != set(bindings):
         missing = sorted(set(bindings) - set(order))
         extra = sorted(set(order) - set(bindings))
@@ -116,12 +200,121 @@ def _inventory_bindings() -> dict[str, tuple[str, str]]:
 def _checked_export_order() -> tuple[str, ...]:
     order = _mapping_order(TARGET) if TARGET.is_file() else _legacy_all_order(FACADE)
     observed = sha256("\n".join(order).encode("utf-8")).hexdigest()
-    if observed != EXPECTED_EXPORT_ORDER_SHA256:
+    if observed not in {
+        PREDECESSOR_EXPORT_ORDER_SHA256,
+        EXPECTED_EXPORT_ORDER_SHA256,
+    }:
         raise ValueError(
             "Governance export order drifted; an explicit compatibility decision "
             "is required"
         )
     return order
+
+
+def _configured_public_api(
+    source_order: tuple[str, ...],
+    inventory_bindings: dict[str, tuple[str, str]],
+) -> tuple[tuple[str, ...], dict[str, tuple[str, str]]]:
+    """Apply the reviewed WP-05 activation without importing implementation code."""
+
+    order = [name for name in source_order if name not in REMOVED_EXPORTS]
+    bindings = {
+        name: binding
+        for name, binding in inventory_bindings.items()
+        if name not in REMOVED_EXPORTS
+    }
+    for module_name in PUBLIC_API_EXTENSION_MODULES:
+        for name in _static_module_all(module_name):
+            existing = bindings.get(name)
+            if existing is not None:
+                if existing == (module_name, name):
+                    continue
+                preferred = PUBLIC_API_SHARED_ALIASES.get(name)
+                if preferred is None or existing[0] != preferred:
+                    raise ValueError(
+                        f"unreviewed Governance public export collision: {name}"
+                    )
+                continue
+            bindings[name] = (module_name, name)
+            if name not in order:
+                order.append(name)
+    for name, binding in PUBLIC_API_BINDING_OVERRIDES.items():
+        if name not in bindings or name not in order:
+            raise ValueError(f"Governance public binding override is unknown: {name}")
+        bindings[name] = binding
+    if len(order) != len(set(order)):
+        raise ValueError("configured Governance public export order is not unique")
+    return tuple(order), bindings
+
+
+def _static_module_all(
+    module_name: str,
+    *,
+    seen: frozenset[str] = frozenset(),
+) -> tuple[str, ...]:
+    if module_name in seen:
+        raise ValueError(f"cyclic static __all__ alias: {module_name}")
+    module_path = ROOT.joinpath(*module_name.split("."))
+    path = module_path.with_suffix(".py")
+    if not path.is_file():
+        path = module_path / "__init__.py"
+    tree = ast.parse(path.read_text(encoding="utf-8"))
+    for node in tree.body:
+        if not isinstance(node, ast.Assign):
+            continue
+        if not any(
+            isinstance(target, ast.Name) and target.id == "__all__"
+            for target in node.targets
+        ):
+            continue
+        try:
+            value = ast.literal_eval(node.value)
+        except (ValueError, TypeError):
+            value = _static_all_alias(
+                module_name,
+                tree,
+                node.value,
+                seen=seen | {module_name},
+            )
+        if not isinstance(value, (list, tuple)) or not all(
+            isinstance(item, str) for item in value
+        ):
+            raise ValueError(f"{module_name} has a non-static __all__ declaration")
+        names = tuple(value)
+        if len(names) != len(set(names)):
+            raise ValueError(f"{module_name} has duplicate public exports")
+        return names
+    raise ValueError(f"{module_name} has no static __all__ declaration")
+
+
+def _static_all_alias(
+    module_name: str,
+    tree: ast.Module,
+    value: ast.AST,
+    *,
+    seen: frozenset[str],
+) -> tuple[str, ...]:
+    if not (
+        isinstance(value, ast.Call)
+        and isinstance(value.func, ast.Name)
+        and value.func.id in {"list", "tuple"}
+        and len(value.args) == 1
+        and not value.keywords
+        and isinstance(value.args[0], ast.Name)
+    ):
+        raise ValueError(f"{module_name} has an unsupported __all__ expression")
+    alias_name = value.args[0].id
+    for node in tree.body:
+        if (
+            not isinstance(node, ast.ImportFrom)
+            or node.level != 0
+            or node.module is None
+        ):
+            continue
+        for alias in node.names:
+            if alias.name == "__all__" and (alias.asname or alias.name) == alias_name:
+                return _static_module_all(node.module, seen=seen)
+    raise ValueError(f"{module_name} has an unresolved __all__ alias: {alias_name}")
 
 
 def _mapping_order(path: Path) -> tuple[str, ...]:
@@ -172,15 +365,28 @@ def _render_mapping(
         "from types import MappingProxyType",
         "",
         "",
-        f'PUBLIC_API_ORDER_SHA256 = "{EXPECTED_EXPORT_ORDER_SHA256}"',
+        "PUBLIC_API_ORDER_SHA256 = (",
+        f'    "{EXPECTED_EXPORT_ORDER_SHA256}"',
+        ")",
         "PUBLIC_API = MappingProxyType(",
         "    {",
     ]
     for name in order:
         module_name, attribute = bindings[name]
-        lines.append(
+        rendered = (
             f"        {_quoted(name)}: ({_quoted(module_name)}, {_quoted(attribute)}),"
         )
+        if len(rendered) <= LINE_LENGTH:
+            lines.append(rendered)
+        else:
+            lines.extend(
+                [
+                    f"        {_quoted(name)}: (",
+                    f"            {_quoted(module_name)},",
+                    f"            {_quoted(attribute)},",
+                    "        ),",
+                ]
+            )
     lines.extend(
         [
             "    }",
@@ -227,9 +433,17 @@ def _render_facade(
     ]
     for name in order:
         module_name, attribute = bindings[name]
-        lines.append(
-            f"    from {module_name} import {attribute} as {name}"
-        )
+        rendered = f"    from {module_name} import {attribute} as {name}"
+        if len(rendered) <= LINE_LENGTH:
+            lines.append(rendered)
+        else:
+            lines.extend(
+                [
+                    f"    from {module_name} import (",
+                    f"        {attribute} as {name},",
+                    "    )",
+                ]
+            )
     lines.extend(
         [
             "",
@@ -244,9 +458,7 @@ def _render_facade(
             "    target = _PUBLIC_API.get(name)",
             "    compatibility_module = _COMPATIBILITY_MODULES.get(name)",
             "    if target is None and compatibility_module is None:",
-            "        raise AttributeError(",
-            '            f"module {__name__!r} has no attribute {name!r}"',
-            "        )",
+            '        raise AttributeError(f"module {__name__!r} has no attribute {name!r}")',
             "    with _PUBLIC_API_LOCK:",
             "        if name in globals():",
             "            return globals()[name]",
@@ -254,15 +466,14 @@ def _render_facade(
             "            module_name, attribute = target",
             "            value = getattr(_import_module(module_name), attribute)",
             "        else:",
+            "            assert compatibility_module is not None",
             "            value = _import_module(compatibility_module)",
             "        globals()[name] = value",
             "        return value",
             "",
             "",
             "def __dir__() -> list[str]:",
-            "    return sorted(",
-            "        set(globals()) | set(_PUBLIC_API) | set(_COMPATIBILITY_MODULES)",
-            "    )",
+            "    return sorted(set(globals()) | set(_PUBLIC_API) | set(_COMPATIBILITY_MODULES))",
             "",
         ]
     )

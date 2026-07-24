@@ -1,6 +1,6 @@
-from __future__ import annotations
-
 """Packaged Commit TCK artifact loading, hashing, and schema generation."""
+
+from __future__ import annotations
 
 from copy import deepcopy
 from hashlib import sha256

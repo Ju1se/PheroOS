@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import TypedDict
+
 from pheroos.governance._commit_validation import (
     require_commit_fingerprint,
     require_commit_labels,
@@ -27,9 +29,20 @@ from pheroos.protocol.validation import (
 )
 
 
+class _WindowBindings(TypedDict):
+    profile: str
+    assurance: CommitAssurance
+    manifest_root: str
+    commit_policy_root: str
+    protocol_id: str
+    run_id: str
+    target: str
+    epoch: int
+
+
 def _validate_bound_commit_policy(
     policy: CollectiveCommitPolicy,
-    bindings: dict[str, object],
+    bindings: _WindowBindings,
 ) -> None:
     if type(policy) is not CollectiveCommitPolicy:
         raise GovernanceError(
@@ -125,7 +138,7 @@ def _normalized_window_bindings(
     target: object,
     epoch: object,
     field_name: str,
-) -> dict[str, object]:
+) -> _WindowBindings:
     _validate_commit_binding_values(
         profile=profile,
         assurance=assurance,

@@ -12,19 +12,20 @@ from pheroos.governance import (
     CandidateSet,
     EvidenceGraph,
     EvidenceNode,
-    InhibitionSignal,
     HybridReplayState,
+    InhibitionSignal,
     LayerPerformanceSnapshot,
     LayerProposal,
     OutputContract,
-    PheromoneExplorationObservation,
     PheromoneEdge,
+    PheromoneExplorationObservation,
     PheromoneFeedback,
     PheromoneNeighborhood,
     PheromoneSubject,
     PheromoneTrail,
     PolicyAdjustmentProposal,
     RecruitmentSignal,
+    RunScopedPolicyOverlay,
     ScoutReport,
     StopResolution,
     StrategyBias,
@@ -33,13 +34,15 @@ from pheroos.governance import (
     hybrid_collective_step_is_authoritative,
     hybrid_replay_state_is_authoritative,
     replay_state_from_hybrid_step,
-    RunScopedPolicyOverlay,
     verify_signal_input,
 )
-from pheroos.protocol import collective_fallback_id, load_capability_manifest, validate_capability_manifest
 from pheroos.governance.errors import GovernanceError
+from pheroos.protocol import (
+    collective_fallback_id,
+    load_capability_manifest,
+    validate_capability_manifest,
+)
 from pheroos.trace import InMemoryTraceStore
-
 
 HYBRID_TRACE_ID_SURFACES = (
     "deposit",
@@ -61,7 +64,9 @@ HYBRID_RECEIPT_COLLISIONS = tuple(combinations(HYBRID_RECEIPT_FIELDS, 2))
 
 
 def test_provider_free_hybrid_pheromone_vertical_slice() -> None:
-    manifest = load_capability_manifest("examples/hybrid-pheromone-protocol/capability.json")
+    manifest = load_capability_manifest(
+        "examples/hybrid-pheromone-protocol/capability.json"
+    )
     protocol = manifest.protocol
     policy = protocol.collective_decision_policy
     target = protocol.quorum_policy.target
@@ -85,8 +90,12 @@ def test_provider_free_hybrid_pheromone_vertical_slice() -> None:
             verified_scout("scout:a", "candidate:alpha", target),
             verified_scout("scout:b", "candidate:alpha", target),
         ],
-        recruitment_signals=[verified_recruitment("recruit:a", "candidate:alpha", target, 1.0)],
-        inhibition_signals=[verified_inhibition("inhibit:a", "candidate:beta", target, 0.5)],
+        recruitment_signals=[
+            verified_recruitment("recruit:a", "candidate:alpha", target, 1.0)
+        ],
+        inhibition_signals=[
+            verified_inhibition("inhibit:a", "candidate:beta", target, 0.5)
+        ],
         deposits=deposits(target),
         topology=topology(target),
         feedback=feedback(target),
@@ -155,7 +164,10 @@ def test_provider_free_hybrid_pheromone_vertical_slice() -> None:
     assert step.decision.candidate_id == "candidate:alpha"
     assert step.decision.reason == "collective_consensus"
     assert output.authorized is True
-    assert sum(step.state.score_breakdown["candidate:alpha"].values()) == step.state.scores["candidate:alpha"]
+    assert (
+        sum(step.state.score_breakdown["candidate:alpha"].values())
+        == step.state.scores["candidate:alpha"]
+    )
     assert step.adjustment_overlay == {"pheromone_positive_weight": 1.2}
     assert step.budget_state is not None
     assert step.budget_state.round_used <= policy.pheromone_per_round_deposit_cap
@@ -163,9 +175,17 @@ def test_provider_free_hybrid_pheromone_vertical_slice() -> None:
         used <= policy.pheromone_per_source_cap
         for used in step.budget_state.source_used.values()
     )
-    assert step.layer_coordination.trace_coverage_confirmations == {"candidate:alpha": 0.8}
-    assess_event = next(event for event in step.trace_events if event.event_type == "coordination_assess")
-    assert assess_event.lineage["trace_coverage_confirmations"] == {"candidate:alpha": 0.8}
+    assert step.layer_coordination.trace_coverage_confirmations == {
+        "candidate:alpha": 0.8
+    }
+    assess_event = next(
+        event
+        for event in step.trace_events
+        if event.event_type == "coordination_assess"
+    )
+    assert assess_event.lineage["trace_coverage_confirmations"] == {
+        "candidate:alpha": 0.8
+    }
     assert {
         "pheromone_deposit",
         "pheromone_diffuse",
@@ -199,13 +219,18 @@ def test_hybrid_example_script_uses_complete_reference_path() -> None:
 
 
 def test_full_hybrid_step_applies_declared_novelty_decay() -> None:
-    manifest = load_capability_manifest("examples/hybrid-pheromone-protocol/capability.json")
+    manifest = load_capability_manifest(
+        "examples/hybrid-pheromone-protocol/capability.json"
+    )
     protocol = manifest.protocol
     base = protocol.collective_decision_policy
     target = protocol.quorum_policy.target
     assert base is not None
     candidates = CandidateSet(
-        [Candidate(item.id, item.target, item.safe_fallback) for item in protocol.candidates]
+        [
+            Candidate(item.id, item.target, item.safe_fallback)
+            for item in protocol.candidates
+        ]
     )
     novelty = PheromoneTrail(
         candidate_id="candidate:alpha",
@@ -242,21 +267,33 @@ def test_full_hybrid_step_applies_declared_novelty_decay() -> None:
         trail.strength for trail in no_decay.active_trails if trail.kind == "novelty"
     )
     strong_decay_strength = sum(
-        trail.strength for trail in strong_decay.active_trails if trail.kind == "novelty"
+        trail.strength
+        for trail in strong_decay.active_trails
+        if trail.kind == "novelty"
     )
 
     assert strong_decay_strength < no_decay_strength
-    assert strong_decay.state.scores["candidate:alpha"] < no_decay.state.scores["candidate:alpha"]
+    assert (
+        strong_decay.state.scores["candidate:alpha"]
+        < no_decay.state.scores["candidate:alpha"]
+    )
 
 
-def test_full_hybrid_step_uses_safe_fallback_for_unresolved_emergency_conflict() -> None:
-    manifest = load_capability_manifest("examples/hybrid-pheromone-protocol/capability.json")
+def test_full_hybrid_step_uses_safe_fallback_for_unresolved_emergency_conflict() -> (
+    None
+):
+    manifest = load_capability_manifest(
+        "examples/hybrid-pheromone-protocol/capability.json"
+    )
     protocol = manifest.protocol
     policy = protocol.collective_decision_policy
     target = protocol.quorum_policy.target
     assert policy is not None
     candidates = CandidateSet(
-        [Candidate(item.id, item.target, item.safe_fallback) for item in protocol.candidates]
+        [
+            Candidate(item.id, item.target, item.safe_fallback)
+            for item in protocol.candidates
+        ]
     )
     step = evaluate_hybrid_collective_step(
         protocol_id=protocol.id,
@@ -268,7 +305,16 @@ def test_full_hybrid_step_uses_safe_fallback_for_unresolved_emergency_conflict()
             verified_scout("scout:conflict:a", "candidate:alpha", target),
             verified_scout("scout:conflict:b", "candidate:alpha", target),
         ],
-        deposits=[route_trail("candidate:alpha", "route:alpha", target, "positive", 1.0, "source:alpha")],
+        deposits=[
+            route_trail(
+                "candidate:alpha",
+                "route:alpha",
+                target,
+                "positive",
+                1.0,
+                "source:alpha",
+            )
+        ],
         topology=topology(target),
         layer_proposals=[
             LayerProposal(
@@ -309,14 +355,21 @@ def test_full_hybrid_step_uses_safe_fallback_for_unresolved_emergency_conflict()
     assert "commit" not in observed
 
 
-def test_positive_layer_pheromone_proposal_enters_full_step_only_through_governed_deposit() -> None:
-    manifest = load_capability_manifest("examples/hybrid-pheromone-protocol/capability.json")
+def test_positive_layer_pheromone_proposal_enters_full_step_only_through_governed_deposit() -> (
+    None
+):
+    manifest = load_capability_manifest(
+        "examples/hybrid-pheromone-protocol/capability.json"
+    )
     protocol = manifest.protocol
     policy = protocol.collective_decision_policy
     target = protocol.quorum_policy.target
     assert policy is not None
     candidates = CandidateSet(
-        [Candidate(item.id, item.target, item.safe_fallback) for item in protocol.candidates]
+        [
+            Candidate(item.id, item.target, item.safe_fallback)
+            for item in protocol.candidates
+        ]
     )
     pheromone_proposal = LayerProposal(
         "evolutionary",
@@ -357,9 +410,9 @@ def test_positive_layer_pheromone_proposal_enters_full_step_only_through_governe
     assert len(proposed_trails) == 1
     assert proposed_trails[0].kind == "positive"
     assert proposed_trails[0].strength == 0.8
-    assert step.layer_coordination.action_effects[pheromone_proposal.trace_event_id] == (
-        "bounded_pheromone_deposit_proposed"
-    )
+    assert step.layer_coordination.action_effects[
+        pheromone_proposal.trace_event_id
+    ] == ("bounded_pheromone_deposit_proposed")
     assert any(
         record.trace_event_id == pheromone_proposal.trace_event_id
         and record.action == "deposit"
@@ -372,7 +425,8 @@ def test_positive_layer_pheromone_proposal_enters_full_step_only_through_governe
         index
         for index, event in enumerate(step.trace_events)
         if event.event_type == "layer_proposal"
-        and event.lineage.get("source_trace_event_id") == pheromone_proposal.trace_event_id
+        and event.lineage.get("source_trace_event_id")
+        == pheromone_proposal.trace_event_id
     )
     proposal_event = step.trace_events[proposal_event_index]
     assert proposal_event.lineage["effect"] == "bounded_pheromone_deposit_proposed"
@@ -382,7 +436,8 @@ def test_positive_layer_pheromone_proposal_enters_full_step_only_through_governe
         index
         for index, event in enumerate(step.trace_events)
         if event.event_type == "pheromone_deposit"
-        and event.lineage.get("source_trace_event_id") == pheromone_proposal.trace_event_id
+        and event.lineage.get("source_trace_event_id")
+        == pheromone_proposal.trace_event_id
     )
     assert proposal_event_index < deposit_event_index
     assert hybrid_collective_step_is_authoritative(step) is True
@@ -436,11 +491,7 @@ def test_hybrid_authority_rejects_cross_lifecycle_receipt_id_collisions(
     authority_record: str,
 ) -> None:
     protocol, candidates, policy, target, step = issued_authority_step()
-    record = (
-        step
-        if authority_record == "step"
-        else replay_state_from_hybrid_step(step)
-    )
+    record = step if authority_record == "step" else replay_state_from_hybrid_step(step)
     insert_cross_lifecycle_receipt_collision(record, left_field, right_field)
 
     if authority_record == "step":
@@ -475,13 +526,18 @@ def test_hybrid_authority_rejects_cross_lifecycle_receipt_id_collisions(
 
 
 def test_full_hybrid_step_is_permutation_invariant_for_set_inputs() -> None:
-    manifest = load_capability_manifest("examples/hybrid-pheromone-protocol/capability.json")
+    manifest = load_capability_manifest(
+        "examples/hybrid-pheromone-protocol/capability.json"
+    )
     protocol = manifest.protocol
     policy = protocol.collective_decision_policy
     target = protocol.quorum_policy.target
     assert policy is not None
     candidates = CandidateSet(
-        [Candidate(item.id, item.target, item.safe_fallback) for item in protocol.candidates]
+        [
+            Candidate(item.id, item.target, item.safe_fallback)
+            for item in protocol.candidates
+        ]
     )
     scouts = [
         verified_scout("scout:permutation:a", "candidate:alpha", target),
@@ -492,7 +548,9 @@ def test_full_hybrid_step_is_permutation_invariant_for_set_inputs() -> None:
     proposal_items = layer_proposals(target)
 
     def run(*, reverse: bool):
-        order = lambda values: list(reversed(values)) if reverse else values
+        def order(values):
+            return list(reversed(values)) if reverse else values
+
         return evaluate_hybrid_collective_step(
             protocol_id=protocol.id,
             candidate_set=candidates,
@@ -520,13 +578,18 @@ def test_full_hybrid_step_is_permutation_invariant_for_set_inputs() -> None:
 
 
 def test_full_hybrid_step_records_processed_feedback_as_replay_observation() -> None:
-    manifest = load_capability_manifest("examples/hybrid-pheromone-protocol/capability.json")
+    manifest = load_capability_manifest(
+        "examples/hybrid-pheromone-protocol/capability.json"
+    )
     protocol = manifest.protocol
     policy = protocol.collective_decision_policy
     target = protocol.quorum_policy.target
     assert policy is not None
     candidates = CandidateSet(
-        [Candidate(item.id, item.target, item.safe_fallback) for item in protocol.candidates]
+        [
+            Candidate(item.id, item.target, item.safe_fallback)
+            for item in protocol.candidates
+        ]
     )
     feedback_items = feedback(target)
     replayed_adjustment = PolicyAdjustmentProposal(
@@ -587,13 +650,18 @@ def test_full_hybrid_step_records_processed_feedback_as_replay_observation() -> 
 
 
 def test_full_hybrid_step_rejects_forged_replay_suppression() -> None:
-    manifest = load_capability_manifest("examples/hybrid-pheromone-protocol/capability.json")
+    manifest = load_capability_manifest(
+        "examples/hybrid-pheromone-protocol/capability.json"
+    )
     protocol = manifest.protocol
     policy = protocol.collective_decision_policy
     target = protocol.quorum_policy.target
     assert policy is not None
     candidates = CandidateSet(
-        [Candidate(item.id, item.target, item.safe_fallback) for item in protocol.candidates]
+        [
+            Candidate(item.id, item.target, item.safe_fallback)
+            for item in protocol.candidates
+        ]
     )
     adverse = feedback(target)[1]
     common = dict(
@@ -626,13 +694,18 @@ def test_full_hybrid_step_rejects_forged_replay_suppression() -> None:
 
 
 def test_hybrid_replay_ids_are_bound_to_their_original_payloads() -> None:
-    manifest = load_capability_manifest("examples/hybrid-pheromone-protocol/capability.json")
+    manifest = load_capability_manifest(
+        "examples/hybrid-pheromone-protocol/capability.json"
+    )
     protocol = manifest.protocol
     policy = protocol.collective_decision_policy
     target = protocol.quorum_policy.target
     assert policy is not None
     candidates = CandidateSet(
-        [Candidate(item.id, item.target, item.safe_fallback) for item in protocol.candidates]
+        [
+            Candidate(item.id, item.target, item.safe_fallback)
+            for item in protocol.candidates
+        ]
     )
     scouts = [
         verified_scout("scout:receipt:a", "candidate:alpha", target),
@@ -780,13 +853,18 @@ def test_hybrid_replay_issuance_snapshot_rejects_every_authority_field_mutation(
 
 
 def test_full_hybrid_step_traces_stale_feedback_without_consuming_budget() -> None:
-    manifest = load_capability_manifest("examples/hybrid-pheromone-protocol/capability.json")
+    manifest = load_capability_manifest(
+        "examples/hybrid-pheromone-protocol/capability.json"
+    )
     protocol = manifest.protocol
     policy = protocol.collective_decision_policy
     target = protocol.quorum_policy.target
     assert policy is not None
     candidates = CandidateSet(
-        [Candidate(item.id, item.target, item.safe_fallback) for item in protocol.candidates]
+        [
+            Candidate(item.id, item.target, item.safe_fallback)
+            for item in protocol.candidates
+        ]
     )
     stale_feedback = PheromoneFeedback(
         "source:alpha",
@@ -822,7 +900,9 @@ def test_full_hybrid_step_traces_stale_feedback_without_consuming_budget() -> No
     assert step.reinforcement_records[0].round_budget_remaining is not None
     assert step.reinforcement_records[0].source_budget_remaining is not None
     reinforce_event = next(
-        event for event in step.trace_events if event.event_type == "pheromone_reinforce"
+        event
+        for event in step.trace_events
+        if event.event_type == "pheromone_reinforce"
     )
     assert reinforce_event.lineage["budget_result"]["status"] == "applied"
     assert any(
@@ -832,13 +912,18 @@ def test_full_hybrid_step_traces_stale_feedback_without_consuming_budget() -> No
 
 
 def test_full_hybrid_step_rejects_overstrength_existing_memory() -> None:
-    manifest = load_capability_manifest("examples/hybrid-pheromone-protocol/capability.json")
+    manifest = load_capability_manifest(
+        "examples/hybrid-pheromone-protocol/capability.json"
+    )
     protocol = manifest.protocol
     policy = protocol.collective_decision_policy
     target = protocol.quorum_policy.target
     assert policy is not None
     candidates = CandidateSet(
-        [Candidate(item.id, item.target, item.safe_fallback) for item in protocol.candidates]
+        [
+            Candidate(item.id, item.target, item.safe_fallback)
+            for item in protocol.candidates
+        ]
     )
     overstrength = route_trail(
         "candidate:alpha",
@@ -929,8 +1014,12 @@ def verification(source_id: str, candidate_id: str, target: str, trace_id: str):
 
 def deposits(target: str) -> list[PheromoneTrail]:
     return [
-        route_trail("candidate:alpha", "route:alpha", target, "positive", 1.0, "source:alpha"),
-        route_trail("candidate:beta", "route:beta", target, "cautionary", 0.5, "source:beta"),
+        route_trail(
+            "candidate:alpha", "route:alpha", target, "positive", 1.0, "source:alpha"
+        ),
+        route_trail(
+            "candidate:beta", "route:beta", target, "cautionary", 0.5, "source:beta"
+        ),
     ]
 
 
@@ -1152,13 +1241,18 @@ def evaluate_hybrid_trace_identity_step(manifest, inputs):
 
 
 def issued_authority_step():
-    manifest = load_capability_manifest("examples/hybrid-pheromone-protocol/capability.json")
+    manifest = load_capability_manifest(
+        "examples/hybrid-pheromone-protocol/capability.json"
+    )
     protocol = manifest.protocol
     policy = protocol.collective_decision_policy
     target = protocol.quorum_policy.target
     assert policy is not None
     candidates = CandidateSet(
-        [Candidate(item.id, item.target, item.safe_fallback) for item in protocol.candidates]
+        [
+            Candidate(item.id, item.target, item.safe_fallback)
+            for item in protocol.candidates
+        ]
     )
     step = evaluate_hybrid_collective_step(
         protocol_id=protocol.id,
@@ -1222,7 +1316,9 @@ def tampered_step_field(step, field_name: str):
         return replace(step.state, scores=scores)
     if field_name == "active_trails":
         return (
-            replace(step.active_trails[0], strength=step.active_trails[0].strength + 0.125),
+            replace(
+                step.active_trails[0], strength=step.active_trails[0].strength + 0.125
+            ),
             *step.active_trails[1:],
         )
     if field_name == "layer_coordination":
@@ -1238,6 +1334,10 @@ def tampered_step_field(step, field_name: str):
             step.effective_policy,
             quorum_threshold=step.effective_policy.quorum_threshold + 1,
         )
+    return _tampered_step_collection_field(step, field_name)
+
+
+def _tampered_step_collection_field(step, field_name: str):
     if field_name in {
         "deposit_records",
         "diffusion_records",
@@ -1274,7 +1374,9 @@ def tampered_step_field(step, field_name: str):
         return substituted_receipts(getattr(step, field_name))
     if field_name == "budget_state":
         assert step.budget_state is not None
-        return replace(step.budget_state, round_used=step.budget_state.round_used + 0.125)
+        return replace(
+            step.budget_state, round_used=step.budget_state.round_used + 0.125
+        )
     if field_name == "trace_events":
         return (
             replace(step.trace_events[0], protocol_id="protocol:forged"),

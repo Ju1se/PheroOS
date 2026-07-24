@@ -49,6 +49,7 @@ def _validate_observation_attestation_semantics(
         end="expires_at_step",
     )
 
+
 def _validate_verified_observation_semantics(
     payload: Mapping[str, Any],
 ) -> list[str]:
@@ -58,10 +59,9 @@ def _validate_verified_observation_semantics(
         end="expires_at_step",
     )
     if payload["verified_at_step"] < payload["observed_at_step"]:
-        errors.append(
-            "$.payload.verified_at_step: verification precedes observation"
-        )
+        errors.append("$.payload.verified_at_step: verification precedes observation")
     return errors
+
 
 def _validate_counterevidence_disposition_semantics(
     payload: Mapping[str, Any],
@@ -98,6 +98,7 @@ def _validate_counterevidence_disposition_semantics(
         )
     return errors
 
+
 def _validate_challenge_attestation_semantics(
     payload: Mapping[str, Any],
 ) -> list[str]:
@@ -108,6 +109,7 @@ def _validate_challenge_attestation_semantics(
     )
     errors.extend(_validate_challenge_result_semantics(payload))
     return errors
+
 
 def _validate_verified_challenge_semantics(
     payload: Mapping[str, Any],
@@ -124,6 +126,7 @@ def _validate_verified_challenge_semantics(
     errors.extend(_validate_challenge_result_semantics(payload))
     return errors
 
+
 def _validate_challenge_result_semantics(
     payload: Mapping[str, Any],
 ) -> list[str]:
@@ -138,6 +141,7 @@ def _validate_challenge_result_semantics(
             "$.payload.result_observation_fingerprints: non-counterevidence result cannot reference observations"
         ]
     return []
+
 
 def _validate_challenge_coverage_semantics(
     payload: Mapping[str, Any],
@@ -179,6 +183,7 @@ def _validate_challenge_coverage_semantics(
         )
     return errors
 
+
 def _validate_evidence_binding_semantics(
     payload: Mapping[str, Any],
     profile: str,
@@ -200,26 +205,19 @@ def _validate_evidence_binding_semantics(
             errors.append(f"$.payload.{field_name}: reconstructable root mismatch")
     return errors
 
+
 def _evidence_binding_roots(
     payload: Mapping[str, Any],
     *,
     profile: str,
 ) -> dict[str, str]:
     positive_root = commit_payload_fingerprint(
-        {
-            "observation_fingerprints": payload[
-                "positive_observation_fingerprints"
-            ]
-        },
+        {"observation_fingerprints": payload["positive_observation_fingerprints"]},
         schema="pheroos-positive-evidence-leaves-v1",
         profile=profile,
     )
     counter_root = commit_payload_fingerprint(
-        {
-            "observation_fingerprints": payload[
-                "counter_observation_fingerprints"
-            ]
-        },
+        {"observation_fingerprints": payload["counter_observation_fingerprints"]},
         schema="pheroos-counterevidence-leaves-v1",
         profile=profile,
     )
@@ -263,6 +261,7 @@ def _evidence_binding_roots(
         "evidence_root": evidence_root,
     }
 
+
 def _validate_evidence_summary_semantics(
     payload: Mapping[str, Any],
 ) -> list[str]:
@@ -298,11 +297,35 @@ def _validate_evidence_summary_semantics(
         payload["source_domains"],
         errors=errors,
     )
+    _validate_evidence_summary_lineage(
+        payload,
+        positive_refs=positive_refs,
+        active_group_refs=active_group_refs,
+        source_refs=source_refs,
+        errors=errors,
+    )
+    _validate_evidence_summary_metrics(
+        payload,
+        positive_sum=positive_sum,
+        counter_sum=counter_sum,
+        qualifying_domains=qualifying_domains,
+        errors=errors,
+    )
+    _validate_evidence_summary_gates(payload, coverage=coverage, errors=errors)
+    return errors
+
+
+def _validate_evidence_summary_lineage(
+    payload: Mapping[str, Any],
+    *,
+    positive_refs: set[str],
+    active_group_refs: set[str],
+    source_refs: set[str],
+    errors: list[str],
+) -> None:
     active_refs = set(payload["active_counter_observation_fingerprints"])
     resolved_refs = set(payload["resolved_counter_observation_fingerprints"])
-    blocking_refs = set(
-        payload["blocking_critical_counter_observation_fingerprints"]
-    )
+    blocking_refs = set(payload["blocking_critical_counter_observation_fingerprints"])
     if active_refs != active_group_refs:
         errors.append(
             "$.payload.active_counter_observation_fingerprints: counter group lineage mismatch"
@@ -317,6 +340,16 @@ def _validate_evidence_summary_semantics(
         )
     if source_refs != positive_refs:
         errors.append("$.payload.source_domains: positive evidence lineage mismatch")
+
+
+def _validate_evidence_summary_metrics(
+    payload: Mapping[str, Any],
+    *,
+    positive_sum: int,
+    counter_sum: int,
+    qualifying_domains: int,
+    errors: list[str],
+) -> None:
     if payload["positive_evidence"] != positive_sum:
         errors.append("$.payload.positive_evidence: group contribution mismatch")
     if payload["counterevidence"] != counter_sum:
@@ -340,6 +373,13 @@ def _validate_evidence_summary_semantics(
     if payload["source_diversity"] != qualifying_domains:
         errors.append("$.payload.source_diversity: qualified domain count mismatch")
 
+
+def _validate_evidence_summary_gates(
+    payload: Mapping[str, Any],
+    *,
+    coverage: Mapping[str, Any],
+    errors: list[str],
+) -> None:
     derived = {
         "positive_threshold_satisfied": (
             payload["positive_evidence"] >= payload["minimum_positive_evidence"]
@@ -364,7 +404,7 @@ def _validate_evidence_summary_semantics(
     expected_gates = all(derived.values()) and coverage["complete"]
     if payload["evidence_gates_satisfied"] is not expected_gates:
         errors.append("$.payload.evidence_gates_satisfied: gate conjunction mismatch")
-    return errors
+
 
 def _validate_group_contributions(
     values: list[Mapping[str, Any]],
@@ -393,6 +433,7 @@ def _validate_group_contributions(
         total += item["counted_contribution"]
     return total, observation_refs
 
+
 def _validate_source_domains(
     values: list[Mapping[str, Any]],
     *,
@@ -420,6 +461,7 @@ def _validate_source_domains(
         qualifying += int(expected)
     return qualifying, observation_refs
 
+
 def _validate_membership_semantics(
     payload: Mapping[str, Any],
     profile: str,
@@ -431,9 +473,7 @@ def _validate_membership_semantics(
     )
     clusters = payload["eligible_clusters"]
     cluster_ids = [item["cluster_id"] for item in clusters]
-    if cluster_ids != sorted(cluster_ids) or len(cluster_ids) != len(
-        set(cluster_ids)
-    ):
+    if cluster_ids != sorted(cluster_ids) or len(cluster_ids) != len(set(cluster_ids)):
         errors.append("$.payload.eligible_clusters: cluster order is not canonical")
     principal_ids: list[str] = []
     verification_refs: list[str] = []
@@ -452,7 +492,9 @@ def _validate_membership_semantics(
             item["principal_verification_fingerprint"] for item in principals
         )
     if len(principal_ids) != len(set(principal_ids)):
-        errors.append("$.payload.eligible_clusters: principal appears in multiple clusters")
+        errors.append(
+            "$.payload.eligible_clusters: principal appears in multiple clusters"
+        )
     if len(verification_refs) != len(set(verification_refs)):
         errors.append("$.payload.eligible_clusters: verification is duplicated")
     expected_root = commit_payload_fingerprint(
@@ -473,6 +515,7 @@ def _validate_membership_semantics(
         errors.append("$.payload.membership_root: reconstructable root mismatch")
     return errors
 
+
 def _membership_epoch_authority_key(
     payload: Mapping[str, Any],
     *,
@@ -492,6 +535,7 @@ def _membership_epoch_authority_key(
         profile=profile,
     )
 
+
 def _validate_membership_epoch_semantics(
     payload: Mapping[str, Any],
     profile: str,
@@ -506,6 +550,7 @@ def _validate_membership_epoch_semantics(
         errors.append("$.payload.authority_key: membership epoch scope mismatch")
     return errors
 
+
 def _validate_support_replay_receipt_semantics(
     payload: Mapping[str, Any],
     *,
@@ -517,6 +562,7 @@ def _validate_support_replay_receipt_semantics(
         end="expires_at_step",
         path=path,
     )
+
 
 def _support_replay_authority_key(
     payload: Mapping[str, Any],
@@ -533,6 +579,7 @@ def _support_replay_authority_key(
         profile=profile,
     )
 
+
 def _validate_support_replay_state_semantics(
     payload: Mapping[str, Any],
     profile: str,
@@ -542,10 +589,24 @@ def _validate_support_replay_state_semantics(
     if payload["authority_key"] != expected_authority:
         errors.append("$.payload.authority_key: support replay authority mismatch")
     if payload["last_issued_at_step"] < payload["initialized_at_step"]:
-        errors.append(
-            "$.payload.last_issued_at_step: predates replay initialization"
-        )
+        errors.append("$.payload.last_issued_at_step: predates replay initialization")
     receipts = payload["receipts"]
+    _validate_support_replay_receipts(payload, receipts, errors=errors)
+    _validate_support_replay_revision(
+        payload,
+        receipts,
+        profile=profile,
+        errors=errors,
+    )
+    return errors
+
+
+def _validate_support_replay_receipts(
+    payload: Mapping[str, Any],
+    receipts: list[Mapping[str, Any]],
+    *,
+    errors: list[str],
+) -> None:
     fingerprints = [item["replay_receipt_fingerprint"] for item in receipts]
     if fingerprints != sorted(fingerprints) or len(fingerprints) != len(
         set(fingerprints)
@@ -558,15 +619,22 @@ def _validate_support_replay_state_semantics(
             errors.append(f"{path}.profile: replay state profile mismatch")
         if receipt["protocol_id"] != payload["protocol_id"]:
             errors.append(f"{path}.protocol_id: replay state protocol mismatch")
-        allowed_profiles = COMMIT_PROFILES_BY_ASSURANCE.get(
-            str(receipt["assurance"])
-        )
+        allowed_profiles = COMMIT_PROFILES_BY_ASSURANCE.get(str(receipt["assurance"]))
         if allowed_profiles is None or receipt["profile"] not in allowed_profiles:
             errors.append(f"{path}.assurance: profile/assurance mismatch")
     for key_name in ("lease_id", "proposal_fingerprint", "nonce"):
         values = [item[key_name] for item in receipts]
         if len(values) != len(set(values)):
             errors.append(f"$.payload.receipts: duplicate {key_name}")
+
+
+def _validate_support_replay_revision(
+    payload: Mapping[str, Any],
+    receipts: list[Mapping[str, Any]],
+    *,
+    profile: str,
+    errors: list[str],
+) -> None:
     if payload["revision"] != len(receipts):
         errors.append("$.payload.revision: receipt count mismatch")
     expected_root = commit_payload_fingerprint(
@@ -580,14 +648,12 @@ def _validate_support_replay_state_semantics(
         if payload["previous_state_fingerprint"]:
             errors.append("$.payload: initial support replay state has predecessor")
         if payload["last_issued_at_step"] != payload["initialized_at_step"]:
-            errors.append(
-                "$.payload.last_issued_at_step: initial replay step mismatch"
-            )
+            errors.append("$.payload.last_issued_at_step: initial replay step mismatch")
     elif not payload["previous_state_fingerprint"]:
         errors.append(
             "$.payload.previous_state_fingerprint: advanced replay state requires predecessor"
         )
-    return errors
+
 
 def _validate_support_lease_semantics(
     payload: Mapping[str, Any],
@@ -646,6 +712,7 @@ def _validate_support_lease_semantics(
         )
     return errors
 
+
 def _validate_equivocation_semantics(
     payload: Mapping[str, Any],
     profile: str,
@@ -668,9 +735,7 @@ def _validate_equivocation_semantics(
             "assurance": payload["assurance"],
             "commit_policy_root": payload["commit_policy_root"],
             "conflicting_candidates": payload["conflicting_candidates"],
-            "conflicting_lease_fingerprints": payload[
-                "conflicting_lease_fingerprints"
-            ],
+            "conflicting_lease_fingerprints": payload["conflicting_lease_fingerprints"],
             "epoch": payload["epoch"],
             "first_overlap_step": payload["first_overlap_step"],
             "manifest_root": payload["manifest_root"],
@@ -686,16 +751,43 @@ def _validate_equivocation_semantics(
         errors.append(f"{path}.finding_id: deterministic finding mismatch")
     return errors
 
+
 def _validate_support_evaluation_semantics(
     payload: Mapping[str, Any],
     profile: str,
 ) -> list[str]:
     errors: list[str] = []
     findings = payload["equivocation_findings"]
+    cluster_ids, conflict_refs = _validate_support_evaluation_findings(
+        payload,
+        findings,
+        profile=profile,
+        errors=errors,
+    )
+    _validate_support_evaluation_counts(
+        payload,
+        cluster_ids=cluster_ids,
+        conflict_refs=conflict_refs,
+        errors=errors,
+    )
+    _validate_support_evaluation_root(
+        payload,
+        findings=findings,
+        profile=profile,
+        errors=errors,
+    )
+    return errors
+
+
+def _validate_support_evaluation_findings(
+    payload: Mapping[str, Any],
+    findings: list[Mapping[str, Any]],
+    *,
+    profile: str,
+    errors: list[str],
+) -> tuple[list[str], set[str]]:
     cluster_ids = [item["principal_cluster_id"] for item in findings]
-    if cluster_ids != sorted(cluster_ids) or len(cluster_ids) != len(
-        set(cluster_ids)
-    ):
+    if cluster_ids != sorted(cluster_ids) or len(cluster_ids) != len(set(cluster_ids)):
         errors.append("$.payload.equivocation_findings: order is not canonical")
     conflict_refs: set[str] = set()
     for index, finding in enumerate(findings):
@@ -720,7 +812,16 @@ def _validate_support_evaluation_semantics(
             if finding[field_name] != payload[field_name]:
                 errors.append(f"{path}.{field_name}: evaluation scope mismatch")
         conflict_refs.update(finding["conflicting_lease_fingerprints"])
+    return cluster_ids, conflict_refs
 
+
+def _validate_support_evaluation_counts(
+    payload: Mapping[str, Any],
+    *,
+    cluster_ids: list[str],
+    conflict_refs: set[str],
+    errors: list[str],
+) -> None:
     active_count = payload["active_support_cluster_count"]
     eligible_count = payload["eligible_cluster_count"]
     if active_count != len(payload["active_support_clusters"]):
@@ -740,8 +841,18 @@ def _validate_support_evaluation_semantics(
     if not conflict_refs.issubset(excluded):
         errors.append("$.payload.excluded_lease_fingerprints: conflicts not excluded")
     if set(cluster_ids).intersection(payload["active_support_clusters"]):
-        errors.append("$.payload.active_support_clusters: equivocated cluster is active")
+        errors.append(
+            "$.payload.active_support_clusters: equivocated cluster is active"
+        )
 
+
+def _validate_support_evaluation_root(
+    payload: Mapping[str, Any],
+    *,
+    findings: list[Mapping[str, Any]],
+    profile: str,
+    errors: list[str],
+) -> None:
     expected_root = commit_payload_fingerprint(
         {
             "candidate_id": payload["candidate_id"],
@@ -749,15 +860,9 @@ def _validate_support_evaluation_semantics(
             "commit_policy_root": payload["commit_policy_root"],
             "current_step": payload["current_step"],
             "epoch": payload["epoch"],
-            "equivocation_finding_ids": [
-                item["finding_id"] for item in findings
-            ],
-            "excluded_lease_fingerprints": payload[
-                "excluded_lease_fingerprints"
-            ],
-            "included_lease_fingerprints": payload[
-                "included_lease_fingerprints"
-            ],
+            "equivocation_finding_ids": [item["finding_id"] for item in findings],
+            "excluded_lease_fingerprints": payload["excluded_lease_fingerprints"],
+            "included_lease_fingerprints": payload["included_lease_fingerprints"],
             "membership_root": payload["membership_root"],
             "membership_epoch_state_fingerprint": payload[
                 "membership_epoch_state_fingerprint"
@@ -771,7 +876,7 @@ def _validate_support_evaluation_semantics(
     )
     if payload["lease_root"] != expected_root:
         errors.append("$.payload.lease_root: reconstructable root mismatch")
-    return errors
+
 
 def _risk_chain_authority_key(
     payload: Mapping[str, Any],
@@ -793,6 +898,7 @@ def _risk_chain_authority_key(
         schema="pheroos-risk-assessment-chain-authority-key-v1",
         profile=profile,
     )
+
 
 def _validate_risk_chain_state_semantics(
     payload: Mapping[str, Any],
@@ -834,6 +940,7 @@ def _validate_risk_chain_state_semantics(
         errors.append("$.payload: non-empty risk chain is missing head lineage")
     return errors
 
+
 def _validate_risk_assessment_semantics(
     payload: Mapping[str, Any],
     profile: str,
@@ -856,14 +963,12 @@ def _validate_risk_assessment_semantics(
         errors.append(
             "$.payload.previous_assessment_fingerprint: reassessment requires predecessor"
         )
-    if (
-        not predecessor
-        and payload["window_reset_required"]
-    ):
+    if not predecessor and payload["window_reset_required"]:
         errors.append(
             "$.payload.window_reset_required: initial assessment cannot require reset"
         )
     return errors
+
 
 def _validate_threshold_snapshot_semantics(
     payload: Mapping[str, Any],
@@ -878,6 +983,7 @@ def _validate_threshold_snapshot_semantics(
     if payload["risk_chain_id"] != expected_chain_id:
         errors.append("$.payload.risk_chain_id: authority scope root mismatch")
     return errors
+
 
 def observation_attestation_payload_schema() -> dict[str, Any]:
     return strict_object_schema(
@@ -902,6 +1008,7 @@ def observation_attestation_payload_schema() -> dict[str, Any]:
             "trace_event_id": canonical_text_schema(),
         }
     )
+
 
 def verified_observation_payload_schema() -> dict[str, Any]:
     return strict_object_schema(
@@ -935,6 +1042,7 @@ def verified_observation_payload_schema() -> dict[str, Any]:
         }
     )
 
+
 def counterevidence_disposition_payload_schema() -> dict[str, Any]:
     return strict_object_schema(
         {
@@ -946,9 +1054,7 @@ def counterevidence_disposition_payload_schema() -> dict[str, Any]:
             "disposition_id": canonical_text_schema(),
             "expires_at_step": authority_integer_schema(),
             "issued_at_step": authority_integer_schema(),
-            "kind": {
-                "enum": ["accepted", "immaterial", "rebutted", "unresolved"]
-            },
+            "kind": {"enum": ["accepted", "immaterial", "rebutted", "unresolved"]},
             "provenance": canonical_text_schema(),
             "reason_codes": canonical_text_set_schema(minimum=1),
             "rebuttal_observation_fingerprints": fingerprint_set_schema(),
@@ -957,6 +1063,7 @@ def counterevidence_disposition_payload_schema() -> dict[str, Any]:
             "verifier_id": canonical_text_schema(),
         }
     )
+
 
 def challenge_attestation_payload_schema() -> dict[str, Any]:
     return strict_object_schema(
@@ -986,6 +1093,7 @@ def challenge_attestation_payload_schema() -> dict[str, Any]:
             "trace_event_id": canonical_text_schema(),
         }
     )
+
 
 def verified_challenge_payload_schema() -> dict[str, Any]:
     return strict_object_schema(
@@ -1024,6 +1132,7 @@ def verified_challenge_payload_schema() -> dict[str, Any]:
         }
     )
 
+
 def challenge_coverage_payload_schema() -> dict[str, Any]:
     return strict_object_schema(
         {
@@ -1034,6 +1143,7 @@ def challenge_coverage_payload_schema() -> dict[str, Any]:
             "required_categories": canonical_text_set_schema(),
         }
     )
+
 
 def evidence_binding_payload_schema() -> dict[str, Any]:
     return strict_object_schema(
@@ -1061,6 +1171,7 @@ def evidence_binding_payload_schema() -> dict[str, Any]:
         }
     )
 
+
 def evidence_group_contribution_schema() -> dict[str, Any]:
     return strict_object_schema(
         {
@@ -1072,6 +1183,7 @@ def evidence_group_contribution_schema() -> dict[str, Any]:
         }
     )
 
+
 def source_domain_contribution_schema() -> dict[str, Any]:
     return strict_object_schema(
         {
@@ -1082,6 +1194,7 @@ def source_domain_contribution_schema() -> dict[str, Any]:
             "source_domain": canonical_text_schema(),
         }
     )
+
 
 def evidence_summary_payload_schema() -> dict[str, Any]:
     return strict_object_schema(
@@ -1124,6 +1237,7 @@ def evidence_summary_payload_schema() -> dict[str, Any]:
         }
     )
 
+
 def eligible_principal_schema() -> dict[str, Any]:
     return strict_object_schema(
         {
@@ -1134,6 +1248,7 @@ def eligible_principal_schema() -> dict[str, Any]:
             "verified_method": canonical_text_schema(),
         }
     )
+
 
 def eligible_cluster_schema() -> dict[str, Any]:
     return strict_object_schema(
@@ -1146,6 +1261,7 @@ def eligible_cluster_schema() -> dict[str, Any]:
             },
         }
     )
+
 
 def eligible_principal_snapshot_payload_schema() -> dict[str, Any]:
     return strict_object_schema(
@@ -1167,6 +1283,7 @@ def eligible_principal_snapshot_payload_schema() -> dict[str, Any]:
         }
     )
 
+
 def eligible_membership_epoch_state_payload_schema() -> dict[str, Any]:
     return strict_object_schema(
         {
@@ -1185,6 +1302,7 @@ def eligible_membership_epoch_state_payload_schema() -> dict[str, Any]:
         }
     )
 
+
 def support_lease_proposal_payload_schema() -> dict[str, Any]:
     return strict_object_schema(
         {
@@ -1200,6 +1318,7 @@ def support_lease_proposal_payload_schema() -> dict[str, Any]:
             "trace_event_id": canonical_text_schema(),
         }
     )
+
 
 def support_lease_replay_receipt_payload_schema() -> dict[str, Any]:
     return strict_object_schema(
@@ -1220,6 +1339,7 @@ def support_lease_replay_receipt_payload_schema() -> dict[str, Any]:
             "replay_receipt_fingerprint": fingerprint_schema(),
         }
     )
+
 
 def support_lease_replay_state_payload_schema() -> dict[str, Any]:
     return strict_object_schema(
@@ -1243,6 +1363,7 @@ def support_lease_replay_state_payload_schema() -> dict[str, Any]:
             "trace_event_id": canonical_text_schema(),
         }
     )
+
 
 def support_lease_payload_schema() -> dict[str, Any]:
     return strict_object_schema(
@@ -1273,6 +1394,7 @@ def support_lease_payload_schema() -> dict[str, Any]:
         }
     )
 
+
 def support_lease_revocation_payload_schema() -> dict[str, Any]:
     return strict_object_schema(
         {
@@ -1292,6 +1414,7 @@ def support_lease_revocation_payload_schema() -> dict[str, Any]:
         }
     )
 
+
 def support_equivocation_finding_payload_schema() -> dict[str, Any]:
     return strict_object_schema(
         {
@@ -1303,6 +1426,7 @@ def support_equivocation_finding_payload_schema() -> dict[str, Any]:
             "principal_cluster_id": canonical_text_schema(),
         }
     )
+
 
 def support_lease_evaluation_payload_schema() -> dict[str, Any]:
     return strict_object_schema(
@@ -1330,6 +1454,7 @@ def support_lease_evaluation_payload_schema() -> dict[str, Any]:
         }
     )
 
+
 def risk_assessment_chain_state_payload_schema() -> dict[str, Any]:
     return strict_object_schema(
         {
@@ -1351,6 +1476,7 @@ def risk_assessment_chain_state_payload_schema() -> dict[str, Any]:
             "trace_event_id": canonical_text_schema(),
         }
     )
+
 
 def risk_assessment_payload_schema() -> dict[str, Any]:
     return strict_object_schema(
@@ -1375,6 +1501,7 @@ def risk_assessment_payload_schema() -> dict[str, Any]:
             "window_reset_required": {"type": "boolean"},
         }
     )
+
 
 def commit_threshold_snapshot_payload_schema() -> dict[str, Any]:
     return strict_object_schema(

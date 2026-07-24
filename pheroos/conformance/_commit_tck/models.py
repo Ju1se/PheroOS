@@ -1,11 +1,11 @@
-from __future__ import annotations
-
 """Stable TCK value models and JSON result primitives.
 
 This module is deliberately dependency-light.  It owns no artifact loading,
 reference semantics, or execution policy, so every other private TCK module
 can depend on it without creating a cycle.
 """
+
+from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
 from copy import deepcopy

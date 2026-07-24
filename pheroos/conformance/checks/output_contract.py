@@ -1,16 +1,39 @@
 from __future__ import annotations
 
-from pheroos.conformance.checks._manifest import active_target, candidate_set, exercise_candidate_id
+from pheroos.conformance.checks._manifest import (
+    active_target,
+    candidate_set,
+    exercise_candidate_id,
+)
 from pheroos.conformance.report import CheckResult
+from pheroos.governance.candidate import CandidateSet
 from pheroos.governance.evidence import EvidenceGraph, EvidenceNode
 from pheroos.governance.output import OutputContract, output_authorized
 from pheroos.governance.quorum import QuorumDecision, commit_candidate
 from pheroos.governance.stop_signal import StopResolution
-from pheroos.protocol.models import CapabilityManifest
+from pheroos.protocol.models import CapabilityManifest, OutputPolicy
 
 
 def check(manifest: CapabilityManifest) -> CheckResult:
     policy = manifest.protocol.output_policy
+    problems = _declared_output_policy_problems(policy)
+    candidate_id = exercise_candidate_id(manifest)
+    if candidate_id is None:
+        problems.append("active_target_candidates")
+        return CheckResult("output_contract", False, ", ".join(problems))
+    target = active_target(manifest)
+    candidates = candidate_set(manifest)
+    problems.extend(
+        _authorization_gate_problems(
+            target=target,
+            candidate_id=candidate_id,
+            candidates=candidates,
+        )
+    )
+    return CheckResult("output_contract", not problems, ", ".join(problems))
+
+
+def _declared_output_policy_problems(policy: OutputPolicy) -> list[str]:
     problems: list[str] = []
     if policy.writer_may_create_facts:
         problems.append("writer_fact_creation")
@@ -22,23 +45,37 @@ def check(manifest: CapabilityManifest) -> CheckResult:
     )
     if not all(required):
         problems.append("mandatory_gates")
+    return problems
 
-    candidate_id = exercise_candidate_id(manifest)
-    if candidate_id is None:
-        problems.append("active_target_candidates")
-        return CheckResult("output_contract", False, ", ".join(problems))
-    target = active_target(manifest)
+
+def _authorization_gate_problems(
+    *,
+    target: str,
+    candidate_id: str,
+    candidates: CandidateSet,
+) -> list[str]:
+    problems: list[str] = []
     contract = OutputContract()
-    candidates = candidate_set(manifest)
     committed = commit_candidate(
         candidate_set=candidates,
         candidate_id=candidate_id,
         target=target,
     )
-    uncommitted = QuorumDecision(target=target, candidate_id=candidate_id, committed=False, reason="conformance")
-    forged = QuorumDecision(target=target, candidate_id=candidate_id, committed=True, reason="caller_claimed")
-    evidence = EvidenceGraph([EvidenceNode("evidence:conformance", "provider-free", "driver:conformance")])
-    resolution = StopResolution(target=target, action="publish", blocked=False, reason="resolved")
+    uncommitted = QuorumDecision(
+        target=target, candidate_id=candidate_id, committed=False, reason="conformance"
+    )
+    forged = QuorumDecision(
+        target=target,
+        candidate_id=candidate_id,
+        committed=True,
+        reason="caller_claimed",
+    )
+    evidence = EvidenceGraph(
+        [EvidenceNode("evidence:conformance", "provider-free", "driver:conformance")]
+    )
+    resolution = StopResolution(
+        target=target, action="publish", blocked=False, reason="resolved"
+    )
 
     if not output_authorized(
         contract,
@@ -98,7 +135,11 @@ def check(manifest: CapabilityManifest) -> CheckResult:
         contract,
         committed,
         evidence,
-        [StopResolution(target=target, action="publish", blocked=True, reason="blocked")],
+        [
+            StopResolution(
+                target=target, action="publish", blocked=True, reason="blocked"
+            )
+        ],
         publication_permission=True,
         candidate_set=candidates,
     ):
@@ -112,5 +153,4 @@ def check(manifest: CapabilityManifest) -> CheckResult:
         candidate_set=candidates,
     ):
         problems.append("missing_publication_permission")
-
-    return CheckResult("output_contract", not problems, ", ".join(problems))
+    return problems

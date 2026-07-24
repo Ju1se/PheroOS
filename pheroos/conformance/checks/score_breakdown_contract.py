@@ -14,7 +14,12 @@ from pheroos.governance import (
     validate_score_breakdown,
     verify_signal_input,
 )
-from pheroos.protocol.models import CapabilityManifest, is_swarm_policy
+from pheroos.governance.signal import SignalVerification
+from pheroos.protocol.models import (
+    CapabilityManifest,
+    CollectiveDecisionPolicy,
+    is_swarm_policy,
+)
 
 
 def check(manifest: CapabilityManifest) -> CheckResult:
@@ -27,10 +32,10 @@ def check(manifest: CapabilityManifest) -> CheckResult:
     try:
         target = manifest.protocol.quorum_policy.target
         candidate_set = CandidateSet(
-            [
+            tuple(
                 Candidate(candidate.id, candidate.target, candidate.safe_fallback)
                 for candidate in manifest.protocol.candidates
-            ]
+            )
         )
         target_candidates = [
             candidate
@@ -40,7 +45,11 @@ def check(manifest: CapabilityManifest) -> CheckResult:
         if not target_candidates:
             return CheckResult("score_breakdown_contract", False, "target_candidates")
         candidate_id = next(
-            (candidate.id for candidate in target_candidates if not candidate.safe_fallback),
+            (
+                candidate.id
+                for candidate in target_candidates
+                if not candidate.safe_fallback
+            ),
             target_candidates[0].id,
         )
         # Signal magnitude is bounded by the manifest's collective threshold.
@@ -50,9 +59,15 @@ def check(manifest: CapabilityManifest) -> CheckResult:
         scout_support = min(2.0, float(policy.quorum_threshold))
         recruitment_strength = min(1.0, float(policy.quorum_threshold))
         inhibition_strength = min(0.5, float(policy.quorum_threshold))
-        scout_verification = verification(target, "scout:conformance", candidate_id, "scout")
-        recruit_verification = verification(target, "recruit:conformance", candidate_id, "recruit")
-        inhibit_verification = verification(target, "inhibit:conformance", candidate_id, "inhibit")
+        scout_verification = verification(
+            target, "scout:conformance", candidate_id, "scout"
+        )
+        recruit_verification = verification(
+            target, "recruit:conformance", candidate_id, "recruit"
+        )
+        inhibit_verification = verification(
+            target, "inhibit:conformance", candidate_id, "inhibit"
+        )
         state = score_candidates(
             candidate_set=candidate_set,
             policy=policy,
@@ -79,7 +94,9 @@ def check(manifest: CapabilityManifest) -> CheckResult:
                     trace_event_id="trace:recruit:conformance",
                     verification=recruit_verification,
                 )
-            ] if policy.recruitment_enabled else [],
+            ]
+            if policy.recruitment_enabled
+            else [],
             inhibition_signals=[
                 InhibitionSignal(
                     "inhibit:conformance",
@@ -90,9 +107,13 @@ def check(manifest: CapabilityManifest) -> CheckResult:
                     trace_event_id="trace:inhibit:conformance",
                     verification=inhibit_verification,
                 )
-            ] if policy.inhibition_enabled else [],
+            ]
+            if policy.inhibition_enabled
+            else [],
             pheromone_trails=(
-                manifest_pheromone_trails(policy, candidate_id=candidate_id, target=target)
+                manifest_pheromone_trails(
+                    policy, candidate_id=candidate_id, target=target
+                )
                 if policy.pheromone_enabled
                 else []
             ),
@@ -111,13 +132,16 @@ def check(manifest: CapabilityManifest) -> CheckResult:
         problems.append("score_not_reconstructable")
     if lineage["scores"].get(candidate_id) != state.scores[candidate_id]:
         problems.append("lineage_missing_score")
-    if lineage["score_breakdown"].get(candidate_id) != state.score_breakdown[candidate_id]:
+    if (
+        lineage["score_breakdown"].get(candidate_id)
+        != state.score_breakdown[candidate_id]
+    ):
         problems.append("lineage_missing_breakdown")
     return CheckResult("score_breakdown_contract", not problems, ", ".join(problems))
 
 
 def manifest_pheromone_trails(
-    policy: object,
+    policy: CollectiveDecisionPolicy,
     *,
     candidate_id: str,
     target: str,
@@ -152,7 +176,9 @@ def fixture_error(exc: Exception) -> str:
     return f"fixture_error:{type(exc).__name__}{suffix}"
 
 
-def verification(target: str, source_id: str, candidate_id: str, suffix: str) -> object:
+def verification(
+    target: str, source_id: str, candidate_id: str, suffix: str
+) -> SignalVerification:
     return verify_signal_input(
         target=target,
         source_id=source_id,

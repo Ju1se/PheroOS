@@ -59,7 +59,9 @@ def prepared_batch(
     )
 
 
-def test_authority_records_are_portable_deterministic_and_defensively_snapshotted() -> None:
+def test_authority_records_are_portable_deterministic_and_defensively_snapshotted() -> (
+    None
+):
     state = {"state": {"values": [1]}}
     claims = {"claim:1": {"subject": {"roles": ["reviewer"]}}}
     trace = {
@@ -84,9 +86,7 @@ def test_authority_records_are_portable_deterministic_and_defensively_snapshotte
     trace["details"]["values"].append(2)
 
     assert transition.state_records["state"]["values"] == (1,)
-    assert transition.identity_claims["claim:1"]["subject"]["roles"] == (
-        "reviewer",
-    )
+    assert transition.identity_claims["claim:1"]["subject"]["roles"] == ("reviewer",)
     assert batch.trace_records[0]["details"]["values"] == (1,)
     assert transition.state_root == state_root
     assert batch.batch_root == batch_root
@@ -137,7 +137,10 @@ def test_state_store_protocol_is_runtime_checkable_with_stable_method_shapes() -
         "fingerprint": ("self",),
     }
     for name, parameters in expected.items():
-        assert tuple(signature(getattr(GovernanceStateStore, name)).parameters) == parameters
+        assert (
+            tuple(signature(getattr(GovernanceStateStore, name)).parameters)
+            == parameters
+        )
 
 
 def test_commit_advances_exact_head_and_atomically_records_state_and_trace() -> None:
@@ -272,7 +275,9 @@ def test_stale_fork_loses_cas_without_a_second_state_or_trace_commit() -> None:
     with pytest.raises(GovernanceError, match="governance_cas_conflict:retry_required"):
         store.atomic_commit(loser)
 
-    assert store.load_head(SCOPE_ALPHA, "commit").state_root == winner_receipt.state_root
+    assert (
+        store.load_head(SCOPE_ALPHA, "commit").state_root == winner_receipt.state_root
+    )
     assert store.load_state(SCOPE_ALPHA, "commit")["state"]["value"] == 1
     assert store.trace_records(SCOPE_ALPHA, "commit") == winner.trace_records
     assert store.load_receipt(SCOPE_ALPHA, "transition:loser") is None
@@ -314,9 +319,7 @@ def test_checkpoint_round_trip_rehydrates_current_authority_and_continues_cas() 
             store,
             transition_id="transition:1",
             value=1,
-            identity_claims={
-                "claim:batched": {"subject": "principal:batched"}
-            },
+            identity_claims={"claim:batched": {"subject": "principal:batched"}},
         )
     )
     store.atomic_commit(prepared_batch(store, transition_id="transition:2", value=2))
@@ -446,14 +449,18 @@ def test_32_workers_retrying_same_batch_receive_one_identical_receipt() -> None:
     batch = prepared_batch(store)
 
     with ThreadPoolExecutor(max_workers=32) as executor:
-        receipts = tuple(executor.map(lambda _index: store.atomic_commit(batch), range(32)))
+        receipts = tuple(
+            executor.map(lambda _index: store.atomic_commit(batch), range(32))
+        )
 
     assert len(set(receipts)) == 1
     assert store.load_head(SCOPE_ALPHA, "commit").revision == 1
     assert len(store.trace_records(SCOPE_ALPHA, "commit")) == 1
 
 
-def test_32_conflicting_workers_produce_exactly_one_commit_and_31_retry_conflicts() -> None:
+def test_32_conflicting_workers_produce_exactly_one_commit_and_31_retry_conflicts() -> (
+    None
+):
     store = InMemoryGovernanceStateStore()
     batches = tuple(
         prepared_batch(
@@ -475,7 +482,9 @@ def test_32_conflicting_workers_produce_exactly_one_commit_and_31_retry_conflict
         outcomes = tuple(executor.map(attempt, batches))
 
     assert outcomes.count("committed") == 1
-    assert sum("governance_cas_conflict:retry_required" in item for item in outcomes) == 31
+    assert (
+        sum("governance_cas_conflict:retry_required" in item for item in outcomes) == 31
+    )
     assert store.load_head(SCOPE_ALPHA, "commit").revision == 1
     assert len(store.trace_records(SCOPE_ALPHA, "commit")) == 1
 

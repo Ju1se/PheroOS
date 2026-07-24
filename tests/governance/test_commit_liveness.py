@@ -20,7 +20,6 @@ from pheroos.governance.commit_state import (
     ReplayReceipt,
     _finality_unavailable_at_deadline,
     advance_commit_window_state,
-    commit_window_state_fingerprint,
     commit_window_seal_for_state,
     commit_window_seal_is_authoritative,
     commit_window_seal_is_current,
@@ -241,11 +240,14 @@ def test_stable_local_commit_is_terminal_but_never_pre_authorizes_actions() -> N
     assert outcome.publication_eligible is False
     assert outcome.execution_eligible is False
     assert decision_outcome_is_authoritative(outcome)
-    assert reduce_commit_liveness(
-        state,
-        commit_policy=scenario.policy,
-        liveness_input=facts,
-    ) is outcome
+    assert (
+        reduce_commit_liveness(
+            state,
+            commit_policy=scenario.policy,
+            liveness_input=facts,
+        )
+        is outcome
+    )
     with pytest.raises(GovernanceError, match="already terminal"):
         advance_commit_window_state(
             state,
@@ -274,7 +276,9 @@ def test_deadline_or_late_call_always_returns_deliverable_non_commit_fallback(
     )
     assert type(outcome) is DecisionOutcome
     assert outcome.kind is DecisionOutcomeKind.SAFE_FALLBACK
-    assert outcome.candidate_id == scenario.policy.terminal_outcome.safe_fallback_candidate
+    assert (
+        outcome.candidate_id == scenario.policy.terminal_outcome.safe_fallback_candidate
+    )
     assert outcome.terminal and outcome.delivery_eligible
     assert not outcome.authoritative_commit
     assert not outcome.epistemically_committed
@@ -431,11 +435,14 @@ def test_replay_head_change_after_assessment_requires_reassessment() -> None:
     assert not commit_liveness_input_is_authoritative(before)
     # The historical exact request remains replay-idempotent even though it is
     # no longer eligible to authorize a new transition from current heads.
-    assert reduce_commit_liveness(
-        state,
-        commit_policy=scenario.policy,
-        liveness_input=before,
-    ) is progress
+    assert (
+        reduce_commit_liveness(
+            state,
+            commit_policy=scenario.policy,
+            liveness_input=before,
+        )
+        is progress
+    )
 
 
 @pytest.mark.parametrize(
@@ -531,24 +538,30 @@ def test_terminal_priority_truth_table_is_total_and_exact() -> None:
             (kind for enabled, kind in zip(values, priority, strict=True) if enabled),
             None,
         )
-        assert select_terminal_outcome_kind(
-            invalid=values[0],
-            safety_violation=values[1],
-            blocked=values[2],
-            evidence_commit_ready=values[3],
-            finality_unavailable=values[4],
-            deadline_reached=values[5],
-            deadline_outcome="safe_fallback",
-        ) is expected
-    assert select_terminal_outcome_kind(
-        invalid=False,
-        safety_violation=False,
-        blocked=False,
-        evidence_commit_ready=False,
-        finality_unavailable=False,
-        deadline_reached=True,
-        deadline_outcome="advisory",
-    ) is DecisionOutcomeKind.ADVISORY
+        assert (
+            select_terminal_outcome_kind(
+                invalid=values[0],
+                safety_violation=values[1],
+                blocked=values[2],
+                evidence_commit_ready=values[3],
+                finality_unavailable=values[4],
+                deadline_reached=values[5],
+                deadline_outcome="safe_fallback",
+            )
+            is expected
+        )
+    assert (
+        select_terminal_outcome_kind(
+            invalid=False,
+            safety_violation=False,
+            blocked=False,
+            evidence_commit_ready=False,
+            finality_unavailable=False,
+            deadline_reached=True,
+            deadline_outcome="advisory",
+        )
+        is DecisionOutcomeKind.ADVISORY
+    )
 
 
 def test_simultaneous_runtime_findings_follow_invalid_safety_blocked_priority() -> None:
@@ -709,11 +722,14 @@ def test_liveness_reduction_is_exactly_idempotent_and_fork_free() -> None:
         commit_policy=scenario.policy,
         liveness_input=first,
     )
-    assert reduce_commit_liveness(
-        state,
-        commit_policy=scenario.policy,
-        liveness_input=first,
-    ) is progress
+    assert (
+        reduce_commit_liveness(
+            state,
+            commit_policy=scenario.policy,
+            liveness_input=first,
+        )
+        is progress
+    )
     with pytest.raises(GovernanceError, match="would fork"):
         reduce_commit_liveness(
             state,
@@ -725,8 +741,8 @@ def test_liveness_reduction_is_exactly_idempotent_and_fork_free() -> None:
 def test_certified_finality_commits_late_only_with_continuous_heartbeat(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    scenario, assessment, state, output_ref = (
-        certificate_tests._certified_scenario(monkeypatch)
+    scenario, assessment, state, output_ref = certificate_tests._certified_scenario(
+        monkeypatch
     )
     receipt = certificate_tests._receipt(
         scenario,
@@ -820,8 +836,8 @@ def test_certified_finality_commits_late_only_with_continuous_heartbeat(
 def test_late_finality_step_gap_is_rejected_before_certificate_authority(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    scenario, assessment, state, output_ref = (
-        certificate_tests._certified_scenario(monkeypatch)
+    scenario, assessment, state, output_ref = certificate_tests._certified_scenario(
+        monkeypatch
     )
     certificate_tests._receipt(scenario, assessment, state, output_ref)
     initial = reduce_commit_liveness(
@@ -849,8 +865,8 @@ def test_late_finality_step_gap_is_rejected_before_certificate_authority(
 def test_missing_heartbeat_at_deadline_is_terminal_noncommit_not_provisional(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    scenario, assessment, state, output_ref = (
-        certificate_tests._certified_scenario(monkeypatch)
+    scenario, assessment, state, output_ref = certificate_tests._certified_scenario(
+        monkeypatch
     )
     certificate_tests._receipt(scenario, assessment, state, output_ref)
     deadline = min(
@@ -914,13 +930,16 @@ def test_explicit_reset_unseals_consumes_budget_and_invalidates_old_proof() -> N
     assert commit_window_seal_is_authoritative(seal)
     assert not commit_window_seal_is_current(seal)
     assert not commit_window_seal_matches_receipt(reset, receipt)
-    assert reset_commit_window_state(
-        state,
-        assessment=next_assessment,
-        commit_policy=scenario.policy,
-        threshold_snapshot=scenario.threshold,
-        current_step=7,
-    ) is reset
+    assert (
+        reset_commit_window_state(
+            state,
+            assessment=next_assessment,
+            commit_policy=scenario.policy,
+            threshold_snapshot=scenario.threshold,
+            current_step=7,
+        )
+        is reset
+    )
 
 
 def test_epoch_restart_invalidates_seal_and_consumes_both_budgets() -> None:

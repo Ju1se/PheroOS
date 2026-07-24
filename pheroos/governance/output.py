@@ -67,12 +67,17 @@ class OutputContract:
                 ("committed_candidate_required", self.committed_candidate_required),
                 ("evidence_required", self.evidence_required),
                 ("stop_resolution_required", self.stop_resolution_required),
-                ("publication_permission_required", self.publication_permission_required),
+                (
+                    "publication_permission_required",
+                    self.publication_permission_required,
+                ),
             )
             if enabled is not True
         ]
         if disabled:
-            raise GovernanceError(f"output authorization gate cannot be disabled: {disabled[0]}")
+            raise GovernanceError(
+                f"output authorization gate cannot be disabled: {disabled[0]}"
+            )
 
 
 @dataclass(frozen=True)
@@ -136,7 +141,9 @@ def output_gate_lineage(
     declared_candidate = False
     if candidate_set is not None:
         try:
-            candidate_set.require_declared_for_target(decision.candidate_id, decision.target)
+            candidate_set.require_declared_for_target(
+                decision.candidate_id, decision.target
+            )
         except GovernanceError:
             pass
         else:
@@ -181,11 +188,15 @@ def evaluate_output_authorization(
         event_type="output",
         protocol_id=protocol_id,
         target=decision.target,
-        reason="output authorized by all four gates" if authorized else "output denied by contract gate",
+        reason="output authorized by all four gates"
+        if authorized
+        else "output denied by contract gate",
         lineage={**gates, "authorized": authorized},
     )
     event.validate()
-    return OutputAuthorizationResult(authorized=authorized, gates=gates, trace_event=event)
+    return OutputAuthorizationResult(
+        authorized=authorized, gates=gates, trace_event=event
+    )
 
 
 class CommitOutputAction(StrEnum):
@@ -265,9 +276,9 @@ def deliver_terminal_outcome(
         "output_payload_bound": bool(output_ref),
     }
     authorized = all(gates.values())
-    reasons = tuple(
-        name for name, satisfied in gates.items() if not satisfied
-    ) or ("delivered",)
+    reasons = tuple(name for name, satisfied in gates.items() if not satisfied) or (
+        "delivered",
+    )
     return _issue_commit_output_authorization(
         action=CommitOutputAction.DELIVER,
         authorized=authorized,
@@ -295,7 +306,10 @@ def authorize_terminal_publication(
     *,
     commit_policy: CollectiveCommitPolicy,
     threshold_snapshot: CommitThresholdSnapshot,
-    certificate: LocalCommitReceipt | EvidenceCommitCertificate | OutcomeCertificate | DistributedCommitCertificate,
+    certificate: LocalCommitReceipt
+    | EvidenceCommitCertificate
+    | OutcomeCertificate
+    | DistributedCommitCertificate,
     output_payload_fingerprint: str,
     stop_resolution: StopResolutionVerification,
     permission: ActionPermission,
@@ -327,7 +341,10 @@ def authorize_terminal_execution(
     *,
     commit_policy: CollectiveCommitPolicy,
     threshold_snapshot: CommitThresholdSnapshot,
-    certificate: LocalCommitReceipt | EvidenceCommitCertificate | OutcomeCertificate | DistributedCommitCertificate,
+    certificate: LocalCommitReceipt
+    | EvidenceCommitCertificate
+    | OutcomeCertificate
+    | DistributedCommitCertificate,
     output_payload_fingerprint: str,
     stop_resolution: StopResolutionVerification,
     permission: ActionPermission,
@@ -360,7 +377,10 @@ def _authorize_terminal_action(
     action: CommitAction,
     commit_policy: CollectiveCommitPolicy,
     threshold_snapshot: CommitThresholdSnapshot,
-    certificate: LocalCommitReceipt | EvidenceCommitCertificate | OutcomeCertificate | DistributedCommitCertificate,
+    certificate: LocalCommitReceipt
+    | EvidenceCommitCertificate
+    | OutcomeCertificate
+    | DistributedCommitCertificate,
     output_payload_fingerprint: str,
     stop_resolution: StopResolutionVerification,
     permission: ActionPermission,
@@ -497,9 +517,9 @@ def _authorize_terminal_action(
         f"{action.value}_permission_allowed": permission_satisfied,
     }
     authorized = all(gates.values())
-    reasons = tuple(
-        name for name, satisfied in gates.items() if not satisfied
-    ) or (f"{action.value}_authorized",)
+    reasons = tuple(name for name, satisfied in gates.items() if not satisfied) or (
+        f"{action.value}_authorized",
+    )
     return _issue_commit_output_authorization(
         action=(
             CommitOutputAction.PUBLISH
@@ -520,9 +540,7 @@ def _authorize_terminal_action(
         stop_resolution_ref=_safe_stop_ref(stop_resolution),
         permission_ref=_safe_permission_ref(permission),
         distributed_state_ref=_safe_distributed_state_ref(distributed_state),
-        distributed_conflict_root=_safe_distributed_conflict_root(
-            distributed_state
-        ),
+        distributed_conflict_root=_safe_distributed_conflict_root(distributed_state),
         gates=gates,
         reason_codes=reasons,
     )
@@ -562,8 +580,7 @@ def _commit_output_threshold_matches(
             and threshold.run_id == outcome.run_id
             and threshold.target == outcome.target
             and threshold.epoch == outcome.epoch
-            and threshold.risk_assessment_fingerprint
-            == outcome.risk_assessment_root
+            and threshold.risk_assessment_fingerprint == outcome.risk_assessment_root
             and commit_threshold_snapshot_fingerprint(threshold)
             == outcome.threshold_root
         )
@@ -607,9 +624,7 @@ def _bound_certificate(
                     outcome.certificate_ref == ref
                     and verify_evidence_commit_certificate(
                         certificate,
-                        trusted_issuer_attestations=(
-                            trusted_issuer_attestations or {}
-                        ),
+                        trusted_issuer_attestations=(trusted_issuer_attestations or {}),
                         expected_certificate_ref=ref,
                         expected_output_payload_fingerprint=(
                             output_payload_fingerprint
@@ -643,9 +658,7 @@ def _bound_certificate(
                         certificate,
                         commit_policy=commit_policy,
                         portable_certificate=portable_certificate,
-                        trusted_issuer_attestations=(
-                            trusted_issuer_attestations or {}
-                        ),
+                        trusted_issuer_attestations=(trusted_issuer_attestations or {}),
                         trusted_witness_attestations=(
                             trusted_witness_attestations or {}
                         ),
@@ -672,8 +685,7 @@ def _bound_certificate(
             and certificate.outcome_kind is outcome.kind
             and certificate.profile == outcome.profile
             and certificate.assurance is outcome.assurance
-            and certificate.output_payload_fingerprint
-            == output_payload_fingerprint
+            and certificate.output_payload_fingerprint == output_payload_fingerprint
             and verify_outcome_certificate(
                 certificate,
                 trusted_issuer_attestations=trusted_issuer_attestations,
@@ -705,24 +717,20 @@ def _certificate_lineage_matches_outcome(
         and certificate.risk_chain_state_root == outcome.risk_chain_state_root
         and certificate.risk_assessment_root == outcome.risk_assessment_root
         and certificate.risk_policy_root == outcome.risk_policy_root
-        and certificate.membership_snapshot_root
-        == outcome.membership_snapshot_root
+        and certificate.membership_snapshot_root == outcome.membership_snapshot_root
         and certificate.membership_epoch_state_root
         == outcome.membership_epoch_state_root
         and certificate.membership_root == outcome.membership_root
         and certificate.threshold_root == outcome.threshold_root
         and certificate.replay_state_root == outcome.replay_state_ref
         and certificate.replay_root == outcome.replay_root
-        and certificate.support_replay_state_root
-        == outcome.support_replay_state_root
+        and certificate.support_replay_state_root == outcome.support_replay_state_root
         and certificate.support_replay_root == outcome.support_replay_root
         and certificate.evidence_root == outcome.collective_evidence_root
         and certificate.challenge_root == outcome.collective_challenge_root
         and certificate.lease_root == outcome.collective_lease_root
-        and certificate.candidate_evidence_root
-        == outcome.candidate_evidence_root
-        and certificate.candidate_challenge_root
-        == outcome.candidate_challenge_root
+        and certificate.candidate_evidence_root == outcome.candidate_evidence_root
+        and certificate.candidate_challenge_root == outcome.candidate_challenge_root
         and certificate.candidate_lease_root == outcome.candidate_lease_root
         and certificate.window_state_root == outcome.window_state_ref
         and certificate.window_root == outcome.window_root
@@ -734,7 +742,7 @@ def _certificate_lineage_matches_outcome(
 
 
 def _distributed_certificate_lineage_matches_outcome(
-    certificate: object,
+    certificate: DistributedCommitCertificate,
     outcome: DecisionOutcome,
     *,
     output_payload_fingerprint: str,
@@ -844,9 +852,7 @@ def _validate_commit_output_authorization(
         result.outcome_ref and result.output_payload_fingerprint
     ):
         raise GovernanceError("authorized output requires outcome and payload refs")
-    if bool(result.distributed_state_ref) is not bool(
-        result.distributed_conflict_root
-    ):
+    if bool(result.distributed_state_ref) is not bool(result.distributed_conflict_root):
         raise GovernanceError(
             "distributed state and conflict roots must be bound together"
         )
@@ -862,7 +868,9 @@ def _validate_commit_output_authorization(
                 result.distributed_conflict_root,
             )
         ):
-            raise GovernanceError("delivery cannot claim publish/execute authority refs")
+            raise GovernanceError(
+                "delivery cannot claim publish/execute authority refs"
+            )
     elif result.authorized and not all(
         (
             result.certificate_ref,
@@ -933,7 +941,10 @@ def _safe_policy_ref(
     outcome: object,
 ) -> str:
     try:
-        if type(policy) is not CollectiveCommitPolicy or type(outcome) is not DecisionOutcome:
+        if (
+            type(policy) is not CollectiveCommitPolicy
+            or type(outcome) is not DecisionOutcome
+        ):
             return ""
         return commit_policy_fingerprint(policy, profile=outcome.profile)
     except (GovernanceError, ValueError):

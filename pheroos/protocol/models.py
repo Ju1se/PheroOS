@@ -5,7 +5,8 @@ from copy import deepcopy
 from dataclasses import dataclass, field
 from typing import Any
 
-from pheroos.protocol._immutable import deep_freeze, snapshot_fields
+from pheroos.protocol._immutable import deep_freeze as deep_freeze
+from pheroos.protocol._immutable import snapshot_fields
 
 from pheroos.protocol.commit_models import CollectiveCommitPolicy
 
@@ -14,11 +15,19 @@ SUPPORTED_PROTOCOL_VERSIONS = frozenset({"pheroos.protocol.v1"})
 SUPPORTED_COLLECTIVE_MODES = frozenset({"quorum", "bee_swarm", "ant_colony", "hybrid"})
 SWARM_COLLECTIVE_MODES = frozenset({"bee_swarm", "ant_colony", "hybrid"})
 SUPPORTED_PHEROMONE_DECAY_MODELS = frozenset({"linear", "exponential", "step"})
-SUPPORTED_PHEROMONE_RESPONSE_MODELS = frozenset({"linear", "saturating", "threshold", "competitive"})
+SUPPORTED_PHEROMONE_RESPONSE_MODELS = frozenset(
+    {"linear", "saturating", "threshold", "competitive"}
+)
 SUPPORTED_PHEROMONE_COMPETITION_MODES = frozenset({"none", "normalize"})
-SUPPORTED_PHEROMONE_SUBJECT_TYPES = frozenset({"candidate", "route", "tool", "evidence", "agent"})
-SUPPORTED_PHEROMONE_KINDS = frozenset({"positive", "negative", "cautionary", "alarm", "novelty", "stale"})
-SUPPORTED_LAYER_IDS = frozenset({"reactive", "learned", "evolutionary", "metacognitive"})
+SUPPORTED_PHEROMONE_SUBJECT_TYPES = frozenset(
+    {"candidate", "route", "tool", "evidence", "agent"}
+)
+SUPPORTED_PHEROMONE_KINDS = frozenset(
+    {"positive", "negative", "cautionary", "alarm", "novelty", "stale"}
+)
+SUPPORTED_LAYER_IDS = frozenset(
+    {"reactive", "learned", "evolutionary", "metacognitive"}
+)
 PHEROMONE_EXTENSION_PREFIXES = ("x-", "ext.")
 
 BASE_SWARM_TRACE_EVENTS = frozenset(
@@ -55,7 +64,12 @@ class ValidationDiagnostic:
     path: str = ""
 
     def to_dict(self) -> dict[str, Any]:
-        return {"level": self.level, "code": self.code, "message": self.message, "path": self.path}
+        return {
+            "level": self.level,
+            "code": self.code,
+            "message": self.message,
+            "path": self.path,
+        }
 
 
 @dataclass(frozen=True)
@@ -65,7 +79,7 @@ class TargetSpec:
     extensions: dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
-        snapshot_fields(self, mappings=("extensions",))
+        snapshot_fields(self, canonical_mappings=("extensions",))
 
 
 @dataclass(frozen=True)
@@ -76,7 +90,7 @@ class SignalSpec:
     extensions: dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
-        snapshot_fields(self, mappings=("extensions",))
+        snapshot_fields(self, canonical_mappings=("extensions",))
 
 
 @dataclass(frozen=True)
@@ -86,7 +100,7 @@ class EvidencePolicy:
     extensions: dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
-        snapshot_fields(self, mappings=("extensions",))
+        snapshot_fields(self, canonical_mappings=("extensions",))
 
 
 @dataclass(frozen=True)
@@ -98,7 +112,7 @@ class CandidateSpec:
     extensions: dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
-        snapshot_fields(self, mappings=("extensions",))
+        snapshot_fields(self, canonical_mappings=("extensions",))
 
 
 @dataclass(frozen=True)
@@ -109,7 +123,7 @@ class QuorumPolicy:
     extensions: dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
-        snapshot_fields(self, mappings=("extensions",))
+        snapshot_fields(self, canonical_mappings=("extensions",))
 
 
 @dataclass(frozen=True)
@@ -124,7 +138,11 @@ class PheromoneKindProfile:
     extensions: dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
-        snapshot_fields(self, sequences=("scored_subject_types",), mappings=("extensions",))
+        snapshot_fields(
+            self,
+            sequences=("scored_subject_types",),
+            canonical_mappings=("extensions",),
+        )
 
 
 @dataclass(frozen=True)
@@ -149,8 +167,12 @@ class CollectiveDecisionPolicy:
     pheromone_min_source_diversity: int = 1
     pheromone_require_provenance: bool = True
     pheromone_require_trace: bool = True
-    pheromone_scored_subject_types: list[str] = field(default_factory=lambda: ["candidate"])
-    pheromone_kind_profiles: dict[str, PheromoneKindProfile] = field(default_factory=dict)
+    pheromone_scored_subject_types: list[str] = field(
+        default_factory=lambda: ["candidate"]
+    )
+    pheromone_kind_profiles: dict[str, PheromoneKindProfile] = field(
+        default_factory=dict
+    )
     pheromone_response_model: str = "linear"
     pheromone_activation_threshold: float = 0.0
     pheromone_saturation_threshold: float = 10.0
@@ -186,8 +208,8 @@ class CollectiveDecisionPolicy:
                 "layer_default_weights",
                 "layer_confidence_thresholds",
                 "policy_adjustment_bounds",
-                "extensions",
             ),
+            canonical_mappings=("extensions",),
         )
 
 
@@ -204,8 +226,13 @@ class RecoveryProtocol:
     def __post_init__(self) -> None:
         snapshot_fields(
             self,
-            sequences=("trigger_targets", "allowed_roles", "allowed_tags", "required_tools"),
-            mappings=("extensions",),
+            sequences=(
+                "trigger_targets",
+                "allowed_roles",
+                "allowed_tags",
+                "required_tools",
+            ),
+            canonical_mappings=("extensions",),
         )
 
 
@@ -219,16 +246,22 @@ class OutputPolicy:
     extensions: dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
-        snapshot_fields(self, mappings=("extensions",))
+        snapshot_fields(self, canonical_mappings=("extensions",))
 
 
 @dataclass(frozen=True)
 class TracePolicy:
-    required_events: list[str] = field(default_factory=lambda: ["block", "commit", "recovery", "output"])
+    required_events: list[str] = field(
+        default_factory=lambda: ["block", "commit", "recovery", "output"]
+    )
     extensions: dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
-        snapshot_fields(self, sequences=("required_events",), mappings=("extensions",))
+        snapshot_fields(
+            self,
+            sequences=("required_events",),
+            canonical_mappings=("extensions",),
+        )
 
 
 @dataclass(frozen=True)
@@ -242,7 +275,11 @@ class DriverSpec:
     extensions: dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
-        snapshot_fields(self, sequences=("capabilities", "permissions"), mappings=("extensions",))
+        snapshot_fields(
+            self,
+            sequences=("capabilities", "permissions"),
+            canonical_mappings=("extensions",),
+        )
 
 
 @dataclass(frozen=True)
@@ -265,7 +302,7 @@ class ProtocolManifest:
         snapshot_fields(
             self,
             sequences=("targets", "candidates", "recovery_protocols", "signals"),
-            mappings=("extensions",),
+            canonical_mappings=("extensions",),
         )
 
 
@@ -284,7 +321,7 @@ class CapabilityManifest:
         snapshot_fields(
             self,
             sequences=("permissions", "required_connections", "drivers"),
-            mappings=("extensions",),
+            canonical_mappings=("extensions",),
         )
 
 
@@ -399,10 +436,7 @@ def thaw_protocol_value(value: Any) -> Any:
     """Return a detached JSON-compatible copy of a frozen protocol value."""
 
     if isinstance(value, Mapping):
-        return {
-            deepcopy(key): thaw_protocol_value(item)
-            for key, item in value.items()
-        }
+        return {deepcopy(key): thaw_protocol_value(item) for key, item in value.items()}
     if isinstance(value, (tuple, list)):
         return [thaw_protocol_value(item) for item in value]
     if isinstance(value, (set, frozenset)):

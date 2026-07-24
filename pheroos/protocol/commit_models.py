@@ -1,13 +1,11 @@
 from __future__ import annotations
 
-from collections.abc import Mapping
 from dataclasses import dataclass, field
 from enum import StrEnum
 from types import MappingProxyType
 from typing import Any
 
 from pheroos.protocol._immutable import (
-    deep_freeze as _deep_freeze,
     snapshot_fields as _snapshot_fields,
 )
 
@@ -22,7 +20,6 @@ CERTIFIED_COMMIT_PROFILE_VERSION = "pheroos-certified-commit-v1"
 DISTRIBUTED_COMMIT_PROFILE_VERSION = "pheroos-distributed-commit-v1"
 WEIGHT_SCALE = 1_000_000
 MAX_AUTHORITY_INTEGER = (2**53) - 1
-
 
 
 class CommitAssurance(StrEnum):
@@ -51,15 +48,11 @@ SUPPORTED_COMMIT_PROFILES = frozenset(
 )
 COMMIT_PROFILES_BY_ASSURANCE = MappingProxyType(
     {
-        CommitAssurance.ADVISORY.value: frozenset(
-            {COMMIT_INTEGRITY_PROFILE_VERSION}
-        ),
+        CommitAssurance.ADVISORY.value: frozenset({COMMIT_INTEGRITY_PROFILE_VERSION}),
         CommitAssurance.EVIDENCE_BOUND.value: frozenset(
             {COMMIT_INTEGRITY_PROFILE_VERSION, HYBRID_COMMIT_PROFILE_VERSION}
         ),
-        CommitAssurance.CERTIFIED.value: frozenset(
-            {CERTIFIED_COMMIT_PROFILE_VERSION}
-        ),
+        CommitAssurance.CERTIFIED.value: frozenset({CERTIFIED_COMMIT_PROFILE_VERSION}),
         CommitAssurance.DISTRIBUTED.value: frozenset(
             {DISTRIBUTED_COMMIT_PROFILE_VERSION}
         ),
@@ -124,7 +117,7 @@ class EvidenceQualificationPolicy:
         _snapshot_fields(
             self,
             sequences=("required_challenge_categories",),
-            mappings=("extensions",),
+            canonical_mappings=("extensions",),
         )
 
 
@@ -141,7 +134,7 @@ class SupportLeasePolicy:
     extensions: dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
-        _snapshot_fields(self, mappings=("extensions",))
+        _snapshot_fields(self, canonical_mappings=("extensions",))
 
 
 @dataclass(frozen=True)
@@ -168,7 +161,7 @@ class RiskBandPolicy:
                 "publishable_outcomes",
                 "executable_outcomes",
             ),
-            mappings=("extensions",),
+            canonical_mappings=("extensions",),
         )
 
 
@@ -186,7 +179,7 @@ class CommitWindowPolicy:
         _snapshot_fields(
             self,
             sequences=("reset_rules",),
-            mappings=("extensions",),
+            canonical_mappings=("extensions",),
         )
 
 
@@ -209,7 +202,7 @@ class TerminalOutcomePolicy:
                 "publishable_outcomes",
                 "executable_outcomes",
             ),
-            mappings=("extensions",),
+            canonical_mappings=("extensions",),
         )
 
 
@@ -224,7 +217,7 @@ class CertificatePolicy:
     extensions: dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
-        _snapshot_fields(self, mappings=("extensions",))
+        _snapshot_fields(self, canonical_mappings=("extensions",))
 
 
 @dataclass(frozen=True)
@@ -241,7 +234,7 @@ class DistributedCommitPolicy:
     extensions: dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
-        _snapshot_fields(self, mappings=("extensions",))
+        _snapshot_fields(self, canonical_mappings=("extensions",))
 
 
 @dataclass(frozen=True)
@@ -262,7 +255,8 @@ class CollectiveCommitPolicy:
     def __post_init__(self) -> None:
         _snapshot_fields(
             self,
-            mappings=("risk_bands", "extensions"),
+            mappings=("risk_bands",),
+            canonical_mappings=("extensions",),
         )
 
 

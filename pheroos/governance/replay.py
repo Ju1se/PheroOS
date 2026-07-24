@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
+from typing import TypeVar
 
 from pheroos.governance._commit_validation import require_commit_step
 from pheroos.governance.challenge import (
@@ -26,6 +27,8 @@ from pheroos.governance.observation import (
     verified_observation_fingerprint,
     verified_observation_is_authoritative,
 )
+
+_ReplayInputT = TypeVar("_ReplayInputT")
 
 
 def observation_replay_receipt(
@@ -240,8 +243,7 @@ def _require_record_binding(
         getattr(record, "profile", None) == state.profile
         and getattr(record, "assurance", None) is state.assurance
         and getattr(record, "manifest_root", None) == state.manifest_root
-        and getattr(record, "commit_policy_root", None)
-        == state.commit_policy_root
+        and getattr(record, "commit_policy_root", None) == state.commit_policy_root
         and getattr(record, "protocol_id", None) == state.protocol_id
         and getattr(record, "run_id", None) == state.run_id
     ):
@@ -259,7 +261,10 @@ def _require_record_binding(
         raise GovernanceError(f"{field_name} replay input is not fresh")
 
 
-def _require_sequence(values: object, field_name: str) -> tuple[object, ...]:
+def _require_sequence(
+    values: Sequence[_ReplayInputT],
+    field_name: str,
+) -> tuple[_ReplayInputT, ...]:
     if isinstance(values, (str, bytes, bytearray)) or not isinstance(
         values,
         Sequence,

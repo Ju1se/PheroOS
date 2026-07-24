@@ -56,12 +56,13 @@ def test_static_contract_registry_covers_every_wire_branch_exactly_once() -> Non
     assert isinstance(COMMIT_WIRE_CONTRACTS_BY_SCHEMA, MappingProxyType)
     assert tuple(COMMIT_WIRE_CONTRACTS_BY_SCHEMA) == names
     assert all(
-        isinstance(contract, CommitWireContract)
-        for contract in COMMIT_WIRE_CONTRACTS
+        isinstance(contract, CommitWireContract) for contract in COMMIT_WIRE_CONTRACTS
     )
     assert all(callable(contract.payload_schema) for contract in COMMIT_WIRE_CONTRACTS)
     assert all(callable(contract.validator) for contract in COMMIT_WIRE_CONTRACTS)
-    assert all(not hasattr(contract, "validators") for contract in COMMIT_WIRE_CONTRACTS)
+    assert all(
+        not hasattr(contract, "validators") for contract in COMMIT_WIRE_CONTRACTS
+    )
 
     with pytest.raises(TypeError):
         COMMIT_WIRE_CONTRACTS_BY_SCHEMA["forged"] = COMMIT_WIRE_CONTRACTS[0]  # type: ignore[index]
@@ -70,18 +71,23 @@ def test_static_contract_registry_covers_every_wire_branch_exactly_once() -> Non
 
 
 def test_static_contract_schema_is_byte_identical_to_checked_in_v1_artifact() -> None:
-    rendered = json.dumps(
-        public_schema.commit_schema(),
-        ensure_ascii=False,
-        indent=2,
-        sort_keys=True,
-    ) + "\n"
-    assert rendered.encode("utf-8") == (
-        ROOT / "schemas/commit.schema.json"
-    ).read_bytes()
+    rendered = (
+        json.dumps(
+            public_schema.commit_schema(),
+            ensure_ascii=False,
+            indent=2,
+            sort_keys=True,
+        )
+        + "\n"
+    )
+    assert (
+        rendered.encode("utf-8") == (ROOT / "schemas/commit.schema.json").read_bytes()
+    )
 
 
-def test_noncritical_extension_round_trips_without_entering_authority_dispatch() -> None:
+def test_noncritical_extension_round_trips_without_entering_authority_dispatch() -> (
+    None
+):
     baseline = _principal_attestation_record()
     extended = {
         **baseline,

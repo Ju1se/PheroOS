@@ -2,7 +2,11 @@ from __future__ import annotations
 
 from dataclasses import replace
 
-from pheroos.conformance.checks._manifest import active_target, candidate_set, exercise_candidate_id
+from pheroos.conformance.checks._manifest import (
+    active_target,
+    candidate_set,
+    exercise_candidate_id,
+)
 from pheroos.conformance.report import CheckResult
 from pheroos.governance import (
     CandidateSet,
@@ -49,17 +53,49 @@ def check_enabled(
     target = active_target(manifest)
     candidates = candidate_set(manifest)
     fallback_id = collective_fallback_id(manifest.protocol)
-    try:
-        fallback = candidates.require_declared_for_target(fallback_id, target)
-    except GovernanceError:
-        return CheckResult("pheromone_behavior", False, "safe_fallback")
-    if not fallback.safe_fallback:
+    if not _has_declared_safe_fallback(candidates, fallback_id, target):
         return CheckResult("pheromone_behavior", False, "safe_fallback")
 
     candidate_id = exercise_candidate_id(manifest)
     if candidate_id is None:
         return CheckResult("pheromone_behavior", False, "active_target_candidates")
     pheromone_policy = pheromone_policy_from_collective(policy)
+    problems.extend(
+        _runtime_behavior_problems(
+            candidate_id=candidate_id,
+            fallback_id=fallback_id,
+            target=target,
+            candidates=candidates,
+            policy=policy,
+            pheromone_policy=pheromone_policy,
+        )
+    )
+
+    return CheckResult("pheromone_behavior", not problems, ", ".join(problems))
+
+
+def _has_declared_safe_fallback(
+    candidates: CandidateSet,
+    fallback_id: str,
+    target: str,
+) -> bool:
+    try:
+        fallback = candidates.require_declared_for_target(fallback_id, target)
+    except GovernanceError:
+        return False
+    return bool(fallback.safe_fallback)
+
+
+def _runtime_behavior_problems(
+    *,
+    candidate_id: str,
+    fallback_id: str,
+    target: str,
+    candidates: CandidateSet,
+    policy: CollectiveDecisionPolicy,
+    pheromone_policy: PheromonePolicy,
+) -> list[str]:
+    problems: list[str] = []
 
     if pheromone_policy.require_provenance and not rejects_missing_provenance(
         candidate_id, target, pheromone_policy, candidates
@@ -73,7 +109,9 @@ def check_enabled(
         problems.append("clip")
     if not non_candidate_pheromone_does_not_score(target, candidates, pheromone_policy):
         problems.append("non_candidate_no_score")
-    if not stale_pheromone_does_not_score(candidate_id, target, candidates, pheromone_policy):
+    if not stale_pheromone_does_not_score(
+        candidate_id, target, candidates, pheromone_policy
+    ):
         problems.append("stale_no_score")
     if not empty_trail_cannot_satisfy_source_diversity(
         candidate_id,
@@ -94,8 +132,7 @@ def check_enabled(
         problems.append("not_evidence")
     if not pheromone_score_cannot_authorize_output(candidate_id, target, candidates):
         problems.append("no_direct_output")
-
-    return CheckResult("pheromone_behavior", not problems, ", ".join(problems))
+    return problems
 
 
 def traceable_candidate_pheromone(
@@ -170,18 +207,26 @@ def clips_pheromone(
     policy: PheromonePolicy,
     candidate_set: CandidateSet,
 ) -> bool:
-    requested = max(policy.max_strength, policy.per_round_deposit_cap, policy.per_source_cap) + 1
+    requested = (
+        max(policy.max_strength, policy.per_round_deposit_cap, policy.per_source_cap)
+        + 1
+    )
     result = deposit_pheromone_trails(
         [traceable_candidate_pheromone(candidate_id, target, strength=requested)],
         policy,
         candidate_set=candidate_set,
         target=target,
     )
-    expected = min(policy.max_strength, policy.per_round_deposit_cap, policy.per_source_cap, requested)
+    expected = min(
+        policy.max_strength,
+        policy.per_round_deposit_cap,
+        policy.per_source_cap,
+        requested,
+    )
     if expected < policy.min_strength:
         expected = 0.0
     actual = result.trails[0].strength if result.trails else 0.0
-    return actual == expected
+    return bool(actual == expected)
 
 
 def non_candidate_pheromone_does_not_score(
@@ -189,7 +234,9 @@ def non_candidate_pheromone_does_not_score(
     candidate_set: CandidateSet,
     policy: PheromonePolicy,
 ) -> bool:
-    baseline = score_pheromone_trails(candidate_set=candidate_set, policy=policy, trails=[])
+    baseline = score_pheromone_trails(
+        candidate_set=candidate_set, policy=policy, trails=[]
+    )
     scores = score_pheromone_trails(
         candidate_set=candidate_set,
         policy=policy,
@@ -208,7 +255,7 @@ def non_candidate_pheromone_does_not_score(
             )
         ],
     )
-    return scores == baseline
+    return bool(scores == baseline)
 
 
 def stale_pheromone_does_not_score(
@@ -231,9 +278,13 @@ def stale_pheromone_does_not_score(
         policy,
         current_step=1,
     )[0]
-    baseline = score_pheromone_trails(candidate_set=candidate_set, policy=policy, trails=[])
-    scores = score_pheromone_trails(candidate_set=candidate_set, policy=policy, trails=[expired])
-    return expired.kind == "stale" and scores == baseline
+    baseline = score_pheromone_trails(
+        candidate_set=candidate_set, policy=policy, trails=[]
+    )
+    scores = score_pheromone_trails(
+        candidate_set=candidate_set, policy=policy, trails=[expired]
+    )
+    return bool(expired.kind == "stale" and scores == baseline)
 
 
 def empty_trail_cannot_satisfy_source_diversity(
@@ -264,7 +315,7 @@ def empty_trail_cannot_satisfy_source_diversity(
         validate_pheromone_trail(empty, policy, candidate_set=candidate_set)
     except GovernanceError:
         # A positive minimum strength already rejects empty active memory.
-        return policy.min_strength > 0
+        return bool(policy.min_strength > 0)
     baseline = score_pheromone_trails(
         candidate_set=candidate_set,
         policy=policy,
@@ -275,7 +326,7 @@ def empty_trail_cannot_satisfy_source_diversity(
         policy=policy,
         trails=[*contributing, empty],
     )
-    return observed == baseline
+    return bool(observed == baseline)
 
 
 def high_pheromone_without_scouts_falls_back(
@@ -283,7 +334,7 @@ def high_pheromone_without_scouts_falls_back(
     fallback_id: str,
     target: str,
     candidate_set: CandidateSet,
-    policy: object,
+    policy: CollectiveDecisionPolicy,
 ) -> bool:
     trails = [
         traceable_candidate_pheromone(
@@ -312,7 +363,10 @@ def high_pheromone_without_scouts_falls_back(
         pheromone_trails=trails,
         fallback_candidate_id=fallback_id,
     )
-    return decision.reason == "safe_collective_fallback" and decision.candidate_id == fallback_id
+    return bool(
+        decision.reason == "safe_collective_fallback"
+        and decision.candidate_id == fallback_id
+    )
 
 
 def pheromone_is_not_evidence(
@@ -326,7 +380,13 @@ def pheromone_is_not_evidence(
         target=target,
     )
     missing_evidence = EvidenceGraph(
-        [EvidenceNode(id="evidence:pheromone", content="pheromone is not evidence", provenance="")]
+        [
+            EvidenceNode(
+                id="evidence:pheromone",
+                content="pheromone is not evidence",
+                provenance="",
+            )
+        ]
     )
     return not output_authorized(
         OutputContract(),
@@ -366,7 +426,13 @@ def pheromone_score_cannot_authorize_output(
         reason="pheromone_score_only",
     )
     evidence = EvidenceGraph(
-        [EvidenceNode(id="evidence:real", content="governed evidence", provenance="driver:real")]
+        [
+            EvidenceNode(
+                id="evidence:real",
+                content="governed evidence",
+                provenance="driver:real",
+            )
+        ]
     )
     return not output_authorized(
         OutputContract(),

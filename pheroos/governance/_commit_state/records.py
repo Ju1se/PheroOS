@@ -7,10 +7,8 @@ from threading import RLock
 
 from pheroos.governance._commit_state.invariants import (
     _normalized_labels,
-    _normalized_window_bindings,
     _require_binding,
     _require_non_negative_integer,
-    _validate_bound_commit_policy,
     _validate_commit_binding_values,
     _validate_profile_assurance,
 )
@@ -19,7 +17,6 @@ from pheroos.governance._commit_state._liveness_contract import (
     _validate_sealed_heartbeat_lineage,
 )
 from pheroos.governance._commit_state.payloads import (
-    build_commit_liveness_input_payload,
     build_commit_window_state_payload,
     build_decision_outcome_payload,
     build_decision_progress_payload,
@@ -35,15 +32,14 @@ from pheroos.governance._commit_validation import (
     require_commit_text,
 )
 from pheroos.governance._commit.common import AuthorityScope
-from pheroos.governance._legacy.authority_registry import (
-    LEGACY_AUTHORITY_REGISTRY,
+from pheroos.governance._commit_replay_namespace import (
+    ReplayNamespace as ReplayNamespace,
 )
 from pheroos.governance.authority import AuthorityLevel, can_verify
 from pheroos.governance.commit_numeric import commit_payload_fingerprint
 from pheroos.governance.errors import GovernanceError
 from pheroos.protocol.commit_models import (
     COMMIT_AUTHORITY_SCOPE_BY_ASSURANCE,
-    CollectiveCommitPolicy,
     CommitAssurance,
 )
 
@@ -161,22 +157,6 @@ class CommitFinalityStatus(StrEnum):
     VERIFIED = "verified"
     UNAVAILABLE = "unavailable"
     CONFLICT = "conflict"
-
-
-class ReplayNamespace(StrEnum):
-    PRINCIPAL = "principal"
-    OBSERVATION = "observation"
-    CHALLENGE = "challenge"
-    COUNTEREVIDENCE_DISPOSITION = "counterevidence_disposition"
-    MEMBERSHIP = "membership"
-    SUPPORT_LEASE = "support_lease"
-    SUPPORT_REVOCATION = "support_revocation"
-    RISK_ASSESSMENT = "risk_assessment"
-    THRESHOLD = "threshold"
-    STOP_RESOLUTION = "stop_resolution"
-    ACTION_PERMISSION = "action_permission"
-    ASSESSMENT = "assessment"
-    WITNESS = "witness"
 
 
 @dataclass(frozen=True)
@@ -1026,6 +1006,17 @@ def _validate_commit_window_state(state: CommitWindowState) -> None:
         epoch=state.epoch,
         field_name="commit window",
     )
+    _validate_commit_window_predecessor(state)
+    _validate_commit_window_core(state)
+    _validate_commit_window_timing(state)
+    _validate_commit_window_issuer(state)
+    _validate_commit_window_assessment_lineage(state)
+    _validate_commit_window_ordered_lineage(state)
+    _validate_commit_window_readiness(state)
+    _validate_commit_window_root(state)
+
+
+def _validate_commit_window_predecessor(state: CommitWindowState) -> None:
     require_commit_fingerprint(state.chain_id, "commit window chain_id")
     revision = require_commit_step(state.revision, "commit window revision")
     if revision == 0:
@@ -1036,6 +1027,9 @@ def _validate_commit_window_state(state: CommitWindowState) -> None:
             state.previous_state_fingerprint,
             "commit window previous_state_fingerprint",
         )
+
+
+def _validate_commit_window_core(state: CommitWindowState) -> None:
     for field_name in (
         "risk_assessment_root",
         "membership_root",
@@ -1046,6 +1040,9 @@ def _validate_commit_window_state(state: CommitWindowState) -> None:
             getattr(state, field_name),
             f"commit window {field_name}",
         )
+
+
+def _validate_commit_window_timing(state: CommitWindowState) -> None:
     for field_name in (
         "initialized_at_step",
         "last_evaluated_step",
@@ -1073,60 +1070,79 @@ def _validate_commit_window_state(state: CommitWindowState) -> None:
     for field_name in ("last_ready", "reset_budget_exhausted"):
         if type(getattr(state, field_name)) is not bool:
             raise GovernanceError(f"commit window {field_name} must be boolean")
+
+
+def _validate_commit_window_issuer(state: CommitWindowState) -> None:
     require_commit_text(state.reset_reason, "commit window reset_reason")
     require_commit_text(state.issuer_id, "commit window issuer_id")
     if type(state.authority) is not AuthorityLevel or not can_verify(state.authority):
         raise GovernanceError("commit window authority is invalid")
     require_commit_text(state.provenance, "commit window provenance")
     require_commit_text(state.trace_event_id, "commit window trace_event_id")
+
+
+def _validate_commit_window_assessment_lineage(state: CommitWindowState) -> None:
     if state.last_assessment_ref:
+        _validate_present_commit_window_assessment(state)
+    elif _commit_window_has_empty_assessment_metadata(state):
+        raise GovernanceError(
+            "commit window empty assessment lineage contains metadata"
+        )
+
+
+def _validate_present_commit_window_assessment(state: CommitWindowState) -> None:
+    require_commit_fingerprint(
+        state.last_assessment_ref,
+        "commit window last_assessment_ref",
+    )
+    require_commit_fingerprint(
+        state.last_context_ref,
+        "commit window last_context_ref",
+    )
+    require_commit_text(
+        state.last_assessment_status,
+        "commit window last_assessment_status",
+    )
+    for name in (
+        "risk_chain_state_root",
+        "risk_policy_root",
+        "membership_snapshot_root",
+        "membership_epoch_state_root",
+        "support_replay_state_root",
+        "support_replay_root",
+        "collective_evidence_root",
+        "collective_challenge_root",
+        "collective_lease_root",
+        "stop_resolution_root",
+        "permission_root",
+        "assessment_replay_state_ref",
+        "assessment_replay_root",
+    ):
         require_commit_fingerprint(
-            state.last_assessment_ref,
-            "commit window last_assessment_ref",
+            getattr(state, name),
+            f"commit window {name}",
         )
-        require_commit_fingerprint(
-            state.last_context_ref,
-            "commit window last_context_ref",
-        )
-        require_commit_text(
-            state.last_assessment_status,
-            "commit window last_assessment_status",
-        )
-        for name in (
-            "risk_chain_state_root",
-            "risk_policy_root",
-            "membership_snapshot_root",
-            "membership_epoch_state_root",
-            "support_replay_state_root",
-            "support_replay_root",
-            "collective_evidence_root",
-            "collective_challenge_root",
-            "collective_lease_root",
-            "stop_resolution_root",
-            "permission_root",
-            "assessment_replay_state_ref",
-            "assessment_replay_root",
-        ):
+    _validate_commit_window_candidate_roots(state)
+
+
+def _validate_commit_window_candidate_roots(state: CommitWindowState) -> None:
+    candidate_roots = (
+        state.candidate_evidence_root,
+        state.candidate_challenge_root,
+        state.candidate_lease_root,
+    )
+    if any(candidate_roots) and not all(candidate_roots):
+        raise GovernanceError("commit window candidate lineage roots must be complete")
+    for value in candidate_roots:
+        if value:
             require_commit_fingerprint(
-                getattr(state, name),
-                f"commit window {name}",
+                value,
+                "commit window candidate lineage root",
             )
-        candidate_roots = (
-            state.candidate_evidence_root,
-            state.candidate_challenge_root,
-            state.candidate_lease_root,
-        )
-        if any(candidate_roots) and not all(candidate_roots):
-            raise GovernanceError(
-                "commit window candidate lineage roots must be complete"
-            )
-        for value in candidate_roots:
-            if value:
-                require_commit_fingerprint(
-                    value,
-                    "commit window candidate lineage root",
-                )
-    elif (
+
+
+def _commit_window_has_empty_assessment_metadata(state: CommitWindowState) -> bool:
+    return bool(
         state.last_context_ref
         or state.last_assessment_status
         or state.last_assessment_reason_codes
@@ -1146,39 +1162,49 @@ def _validate_commit_window_state(state: CommitWindowState) -> None:
         or state.permission_root
         or state.assessment_replay_state_ref
         or state.assessment_replay_root
-    ):
-        raise GovernanceError(
-            "commit window empty assessment lineage contains metadata"
-        )
+    )
+
+
+def _validate_commit_window_ordered_lineage(state: CommitWindowState) -> None:
     for reference in state.ordered_assessment_refs:
         require_commit_fingerprint(reference, "commit window assessment_ref")
     if len(state.ordered_assessment_refs) != len(set(state.ordered_assessment_refs)):
         raise GovernanceError("commit window assessment lineage contains replay")
+
+
+def _validate_commit_window_readiness(state: CommitWindowState) -> None:
     if state.last_ready:
-        require_commit_text(
-            state.leader_candidate_id,
-            "commit window leader_candidate_id",
-        )
-        if state.window_count <= 0:
-            raise GovernanceError("ready commit window requires positive count")
-        if len(state.ordered_assessment_refs) != state.window_count:
-            raise GovernanceError(
-                "commit window assessment lineage must match window_count"
-            )
-        if (
-            not state.last_assessment_ref
-            or state.last_assessment_status != "ready"
-            or state.ordered_assessment_refs[-1] != state.last_assessment_ref
-        ):
-            raise GovernanceError(
-                "ready commit window must end at its latest ready assessment"
-            )
+        _validate_ready_commit_window(state)
     elif (
         state.leader_candidate_id
         or state.window_count != 0
         or state.ordered_assessment_refs
     ):
         raise GovernanceError("non-ready commit window must have an empty window")
+
+
+def _validate_ready_commit_window(state: CommitWindowState) -> None:
+    require_commit_text(
+        state.leader_candidate_id,
+        "commit window leader_candidate_id",
+    )
+    if state.window_count <= 0:
+        raise GovernanceError("ready commit window requires positive count")
+    if len(state.ordered_assessment_refs) != state.window_count:
+        raise GovernanceError(
+            "commit window assessment lineage must match window_count"
+        )
+    if (
+        not state.last_assessment_ref
+        or state.last_assessment_status != "ready"
+        or state.ordered_assessment_refs[-1] != state.last_assessment_ref
+    ):
+        raise GovernanceError(
+            "ready commit window must end at its latest ready assessment"
+        )
+
+
+def _validate_commit_window_root(state: CommitWindowState) -> None:
     expected_root = _window_root(
         state.ordered_assessment_refs,
         profile=state.profile,
@@ -1269,6 +1295,16 @@ def _validate_commit_liveness_input(value: CommitLivenessInput) -> None:
         epoch=value.epoch,
         field_name="commit liveness input",
     )
+    _validate_commit_liveness_header(value)
+    _validate_commit_liveness_assessment(value)
+    _validate_commit_liveness_leader(value)
+    _validate_commit_liveness_seal(value)
+    _validate_commit_liveness_heartbeat(value)
+    _validate_commit_liveness_finality(value)
+    _validate_commit_liveness_issuer(value)
+
+
+def _validate_commit_liveness_header(value: CommitLivenessInput) -> None:
     require_commit_text(value.input_id, "commit liveness input_id")
     require_commit_step(value.current_step, "commit liveness current_step")
     if type(value.deadline_reached) is not bool:
@@ -1285,52 +1321,72 @@ def _validate_commit_liveness_input(value: CommitLivenessInput) -> None:
             getattr(value, name),
             f"commit liveness {name}",
         )
+
+
+def _validate_commit_liveness_assessment(value: CommitLivenessInput) -> None:
     if value.assessment_ref:
+        _validate_present_commit_liveness_assessment(value)
+    elif _commit_liveness_has_empty_assessment_metadata(value):
+        raise GovernanceError(
+            "commit liveness empty assessment cannot carry assessment metadata"
+        )
+
+
+def _validate_present_commit_liveness_assessment(value: CommitLivenessInput) -> None:
+    require_commit_fingerprint(
+        value.assessment_ref,
+        "commit liveness assessment_ref",
+    )
+    require_commit_fingerprint(
+        value.context_ref,
+        "commit liveness context_ref",
+    )
+    require_commit_text(
+        value.assessment_status,
+        "commit liveness assessment_status",
+    )
+    for name in (
+        "risk_chain_state_root",
+        "risk_policy_root",
+        "membership_snapshot_root",
+        "membership_epoch_state_root",
+        "support_replay_state_root",
+        "support_replay_root",
+        "collective_evidence_root",
+        "collective_challenge_root",
+        "collective_lease_root",
+        "stop_resolution_root",
+        "permission_root",
+    ):
         require_commit_fingerprint(
-            value.assessment_ref,
-            "commit liveness assessment_ref",
+            getattr(value, name),
+            f"commit liveness {name}",
         )
-        require_commit_fingerprint(
-            value.context_ref,
-            "commit liveness context_ref",
+    _validate_commit_liveness_candidate_roots(value)
+
+
+def _validate_commit_liveness_candidate_roots(value: CommitLivenessInput) -> None:
+    candidate_roots = (
+        value.candidate_evidence_root,
+        value.candidate_challenge_root,
+        value.candidate_lease_root,
+    )
+    if any(candidate_roots) and not all(candidate_roots):
+        raise GovernanceError(
+            "commit liveness candidate lineage roots must be complete"
         )
-        require_commit_text(
-            value.assessment_status,
-            "commit liveness assessment_status",
-        )
-        for name in (
-            "risk_chain_state_root",
-            "risk_policy_root",
-            "membership_snapshot_root",
-            "membership_epoch_state_root",
-            "support_replay_state_root",
-            "support_replay_root",
-            "collective_evidence_root",
-            "collective_challenge_root",
-            "collective_lease_root",
-            "stop_resolution_root",
-            "permission_root",
-        ):
+    for root in candidate_roots:
+        if root:
             require_commit_fingerprint(
-                getattr(value, name),
-                f"commit liveness {name}",
+                root,
+                "commit liveness candidate lineage root",
             )
-        candidate_roots = (
-            value.candidate_evidence_root,
-            value.candidate_challenge_root,
-            value.candidate_lease_root,
-        )
-        if any(candidate_roots) and not all(candidate_roots):
-            raise GovernanceError(
-                "commit liveness candidate lineage roots must be complete"
-            )
-        for root in candidate_roots:
-            if root:
-                require_commit_fingerprint(
-                    root,
-                    "commit liveness candidate lineage root",
-                )
-    elif (
+
+
+def _commit_liveness_has_empty_assessment_metadata(
+    value: CommitLivenessInput,
+) -> bool:
+    return bool(
         value.context_ref
         or value.assessment_status
         or value.leader_candidate_id
@@ -1350,10 +1406,10 @@ def _validate_commit_liveness_input(value: CommitLivenessInput) -> None:
         or value.candidate_lease_root
         or value.stop_resolution_root
         or value.permission_root
-    ):
-        raise GovernanceError(
-            "commit liveness empty assessment cannot carry assessment metadata"
-        )
+    )
+
+
+def _validate_commit_liveness_leader(value: CommitLivenessInput) -> None:
     if value.leader_candidate_id:
         require_commit_text(
             value.leader_candidate_id,
@@ -1363,6 +1419,9 @@ def _validate_commit_liveness_input(value: CommitLivenessInput) -> None:
         raise GovernanceError("commit liveness leader readiness must be boolean")
     if value.leader_ready_for_stability and not value.leader_candidate_id:
         raise GovernanceError("commit liveness ready leader requires a candidate")
+
+
+def _validate_commit_liveness_seal(value: CommitLivenessInput) -> None:
     for name, item in (
         ("sealed_window", value.sealed_window),
         ("heartbeat_continuous", value.heartbeat_continuous),
@@ -1382,6 +1441,9 @@ def _validate_commit_liveness_input(value: CommitLivenessInput) -> None:
             raise GovernanceError("commit liveness seal is from the future")
     elif value.seal_ref or value.sealed_at_step or value.previous_progress_ref:
         raise GovernanceError("unsealed liveness cannot carry seal lineage")
+
+
+def _validate_commit_liveness_heartbeat(value: CommitLivenessInput) -> None:
     if value.previous_progress_ref:
         require_commit_fingerprint(
             value.previous_progress_ref,
@@ -1397,6 +1459,9 @@ def _validate_commit_liveness_input(value: CommitLivenessInput) -> None:
         raise GovernanceError(
             "only a sealed late-finality path can report heartbeat loss"
         )
+
+
+def _validate_commit_liveness_finality(value: CommitLivenessInput) -> None:
     if type(value.finality_status) is not CommitFinalityStatus:
         raise GovernanceError("commit liveness finality status is invalid")
     if value.certificate_ref:
@@ -1422,6 +1487,9 @@ def _validate_commit_liveness_input(value: CommitLivenessInput) -> None:
         raise GovernanceError(
             "non-verified finality cannot carry certificate authority"
         )
+
+
+def _validate_commit_liveness_issuer(value: CommitLivenessInput) -> None:
     require_commit_text(value.issuer_id, "commit liveness issuer_id")
     if type(value.authority) is not AuthorityLevel or not can_verify(value.authority):
         raise GovernanceError("commit liveness authority is invalid")
@@ -1590,6 +1658,14 @@ def _commit_replay_receipt_root(
 
 
 def _validate_decision_progress(progress: DecisionProgress) -> None:
+    _validate_decision_progress_header(progress)
+    _validate_decision_progress_timing(progress)
+    _validate_decision_progress_candidate(progress)
+    _validate_decision_progress_lineage(progress)
+    _validate_decision_progress_terminal_state(progress)
+
+
+def _validate_decision_progress_header(progress: DecisionProgress) -> None:
     if type(progress.phase) is not DecisionPhase:
         raise GovernanceError("decision progress phase is invalid")
     if type(progress.assurance) is not CommitAssurance:
@@ -1610,6 +1686,9 @@ def _validate_decision_progress(progress: DecisionProgress) -> None:
     _require_binding(progress.protocol_id, "decision progress protocol id")
     _require_binding(progress.run_id, "decision progress run id")
     _require_binding(progress.target, "decision progress target")
+
+
+def _validate_decision_progress_timing(progress: DecisionProgress) -> None:
     for name, value in (
         ("epoch", progress.epoch),
         ("current step", progress.current_step),
@@ -1637,6 +1716,9 @@ def _validate_decision_progress(progress: DecisionProgress) -> None:
         raise GovernanceError(
             "decision progress deadline exceeds the absolute run deadline"
         )
+
+
+def _validate_decision_progress_candidate(progress: DecisionProgress) -> None:
     if progress.leader_candidate_id:
         require_commit_text(
             progress.leader_candidate_id,
@@ -1647,6 +1729,9 @@ def _validate_decision_progress(progress: DecisionProgress) -> None:
             progress.assessment_ref,
             "decision progress assessment ref",
         )
+
+
+def _validate_decision_progress_lineage(progress: DecisionProgress) -> None:
     for name in (
         "risk_assessment_root",
         "membership_root",
@@ -1678,6 +1763,9 @@ def _validate_decision_progress(progress: DecisionProgress) -> None:
         progress,
         field_name="decision progress",
     )
+
+
+def _validate_decision_progress_terminal_state(progress: DecisionProgress) -> None:
     if not progress.heartbeat_continuous:
         raise GovernanceError("decision progress requires a continuous heartbeat")
     if progress.terminal is not False:
@@ -1689,6 +1777,18 @@ def _validate_decision_progress(progress: DecisionProgress) -> None:
 
 
 def _validate_decision_outcome(outcome: DecisionOutcome) -> None:
+    _validate_decision_outcome_header(outcome)
+    _validate_decision_outcome_timing(outcome)
+    _validate_decision_outcome_flags(outcome)
+    _validate_decision_outcome_lineage(outcome)
+    _validate_decision_outcome_reasons(outcome)
+    _validate_decision_outcome_commit_authority(outcome)
+    _validate_decision_outcome_publication(outcome)
+    _validate_decision_outcome_authority_scope(outcome)
+    _validate_decision_outcome_fallback(outcome)
+
+
+def _validate_decision_outcome_header(outcome: DecisionOutcome) -> None:
     if type(outcome.kind) is not DecisionOutcomeKind:
         raise GovernanceError("decision outcome kind is invalid")
     if type(outcome.assurance) is not CommitAssurance:
@@ -1711,6 +1811,9 @@ def _validate_decision_outcome(outcome: DecisionOutcome) -> None:
     _require_binding(outcome.protocol_id, "decision outcome protocol id")
     _require_binding(outcome.run_id, "decision outcome run id")
     _require_binding(outcome.target, "decision outcome target")
+
+
+def _validate_decision_outcome_timing(outcome: DecisionOutcome) -> None:
     _require_non_negative_integer(outcome.epoch, "decision outcome epoch")
     _require_non_negative_integer(
         outcome.current_step,
@@ -1728,6 +1831,9 @@ def _validate_decision_outcome(outcome: DecisionOutcome) -> None:
         raise GovernanceError(
             "decision outcome deadline exceeds the absolute run deadline"
         )
+
+
+def _validate_decision_outcome_flags(outcome: DecisionOutcome) -> None:
     for name, value in (
         ("authoritative_commit", outcome.authoritative_commit),
         ("epistemically_committed", outcome.epistemically_committed),
@@ -1741,6 +1847,9 @@ def _validate_decision_outcome(outcome: DecisionOutcome) -> None:
         raise GovernanceError("decision outcome must be terminal")
     if not outcome.delivery_eligible:
         raise GovernanceError("terminal decision outcome must be deliverable")
+
+
+def _validate_decision_outcome_lineage(outcome: DecisionOutcome) -> None:
     if outcome.candidate_id:
         require_commit_text(outcome.candidate_id, "decision outcome candidate")
     if outcome.assessment_ref:
@@ -1784,6 +1893,9 @@ def _validate_decision_outcome(outcome: DecisionOutcome) -> None:
             outcome.certificate_ref,
             "decision outcome certificate ref",
         )
+
+
+def _validate_decision_outcome_reasons(outcome: DecisionOutcome) -> None:
     if not outcome.reason_codes:
         raise GovernanceError("decision outcome requires at least one reason code")
     if (
@@ -1794,38 +1906,50 @@ def _validate_decision_outcome(outcome: DecisionOutcome) -> None:
             "deadline outcome cannot be issued before the absolute deadline"
         )
 
-    if outcome.kind is DecisionOutcomeKind.EVIDENCE_COMMIT:
-        if outcome.assurance is CommitAssurance.ADVISORY:
-            raise GovernanceError("advisory assurance cannot issue an evidence commit")
-        if not outcome.authoritative_commit or not outcome.epistemically_committed:
-            raise GovernanceError(
-                "evidence commit outcome must carry epistemic commit authority"
-            )
-        expected_scope = COMMIT_AUTHORITY_SCOPE_BY_ASSURANCE[outcome.assurance.value]
-        if outcome.authority_scope.value != expected_scope:
-            raise GovernanceError(
-                "evidence commit authority scope does not match assurance"
-            )
-        if not outcome.candidate_id:
-            raise GovernanceError("evidence commit candidate is required")
-        if not outcome.assessment_ref:
-            raise GovernanceError("evidence commit assessment_ref is required")
-        if not outcome.certificate_ref:
-            raise GovernanceError(
-                "evidence commit requires its assurance-specific commit proof"
-            )
-        if not outcome.sealed_window or not outcome.heartbeat_continuous:
-            raise GovernanceError(
-                "evidence commit requires continuous sealed-window authority"
-            )
-    else:
-        if outcome.authoritative_commit or outcome.epistemically_committed:
-            raise GovernanceError(
-                "non-commit outcome cannot carry epistemic commit authority"
-            )
-        if outcome.execution_eligible:
-            raise GovernanceError("non-commit outcome cannot authorize execution")
 
+def _validate_decision_outcome_commit_authority(outcome: DecisionOutcome) -> None:
+    if outcome.kind is DecisionOutcomeKind.EVIDENCE_COMMIT:
+        _validate_evidence_commit_outcome(outcome)
+        return
+    _validate_non_commit_decision_outcome(outcome)
+
+
+def _validate_evidence_commit_outcome(outcome: DecisionOutcome) -> None:
+    if outcome.assurance is CommitAssurance.ADVISORY:
+        raise GovernanceError("advisory assurance cannot issue an evidence commit")
+    if not outcome.authoritative_commit or not outcome.epistemically_committed:
+        raise GovernanceError(
+            "evidence commit outcome must carry epistemic commit authority"
+        )
+    expected_scope = COMMIT_AUTHORITY_SCOPE_BY_ASSURANCE[outcome.assurance.value]
+    if outcome.authority_scope.value != expected_scope:
+        raise GovernanceError(
+            "evidence commit authority scope does not match assurance"
+        )
+    if not outcome.candidate_id:
+        raise GovernanceError("evidence commit candidate is required")
+    if not outcome.assessment_ref:
+        raise GovernanceError("evidence commit assessment_ref is required")
+    if not outcome.certificate_ref:
+        raise GovernanceError(
+            "evidence commit requires its assurance-specific commit proof"
+        )
+    if not outcome.sealed_window or not outcome.heartbeat_continuous:
+        raise GovernanceError(
+            "evidence commit requires continuous sealed-window authority"
+        )
+
+
+def _validate_non_commit_decision_outcome(outcome: DecisionOutcome) -> None:
+    if outcome.authoritative_commit or outcome.epistemically_committed:
+        raise GovernanceError(
+            "non-commit outcome cannot carry epistemic commit authority"
+        )
+    if outcome.execution_eligible:
+        raise GovernanceError("non-commit outcome cannot authorize execution")
+
+
+def _validate_decision_outcome_publication(outcome: DecisionOutcome) -> None:
     if (
         outcome.kind
         in {
@@ -1838,6 +1962,9 @@ def _validate_decision_outcome(outcome: DecisionOutcome) -> None:
         raise GovernanceError(
             f"{outcome.kind.value} outcome cannot authorize publication"
         )
+
+
+def _validate_decision_outcome_authority_scope(outcome: DecisionOutcome) -> None:
     if outcome.kind is DecisionOutcomeKind.BLOCKED:
         if outcome.authority_scope is not AuthorityScope.DENIAL:
             raise GovernanceError("blocked outcome must use denial authority scope")
@@ -1848,6 +1975,9 @@ def _validate_decision_outcome(outcome: DecisionOutcome) -> None:
             )
     elif outcome.authority_scope is AuthorityScope.DENIAL:
         raise GovernanceError("denial authority scope is reserved for blocked outcome")
+
+
+def _validate_decision_outcome_fallback(outcome: DecisionOutcome) -> None:
     if outcome.kind is DecisionOutcomeKind.SAFE_FALLBACK and not outcome.candidate_id:
         raise GovernanceError("safe fallback candidate is required")
 

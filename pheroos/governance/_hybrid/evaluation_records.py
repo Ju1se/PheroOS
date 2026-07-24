@@ -1,6 +1,6 @@
-from __future__ import annotations
-
 """Canonical Hybrid Commit result and diagnostic records."""
+
+from __future__ import annotations
 
 from collections.abc import Sequence
 from dataclasses import dataclass, field
@@ -38,9 +38,7 @@ from pheroos.trace import TraceEvent
 
 
 HYBRID_COMMIT_EVALUATION_VERSION = "pheroos-hybrid-commit-evaluation-v1"
-HYBRID_COMMIT_EVALUATION_REQUEST_VERSION = (
-    "pheroos-hybrid-commit-evaluation-request-v1"
-)
+HYBRID_COMMIT_EVALUATION_REQUEST_VERSION = "pheroos-hybrid-commit-evaluation-request-v1"
 HYBRID_COMMIT_EVALUATION_DIAGNOSTIC_VERSION = (
     "pheroos-hybrid-commit-evaluation-diagnostic-v1"
 )
@@ -65,16 +63,19 @@ class HybridCommitEvaluationStatus(StrEnum):
     OUTCOME = "outcome"
     INVALID = "invalid"
 
+
 class HybridCommitAttentionStatus(StrEnum):
     """Availability of the non-authoritative attention projection."""
 
     VERIFIED = "verified"
     UNAVAILABLE = "unavailable"
 
+
 class HybridCommitDiagnosticSeverity(StrEnum):
     INFO = "info"
     WARNING = "warning"
     ERROR = "error"
+
 
 @dataclass(frozen=True)
 class HybridCommitDiagnostic:
@@ -106,6 +107,7 @@ class HybridCommitDiagnostic:
                 )
             ),
         )
+
 
 @dataclass(frozen=True)
 class HybridCommitEvaluation:
@@ -230,6 +232,7 @@ class HybridCommitEvaluation:
         object.__setattr__(self, "trace_events", tuple(self.trace_events))
         _validate_hybrid_commit_evaluation_shape(self)
 
+
 def hybrid_commit_diagnostic_payload(
     diagnostic: HybridCommitDiagnostic,
 ) -> dict[str, object]:
@@ -244,6 +247,7 @@ def hybrid_commit_diagnostic_payload(
         "references": diagnostic.references,
     }
 
+
 def hybrid_commit_evaluation_payload(
     evaluation: HybridCommitEvaluation,
 ) -> dict[str, object]:
@@ -251,6 +255,7 @@ def hybrid_commit_evaluation_payload(
         raise GovernanceError("Hybrid Commit evaluation must be canonical")
     _validate_hybrid_commit_evaluation_shape(evaluation)
     return _hybrid_commit_evaluation_payload(evaluation, include_root=True)
+
 
 def hybrid_commit_evaluation_fingerprint(
     evaluation: HybridCommitEvaluation,
@@ -260,6 +265,7 @@ def hybrid_commit_evaluation_fingerprint(
         schema=HYBRID_COMMIT_EVALUATION_VERSION,
         profile=evaluation.profile,
     )
+
 
 def _hybrid_commit_evaluation_payload(
     evaluation: HybridCommitEvaluation,
@@ -304,13 +310,13 @@ def _hybrid_commit_evaluation_payload(
         "trace_event_ids": evaluation.trace_event_ids,
         "trace_root": evaluation.trace_root,
         "diagnostics": tuple(
-            hybrid_commit_diagnostic_payload(item)
-            for item in evaluation.diagnostics
+            hybrid_commit_diagnostic_payload(item) for item in evaluation.diagnostics
         ),
     }
     if include_root:
         payload["evaluation_root"] = evaluation.evaluation_root
     return payload
+
 
 def _validate_hybrid_commit_evaluation_shape(
     evaluation: HybridCommitEvaluation,
@@ -329,12 +335,19 @@ def _validate_hybrid_commit_evaluation_shape(
     require_commit_profile(evaluation.profile, "Hybrid Commit evaluation profile")
     if type(evaluation.assurance) is not CommitAssurance:
         raise GovernanceError("Hybrid Commit evaluation assurance is invalid")
-    if evaluation.profile not in COMMIT_PROFILES_BY_ASSURANCE[evaluation.assurance.value]:
+    if (
+        evaluation.profile
+        not in COMMIT_PROFILES_BY_ASSURANCE[evaluation.assurance.value]
+    ):
         raise GovernanceError("Hybrid Commit evaluation profile/assurance mismatch")
     for name in ("protocol_id", "run_id", "target"):
-        require_commit_text(getattr(evaluation, name), f"Hybrid Commit evaluation {name}")
+        require_commit_text(
+            getattr(evaluation, name), f"Hybrid Commit evaluation {name}"
+        )
     require_commit_step(evaluation.epoch, "Hybrid Commit evaluation epoch")
-    require_commit_step(evaluation.current_step, "Hybrid Commit evaluation current_step")
+    require_commit_step(
+        evaluation.current_step, "Hybrid Commit evaluation current_step"
+    )
     require_commit_fingerprint(evaluation.request_ref, "Hybrid Commit request_ref")
     for name in (
         "binding_step_ref",
@@ -362,7 +375,9 @@ def _validate_hybrid_commit_evaluation_shape(
         if value:
             require_commit_fingerprint(value, f"Hybrid Commit evaluation {name}")
     require_commit_fingerprint(evaluation.trace_root, "Hybrid Commit trace_root")
-    require_commit_fingerprint(evaluation.evaluation_root, "Hybrid Commit evaluation_root")
+    require_commit_fingerprint(
+        evaluation.evaluation_root, "Hybrid Commit evaluation_root"
+    )
     require_commit_labels(
         evaluation.trace_event_ids,
         "Hybrid Commit evaluation trace event ids",
@@ -401,12 +416,22 @@ def _validate_hybrid_commit_evaluation_shape(
                 evaluation.replay_state_ref,
             )
         ):
-            raise GovernanceError("authoritative Hybrid evaluation lacks authority refs")
+            raise GovernanceError(
+                "authoritative Hybrid evaluation lacks authority refs"
+            )
         if evaluation.status is HybridCommitEvaluationStatus.PROGRESS:
-            if evaluation.terminal or not evaluation.progress_ref or evaluation.outcome_ref:
+            if (
+                evaluation.terminal
+                or not evaluation.progress_ref
+                or evaluation.outcome_ref
+            ):
                 raise GovernanceError("Hybrid progress envelope is inconsistent")
         else:
-            if not evaluation.terminal or not evaluation.outcome_ref or evaluation.progress_ref:
+            if (
+                not evaluation.terminal
+                or not evaluation.outcome_ref
+                or evaluation.progress_ref
+            ):
                 raise GovernanceError("Hybrid terminal envelope is inconsistent")
     elif evaluation.status is not HybridCommitEvaluationStatus.INVALID:
         raise GovernanceError("non-authoritative Hybrid evaluation must be invalid")
@@ -415,13 +440,12 @@ def _validate_hybrid_commit_evaluation_shape(
     ):
         raise GovernanceError("Hybrid evaluation trace ids do not match trace events")
 
+
 def _has_exact_attention_channel_diagnostic(
     diagnostics: Sequence[HybridCommitDiagnostic],
 ) -> bool:
     channel = tuple(
-        item
-        for item in diagnostics
-        if item.code == _ATTENTION_CHANNEL_DIAGNOSTIC_CODE
+        item for item in diagnostics if item.code == _ATTENTION_CHANNEL_DIAGNOSTIC_CODE
     )
     if len(channel) != 1:
         return False
@@ -455,6 +479,7 @@ def _diagnostic(
         references=tuple(references),
     )
 
+
 def _diagnostic_from_exception(
     code: str,
     stage: str,
@@ -471,7 +496,6 @@ def _diagnostic_from_exception(
         fatal=fatal,
         references=references,
     )
-
 
 
 __all__ = [

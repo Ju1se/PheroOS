@@ -7,7 +7,11 @@ from pheroos.protocol.models import CapabilityManifest, DriverSpec
 def check(manifest: CapabilityManifest) -> CheckResult:
     problems: list[str] = []
     for index, driver in enumerate(manifest.drivers):
-        if not driver_id(driver) or not driver_kind(driver) or not driver_version(driver):
+        if (
+            not driver_id(driver)
+            or not driver_kind(driver)
+            or not driver_version(driver)
+        ):
             problems.append(f"{index}:identity")
         if not driver_capabilities(driver):
             problems.append(f"{index}:capabilities")

@@ -1,61 +1,19 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
+from typing import cast
 
-from dataclasses import dataclass, field
-
-from enum import StrEnum
 
 from pheroos.governance._commit_state.invariants import (
-    _normalized_labels,
-    _normalized_window_bindings,
-    _require_binding,
-    _require_non_negative_integer,
-    _validate_bound_commit_policy,
-    _validate_commit_binding_values,
     _validate_profile_assurance,
 )
 
-from pheroos.governance._commit_state._liveness_contract import (
-    _validate_assessment_lineage_roots,
-    _validate_sealed_heartbeat_lineage,
-)
-
-from pheroos.governance._commit_state.payloads import (
-    build_commit_liveness_input_payload,
-    build_commit_window_state_payload,
-    build_decision_outcome_payload,
-    build_decision_progress_payload,
-)
 
 from pheroos.governance._commit_state.records import (
-    _COMMIT_FINALITY_VERIFICATION_ISSUANCE,
-    _COMMIT_LIVENESS_INPUT_ISSUANCE,
-    _COMMIT_REPLAY_STATE_ISSUANCE,
-    _COMMIT_WINDOW_SEAL_ISSUANCE,
-    _COMMIT_WINDOW_STATE_ISSUANCE,
-    _DECISION_OUTCOME_ISSUANCE,
-    _DECISION_PROGRESS_ISSUANCE,
     _LEGACY_COMMIT_REPLAY_CURSORS,
-    _LEGACY_COMMIT_WINDOW_CURSORS,
     _CommitReplayCursor,
-    _CommitWindowCursor,
 )
 
-from pheroos.governance._commit_state._replay_contract import (
-    canonical_replay_receipts as _canonical_replay_receipts_engine,
-)
-
-from pheroos.governance._commit_state._window_contract import (
-    _authoritative_commit_assessment_view,
-    _commit_window_authority_key,
-    _threshold_snapshot_bindings,
-    _validate_assessment_matches_window_head,
-    _validate_window_chain_scope,
-    _validate_window_threshold_snapshot,
-    _window_reset_reason,
-    _window_root,
-)
 
 from pheroos.governance._commit_validation import (
     require_commit_fingerprint,
@@ -64,20 +22,12 @@ from pheroos.governance._commit_validation import (
     require_commit_text,
 )
 
-from pheroos.governance._commit.common import AuthorityScope
-
-from pheroos.governance._commit.local_receipt import (
-    LocalCommitReceipt,
-    local_commit_receipt_fingerprint,
-    local_commit_receipt_is_authoritative,
-)
 
 from pheroos.governance._legacy.authority_registry import (
     LEGACY_AUTHORITY_REGISTRY,
 )
 
 from pheroos.governance.commit_numeric import (
-    checked_add,
     commit_payload_fingerprint,
 )
 
@@ -86,73 +36,19 @@ from pheroos.governance.authority import AuthorityLevel, can_verify
 from pheroos.governance.errors import GovernanceError
 
 from pheroos.protocol.commit_models import (
-    COMMIT_AUTHORITY_SCOPE_BY_ASSURANCE,
-    CollectiveCommitPolicy,
     CommitAssurance,
 )
 
 from pheroos.governance._commit_state.records import (
-    _DECISION_PROGRESS_ISSUANCE,
-    _DECISION_OUTCOME_ISSUANCE,
-    _COMMIT_WINDOW_STATE_ISSUANCE,
-    _COMMIT_WINDOW_SEAL_ISSUANCE,
-    _COMMIT_REPLAY_STATE_ISSUANCE,
-    _COMMIT_LIVENESS_INPUT_ISSUANCE,
-    _COMMIT_FINALITY_VERIFICATION_ISSUANCE,
-    _LEGACY_COMMIT_WINDOW_CURSORS,
-    _LEGACY_COMMIT_REPLAY_CURSORS,
-    _CommitWindowCursor,
-    _CommitReplayCursor,
-    DecisionPhase,
-    DecisionOutcomeKind,
-    CommitFinalityStatus,
-    ReplayNamespace,
-    DecisionProgress,
-    DecisionOutcome,
-    CommitWindowState,
-    CommitWindowSeal,
-    CommitLivenessInput,
-    CommitFinalityVerification,
     ReplayReceipt,
     CommitReplayState,
-    decision_progress_is_authoritative,
-    decision_outcome_is_authoritative,
-    _issue_commit_finality_verification,
-    commit_finality_verification_payload,
-    commit_finality_verification_fingerprint,
-    commit_finality_verification_is_authoritative,
-    _issue_decision_progress,
-    _issue_decision_outcome,
-    _issue_commit_window_state,
     _issue_commit_replay_state,
-    commit_window_state_is_authoritative,
-    commit_window_state_is_current,
     commit_replay_state_is_authoritative,
     commit_replay_state_is_current,
-    commit_window_state_payload,
-    commit_window_state_fingerprint,
-    replay_receipt_payload,
     replay_receipt_fingerprint,
-    commit_replay_state_contains,
-    commit_replay_state_matches,
-    commit_replay_state_payload,
     commit_replay_state_fingerprint,
-    _validate_commit_window_state,
-    _validate_commit_window_seal,
-    _validate_commit_liveness_input,
-    _validate_commit_finality_verification,
-    _validate_commit_replay_state,
-    _validate_replay_receipt,
     _canonical_replay_receipts,
     _commit_replay_receipt_root,
-    _validate_decision_progress,
-    _validate_decision_outcome,
-    _progress_snapshot,
-    _outcome_snapshot,
-    decision_progress_payload,
-    decision_outcome_payload,
-    decision_progress_fingerprint,
-    decision_outcome_fingerprint,
 )
 
 
@@ -239,7 +135,7 @@ def initialize_commit_replay_state(
             if not commit_replay_state_is_current(cursor.current_state):
                 raise GovernanceError("commit replay current state is unavailable")
             assert cursor.current_state is not None
-            return cursor.current_state
+            return cast(CommitReplayState, cursor.current_state)
         cursor = _CommitReplayCursor(
             authority_key=authority_key,
             base_fingerprint=base_fingerprint,
@@ -287,6 +183,52 @@ def record_commit_replay_receipts(
     incoming = _canonical_replay_receipts(receipts)
     if not incoming:
         return state
+    additions = _collect_new_commit_replay_receipts(state, incoming)
+    if not additions:
+        return state
+
+    combined = _canonical_replay_receipts((*state.receipts, *additions))
+    parent_fingerprint = commit_replay_state_fingerprint(state)
+    request_fingerprint = _commit_replay_request_fingerprint(
+        state,
+        current=current,
+        parent_fingerprint=parent_fingerprint,
+        additions=additions,
+    )
+    cursor = _require_commit_replay_cursor(state)
+    with cursor.lock:
+        cached = _cached_commit_replay_transition(
+            cursor,
+            parent_fingerprint=parent_fingerprint,
+            request_fingerprint=request_fingerprint,
+        )
+        if cached is not None:
+            return cached
+    next_state = _next_commit_replay_state(
+        state,
+        current=current,
+        parent_fingerprint=parent_fingerprint,
+        receipts=combined,
+    )
+    with cursor.lock:
+        cached = _cached_commit_replay_transition(
+            cursor,
+            parent_fingerprint=parent_fingerprint,
+            request_fingerprint=request_fingerprint,
+        )
+        if cached is not None:
+            return cached
+        next_state = _issue_commit_replay_state(next_state, cursor=cursor)
+        cursor.current_state = next_state
+        cursor.current_state_fingerprint = commit_replay_state_fingerprint(next_state)
+        cursor.transitions[parent_fingerprint] = (request_fingerprint, next_state)
+        return next_state
+
+
+def _collect_new_commit_replay_receipts(
+    state: CommitReplayState,
+    incoming: Sequence[ReplayReceipt],
+) -> tuple[ReplayReceipt, ...]:
     existing_by_nonce = {item.nonce: item for item in state.receipts}
     existing_by_id = {(item.namespace, item.record_id): item for item in state.receipts}
     existing_by_payload = {item.payload_fingerprint: item for item in state.receipts}
@@ -311,12 +253,17 @@ def record_commit_replay_receipts(
         existing_by_nonce[receipt.nonce] = receipt
         existing_by_id[(receipt.namespace, receipt.record_id)] = receipt
         existing_by_payload[receipt.payload_fingerprint] = receipt
-    if not additions:
-        return state
+    return tuple(additions)
 
-    combined = _canonical_replay_receipts((*state.receipts, *additions))
-    parent_fingerprint = commit_replay_state_fingerprint(state)
-    request_fingerprint = commit_payload_fingerprint(
+
+def _commit_replay_request_fingerprint(
+    state: CommitReplayState,
+    *,
+    current: int,
+    parent_fingerprint: str,
+    additions: Sequence[ReplayReceipt],
+) -> str:
+    return commit_payload_fingerprint(
         {
             "current_step": current,
             "parent_state_fingerprint": parent_fingerprint,
@@ -328,16 +275,37 @@ def record_commit_replay_receipts(
         schema="pheroos-commit-replay-transition-v1",
         profile=state.profile,
     )
+
+
+def _require_commit_replay_cursor(state: CommitReplayState) -> _CommitReplayCursor:
     cursor = state._cursor
     if type(cursor) is not _CommitReplayCursor:
         raise GovernanceError("commit replay cursor is invalid")
-    with cursor.lock:
-        if cursor.current_state_fingerprint != parent_fingerprint:
-            cached = cursor.transitions.get(parent_fingerprint)
-            if cached is not None and cached[0] == request_fingerprint:
-                return cached[1]
-            raise GovernanceError("commit replay state is stale or would fork")
-    next_state = CommitReplayState(
+    return cursor
+
+
+def _cached_commit_replay_transition(
+    cursor: _CommitReplayCursor,
+    *,
+    parent_fingerprint: str,
+    request_fingerprint: str,
+) -> CommitReplayState | None:
+    if cursor.current_state_fingerprint == parent_fingerprint:
+        return None
+    cached = cursor.transitions.get(parent_fingerprint)
+    if cached is not None and cached[0] == request_fingerprint:
+        return cached[1]
+    raise GovernanceError("commit replay state is stale or would fork")
+
+
+def _next_commit_replay_state(
+    state: CommitReplayState,
+    *,
+    current: int,
+    parent_fingerprint: str,
+    receipts: Sequence[ReplayReceipt],
+) -> CommitReplayState:
+    return CommitReplayState(
         chain_id=state.chain_id,
         profile=state.profile,
         assurance=state.assurance,
@@ -349,9 +317,9 @@ def record_commit_replay_receipts(
         initialized_at_step=state.initialized_at_step,
         current_step=current,
         previous_state_fingerprint=parent_fingerprint,
-        receipts=combined,
+        receipts=tuple(receipts),
         receipt_root=_commit_replay_receipt_root(
-            combined,
+            receipts,
             profile=state.profile,
         ),
         issuer_id=state.issuer_id,
@@ -359,17 +327,6 @@ def record_commit_replay_receipts(
         provenance=state.provenance,
         trace_event_id=state.trace_event_id,
     )
-    with cursor.lock:
-        if cursor.current_state_fingerprint != parent_fingerprint:
-            cached = cursor.transitions.get(parent_fingerprint)
-            if cached is not None and cached[0] == request_fingerprint:
-                return cached[1]
-            raise GovernanceError("commit replay state is stale or would fork")
-        next_state = _issue_commit_replay_state(next_state, cursor=cursor)
-        cursor.current_state = next_state
-        cursor.current_state_fingerprint = commit_replay_state_fingerprint(next_state)
-        cursor.transitions[parent_fingerprint] = (request_fingerprint, next_state)
-        return next_state
 
 
 for _name in ("initialize_commit_replay_state", "record_commit_replay_receipts"):

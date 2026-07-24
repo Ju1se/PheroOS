@@ -15,12 +15,37 @@ from pheroos.trace._contracts.base import (
     TraceEventContract,
     contract_map,
 )
+from pheroos.trace._contracts.authority import AUTHORITY_TRACE_EVENT_CONTRACTS
+from pheroos.trace._contracts.commit_gate_authority import (
+    COMMIT_GATE_AUTHORITY_TRACE_EVENT_CONTRACTS,
+)
+from pheroos.trace._contracts.commit_certificate_authority import (
+    COMMIT_CERTIFICATE_AUTHORITY_TRACE_EVENT_CONTRACTS,
+)
+from pheroos.trace._contracts.commit_decision_authority import (
+    COMMIT_DECISION_AUTHORITY_TRACE_EVENT_CONTRACTS,
+)
+from pheroos.trace._contracts.commit_evidence_authority import (
+    COMMIT_EVIDENCE_AUTHORITY_TRACE_EVENT_CONTRACTS,
+)
+from pheroos.trace._contracts.durable_authority import (
+    DURABLE_AUTHORITY_TRACE_EVENT_CONTRACTS,
+)
+from pheroos.trace._contracts.distributed_authority import (
+    DISTRIBUTED_AUTHORITY_TRACE_EVENT_CONTRACTS,
+)
 from pheroos.trace._contracts.layer import LAYER_TRACE_EVENT_CONTRACTS
+from pheroos.trace._contracts.membership_authority import (
+    MEMBERSHIP_AUTHORITY_TRACE_EVENT_CONTRACTS,
+)
 from pheroos.trace._contracts.pheromone import PHEROMONE_TRACE_EVENT_CONTRACTS
+from pheroos.trace._contracts.support_authority import (
+    SUPPORT_AUTHORITY_TRACE_EVENT_CONTRACTS,
+)
 from pheroos.trace._contracts.swarm import SWARM_TRACE_EVENT_CONTRACTS
 from pheroos.trace._validation_core import (
     DECLARED_COORDINATION_LAYER_IDS as DECLARED_COORDINATION_LAYER_IDS,
-    EXTENSION_EVENT_PREFIXES,
+    EXTENSION_EVENT_PREFIXES as EXTENSION_EVENT_PREFIXES,
     LAYER_SNAPSHOT_FIELDS as LAYER_SNAPSHOT_FIELDS,
     PHEROMONE_CLIP_PAYLOAD_VERSION as PHEROMONE_CLIP_PAYLOAD_VERSION,
     TraceEventView,
@@ -39,12 +64,21 @@ TraceEvent = TraceEventView
 # declarations.  There is intentionally no registration API.
 TRACE_EVENT_CONTRACTS: tuple[TraceEventContract, ...] = (
     *BASE_TRACE_EVENT_CONTRACTS,
+    *AUTHORITY_TRACE_EVENT_CONTRACTS,
+    *DURABLE_AUTHORITY_TRACE_EVENT_CONTRACTS,
+    *COMMIT_GATE_AUTHORITY_TRACE_EVENT_CONTRACTS,
+    *COMMIT_DECISION_AUTHORITY_TRACE_EVENT_CONTRACTS,
+    *COMMIT_EVIDENCE_AUTHORITY_TRACE_EVENT_CONTRACTS,
+    *COMMIT_CERTIFICATE_AUTHORITY_TRACE_EVENT_CONTRACTS,
+    *DISTRIBUTED_AUTHORITY_TRACE_EVENT_CONTRACTS,
+    *MEMBERSHIP_AUTHORITY_TRACE_EVENT_CONTRACTS,
+    *SUPPORT_AUTHORITY_TRACE_EVENT_CONTRACTS,
     *SWARM_TRACE_EVENT_CONTRACTS,
     *PHEROMONE_TRACE_EVENT_CONTRACTS,
     *LAYER_TRACE_EVENT_CONTRACTS,
 )
-_TRACE_EVENT_CONTRACTS_BY_TYPE: Mapping[str, TraceEventContract] = (
-    MappingProxyType(dict(contract_map(TRACE_EVENT_CONTRACTS)))
+_TRACE_EVENT_CONTRACTS_BY_TYPE: Mapping[str, TraceEventContract] = MappingProxyType(
+    dict(contract_map(TRACE_EVENT_CONTRACTS))
 )
 VALID_EVENT_TYPES = frozenset(_TRACE_EVENT_CONTRACTS_BY_TYPE)
 EVENT_LINEAGE_CONTRACTS: Mapping[str, frozenset[str]] = MappingProxyType(

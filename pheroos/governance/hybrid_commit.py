@@ -44,7 +44,11 @@ if (
     raise RuntimeError("Hybrid Commit facade constants do not match the engine")
 
 
-def evaluate_hybrid_commit_step(*, request: object):
+# The missing runtime return annotation is frozen in the Draft public shape;
+# the precise ignore preserves that ABI while the private owner stays typed.
+def evaluate_hybrid_commit_step(  # type: ignore[no-untyped-def]
+    *, request: object
+):
     """Run the sole total Hybrid Commit evaluation engine."""
 
     return _evaluate_hybrid_commit_step(request)

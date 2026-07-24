@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
+from typing import cast
 
 from pheroos.governance._commit.invariants import _require_authoritative_heads
 from pheroos.governance._commit.records import (
@@ -87,6 +88,108 @@ def issue_commit_evaluation_context(
     provenance: str,
     trace_event_id: str,
 ) -> CommitEvaluationContext:
+    policy = _validate_commit_context_manifest(manifest)
+    (
+        normalized_profile,
+        normalized_assurance,
+        normalized_target,
+        normalized_run,
+        normalized_epoch,
+        current,
+    ) = _normalize_commit_context_bindings(
+        policy=policy,
+        profile=profile,
+        assurance=assurance,
+        target=target,
+        run_id=run_id,
+        epoch=epoch,
+        current_step=current_step,
+        authority=authority,
+    )
+    manifest_root = commit_manifest_fingerprint(manifest, profile=normalized_profile)
+    policy_root = commit_policy_fingerprint(policy, profile=normalized_profile)
+    protocol_id = manifest.protocol.id
+    _require_authoritative_heads(
+        policy=policy,
+        profile=normalized_profile,
+        assurance=normalized_assurance,
+        manifest_root=manifest_root,
+        commit_policy_root=policy_root,
+        protocol_id=protocol_id,
+        run_id=normalized_run,
+        target=normalized_target,
+        epoch=normalized_epoch,
+        risk_chain_state=risk_chain_state,
+        risk_assessment=risk_assessment,
+        threshold_snapshot=threshold_snapshot,
+        membership_snapshot=membership_snapshot,
+        membership_epoch_state=membership_epoch_state,
+        replay_state=replay_state,
+        support_replay_state=support_replay_state,
+        current_step=current,
+    )
+    claims, substantive_ids, fallback_id = _commit_context_candidate_claims(
+        manifest,
+        policy=policy,
+        target=normalized_target,
+        candidate_claims=candidate_claims,
+    )
+    expiry = _commit_context_expiry(
+        risk_chain_state=risk_chain_state,
+        risk_assessment=risk_assessment,
+        threshold_snapshot=threshold_snapshot,
+        membership_snapshot=membership_snapshot,
+        membership_epoch_state=membership_epoch_state,
+        current_step=current,
+    )
+    context = CommitEvaluationContext(
+        context_id=require_commit_text(context_id, "commit context context_id"),
+        profile=normalized_profile,
+        assurance=normalized_assurance,
+        manifest_root=manifest_root,
+        commit_policy_root=policy_root,
+        protocol_id=protocol_id,
+        run_id=normalized_run,
+        target=normalized_target,
+        epoch=normalized_epoch,
+        candidate_claims=claims,
+        substantive_candidate_ids=substantive_ids,
+        fallback_candidate_id=fallback_id,
+        risk_chain_state_fingerprint=risk_assessment_chain_state_fingerprint(
+            risk_chain_state
+        ),
+        risk_assessment_fingerprint=risk_assessment_fingerprint(risk_assessment),
+        risk_policy_root=risk_assessment.risk_policy_root,
+        threshold_fingerprint=commit_threshold_snapshot_fingerprint(threshold_snapshot),
+        membership_snapshot_fingerprint=eligible_principal_snapshot_fingerprint(
+            membership_snapshot
+        ),
+        membership_epoch_state_fingerprint=(
+            eligible_membership_epoch_state_fingerprint(membership_epoch_state)
+        ),
+        membership_root=membership_snapshot.membership_root,
+        replay_state_fingerprint=commit_replay_state_fingerprint(replay_state),
+        replay_receipt_root=replay_state.receipt_root,
+        support_replay_state_fingerprint=(
+            support_lease_replay_state_fingerprint(support_replay_state)
+        ),
+        support_replay_root=support_replay_state.replay_root,
+        issuer_id=require_commit_text(issuer_id, "commit context issuer_id"),
+        authority=authority,
+        issued_at_step=current,
+        expires_at_step=expiry,
+        provenance=require_commit_text(provenance, "commit context provenance"),
+        trace_event_id=require_commit_text(
+            trace_event_id,
+            "commit context trace_event_id",
+        ),
+    )
+    return _register_commit_evaluation_context(context)
+
+
+def _validate_commit_context_manifest(
+    manifest: CapabilityManifest,
+) -> CollectiveCommitPolicy:
     if type(manifest) is not CapabilityManifest:
         raise CommitEvaluationError(
             CommitReasonCode.INVALID_MANIFEST,
@@ -108,12 +211,29 @@ def issue_commit_evaluation_context(
             CommitReasonCode.INVALID_MANIFEST,
             "commit context requires an active collective commit policy",
         )
+    return policy
+
+
+def _normalize_commit_context_bindings(
+    *,
+    policy: CollectiveCommitPolicy,
+    profile: str,
+    assurance: CommitAssurance,
+    target: str,
+    run_id: str,
+    epoch: int,
+    current_step: int,
+    authority: object,
+) -> tuple[str, CommitAssurance, str, str, int, int]:
     normalized_profile = require_commit_profile(profile, "commit context profile")
     normalized_assurance = require_commit_assurance(
         assurance,
         "commit context assurance",
     )
-    if normalized_profile not in COMMIT_PROFILES_BY_ASSURANCE[normalized_assurance.value]:
+    if (
+        normalized_profile
+        not in COMMIT_PROFILES_BY_ASSURANCE[normalized_assurance.value]
+    ):
         raise CommitEvaluationError(
             CommitReasonCode.INVALID_MANIFEST,
             "commit context profile and assurance do not match",
@@ -137,34 +257,27 @@ def issue_commit_evaluation_context(
             CommitReasonCode.INVALID_CONTEXT,
             "commit context issuance requires governance authority",
         )
-
-    manifest_root = commit_manifest_fingerprint(manifest, profile=normalized_profile)
-    policy_root = commit_policy_fingerprint(policy, profile=normalized_profile)
-    protocol_id = manifest.protocol.id
-    _require_authoritative_heads(
-        policy=policy,
-        profile=normalized_profile,
-        assurance=normalized_assurance,
-        manifest_root=manifest_root,
-        commit_policy_root=policy_root,
-        protocol_id=protocol_id,
-        run_id=normalized_run,
-        target=normalized_target,
-        epoch=normalized_epoch,
-        risk_chain_state=risk_chain_state,
-        risk_assessment=risk_assessment,
-        threshold_snapshot=threshold_snapshot,
-        membership_snapshot=membership_snapshot,
-        membership_epoch_state=membership_epoch_state,
-        replay_state=replay_state,
-        support_replay_state=support_replay_state,
-        current_step=current,
+    return (
+        normalized_profile,
+        normalized_assurance,
+        normalized_target,
+        normalized_run,
+        normalized_epoch,
+        current,
     )
 
+
+def _commit_context_candidate_claims(
+    manifest: CapabilityManifest,
+    *,
+    policy: CollectiveCommitPolicy,
+    target: str,
+    candidate_claims: Mapping[str, str],
+) -> tuple[tuple[CandidateClaimBinding, ...], tuple[str, ...], str]:
     declared = tuple(
         candidate
         for candidate in manifest.protocol.candidates
-        if candidate.target == normalized_target
+        if candidate.target == target
     )
     if not isinstance(candidate_claims, Mapping):
         raise CommitEvaluationError(
@@ -199,15 +312,25 @@ def issue_commit_evaluation_context(
             "commit context does not bind the declared safe fallback",
         )
     substantive_ids = tuple(
-        item.candidate_id
-        for item in claims
-        if item.candidate_id != fallback_id
+        item.candidate_id for item in claims if item.candidate_id != fallback_id
     )
     if not substantive_ids:
         raise CommitEvaluationError(
             CommitReasonCode.CANDIDATE_COVERAGE_MISMATCH,
             "commit context requires a substantive candidate",
         )
+    return claims, substantive_ids, fallback_id
+
+
+def _commit_context_expiry(
+    *,
+    risk_chain_state: RiskAssessmentChainState,
+    risk_assessment: RiskAssessment,
+    threshold_snapshot: CommitThresholdSnapshot,
+    membership_snapshot: EligiblePrincipalSnapshot,
+    membership_epoch_state: EligibleMembershipEpochState,
+    current_step: int,
+) -> int:
     expiry = min(
         risk_chain_state.expires_at_step,
         risk_assessment.expires_at_step,
@@ -215,55 +338,17 @@ def issue_commit_evaluation_context(
         membership_snapshot.expires_at_step,
         membership_epoch_state.expires_at_step,
     )
-    if current >= expiry:
+    if current_step >= expiry:
         raise CommitEvaluationError(
             CommitReasonCode.CONTEXT_EXPIRED,
             "commit context authority inputs are no longer fresh",
         )
-    context = CommitEvaluationContext(
-        context_id=require_commit_text(context_id, "commit context context_id"),
-        profile=normalized_profile,
-        assurance=normalized_assurance,
-        manifest_root=manifest_root,
-        commit_policy_root=policy_root,
-        protocol_id=protocol_id,
-        run_id=normalized_run,
-        target=normalized_target,
-        epoch=normalized_epoch,
-        candidate_claims=claims,
-        substantive_candidate_ids=substantive_ids,
-        fallback_candidate_id=fallback_id,
-        risk_chain_state_fingerprint=risk_assessment_chain_state_fingerprint(
-            risk_chain_state
-        ),
-        risk_assessment_fingerprint=risk_assessment_fingerprint(risk_assessment),
-        risk_policy_root=risk_assessment.risk_policy_root,
-        threshold_fingerprint=commit_threshold_snapshot_fingerprint(
-            threshold_snapshot
-        ),
-        membership_snapshot_fingerprint=eligible_principal_snapshot_fingerprint(
-            membership_snapshot
-        ),
-        membership_epoch_state_fingerprint=(
-            eligible_membership_epoch_state_fingerprint(membership_epoch_state)
-        ),
-        membership_root=membership_snapshot.membership_root,
-        replay_state_fingerprint=commit_replay_state_fingerprint(replay_state),
-        replay_receipt_root=replay_state.receipt_root,
-        support_replay_state_fingerprint=(
-            support_lease_replay_state_fingerprint(support_replay_state)
-        ),
-        support_replay_root=support_replay_state.replay_root,
-        issuer_id=require_commit_text(issuer_id, "commit context issuer_id"),
-        authority=authority,
-        issued_at_step=current,
-        expires_at_step=expiry,
-        provenance=require_commit_text(provenance, "commit context provenance"),
-        trace_event_id=require_commit_text(
-            trace_event_id,
-            "commit context trace_event_id",
-        ),
-    )
+    return expiry
+
+
+def _register_commit_evaluation_context(
+    context: CommitEvaluationContext,
+) -> CommitEvaluationContext:
     context_fingerprint = commit_evaluation_context_fingerprint(context)
     authority_key = _commit_context_authority_key(context)
     claim_authority_key = _commit_context_claim_authority_key(context)
@@ -290,7 +375,7 @@ def issue_commit_evaluation_context(
                 existing_fingerprint == context_fingerprint
                 and commit_evaluation_context_is_authoritative(existing_context)
             ):
-                return existing_context
+                return cast(CommitEvaluationContext, existing_context)
             raise CommitEvaluationError(
                 CommitReasonCode.CONTEXT_AUTHORITY_FORK,
                 "commit context authority heads already have a conflicting context",
@@ -314,6 +399,7 @@ def issue_commit_evaluation_context(
             claim_authority_fingerprint,
         )
         return context
+
 
 def commit_evaluation_context_payload(
     context: CommitEvaluationContext,
@@ -344,9 +430,7 @@ def commit_evaluation_context_payload(
             context.membership_epoch_state_fingerprint
         ),
         "membership_root": context.membership_root,
-        "membership_snapshot_fingerprint": (
-            context.membership_snapshot_fingerprint
-        ),
+        "membership_snapshot_fingerprint": (context.membership_snapshot_fingerprint),
         "profile": context.profile,
         "protocol_id": context.protocol_id,
         "provenance": context.provenance,
@@ -358,13 +442,12 @@ def commit_evaluation_context_payload(
         "run_id": context.run_id,
         "substantive_candidate_ids": context.substantive_candidate_ids,
         "support_replay_root": context.support_replay_root,
-        "support_replay_state_fingerprint": (
-            context.support_replay_state_fingerprint
-        ),
+        "support_replay_state_fingerprint": (context.support_replay_state_fingerprint),
         "target": context.target,
         "threshold_fingerprint": context.threshold_fingerprint,
         "trace_event_id": context.trace_event_id,
     }
+
 
 def commit_evaluation_context_fingerprint(
     context: CommitEvaluationContext,
@@ -374,6 +457,7 @@ def commit_evaluation_context_fingerprint(
         schema="pheroos-commit-evaluation-context-v1",
         profile=context.profile,
     )
+
 
 def commit_evaluation_context_is_authoritative(context: object) -> bool:
     if type(context) is not CommitEvaluationContext:
@@ -404,6 +488,7 @@ def commit_evaluation_context_is_authoritative(context: object) -> bool:
     except Exception:
         return False
 
+
 def _commit_context_authority_key(context: CommitEvaluationContext) -> str:
     return commit_payload_fingerprint(
         {
@@ -423,9 +508,7 @@ def _commit_context_authority_key(context: CommitEvaluationContext) -> str:
             "replay_receipt_root": context.replay_receipt_root,
             "replay_state_fingerprint": context.replay_state_fingerprint,
             "risk_assessment_fingerprint": context.risk_assessment_fingerprint,
-            "risk_chain_state_fingerprint": (
-                context.risk_chain_state_fingerprint
-            ),
+            "risk_chain_state_fingerprint": (context.risk_chain_state_fingerprint),
             "risk_policy_root": context.risk_policy_root,
             "run_id": context.run_id,
             "support_replay_root": context.support_replay_root,
@@ -438,6 +521,7 @@ def _commit_context_authority_key(context: CommitEvaluationContext) -> str:
         schema="pheroos-commit-evaluation-context-authority-key-v1",
         profile=context.profile,
     )
+
 
 def _commit_context_claim_authority_key(
     context: CommitEvaluationContext,
@@ -456,6 +540,7 @@ def _commit_context_claim_authority_key(
         schema="pheroos-commit-candidate-claim-authority-key-v1",
         profile=context.profile,
     )
+
 
 def _commit_context_claims_fingerprint(
     context: CommitEvaluationContext,
@@ -476,6 +561,7 @@ def _commit_context_claims_fingerprint(
         schema="pheroos-commit-candidate-claims-v1",
         profile=context.profile,
     )
+
 
 _PUBLIC_MODULE = "pheroos.governance.commit"
 for _public_object in (

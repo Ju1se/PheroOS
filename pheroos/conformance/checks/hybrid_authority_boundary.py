@@ -2,11 +2,13 @@ from __future__ import annotations
 
 from dataclasses import replace
 
-from pheroos.conformance.checks._manifest import active_target, candidate_set, exercise_candidate_id
+from pheroos.conformance.checks._manifest import (
+    active_target,
+    candidate_set,
+    exercise_candidate_id,
+)
 from pheroos.conformance.report import CheckResult
 from pheroos.governance import (
-    Candidate,
-    CandidateSet,
     EvidenceGraph,
     EvidenceNode,
     LayerCoordinationPolicy,
@@ -18,7 +20,11 @@ from pheroos.governance import (
     output_authorized,
 )
 from pheroos.governance.errors import GovernanceError
-from pheroos.protocol.models import CapabilityManifest, collective_fallback_id, has_hybrid_pheromone_features
+from pheroos.protocol.models import (
+    CapabilityManifest,
+    collective_fallback_id,
+    has_hybrid_pheromone_features,
+)
 
 
 def check(manifest: CapabilityManifest) -> CheckResult:
@@ -32,7 +38,9 @@ def check(manifest: CapabilityManifest) -> CheckResult:
     candidates = candidate_set(manifest)
     candidate_id = exercise_candidate_id(manifest)
     if candidate_id is None:
-        return CheckResult("hybrid_authority_boundary", False, "active_target_candidates")
+        return CheckResult(
+            "hybrid_authority_boundary", False, "active_target_candidates"
+        )
     layer_state = evaluate_layer_coordination(
         candidate_set=candidates,
         target=target,
@@ -62,7 +70,12 @@ def check(manifest: CapabilityManifest) -> CheckResult:
     try:
         evaluate_collective_decision(
             candidate_set=candidates,
-            policy=replace(policy, layer_coordination_enabled=True, min_independent_scouts=1, quorum_threshold=1),
+            policy=replace(
+                policy,
+                layer_coordination_enabled=True,
+                min_independent_scouts=1,
+                quorum_threshold=1,
+            ),
             target=target,
             scout_reports=[],
             layer_coordination_state=layer_state,
@@ -72,11 +85,22 @@ def check(manifest: CapabilityManifest) -> CheckResult:
         rejects_forged_layer_state = True
     else:
         rejects_forged_layer_state = False
-    uncommitted = QuorumDecision(target=target, candidate_id=candidate_id, committed=False, reason="proposal_only")
+    uncommitted = QuorumDecision(
+        target=target,
+        candidate_id=candidate_id,
+        committed=False,
+        reason="proposal_only",
+    )
     authorized = output_authorized(
         OutputContract(),
         uncommitted,
-        EvidenceGraph([EvidenceNode("evidence:proposal", "proposal is not evidence", provenance="")]),
+        EvidenceGraph(
+            [
+                EvidenceNode(
+                    "evidence:proposal", "proposal is not evidence", provenance=""
+                )
+            ]
+        ),
         [],
         publication_permission=True,
         candidate_set=candidates,

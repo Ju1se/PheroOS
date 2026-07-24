@@ -182,9 +182,7 @@ def verify_observation(
         principal_verification=principal,
         evidence_policy=policy or evidence_policy(),
         quality_ppm=(
-            attestation.reported_quality_ppm
-            if quality_ppm is None
-            else quality_ppm
+            attestation.reported_quality_ppm if quality_ppm is None else quality_ppm
         ),
         relevance_ppm=(
             attestation.reported_relevance_ppm
@@ -370,7 +368,9 @@ def test_observation_proposal_is_governance_verified_and_tamper_evident() -> Non
     assert verified_observation_is_authoritative(observation) is False
 
 
-def test_observation_verification_rejects_wrong_binding_ttl_authority_and_replay() -> None:
+def test_observation_verification_rejects_wrong_binding_ttl_authority_and_replay() -> (
+    None
+):
     first = verify_observation(
         observation_attestation("observation:first", principal_id="principal:first")
     )
@@ -439,7 +439,9 @@ def test_observation_verification_rejects_wrong_binding_ttl_authority_and_replay
         )
 
 
-def test_identical_observation_replay_is_idempotent_but_verified_value_conflict_fails() -> None:
+def test_identical_observation_replay_is_idempotent_but_verified_value_conflict_fails() -> (
+    None
+):
     attestation = observation_attestation(
         "observation:idempotent",
         principal_id="principal:idempotent",
@@ -525,7 +527,9 @@ def test_observation_freshness_is_capped_by_principal_verification_expiry() -> N
     )
 
 
-def test_rebutted_counterevidence_requires_independent_evidence_and_resolution() -> None:
+def test_rebutted_counterevidence_requires_independent_evidence_and_resolution() -> (
+    None
+):
     counter = verify_observation(
         observation_attestation(
             "observation:counter",
@@ -589,7 +593,9 @@ def test_rebutted_counterevidence_requires_independent_evidence_and_resolution()
     assert counterevidence_disposition_is_authoritative(replace(disposition)) is False
 
 
-def test_fake_rebuttal_cannot_relabel_the_same_principal_cluster_as_independent() -> None:
+def test_fake_rebuttal_cannot_relabel_the_same_principal_cluster_as_independent() -> (
+    None
+):
     principal = principal_verification(
         "principal:self-rebuttal",
         cluster_id="cluster:self-rebuttal",
@@ -684,7 +690,9 @@ def test_multiple_rebuttals_must_be_pairwise_cluster_independent() -> None:
         )
 
 
-def test_challenge_requires_declared_executed_category_and_actual_result_evidence() -> None:
+def test_challenge_requires_declared_executed_category_and_actual_result_evidence() -> (
+    None
+):
     with pytest.raises(GovernanceError, match="not declared"):
         verify_challenge(
             challenge_attestation(
@@ -721,9 +729,7 @@ def test_challenge_requires_declared_executed_category_and_actual_result_evidenc
         principal_id="principal:challenge-found",
         category="falsification",
         result=ChallengeResult.COUNTEREVIDENCE_FOUND,
-        result_observation_fingerprints=(
-            verified_observation_fingerprint(counter),
-        ),
+        result_observation_fingerprints=(verified_observation_fingerprint(counter),),
     )
     with pytest.raises(GovernanceError, match="do not match"):
         verify_challenge(found, result_observations=())

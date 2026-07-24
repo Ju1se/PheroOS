@@ -1,13 +1,16 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
+from typing import cast
 
 from dataclasses import dataclass, field
 
 
 from pheroos.governance._distributed.invariants import (
     _coerce_assurance,
+    _construct_dataclass,
     _public_dataclass_payload,
+    _require_mapping,
     _strict_dataclass_payload,
     _validate_distributed_policy,
 )
@@ -280,7 +283,8 @@ def issue_distributed_commit_proposal(
         schema=DISTRIBUTED_PROPOSAL_VERSION,
         profile=receipt.profile,
     )
-    proposal = DistributedCommitProposal(**body, proposal_digest=digest)
+    body["proposal_digest"] = digest
+    proposal = _construct_dataclass(DistributedCommitProposal, body)
     object.__setattr__(
         proposal,
         "_issuance",
@@ -302,7 +306,7 @@ def issue_distributed_commit_proposal(
                 raise GovernanceError(
                     "distributed proposal id replay has a different body"
                 )
-            return existing
+            return cast(DistributedCommitProposal, existing)
         registry.set(_LEGACY_PROPOSALS_BY_ID, key, proposal)
         return proposal
 
@@ -339,12 +343,17 @@ def distributed_commit_value_root(
     value: DistributedCommitProposal | Mapping[str, object],
 ) -> str:
     if type(value) is DistributedCommitProposal:
+        assert isinstance(value, DistributedCommitProposal)
         payload = distributed_commit_value_payload(value)
         profile = value.profile
     else:
-        payload = _validate_distributed_commit_value_payload(value)
-        profile = payload["profile"]
-        assert type(profile) is str
+        payload = _validate_distributed_commit_value_payload(
+            _require_mapping(value, "distributed commit value payload")
+        )
+        raw_profile = payload["profile"]
+        if not isinstance(raw_profile, str):
+            raise GovernanceError("distributed commit value profile is invalid")
+        profile = raw_profile
     return commit_payload_fingerprint(
         payload,
         schema=DISTRIBUTED_COMMIT_VALUE_VERSION,
@@ -387,7 +396,7 @@ def distributed_commit_proposal_from_payload(
     )
     values["assurance"] = _coerce_assurance(values["assurance"])
     try:
-        return DistributedCommitProposal(**values)
+        return _construct_dataclass(DistributedCommitProposal, values)
     except (TypeError, ValueError, GovernanceError) as exc:
         raise GovernanceError(
             f"distributed proposal payload is invalid: {exc}"
@@ -405,12 +414,16 @@ def verify_distributed_commit_proposal(
     expected_commit_value_root: str = "",
 ) -> bool:
     try:
-        proposal = (
-            proposal_or_payload
-            if type(proposal_or_payload) is DistributedCommitProposal
-            else distributed_commit_proposal_from_payload(proposal_or_payload)
-        )
-        assert type(proposal) is DistributedCommitProposal
+        if type(proposal_or_payload) is DistributedCommitProposal:
+            assert isinstance(proposal_or_payload, DistributedCommitProposal)
+            proposal = proposal_or_payload
+        else:
+            proposal = distributed_commit_proposal_from_payload(
+                _require_mapping(
+                    proposal_or_payload,
+                    "distributed proposal payload",
+                )
+            )
         distributed = _validate_distributed_policy(
             commit_policy,
             profile=proposal.profile,

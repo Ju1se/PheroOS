@@ -1,4 +1,9 @@
-from pheroos.protocol.models import CandidateSpec, ProtocolManifest, QuorumPolicy, TargetSpec
+from pheroos.protocol.models import (
+    CandidateSpec,
+    ProtocolManifest,
+    QuorumPolicy,
+    TargetSpec,
+)
 from pheroos.protocol.validation import validate_capability_manifest
 from pheroos.protocol.models import CapabilityManifest
 
@@ -9,9 +14,13 @@ def test_candidate_must_reference_declared_target() -> None:
         id="toy.invalid",
         targets=[TargetSpec(id="decision:review")],
         candidates=[CandidateSpec(id="candidate:accept", target="decision:missing")],
-        quorum_policy=QuorumPolicy(target="decision:review", fallback_candidate="candidate:accept"),
+        quorum_policy=QuorumPolicy(
+            target="decision:review", fallback_candidate="candidate:accept"
+        ),
     )
-    manifest = CapabilityManifest(id="toy", name="Toy", version="0.1.0", protocol=protocol)
+    manifest = CapabilityManifest(
+        id="toy", name="Toy", version="0.1.0", protocol=protocol
+    )
 
     codes = {item.code for item in validate_capability_manifest(manifest)}
 
@@ -27,9 +36,13 @@ def test_candidate_ids_must_be_unique() -> None:
             CandidateSpec(id="candidate:accept", target="decision:review"),
             CandidateSpec(id="candidate:accept", target="decision:review"),
         ],
-        quorum_policy=QuorumPolicy(target="decision:review", fallback_candidate="candidate:accept"),
+        quorum_policy=QuorumPolicy(
+            target="decision:review", fallback_candidate="candidate:accept"
+        ),
     )
-    manifest = CapabilityManifest(id="toy", name="Toy", version="0.1.0", protocol=protocol)
+    manifest = CapabilityManifest(
+        id="toy", name="Toy", version="0.1.0", protocol=protocol
+    )
 
     codes = {item.code for item in validate_capability_manifest(manifest)}
 

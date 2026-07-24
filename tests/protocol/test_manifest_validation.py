@@ -4,7 +4,11 @@ from pathlib import Path
 
 import pytest
 
-from pheroos.protocol import DriverSpec, load_capability_manifest, validate_capability_manifest
+from pheroos.protocol import (
+    DriverSpec,
+    load_capability_manifest,
+    validate_capability_manifest,
+)
 from pheroos.protocol.manifest import capability_manifest_from_dict
 from pheroos.protocol.schema import capability_schema, capability_schema_v2
 from pheroos.protocol.schema_validation import validate_json_schema
@@ -26,7 +30,9 @@ def test_manifest_schema_and_loader_reject_unsupported_protocol_versions(
     payload["protocol"]["protocol_version"] = protocol_version
 
     generated_errors = validate_json_schema(payload, capability_schema_v2())
-    checked_in_schema = json.loads(Path("schemas/capability-v2.schema.json").read_text())
+    checked_in_schema = json.loads(
+        Path("schemas/capability-v2.schema.json").read_text()
+    )
     artifact_errors = validate_json_schema(payload, checked_in_schema)
 
     expected_path = "$.protocol.protocol_version"
@@ -59,7 +65,9 @@ def test_typed_manifest_validation_rejects_unsupported_protocol_versions(
     ]
 
 
-def test_unknown_protocol_version_combined_with_invalid_shape_reports_all_paths() -> None:
+def test_unknown_protocol_version_combined_with_invalid_shape_reports_all_paths() -> (
+    None
+):
     payload = json.loads(Path("examples/toy-protocol/capability.json").read_text())
     payload["protocol"]["protocol_version"] = "pheroos.protocol.v999"
     payload["protocol"]["quorum_policy"]["commit_threshold"] = 0
@@ -69,7 +77,9 @@ def test_unknown_protocol_version_combined_with_invalid_shape_reports_all_paths(
         "$.protocol.quorum_policy.commit_threshold",
     }
     generated_errors = validate_json_schema(payload, capability_schema_v2())
-    checked_in_schema = json.loads(Path("schemas/capability-v2.schema.json").read_text())
+    checked_in_schema = json.loads(
+        Path("schemas/capability-v2.schema.json").read_text()
+    )
     artifact_errors = validate_json_schema(payload, checked_in_schema)
 
     for expected_path in expected_paths:
@@ -111,7 +121,9 @@ def test_manifest_loader_preserves_collective_policy_extensions() -> None:
     payload["protocol"]["collective_decision_policy"]["extensions"] = {
         "x-collective": {"memory": "external-runtime-owned"}
     }
-    payload["protocol"]["collective_decision_policy"]["x-acme.policy"] = {"mode": "observed"}
+    payload["protocol"]["collective_decision_policy"]["x-acme.policy"] = {
+        "mode": "observed"
+    }
 
     manifest = capability_manifest_from_dict(payload)
 
@@ -119,7 +131,9 @@ def test_manifest_loader_preserves_collective_policy_extensions() -> None:
     assert manifest.protocol.collective_decision_policy.extensions["x-collective"] == {
         "memory": "external-runtime-owned"
     }
-    assert manifest.protocol.collective_decision_policy.extensions["x-acme.policy"] == {"mode": "observed"}
+    assert manifest.protocol.collective_decision_policy.extensions["x-acme.policy"] == {
+        "mode": "observed"
+    }
 
 
 def test_e2e_manifest_loads_provider_neutral_driver_specs() -> None:
@@ -156,7 +170,9 @@ def test_protocol_validation_reports_secret_like_extension_fields() -> None:
     ("mutate", "expected_detail"),
     [
         (
-            lambda payload: payload["protocol"]["quorum_policy"].__setitem__("commit_threshold", 0),
+            lambda payload: payload["protocol"]["quorum_policy"].__setitem__(
+                "commit_threshold", 0
+            ),
             "$.protocol.quorum_policy.commit_threshold",
         ),
         (
@@ -164,24 +180,34 @@ def test_protocol_validation_reports_secret_like_extension_fields() -> None:
             "$.protocol.targets[1]",
         ),
         (
-            lambda payload: payload["drivers"].__getitem__(0).__setitem__("capabilities", "not-list"),
+            lambda payload: payload["drivers"]
+            .__getitem__(0)
+            .__setitem__("capabilities", "not-list"),
             "$.drivers[0].capabilities",
         ),
         (
-            lambda payload: payload["protocol"]["candidates"].__getitem__(0).__setitem__("safe_fallback", "false"),
+            lambda payload: payload["protocol"]["candidates"]
+            .__getitem__(0)
+            .__setitem__("safe_fallback", "false"),
             "$.protocol.candidates[0].safe_fallback",
         ),
         (
-            lambda payload: payload["protocol"]["trace_policy"].__setitem__("required_events", "commit"),
+            lambda payload: payload["protocol"]["trace_policy"].__setitem__(
+                "required_events", "commit"
+            ),
             "$.protocol.trace_policy.required_events",
         ),
         (
-            lambda payload: payload["protocol"]["targets"].__getitem__(0).__setitem__("unexpected", "value"),
+            lambda payload: payload["protocol"]["targets"]
+            .__getitem__(0)
+            .__setitem__("unexpected", "value"),
             "$.protocol.targets[0].unexpected",
         ),
     ],
 )
-def test_manifest_loader_rejects_invalid_manifest_shape(mutate, expected_detail: str) -> None:
+def test_manifest_loader_rejects_invalid_manifest_shape(
+    mutate, expected_detail: str
+) -> None:
     payload = json.loads(Path("examples/e2e-protocol/capability.json").read_text())
     mutate(payload)
 
@@ -192,9 +218,13 @@ def test_manifest_loader_rejects_invalid_manifest_shape(mutate, expected_detail:
 
 
 @pytest.mark.parametrize("constant", ["NaN", "Infinity", "-Infinity"])
-def test_manifest_file_loader_rejects_non_finite_json_constants(tmp_path: Path, constant: str) -> None:
+def test_manifest_file_loader_rejects_non_finite_json_constants(
+    tmp_path: Path, constant: str
+) -> None:
     raw = Path("examples/hybrid-pheromone-protocol/capability.json").read_text()
-    raw = raw.replace('"pheromone_evaporation_rate": 0.2', f'"pheromone_evaporation_rate": {constant}')
+    raw = raw.replace(
+        '"pheromone_evaporation_rate": 0.2', f'"pheromone_evaporation_rate": {constant}'
+    )
     path = tmp_path / "capability.json"
     path.write_text(raw)
 
@@ -241,23 +271,33 @@ def test_manifest_loader_rejects_exponent_overflow_in_extension_metadata(
     ("mutate", "expected_path"),
     [
         (
-            lambda policy: policy["pheromone_kind_profiles"].__setitem__("positive", "not-an-object"),
+            lambda policy: policy["pheromone_kind_profiles"].__setitem__(
+                "positive", "not-an-object"
+            ),
             "$.protocol.collective_decision_policy.pheromone_kind_profiles.positive",
         ),
         (
-            lambda policy: policy["pheromone_kind_profiles"]["positive"].__setitem__("weight", True),
+            lambda policy: policy["pheromone_kind_profiles"]["positive"].__setitem__(
+                "weight", True
+            ),
             "$.protocol.collective_decision_policy.pheromone_kind_profiles.positive.weight",
         ),
         (
-            lambda policy: policy["layer_default_weights"].__setitem__("learned", "1.0"),
+            lambda policy: policy["layer_default_weights"].__setitem__(
+                "learned", "1.0"
+            ),
             "$.protocol.collective_decision_policy.layer_default_weights.learned",
         ),
         (
-            lambda policy: policy["layer_weight_bounds"].__setitem__("learned", [0, 1, 2]),
+            lambda policy: policy["layer_weight_bounds"].__setitem__(
+                "learned", [0, 1, 2]
+            ),
             "$.protocol.collective_decision_policy.layer_weight_bounds.learned",
         ),
         (
-            lambda policy: policy["policy_adjustment_bounds"].__setitem__("manifest", [0, 1]),
+            lambda policy: policy["policy_adjustment_bounds"].__setitem__(
+                "manifest", [0, 1]
+            ),
             "$.protocol.collective_decision_policy.policy_adjustment_bounds.manifest",
         ),
         (
@@ -273,7 +313,9 @@ def test_hybrid_raw_json_shape_is_rejected_consistently_by_schema_and_loader(
     mutate,
     expected_path: str,
 ) -> None:
-    payload = json.loads(Path("examples/hybrid-pheromone-protocol/capability.json").read_text())
+    payload = json.loads(
+        Path("examples/hybrid-pheromone-protocol/capability.json").read_text()
+    )
     mutate(payload["protocol"]["collective_decision_policy"])
     generated_errors = validate_json_schema(payload, capability_schema())
     checked_in_schema = json.loads(Path("schemas/capability.schema.json").read_text())
@@ -288,16 +330,26 @@ def test_hybrid_raw_json_shape_is_rejected_consistently_by_schema_and_loader(
 
 
 def test_manifest_mapping_does_not_repair_invalid_kind_profile_to_defaults() -> None:
-    payload = json.loads(Path("examples/hybrid-pheromone-protocol/capability.json").read_text())
-    payload["protocol"]["collective_decision_policy"]["pheromone_kind_profiles"]["alarm"] = []
+    payload = json.loads(
+        Path("examples/hybrid-pheromone-protocol/capability.json").read_text()
+    )
+    payload["protocol"]["collective_decision_policy"]["pheromone_kind_profiles"][
+        "alarm"
+    ] = []
 
     with pytest.raises(ValueError, match="pheromone_kind_profiles.alarm"):
         capability_manifest_from_dict(payload)
 
 
-def test_direct_payload_with_non_finite_number_is_rejected_before_typed_mapping() -> None:
-    payload = json.loads(Path("examples/hybrid-pheromone-protocol/capability.json").read_text())
-    payload["protocol"]["collective_decision_policy"]["pheromone_evaporation_rate"] = float("nan")
+def test_direct_payload_with_non_finite_number_is_rejected_before_typed_mapping() -> (
+    None
+):
+    payload = json.loads(
+        Path("examples/hybrid-pheromone-protocol/capability.json").read_text()
+    )
+    payload["protocol"]["collective_decision_policy"]["pheromone_evaporation_rate"] = (
+        float("nan")
+    )
 
     with pytest.raises(ValueError, match="must be finite"):
         capability_manifest_from_dict(payload)
@@ -312,7 +364,9 @@ def test_direct_payload_with_non_finite_number_is_rejected_before_typed_mapping(
         "requires_publication_permission",
     ],
 )
-def test_manifest_schema_rejects_disabling_mandatory_output_gate(field_name: str) -> None:
+def test_manifest_schema_rejects_disabling_mandatory_output_gate(
+    field_name: str,
+) -> None:
     payload = json.loads(Path("examples/e2e-protocol/capability.json").read_text())
     payload["protocol"]["output_policy"][field_name] = False
 
@@ -347,11 +401,17 @@ def test_typed_manifest_validation_rejects_disabling_mandatory_output_gate(
 
 
 def test_json_schema_integer_value_is_normalized_to_python_int() -> None:
-    payload = json.loads(Path("examples/hybrid-pheromone-protocol/capability.json").read_text())
-    payload["protocol"]["collective_decision_policy"]["pheromone_kind_profiles"]["alarm"]["ttl_steps"] = 1.0
+    payload = json.loads(
+        Path("examples/hybrid-pheromone-protocol/capability.json").read_text()
+    )
+    payload["protocol"]["collective_decision_policy"]["pheromone_kind_profiles"][
+        "alarm"
+    ]["ttl_steps"] = 1.0
 
     manifest = capability_manifest_from_dict(payload)
-    ttl_steps = manifest.protocol.collective_decision_policy.pheromone_kind_profiles["alarm"].ttl_steps
+    ttl_steps = manifest.protocol.collective_decision_policy.pheromone_kind_profiles[
+        "alarm"
+    ].ttl_steps
 
     assert ttl_steps == 1
     assert isinstance(ttl_steps, int)

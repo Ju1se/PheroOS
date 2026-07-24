@@ -5,7 +5,7 @@ from dataclasses import fields, is_dataclass
 from enum import Enum
 from hashlib import sha256
 import json
-from typing import Any
+from typing import Any, TypeGuard, cast
 import unicodedata
 
 from pheroos.protocol.commit_models import (
@@ -54,7 +54,7 @@ def canonical_commit_payload(
             )
         normalized_bindings[field_name] = normalized
     normalized_payload = _canonical_commit_value(payload, path="payload")
-    if not isinstance(normalized_payload, dict):  # pragma: no cover - Mapping above
+    if not isinstance(normalized_payload, dict):
         raise CommitWireError("commit canonical payload must be an object")
     return json.dumps(
         {
@@ -121,10 +121,10 @@ def commit_policy_authority_payload(
         raise CommitWireError(
             "commit policy authority projection requires CollectiveCommitPolicy"
         )
-    projected = _authority_projection(policy, field_name="collective_commit_policy")
-    if not isinstance(projected, dict):  # pragma: no cover - dataclass above
-        raise CommitWireError("commit policy authority projection must be an object")
-    return projected
+    return cast(
+        dict[str, Any],
+        _authority_projection(policy, field_name="collective_commit_policy"),
+    )
 
 
 def commit_policy_fingerprint(
@@ -266,93 +266,91 @@ def _authority_projection(value: Any, *, field_name: str) -> Any:
 
 
 def _canonical_commit_value(value: Any, *, path: str) -> Any:
-    value_type = type(value)
-    # Authority payloads overwhelmingly use exact JSON-native values.  Keep
-    # subclass and custom-container behavior in the original generic branches
-    # below while avoiding repeated ABC checks for the canonical hot path.
-    if value is None or value_type is bool:
-        return value
-    if value_type is str:
-        normalized = unicodedata.normalize("NFC", value)
-        if normalized != value:
-            raise CommitWireError(f"{path} must already use NFC normalization")
-        return value
-    if value_type is int:
-        if abs(value) > MAX_AUTHORITY_INTEGER:
-            raise CommitWireError(f"{path} exceeds the authority integer bound")
-        return value
-    if value_type is float:
-        raise CommitWireError(f"{path} must not contain floating-point values")
-    if value_type is dict:
-        normalized_mapping: dict[str, Any] = {}
-        for key, item in value.items():
-            if (
-                not isinstance(key, str)
-                or not key
-                or key != key.strip()
-                or key != unicodedata.normalize("NFC", key)
-            ):
-                raise CommitWireError(
-                    f"{path} keys must be canonical non-blank NFC strings"
-                )
-            if key in normalized_mapping:
-                raise CommitWireError(f"{path} contains duplicate keys")
-            normalized_mapping[key] = _canonical_commit_value(
-                item,
-                path=f"{path}.{key}",
-            )
-        return normalized_mapping
-    if value_type is list or value_type is tuple:
-        return [
-            _canonical_commit_value(item, path=f"{path}[{index}]")
-            for index, item in enumerate(value)
-        ]
-    if value_type is set or value_type is frozenset:
-        return list(canonical_commit_set(tuple(value)))
+    handled, canonical = _canonical_exact_value(value, path=path)
+    if handled:
+        return canonical
     if isinstance(value, Enum):
         return _canonical_commit_value(value.value, path=path)
     if value is None or isinstance(value, bool):
         return value
     if isinstance(value, str):
-        normalized = unicodedata.normalize("NFC", value)
-        if normalized != value:
-            raise CommitWireError(f"{path} must already use NFC normalization")
-        return value
+        return _canonical_text(value, path=path)
     if isinstance(value, int):
-        if abs(value) > MAX_AUTHORITY_INTEGER:
-            raise CommitWireError(f"{path} exceeds the authority integer bound")
-        return value
+        return _canonical_integer(value, path=path)
     if isinstance(value, float):
         raise CommitWireError(f"{path} must not contain floating-point values")
     if isinstance(value, Mapping):
-        normalized: dict[str, Any] = {}
-        for key, item in value.items():
-            if (
-                not isinstance(key, str)
-                or not key
-                or key != key.strip()
-                or key != unicodedata.normalize("NFC", key)
-            ):
-                raise CommitWireError(
-                    f"{path} keys must be canonical non-blank NFC strings"
-                )
-            if key in normalized:
-                raise CommitWireError(f"{path} contains duplicate keys")
-            normalized[key] = _canonical_commit_value(
-                item,
-                path=f"{path}.{key}",
-            )
-        return normalized
+        return _canonical_mapping(value, path=path)
     if isinstance(value, (set, frozenset)):
         return list(canonical_commit_set(tuple(value)))
     if isinstance(value, Sequence) and not isinstance(value, (str, bytes, bytearray)):
-        return [
-            _canonical_commit_value(item, path=f"{path}[{index}]")
-            for index, item in enumerate(value)
-        ]
+        return _canonical_sequence(value, path=path)
     raise CommitWireError(
         f"{path} contains unsupported value type: {type(value).__name__}"
     )
+
+
+def _canonical_exact_value(value: Any, *, path: str) -> tuple[bool, Any]:
+    """Handle exact JSON-native containers without changing subclass semantics."""
+
+    value_type = type(value)
+    if value is None or value_type is bool:
+        return True, value
+    if value_type is str:
+        return True, _canonical_text(value, path=path)
+    if value_type is int:
+        return True, _canonical_integer(value, path=path)
+    if value_type is float:
+        raise CommitWireError(f"{path} must not contain floating-point values")
+    if value_type is dict:
+        return True, _canonical_mapping(value, path=path)
+    if value_type is list or value_type is tuple:
+        return True, _canonical_sequence(value, path=path)
+    if value_type is set or value_type is frozenset:
+        return True, list(canonical_commit_set(tuple(value)))
+    return False, None
+
+
+def _canonical_text(value: str, *, path: str) -> str:
+    normalized = unicodedata.normalize("NFC", value)
+    if normalized != value:
+        raise CommitWireError(f"{path} must already use NFC normalization")
+    return value
+
+
+def _canonical_integer(value: int, *, path: str) -> int:
+    if abs(value) > MAX_AUTHORITY_INTEGER:
+        raise CommitWireError(f"{path} exceeds the authority integer bound")
+    return value
+
+
+def _canonical_mapping(value: Mapping[object, Any], *, path: str) -> dict[str, Any]:
+    normalized: dict[str, Any] = {}
+    for key, item in value.items():
+        if not _canonical_mapping_key(key):
+            raise CommitWireError(
+                f"{path} keys must be canonical non-blank NFC strings"
+            )
+        if key in normalized:
+            raise CommitWireError(f"{path} contains duplicate keys")
+        normalized[key] = _canonical_commit_value(item, path=f"{path}.{key}")
+    return normalized
+
+
+def _canonical_mapping_key(value: object) -> TypeGuard[str]:
+    return (
+        isinstance(value, str)
+        and bool(value)
+        and value == value.strip()
+        and value == unicodedata.normalize("NFC", value)
+    )
+
+
+def _canonical_sequence(value: Sequence[Any], *, path: str) -> list[Any]:
+    return [
+        _canonical_commit_value(item, path=f"{path}[{index}]")
+        for index, item in enumerate(value)
+    ]
 
 
 __all__ = [

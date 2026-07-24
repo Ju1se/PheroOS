@@ -1,0 +1,87 @@
+{
+  "id": "scoped-output-protocol",
+  "name": "Scoped Output Protocol",
+  "version": "0.2.0rc1",
+  "permissions": [],
+  "required_connections": [],
+  "drivers": [],
+  "protocol": {
+    "protocol_version": "pheroos.protocol.v2",
+    "id": "scoped.output.review",
+    "targets": [
+      {
+        "id": "decision:review",
+        "description": "A provider-free scoped baseline output target."
+      }
+    ],
+    "signals": [
+      {
+        "type": "proposal",
+        "target": "decision:review",
+        "authority_required": "governance"
+      }
+    ],
+    "candidates": [
+      {
+        "id": "candidate:accept",
+        "target": "decision:review",
+        "label": "Accept"
+      },
+      {
+        "id": "candidate:safe_fallback",
+        "target": "decision:review",
+        "label": "Insufficient evidence",
+        "safe_fallback": true
+      }
+    ],
+    "quorum_policy": {
+      "target": "decision:review",
+      "fallback_candidate": "candidate:safe_fallback",
+      "commit_threshold": 1
+    },
+    "authority_policy": {
+      "policy_version": "pheroos-scoped-authority-policy-v2",
+      "profile": "pheroos-scoped-authority-local-v2",
+      "wire_version": "pheroos-authority-wire-v2",
+      "canonical_version": "pheroos-authority-canonical-v2",
+      "ledger_version": "pheroos-governance-authority-ledger-v2",
+      "state_store_version": "pheroos-governance-state-store-v2",
+      "trace_batch_version": "pheroos-governance-trace-batch-v2",
+      "read_set_version": "pheroos-governance-authority-read-set-v2"
+    },
+    "recovery_protocols": [],
+    "evidence_policy": {
+      "require_provenance": true,
+      "allow_agent_fact_creation": false
+    },
+    "output_policy": {
+      "policy_version": "pheroos-baseline-output-policy-v2",
+      "decision_mode": "quorum",
+      "actions": [
+        {
+          "action_ref": "action:publish-review",
+          "effect": "publish",
+          "target": "decision:review",
+          "allowed_outcomes": [
+            "evidence_commit",
+            "safe_fallback"
+          ]
+        }
+      ]
+    },
+    "trace_policy": {
+      "required_events": [
+        "baseline_action_permission_issued",
+        "baseline_decision_evaluated",
+        "baseline_evidence_qualified",
+        "baseline_manifest_activated",
+        "baseline_output_committed",
+        "baseline_stop_resolved",
+        "block",
+        "commit",
+        "recovery",
+        "output"
+      ]
+    }
+  }
+}

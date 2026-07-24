@@ -82,6 +82,7 @@ class _RiskAssessmentChainCursor:
         ] = {}
         self.lock = RLock()
 
+
 def initialize_risk_assessment_chain(
     *,
     commit_policy: CollectiveCommitPolicy,
@@ -125,7 +126,9 @@ def initialize_risk_assessment_chain(
         "risk assessment chain expires_at_step",
     )
     if expires <= initialized:
-        raise GovernanceError("risk assessment chain expiry must be after initialization")
+        raise GovernanceError(
+            "risk assessment chain expiry must be after initialization"
+        )
     normalized_issuer = require_commit_text(
         issuer_id,
         "risk assessment chain issuer_id",
@@ -206,12 +209,13 @@ def initialize_risk_assessment_chain(
             trace_event_id=normalized_trace,
         )
         state = _issue_risk_assessment_chain_state(state, cursor)
-        cursor.current_state_fingerprint = (
-            risk_assessment_chain_state_fingerprint(state)
+        cursor.current_state_fingerprint = risk_assessment_chain_state_fingerprint(
+            state
         )
         cursor.current_state = state
         registry.set(_LEGACY_RISK_CHAIN_CURSORS, authority_key, cursor)
         return state
+
 
 def issue_risk_assessment(
     chain_state: RiskAssessmentChainState,
@@ -291,9 +295,7 @@ def issue_risk_assessment(
             previous_assessment,
             chain_state,
         ):
-            raise GovernanceError(
-                "previous risk assessment is not the chain head"
-            )
+            raise GovernanceError("previous risk assessment is not the chain head")
         if issued <= chain_state.last_issued_at_step:
             raise GovernanceError(
                 "risk reassessment must advance the logical issuance step"
@@ -362,9 +364,7 @@ def issue_risk_assessment(
             prior = cursor.transitions.get(parent_state_fingerprint)
             if prior is not None and prior[0] == request_fingerprint:
                 return prior[1], prior[2]
-            raise GovernanceError(
-                "risk assessment chain state is stale or would fork"
-            )
+            raise GovernanceError("risk assessment chain state is stale or would fork")
 
         next_state = RiskAssessmentChainState(
             chain_id=chain_state.chain_id,
@@ -400,6 +400,7 @@ def issue_risk_assessment(
         )
         return assessment, next_state
 
+
 def risk_assessment_chain_state_is_authoritative(state: object) -> bool:
     if type(state) is not RiskAssessmentChainState:
         return False
@@ -418,6 +419,7 @@ def risk_assessment_chain_state_is_authoritative(state: object) -> bool:
     except Exception:
         return False
 
+
 def risk_assessment_chain_state_is_current(state: object) -> bool:
     if not risk_assessment_chain_state_is_authoritative(state):
         return False
@@ -434,6 +436,7 @@ def risk_assessment_chain_state_is_current(state: object) -> bool:
     except Exception:
         return False
 
+
 def risk_assessment_is_authoritative(assessment: object) -> bool:
     if type(assessment) is not RiskAssessment:
         return False
@@ -448,6 +451,7 @@ def risk_assessment_is_authoritative(assessment: object) -> bool:
         )
     except Exception:
         return False
+
 
 def risk_assessment_is_latest(
     assessment: RiskAssessment | None,
@@ -464,6 +468,7 @@ def risk_assessment_is_latest(
         )
     except GovernanceError:
         return False
+
 
 def risk_assessment_matches(
     assessment: RiskAssessment | None,
@@ -510,6 +515,7 @@ def risk_assessment_matches(
     except GovernanceError:
         return False
 
+
 def _risk_assessment_is_head_of_state(
     assessment: RiskAssessment,
     state: RiskAssessmentChainState,
@@ -527,6 +533,7 @@ def _risk_assessment_is_head_of_state(
         and assessment.issued_at_step == state.last_issued_at_step
         and assessment.expires_at_step == state.expires_at_step
     )
+
 
 def _issue_risk_assessment_chain_state(
     state: RiskAssessmentChainState,

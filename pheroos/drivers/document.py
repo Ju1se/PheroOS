@@ -9,7 +9,6 @@ from pheroos.drivers._versions import DRIVER_DESCRIPTOR_VERSION_V2
 from pheroos.drivers.base import DriverDescriptor
 from pheroos.drivers.lifecycle import validate
 
-
 _BASE_FIELDS = frozenset(
     {
         "id",
@@ -138,6 +137,32 @@ def _descriptor_payload(
             "driver_descriptor_document_invalid",
             "driver descriptor document must be an object",
         )
+    _validate_descriptor_fields(payload, versioned=versioned)
+    capabilities = _string_list(payload.get("capabilities", []), "capabilities")
+    permissions = _string_list(payload.get("permissions", []), "permissions")
+    config_ref = payload.get("config_ref", "")
+    if not isinstance(config_ref, str):
+        raise DriverSchemaVersionError(
+            "driver_descriptor_fields_invalid",
+            "driver descriptor config_ref must be text",
+            path="$.config_ref",
+        )
+    return {
+        "id": payload["id"],
+        "kind": payload["kind"],
+        "version": payload["version"],
+        "capabilities": capabilities,
+        "permissions": permissions,
+        "config_ref": config_ref,
+        "extensions": _descriptor_extensions(payload),
+    }
+
+
+def _validate_descriptor_fields(
+    payload: Mapping[str, Any],
+    *,
+    versioned: bool,
+) -> None:
     allowed = _BASE_FIELDS | ({"descriptor_version"} if versioned else set())
     unknown = {
         key
@@ -164,15 +189,9 @@ def _descriptor_payload(
                 f"driver descriptor {name} must be text",
                 path=f"$.{name}",
             )
-    capabilities = _string_list(payload.get("capabilities", []), "capabilities")
-    permissions = _string_list(payload.get("permissions", []), "permissions")
-    config_ref = payload.get("config_ref", "")
-    if not isinstance(config_ref, str):
-        raise DriverSchemaVersionError(
-            "driver_descriptor_fields_invalid",
-            "driver descriptor config_ref must be text",
-            path="$.config_ref",
-        )
+
+
+def _descriptor_extensions(payload: Mapping[str, Any]) -> dict[str, Any]:
     declared_extensions = payload.get("extensions", {})
     if not isinstance(declared_extensions, Mapping):
         raise DriverSchemaVersionError(
@@ -190,15 +209,7 @@ def _descriptor_payload(
                     path=f"$.{key}",
                 )
             extensions[key] = item
-    return {
-        "id": payload["id"],
-        "kind": payload["kind"],
-        "version": payload["version"],
-        "capabilities": capabilities,
-        "permissions": permissions,
-        "config_ref": config_ref,
-        "extensions": extensions,
-    }
+    return extensions
 
 
 def _string_list(value: Any, name: str) -> list[str]:

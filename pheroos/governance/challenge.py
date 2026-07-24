@@ -68,7 +68,6 @@ class ChallengeAttestation:
             _canonical_fingerprints(
                 self.result_observation_fingerprints,
                 "challenge result observation fingerprints",
-                allow_empty=True,
             ),
         )
         _validate_challenge_attestation(self)
@@ -122,7 +121,6 @@ class VerifiedChallenge:
             _canonical_fingerprints(
                 self.result_observation_fingerprints,
                 "verified challenge result observation fingerprints",
-                allow_empty=True,
             ),
         )
         _validate_verified_challenge_shape(self)
@@ -155,7 +153,6 @@ class ChallengeCoverage:
         fingerprints = _canonical_fingerprints(
             self.challenge_fingerprints,
             "challenge coverage fingerprints",
-            allow_empty=True,
         )
         if not set(covered).issubset(required):
             raise GovernanceError(
@@ -330,38 +327,18 @@ def verify_challenge_attestation(
             raise GovernanceError(
                 "challenge result observation is not authoritative, fresh, and bound"
             )
-        actual_result_fingerprints.append(
-            verified_observation_fingerprint(observation)
-        )
+        actual_result_fingerprints.append(verified_observation_fingerprint(observation))
         expiry = min(expiry, observation.expires_at_step)
     actual_refs = _canonical_fingerprints(
         actual_result_fingerprints,
         "verified challenge result observation fingerprints",
-        allow_empty=True,
     )
     if actual_refs != attestation.result_observation_fingerprints:
         raise GovernanceError(
             "challenge result observation records do not match the attestation"
         )
-    if (
-        attestation.result is ChallengeResult.COUNTEREVIDENCE_FOUND
-        and not actual_refs
-    ):
-        raise GovernanceError(
-            "counterevidence-found challenge requires verified observations"
-        )
-    if (
-        attestation.result is not ChallengeResult.COUNTEREVIDENCE_FOUND
-        and actual_refs
-    ):
-        raise GovernanceError(
-            "challenge without a counterevidence result cannot reference observations"
-        )
-
     if any(attestation.nonce == item.nonce for item in result_observations):
-        raise GovernanceError(
-            "challenge nonce cannot replay an observation nonce"
-        )
+        raise GovernanceError("challenge nonce cannot replay an observation nonce")
 
     attestation_fingerprint = challenge_attestation_fingerprint(attestation)
     challenge = VerifiedChallenge(
@@ -459,9 +436,7 @@ def verified_challenge_payload(challenge: VerifiedChallenge) -> dict[str, object
         "protocol_id": challenge.protocol_id,
         "result": challenge.result,
         "result_fingerprint": challenge.result_fingerprint,
-        "result_observation_fingerprints": (
-            challenge.result_observation_fingerprints
-        ),
+        "result_observation_fingerprints": (challenge.result_observation_fingerprints),
         "run_id": challenge.run_id,
         "target": challenge.target,
         "verification_provenance": challenge.verification_provenance,
@@ -680,7 +655,6 @@ def _validate_challenge_attestation(attestation: ChallengeAttestation) -> None:
     refs = _canonical_fingerprints(
         attestation.result_observation_fingerprints,
         "challenge result observation fingerprints",
-        allow_empty=True,
     )
     if refs != attestation.result_observation_fingerprints:
         raise GovernanceError(
@@ -754,7 +728,6 @@ def _validate_verified_challenge_shape(challenge: VerifiedChallenge) -> None:
     refs = _canonical_fingerprints(
         challenge.result_observation_fingerprints,
         "verified challenge result observation fingerprints",
-        allow_empty=True,
     )
     if refs != challenge.result_observation_fingerprints:
         raise GovernanceError(
@@ -827,8 +800,7 @@ def _challenge_replay_result(
             prior.challenge_id == challenge.challenge_id
             or prior.nonce == challenge.nonce
             or prior.attestation_fingerprint == challenge.attestation_fingerprint
-            or prior.execution_attestation_ref
-            == challenge.execution_attestation_ref
+            or prior.execution_attestation_ref == challenge.execution_attestation_ref
             or prior.execution_fingerprint == challenge.execution_fingerprint
         )
         if not identity_collision:
@@ -853,8 +825,7 @@ def _challenge_replay_result(
             == challenge.principal_verification_fingerprint
             and prior.category == challenge.category
             and prior.execution_method == challenge.execution_method
-            and prior.execution_attestation_ref
-            == challenge.execution_attestation_ref
+            and prior.execution_attestation_ref == challenge.execution_attestation_ref
             and prior.execution_fingerprint == challenge.execution_fingerprint
             and prior.result is challenge.result
             and prior.result_fingerprint == challenge.result_fingerprint
@@ -863,32 +834,25 @@ def _challenge_replay_result(
             and prior.executed_at_step == challenge.executed_at_step
             and prior.expires_at_step == challenge.expires_at_step
             and prior.attestation_provenance == challenge.attestation_provenance
-            and prior.attestation_trace_event_id
-            == challenge.attestation_trace_event_id
+            and prior.attestation_trace_event_id == challenge.attestation_trace_event_id
             and prior.verifier_id == challenge.verifier_id
             and prior.authority is challenge.authority
-            and prior.verification_provenance
-            == challenge.verification_provenance
+            and prior.verification_provenance == challenge.verification_provenance
             and prior.verification_trace_event_id
             == challenge.verification_trace_event_id
             and prior.executed_at_step <= current_step < prior.expires_at_step
         )
         if not exact_replay:
             if prior.nonce == challenge.nonce:
-                raise GovernanceError(
-                    "challenge nonce replay is a safety violation"
-                )
+                raise GovernanceError("challenge nonce replay is a safety violation")
             if (
-                prior.execution_attestation_ref
-                == challenge.execution_attestation_ref
+                prior.execution_attestation_ref == challenge.execution_attestation_ref
                 or prior.execution_fingerprint == challenge.execution_fingerprint
             ):
                 raise GovernanceError(
                     "challenge execution evidence replay is a safety violation"
                 )
-            raise GovernanceError(
-                "challenge identity replay is a safety violation"
-            )
+            raise GovernanceError("challenge identity replay is a safety violation")
         idempotent = prior
     return idempotent
 
@@ -925,16 +889,12 @@ def _canonical_labels(
 def _canonical_fingerprints(
     values: Sequence[str],
     field_name: str,
-    *,
-    allow_empty: bool,
 ) -> tuple[str, ...]:
     if isinstance(values, (str, bytes, bytearray)):
         raise GovernanceError(f"{field_name} must be a sequence")
     fingerprints = tuple(
         require_commit_fingerprint(value, field_name) for value in values
     )
-    if not fingerprints and not allow_empty:
-        raise GovernanceError(f"{field_name} must not be empty")
     if len(set(fingerprints)) != len(fingerprints):
         raise GovernanceError(f"{field_name} contains a duplicate")
     return tuple(sorted(fingerprints))

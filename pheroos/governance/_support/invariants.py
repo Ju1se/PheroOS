@@ -1,5 +1,6 @@
 from __future__ import annotations
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
+from typing import TYPE_CHECKING, Protocol, TypedDict
 from pheroos.governance._commit_validation import (
     require_commit_assurance,
     require_commit_fingerprint,
@@ -22,7 +23,51 @@ from pheroos.protocol.commit_models import (
 from pheroos.protocol.commit_wire import commit_policy_fingerprint
 
 
-def _validate_eligible_principal(principal: object) -> None:
+if TYPE_CHECKING:
+
+    class _EligiblePrincipalLike(Protocol):
+        @property
+        def principal_id(self) -> str: ...
+
+        @property
+        def principal_verification_fingerprint(self) -> str: ...
+
+        @property
+        def verified_issuer_id(self) -> str: ...
+
+        @property
+        def verified_method(self) -> str: ...
+
+        @property
+        def failure_domain(self) -> str: ...
+
+    class _EligiblePrincipalClusterLike(Protocol):
+        @property
+        def cluster_id(self) -> str: ...
+
+        @property
+        def principals(self) -> tuple[_EligiblePrincipalLike, ...]: ...
+else:
+
+    class _EligiblePrincipalLike(Protocol):
+        pass
+
+    class _EligiblePrincipalClusterLike(Protocol):
+        pass
+
+
+class _NormalizedBindings(TypedDict):
+    profile: str
+    assurance: CommitAssurance
+    manifest_root: str
+    commit_policy_root: str
+    protocol_id: str
+    run_id: str
+    target: str
+    epoch: int
+
+
+def _validate_eligible_principal(principal: _EligiblePrincipalLike) -> None:
     for name in ("principal_id", "verified_issuer_id", "verified_method"):
         require_commit_text(
             getattr(principal, name),
@@ -73,7 +118,7 @@ def _normalized_bindings(
     target: str,
     epoch: int,
     field_name: str,
-) -> dict[str, object]:
+) -> _NormalizedBindings:
     normalized_profile = require_commit_profile(profile, f"{field_name} profile")
     normalized_assurance = require_commit_assurance(
         assurance,
@@ -105,7 +150,7 @@ def _normalized_bindings(
     }
 
 
-def _record_bindings_equal(record: object, expected: dict[str, object]) -> bool:
+def _record_bindings_equal(record: object, expected: Mapping[str, object]) -> bool:
     return all(getattr(record, name) == value for name, value in expected.items())
 
 
@@ -230,7 +275,9 @@ def _membership_epoch_authority_key(record: object) -> str:
     )
 
 
-def _eligible_cluster_payload(cluster: object) -> dict[str, object]:
+def _eligible_cluster_payload(
+    cluster: _EligiblePrincipalClusterLike,
+) -> dict[str, object]:
     return {
         "cluster_id": cluster.cluster_id,
         "principals": tuple(
@@ -258,7 +305,7 @@ def _membership_root(
     run_id: str,
     target: str,
     epoch: int,
-    clusters: Sequence[object],
+    clusters: Sequence[_EligiblePrincipalClusterLike],
 ) -> str:
     return commit_payload_fingerprint(
         {

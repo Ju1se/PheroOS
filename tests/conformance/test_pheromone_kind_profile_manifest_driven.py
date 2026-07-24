@@ -19,8 +19,12 @@ from pheroos.protocol import (
 )
 
 
-def test_kind_profile_check_exercises_every_declared_kind_subject_and_ttl(monkeypatch) -> None:
-    manifest = load_capability_manifest("examples/hybrid-pheromone-protocol/capability.json")
+def test_kind_profile_check_exercises_every_declared_kind_subject_and_ttl(
+    monkeypatch,
+) -> None:
+    manifest = load_capability_manifest(
+        "examples/hybrid-pheromone-protocol/capability.json"
+    )
     policy = manifest.protocol.collective_decision_policy
     assert policy is not None
     manifest = replace(
@@ -52,7 +56,9 @@ def test_kind_profile_check_exercises_every_declared_kind_subject_and_ttl(monkey
         "score_pheromone_trails_result",
         tracking_score,
     )
-    monkeypatch.setattr(pheromone_kind_profile, "evaporate_trails", tracking_evaporation)
+    monkeypatch.setattr(
+        pheromone_kind_profile, "evaporate_trails", tracking_evaporation
+    )
 
     result = pheromone_kind_profile.check(manifest)
 
@@ -77,7 +83,9 @@ def test_kind_profile_check_exercises_every_declared_kind_subject_and_ttl(monkey
 
 
 def test_kind_profile_check_proves_global_cap_precedes_source_diversity_gate() -> None:
-    manifest = load_capability_manifest("examples/hybrid-pheromone-protocol/capability.json")
+    manifest = load_capability_manifest(
+        "examples/hybrid-pheromone-protocol/capability.json"
+    )
     policy = manifest.protocol.collective_decision_policy
     assert policy is not None
     profiles = dict(policy.pheromone_kind_profiles)
@@ -150,9 +158,7 @@ def test_namespaced_kind_conformance_requires_explicit_per_kind_scoring_subjects
     candidates = pheromone_kind_profile.candidate_set(manifest)
     candidate_id = pheromone_kind_profile.exercise_candidate_id(manifest)
     assert candidate_id is not None
-    runtime_policy = pheromone_kind_profile.pheromone_policy_from_collective(
-        collective
-    )
+    runtime_policy = pheromone_kind_profile.pheromone_policy_from_collective(collective)
     trails = pheromone_kind_profile.profile_trails(
         candidate_id,
         target=pheromone_kind_profile.active_target(manifest),
@@ -209,7 +215,9 @@ def test_manifest_conformance_rejects_evidence_scoring_declarations(
 
 
 def test_low_max_strength_replay_emits_truthful_clip_lineage() -> None:
-    manifest = load_capability_manifest("examples/hybrid-pheromone-protocol/capability.json")
+    manifest = load_capability_manifest(
+        "examples/hybrid-pheromone-protocol/capability.json"
+    )
     policy = manifest.protocol.collective_decision_policy
     assert policy is not None
     manifest = replace(
@@ -221,7 +229,9 @@ def test_low_max_strength_replay_emits_truthful_clip_lineage() -> None:
     )
 
     step, _ = hybrid_trace_contract.manifest_replay(manifest)
-    clips = [event for event in step.trace_events if event.event_type == "pheromone_clip"]
+    clips = [
+        event for event in step.trace_events if event.event_type == "pheromone_clip"
+    ]
 
     assert clips
     assert any(event.lineage["requested_strength"] > 0.5 for event in clips)
@@ -238,10 +248,18 @@ def test_low_max_strength_replay_emits_truthful_clip_lineage() -> None:
 )
 @pytest.mark.parametrize(
     "check",
-    [pheromone_kind_profile.check, pheromone_diffusion.check, hybrid_trace_contract.check],
+    [
+        pheromone_kind_profile.check,
+        pheromone_diffusion.check,
+        hybrid_trace_contract.check,
+    ],
 )
-def test_hybrid_behavior_checks_accept_valid_manifest_edge_policies(check, updates) -> None:
-    manifest = load_capability_manifest("examples/hybrid-pheromone-protocol/capability.json")
+def test_hybrid_behavior_checks_accept_valid_manifest_edge_policies(
+    check, updates
+) -> None:
+    manifest = load_capability_manifest(
+        "examples/hybrid-pheromone-protocol/capability.json"
+    )
     policy = manifest.protocol.collective_decision_policy
     assert policy is not None
     manifest = replace(
@@ -268,7 +286,9 @@ def test_manifest_driven_behavior_checks_are_total_for_malformed_direct_policy(
     check,
     updates,
 ) -> None:
-    manifest = load_capability_manifest("examples/hybrid-pheromone-protocol/capability.json")
+    manifest = load_capability_manifest(
+        "examples/hybrid-pheromone-protocol/capability.json"
+    )
     policy = manifest.protocol.collective_decision_policy
     assert policy is not None
     manifest = replace(
@@ -303,8 +323,12 @@ def test_manifest_driven_behavior_checks_are_total_for_malformed_direct_policy(
         {"pheromone_activation_threshold": 20.0},
     ],
 )
-def test_full_hybrid_profile_accepts_valid_manifest_derived_strength_edges(updates) -> None:
-    manifest = load_capability_manifest("examples/hybrid-pheromone-protocol/capability.json")
+def test_full_hybrid_profile_accepts_valid_manifest_derived_strength_edges(
+    updates,
+) -> None:
+    manifest = load_capability_manifest(
+        "examples/hybrid-pheromone-protocol/capability.json"
+    )
     policy = manifest.protocol.collective_decision_policy
     assert policy is not None
     manifest = replace(

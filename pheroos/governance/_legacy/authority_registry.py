@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 """Single quarantined adapter for v1 process-local authority identity.
 
 The adapter is intentionally private and non-extensible.  It is not consulted
@@ -7,6 +5,8 @@ by the scoped ``GovernanceStateStore`` path.  Centralizing the old registries
 makes their compatibility lifetime, cardinality, and eventual deletion
 observable while preserving v1's object-identity checks byte-for-byte.
 """
+
+from __future__ import annotations
 
 from collections.abc import Hashable, Iterator, Mapping
 from contextlib import contextmanager

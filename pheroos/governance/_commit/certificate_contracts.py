@@ -66,9 +66,10 @@ def validate_certificate_header(
         assurance,
         "certificate assurance",
     )
-    if normalized_profile not in COMMIT_PROFILES_BY_ASSURANCE[
-        normalized_assurance.value
-    ]:
+    if (
+        normalized_profile
+        not in COMMIT_PROFILES_BY_ASSURANCE[normalized_assurance.value]
+    ):
         raise GovernanceError("certificate profile/assurance mismatch")
 
 

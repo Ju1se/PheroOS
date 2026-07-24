@@ -253,8 +253,7 @@ def test_distributed_wire_constants_are_direct_public_abi_literals() -> None:
     assert all(isinstance(value, ast.Constant) for value in assignments.values())
     internal = importlib.import_module("pheroos.governance._distributed.constants")
     assert all(
-        getattr(distributed_commit, name) == getattr(internal, name)
-        for name in names
+        getattr(distributed_commit, name) == getattr(internal, name) for name in names
     )
 
 

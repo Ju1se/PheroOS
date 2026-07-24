@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 """Event-specific Trace ABI contracts for Optimal Commit.
 
 The module deliberately depends only on the Protocol wire codec and the
@@ -7,15 +5,17 @@ standard library.  It validates portable JSON lineage and reconstructs a
 commit decision chain without importing governance implementation objects.
 """
 
-from collections.abc import Iterable, Mapping, Sequence
-from dataclasses import dataclass
-from enum import Enum
-from hashlib import sha256
+from __future__ import annotations
+
 import json
-from types import MappingProxyType
-from typing import Any
 import re
 import unicodedata
+from collections.abc import Iterable, Mapping, Sequence
+from dataclasses import dataclass, field
+from enum import Enum
+from hashlib import sha256
+from types import MappingProxyType
+from typing import Any, Callable, cast
 
 COMMIT_TRACE_PAYLOAD_VERSION = "pheroos-commit-trace-payload-v1"
 COMMIT_TRACE_EVENT_SCHEMA = "pheroos-commit-trace-event-v1"
@@ -69,8 +69,6 @@ def _trace_wire_fingerprint(
         _require_text(value, f"commit trace canonical {name}")
         bindings[name] = value
     normalized = _trace_wire_value(payload, path="payload")
-    if not isinstance(normalized, dict):  # pragma: no cover - Mapping above
-        raise ValueError("commit trace canonical payload must be an object")
     canonical = json.dumps(
         {
             "payload": normalized,
@@ -102,21 +100,23 @@ def _trace_wire_value(value: Any, *, path: str) -> Any:
     if isinstance(value, float):
         raise ValueError(f"{path} must not contain floating-point values")
     if isinstance(value, Mapping):
-        normalized: dict[str, Any] = {}
-        for key, item in value.items():
-            _require_text(key, f"{path} key")
-            if key in normalized:
-                raise ValueError(f"{path} contains duplicate keys")
-            normalized[key] = _trace_wire_value(item, path=f"{path}.{key}")
-        return normalized
-    if isinstance(value, Sequence) and not isinstance(
-        value, (str, bytes, bytearray)
-    ):
+        return _trace_wire_mapping(value, path=path)
+    if isinstance(value, Sequence) and not isinstance(value, (str, bytes, bytearray)):
         return [
             _trace_wire_value(item, path=f"{path}[{index}]")
             for index, item in enumerate(value)
         ]
     raise ValueError(f"{path} contains an unsupported wire value")
+
+
+def _trace_wire_mapping(value: Mapping[Any, Any], *, path: str) -> dict[str, Any]:
+    normalized: dict[str, Any] = {}
+    for key, item in value.items():
+        _require_text(key, f"{path} key")
+        if key in normalized:
+            raise ValueError(f"{path} contains duplicate keys")
+        normalized[key] = _trace_wire_value(item, path=f"{path}.{key}")
+    return normalized
 
 
 @dataclass(frozen=True)
@@ -150,9 +150,7 @@ _STOP = frozenset({"stop_resolution_verified"})
 _PERMISSION = frozenset({"action_permission_issued"})
 _METRICS = frozenset({"commit_metrics"})
 _WINDOW = frozenset({"commit_window_advanced", "commit_window_reset"})
-_CERT_OR_PROVISIONAL = frozenset(
-    {"commit_certificate_issued", "commit_provisional"}
-)
+_CERT_OR_PROVISIONAL = frozenset({"commit_certificate_issued", "commit_provisional"})
 _WITNESS = frozenset({"quorum_witness"})
 _OUTCOME = frozenset({"decision_outcome"})
 
@@ -306,7 +304,14 @@ COMMIT_EVENT_CONTRACTS: Mapping[str, CommitTraceEventContract] = MappingProxyTyp
                 "margin": _INTEGER,
                 "ready_for_stability": _BOOL,
             },
-            predecessors=(_EVIDENCE_BOUND, _LEASE, _RISK, _MEMBERSHIP, _STOP, _PERMISSION),
+            predecessors=(
+                _EVIDENCE_BOUND,
+                _LEASE,
+                _RISK,
+                _MEMBERSHIP,
+                _STOP,
+                _PERMISSION,
+            ),
         ),
         "commit_window_advanced": _contract(
             {
@@ -393,7 +398,12 @@ COMMIT_EVENT_CONTRACTS: Mapping[str, CommitTraceEventContract] = MappingProxyTyp
         "commit_certificate_issued": _contract(
             {
                 "certificate_kind": frozenset(
-                    {"local_receipt", "evidence_commit", "distributed_commit", "outcome"}
+                    {
+                        "local_receipt",
+                        "evidence_commit",
+                        "distributed_commit",
+                        "outcome",
+                    }
                 ),
                 "certificate_ref": _ROOT,
                 "candidate_id": _STRING,
@@ -442,9 +452,7 @@ COMMIT_EVENT_CONTRACTS: Mapping[str, CommitTraceEventContract] = MappingProxyTyp
                 "commit_value_root": _ROOT,
                 "proposal_digest": _ROOT,
             },
-            predecessors=(
-                frozenset({"quorum_witness", "commit_certificate_issued"}),
-            ),
+            predecessors=(frozenset({"quorum_witness", "commit_certificate_issued"}),),
         ),
         "certificate_conflict": _contract(
             {
@@ -610,8 +618,6 @@ def build_commit_trace_lineage(
     if not isinstance(record_payload, Mapping):
         raise ValueError("commit trace record_payload must be an object")
     payload = _portable_value(record_payload, path="record_payload")
-    if not isinstance(payload, dict):  # pragma: no cover - Mapping above
-        raise ValueError("commit trace record_payload must be an object")
     try:
         record_ref = _trace_wire_fingerprint(
             payload,
@@ -621,7 +627,7 @@ def build_commit_trace_lineage(
     except ValueError as exc:
         raise ValueError(f"invalid commit trace record payload: {exc}") from exc
     normalized_details = _portable_value(details, path="details")
-    if not isinstance(normalized_details, dict):  # pragma: no cover - Mapping above
+    if not isinstance(normalized_details, dict):
         raise ValueError("commit trace details must be an object")
     self_ref_field = _SELF_REFERENCE_FIELDS[event_type]
     supplied_self_ref = normalized_details.get(self_ref_field)
@@ -672,17 +678,46 @@ def validate_commit_trace_event(
     reason: str,
     lineage: Mapping[str, Any],
 ) -> None:
+    contract = _validate_declared_trace_fields(event_type, lineage)
+    _validate_trace_envelope_text(protocol_id, target, reason)
+    _validate_trace_sequence_order(event_type, lineage, contract)
+    payload = _validate_trace_record_binding(event_type, lineage)
+    _validate_trace_payload_envelope(
+        event_type,
+        protocol_id=protocol_id,
+        target=target,
+        lineage=lineage,
+        payload=payload,
+    )
+    _validate_trace_payload_details(event_type, lineage, payload, contract)
+    expected_event_id = commit_trace_event_id(
+        event_type=event_type,
+        protocol_id=protocol_id,
+        target=target,
+        reason=reason,
+        lineage=lineage,
+    )
+    if lineage["event_id"] != expected_event_id:
+        raise ValueError(f"{event_type} trace event_id does not bind its full event")
+    _validate_event_semantics(event_type, lineage)
+
+
+def _validate_declared_trace_fields(
+    event_type: str,
+    lineage: Mapping[str, Any],
+) -> CommitTraceEventContract:
     contract = COMMIT_EVENT_CONTRACTS.get(event_type)
     if contract is None:
         raise ValueError(f"unsupported commit trace event type: {event_type}")
     if not isinstance(lineage, dict):
         raise ValueError(f"{event_type} trace lineage must be a JSON object")
-    allowed = set(_COMMON_REQUIRED) | set(contract.required) | set(contract.optional) | {
-        "extensions"
-    }
-    missing = sorted(
-        (set(_COMMON_REQUIRED) | set(contract.required)) - set(lineage)
+    allowed = (
+        set(_COMMON_REQUIRED)
+        | set(contract.required)
+        | set(contract.optional)
+        | {"extensions"}
     )
+    missing = sorted((set(_COMMON_REQUIRED) | set(contract.required)) - set(lineage))
     if missing:
         raise ValueError(
             f"{event_type} trace lineage missing required fields: {', '.join(missing)}"
@@ -700,7 +735,10 @@ def validate_commit_trace_event(
         if name in lineage:
             _validate_field(event_type, name, lineage[name], spec)
     _validate_extensions(lineage.get("extensions"), event_type=event_type)
+    return contract
 
+
+def _validate_trace_envelope_text(protocol_id: str, target: str, reason: str) -> None:
     if not isinstance(protocol_id, str) or not protocol_id.strip():
         raise ValueError("commit trace protocol_id is required")
     if not isinstance(target, str) or not target.strip():
@@ -708,6 +746,12 @@ def validate_commit_trace_event(
     if not isinstance(reason, str) or not reason.strip():
         raise ValueError("commit trace reason is required")
 
+
+def _validate_trace_sequence_order(
+    event_type: str,
+    lineage: Mapping[str, Any],
+    contract: CommitTraceEventContract,
+) -> None:
     previous = lineage["previous_event_ids"]
     if previous != sorted(previous) or len(previous) != len(set(previous)):
         raise ValueError(
@@ -721,6 +765,11 @@ def validate_commit_trace_event(
         ):
             raise ValueError(f"{event_type} trace {name} must use canonical ordering")
 
+
+def _validate_trace_record_binding(
+    event_type: str,
+    lineage: Mapping[str, Any],
+) -> Mapping[str, Any]:
     payload = lineage["record_payload"]
     try:
         expected_record_ref = _trace_wire_fingerprint(
@@ -729,7 +778,9 @@ def validate_commit_trace_event(
             profile=lineage["profile"],
         )
     except ValueError as exc:
-        raise ValueError(f"{event_type} trace record payload is invalid: {exc}") from exc
+        raise ValueError(
+            f"{event_type} trace record payload is invalid: {exc}"
+        ) from exc
     if lineage["record_ref"] != expected_record_ref:
         raise ValueError(f"{event_type} trace record_ref does not bind record_payload")
     self_ref_field = _SELF_REFERENCE_FIELDS[event_type]
@@ -737,7 +788,17 @@ def validate_commit_trace_event(
         raise ValueError(
             f"{event_type} trace {self_ref_field} does not bind record_payload"
         )
+    return cast(Mapping[str, Any], payload)
 
+
+def _validate_trace_payload_envelope(
+    event_type: str,
+    *,
+    protocol_id: str,
+    target: str,
+    lineage: Mapping[str, Any],
+    payload: Mapping[str, Any],
+) -> None:
     bindings = {
         "protocol_id": protocol_id,
         "target": target,
@@ -753,6 +814,14 @@ def validate_commit_trace_event(
             raise ValueError(
                 f"{event_type} trace record_payload {name} does not match its envelope"
             )
+
+
+def _validate_trace_payload_details(
+    event_type: str,
+    lineage: Mapping[str, Any],
+    payload: Mapping[str, Any],
+    contract: CommitTraceEventContract,
+) -> None:
     for name in (*contract.required.keys(), *contract.optional.keys()):
         if name in payload and name in lineage:
             spec = contract.required.get(name, contract.optional.get(name))
@@ -763,160 +832,224 @@ def validate_commit_trace_event(
                     f"{event_type} trace {name} does not match record_payload"
                 )
 
-    expected_event_id = commit_trace_event_id(
-        event_type=event_type,
-        protocol_id=protocol_id,
-        target=target,
-        reason=reason,
-        lineage=lineage,
-    )
-    if lineage["event_id"] != expected_event_id:
-        raise ValueError(f"{event_type} trace event_id does not bind its full event")
-    _validate_event_semantics(event_type, lineage)
-
 
 def replay_commit_trace(
     events: Iterable[Any],
     *,
     require_complete: bool = True,
 ) -> CommitTraceReplay:
-    accepted: list[Any] = []
-    by_id: dict[str, Any] = {}
-    by_type: dict[str, list[Any]] = {}
-    identity: tuple[str, str, str, str, str, int] | None = None
-    last_step = -1
+    state = _CommitTraceReplayState()
     for raw in events:
         event_type = getattr(raw, "event_type", None)
         if event_type not in COMMIT_EVENT_TYPES:
             continue
-        validate = getattr(raw, "validate", None)
-        if not callable(validate):
-            raise ValueError("commit trace replay requires canonical TraceEvent records")
-        validate()
-        lineage = raw.lineage
-        event_id = lineage["event_id"]
-        prior = by_id.get(event_id)
-        if prior is not None:
-            if prior != raw:
-                raise ValueError("commit trace event id replay changed its payload")
-            continue
-        current_identity = (
-            raw.protocol_id,
-            lineage["run_id"],
-            raw.target,
-            lineage["profile"],
-            lineage["assurance"],
-            lineage["epoch"],
-        )
-        if identity is None:
-            identity = current_identity
-        elif current_identity != identity:
-            raise ValueError("commit trace replay mixes protocol/run/target/profile/epoch")
-        step = lineage["step"]
-        if step < last_step:
-            raise ValueError("commit trace logical steps must be nondecreasing")
-        last_step = step
-        missing = sorted(set(lineage["previous_event_ids"]) - set(by_id))
-        if missing:
-            raise ValueError(
-                f"{event_type} trace references unseen predecessor events: {', '.join(missing)}"
-            )
-        predecessor_types = {
-            by_id[item].event_type for item in lineage["previous_event_ids"]
-        }
-        contract = COMMIT_EVENT_CONTRACTS[event_type]
-        for group in contract.predecessor_groups:
-            if not predecessor_types.intersection(group):
-                raise ValueError(
-                    f"{event_type} trace lacks required predecessor type from "
-                    + ", ".join(sorted(group))
-                )
-        if event_type == "commit_provisional":
-            witness_count = lineage["witness_count"]
-            required_predecessor = (
-                "commit_certificate_issued"
-                if witness_count == 0
-                else "quorum_witness"
-            )
-            if required_predecessor not in predecessor_types:
-                raise ValueError(
-                    "zero-witness provisional trace requires the portable "
-                    "certificate predecessor"
-                    if witness_count == 0
-                    else "witness-bearing provisional trace requires a quorum "
-                    "witness predecessor"
-                )
-            proposal_present = "proposal_digest" in lineage
-            value_present = "commit_value_root" in lineage
-            if (
-                witness_count == 0
-                and (proposal_present or value_present)
-            ) or (
-                witness_count > 0
-                and (not proposal_present or not value_present)
-            ):
-                raise ValueError(
-                    "zero-witness provisional trace cannot claim a proposal/value"
-                    if witness_count == 0
-                    else "witness-bearing provisional trace requires the exact "
-                    "proposal digest and commit value root"
-                )
-            if witness_count > 0 and not any(
-                item.lineage["proposal_digest"] == lineage["proposal_digest"]
-                and item.lineage["commit_value_root"]
-                == lineage["commit_value_root"]
-                and item.lineage["event_id"] in lineage["previous_event_ids"]
-                for item in by_type.get("quorum_witness", [])
-            ):
-                raise ValueError(
-                    "witness-bearing provisional trace lacks its exact proposal/value witness"
-                )
-            portable_ref = lineage["portable_certificate_ref"]
-            portable_events = tuple(
-                item
-                for item in by_type.get("commit_certificate_issued", [])
-                if item.lineage["certificate_kind"] == "evidence_commit"
-                and item.lineage["certificate_ref"] == portable_ref
-            )
-            if not portable_events:
-                raise ValueError(
-                    "provisional trace lacks its exact portable certificate lineage"
-                )
-            if witness_count == 0 and not any(
-                item.lineage["event_id"] in lineage["previous_event_ids"]
-                for item in portable_events
-            ):
-                raise ValueError(
-                    "zero-witness provisional trace must directly depend on its "
-                    "portable certificate"
-                )
-        elif event_type == "certificate_conflict":
-            conflict_refs = {
-                lineage["left_certificate_ref"],
-                lineage["right_certificate_ref"],
-            }
-            certificate_events = tuple(
-                item
-                for item in by_type.get("commit_certificate_issued", [])
-                if item.lineage["certificate_kind"] == "distributed_commit"
-                and item.lineage["event_id"] in lineage["previous_event_ids"]
-            )
-            if not conflict_refs.issubset(
-                {item.lineage["certificate_ref"] for item in certificate_events}
-            ):
-                raise ValueError(
-                    "certificate conflict trace lacks both distributed certificate lineages"
-                )
-            if {
-                item.lineage["commit_value_root"] for item in certificate_events
-            } != set(lineage["commit_value_roots"]):
-                raise ValueError(
-                    "certificate conflict trace commit values do not match its certificates"
-                )
-        by_id[event_id] = raw
-        by_type.setdefault(event_type, []).append(raw)
-        accepted.append(raw)
+        _accept_commit_trace_event(state, raw, event_type)
+    return _finalize_commit_trace_replay(state, require_complete=require_complete)
 
+
+@dataclass
+class _CommitTraceReplayState:
+    accepted: list[Any] = field(default_factory=list)
+    by_id: dict[str, Any] = field(default_factory=dict)
+    by_type: dict[str, list[Any]] = field(default_factory=dict)
+    identity: tuple[str, str, str, str, str, int] | None = None
+    last_step: int = -1
+
+
+def _accept_commit_trace_event(
+    state: _CommitTraceReplayState,
+    raw: Any,
+    event_type: str,
+) -> None:
+    validate = getattr(raw, "validate", None)
+    if not callable(validate):
+        raise ValueError("commit trace replay requires canonical TraceEvent records")
+    validate()
+    lineage = raw.lineage
+    event_id = lineage["event_id"]
+    prior = state.by_id.get(event_id)
+    if prior is not None:
+        if prior != raw:
+            raise ValueError("commit trace event id replay changed its payload")
+        return
+    _validate_replay_identity_and_step(state, raw, lineage)
+    predecessor_types = _validate_replay_predecessors(
+        event_type,
+        lineage,
+        state.by_id,
+    )
+    if event_type == "commit_provisional":
+        _validate_provisional_replay(lineage, predecessor_types, state.by_type)
+    elif event_type == "certificate_conflict":
+        _validate_conflict_replay(lineage, state.by_type)
+    state.by_id[event_id] = raw
+    state.by_type.setdefault(event_type, []).append(raw)
+    state.accepted.append(raw)
+
+
+def _validate_replay_identity_and_step(
+    state: _CommitTraceReplayState,
+    raw: Any,
+    lineage: Mapping[str, Any],
+) -> None:
+    current_identity = (
+        raw.protocol_id,
+        lineage["run_id"],
+        raw.target,
+        lineage["profile"],
+        lineage["assurance"],
+        lineage["epoch"],
+    )
+    if state.identity is None:
+        state.identity = current_identity
+    elif current_identity != state.identity:
+        raise ValueError("commit trace replay mixes protocol/run/target/profile/epoch")
+    step = lineage["step"]
+    if step < state.last_step:
+        raise ValueError("commit trace logical steps must be nondecreasing")
+    state.last_step = step
+
+
+def _validate_replay_predecessors(
+    event_type: str,
+    lineage: Mapping[str, Any],
+    by_id: Mapping[str, Any],
+) -> set[str]:
+    missing = sorted(set(lineage["previous_event_ids"]) - set(by_id))
+    if missing:
+        raise ValueError(
+            f"{event_type} trace references unseen predecessor events: "
+            f"{', '.join(missing)}"
+        )
+    predecessor_types = {
+        by_id[item].event_type for item in lineage["previous_event_ids"]
+    }
+    for group in COMMIT_EVENT_CONTRACTS[event_type].predecessor_groups:
+        if not predecessor_types.intersection(group):
+            raise ValueError(
+                f"{event_type} trace lacks required predecessor type from "
+                + ", ".join(sorted(group))
+            )
+    return predecessor_types
+
+
+def _validate_provisional_replay(
+    lineage: Mapping[str, Any],
+    predecessor_types: set[str],
+    by_type: Mapping[str, list[Any]],
+) -> None:
+    witness_count = lineage["witness_count"]
+    required_predecessor = (
+        "commit_certificate_issued" if witness_count == 0 else "quorum_witness"
+    )
+    if required_predecessor not in predecessor_types:
+        raise ValueError(
+            "zero-witness provisional trace requires the portable certificate predecessor"
+            if witness_count == 0
+            else "witness-bearing provisional trace requires a quorum witness predecessor"
+        )
+    _validate_provisional_value_shape(lineage, witness_count)
+    _validate_provisional_witness(lineage, witness_count, by_type)
+    _validate_provisional_certificate(lineage, witness_count, by_type)
+
+
+def _validate_provisional_value_shape(
+    lineage: Mapping[str, Any],
+    witness_count: int,
+) -> None:
+    proposal_present = "proposal_digest" in lineage
+    value_present = "commit_value_root" in lineage
+    invalid_zero = witness_count == 0 and (proposal_present or value_present)
+    invalid_witness = witness_count > 0 and not (proposal_present and value_present)
+    if invalid_zero or invalid_witness:
+        raise ValueError(
+            "zero-witness provisional trace cannot claim a proposal/value"
+            if witness_count == 0
+            else "witness-bearing provisional trace requires the exact proposal digest "
+            "and commit value root"
+        )
+
+
+def _validate_provisional_witness(
+    lineage: Mapping[str, Any],
+    witness_count: int,
+    by_type: Mapping[str, list[Any]],
+) -> None:
+    if witness_count == 0:
+        return
+    matching = any(
+        item.lineage["proposal_digest"] == lineage["proposal_digest"]
+        and item.lineage["commit_value_root"] == lineage["commit_value_root"]
+        and item.lineage["event_id"] in lineage["previous_event_ids"]
+        for item in by_type.get("quorum_witness", [])
+    )
+    if not matching:
+        raise ValueError(
+            "witness-bearing provisional trace lacks its exact proposal/value witness"
+        )
+
+
+def _validate_provisional_certificate(
+    lineage: Mapping[str, Any],
+    witness_count: int,
+    by_type: Mapping[str, list[Any]],
+) -> None:
+    portable_ref = lineage["portable_certificate_ref"]
+    portable_events = tuple(
+        item
+        for item in by_type.get("commit_certificate_issued", [])
+        if item.lineage["certificate_kind"] == "evidence_commit"
+        and item.lineage["certificate_ref"] == portable_ref
+    )
+    if not portable_events:
+        raise ValueError(
+            "provisional trace lacks its exact portable certificate lineage"
+        )
+    direct = any(
+        item.lineage["event_id"] in lineage["previous_event_ids"]
+        for item in portable_events
+    )
+    if witness_count == 0 and not direct:
+        raise ValueError(
+            "zero-witness provisional trace must directly depend on its portable certificate"
+        )
+
+
+def _validate_conflict_replay(
+    lineage: Mapping[str, Any],
+    by_type: Mapping[str, list[Any]],
+) -> None:
+    conflict_refs = {
+        lineage["left_certificate_ref"],
+        lineage["right_certificate_ref"],
+    }
+    certificate_events = tuple(
+        item
+        for item in by_type.get("commit_certificate_issued", [])
+        if item.lineage["certificate_kind"] == "distributed_commit"
+        and item.lineage["event_id"] in lineage["previous_event_ids"]
+    )
+    if not conflict_refs.issubset(
+        {item.lineage["certificate_ref"] for item in certificate_events}
+    ):
+        raise ValueError(
+            "certificate conflict trace lacks both distributed certificate lineages"
+        )
+    values = {item.lineage["commit_value_root"] for item in certificate_events}
+    if values != set(lineage["commit_value_roots"]):
+        raise ValueError(
+            "certificate conflict trace commit values do not match its certificates"
+        )
+
+
+def _finalize_commit_trace_replay(
+    state: _CommitTraceReplayState,
+    *,
+    require_complete: bool,
+) -> CommitTraceReplay:
+    accepted = state.accepted
+    by_type = state.by_type
+    identity = state.identity
     if not accepted or identity is None:
         raise ValueError("commit trace replay requires at least one commit event")
     outcomes = by_type.get("decision_outcome", [])
@@ -954,7 +1087,7 @@ def replay_commit_trace(
         event_ids=tuple(item.lineage["event_id"] for item in accepted),
         event_types=tuple(item.event_type for item in accepted),
         record_refs=tuple(item.lineage["record_ref"] for item in accepted),
-        last_step=last_step,
+        last_step=state.last_step,
         outcome_ref=outcome_ref,
         outcome_kind=outcome_kind,
         certificate_refs=certificate_refs,
@@ -1001,85 +1134,105 @@ def commit_trace_lineage_schema(event_type: str) -> dict[str, Any]:
                         ]
                     }
                 },
-                "else": {
-                    "required": ["commit_value_root", "proposal_digest"]
-                },
+                "else": {"required": ["commit_value_root", "proposal_digest"]},
             }
         ]
     return schema
 
 
 def _validate_event_semantics(event_type: str, lineage: Mapping[str, Any]) -> None:
-    if event_type == "commit_window_advanced":
-        if lineage["required_stability_steps"] <= 0:
-            raise ValueError("commit window required_stability_steps must be positive")
-        if lineage["leader_candidate_id"] and lineage["stability_count"] <= 0:
-            raise ValueError(
-                "ready commit window stability_count must be positive"
-            )
-        if not lineage["leader_candidate_id"] and lineage["stability_count"] != 0:
-            raise ValueError(
-                "non-ready commit window stability_count must be zero"
-            )
-    elif event_type == "commit_window_reset":
-        if lineage["reset_count"] <= 0:
-            raise ValueError("commit window reset_count must be positive")
-        if lineage["window_ref"] == lineage["prior_window_ref"]:
-            raise ValueError("commit window reset must issue a new window state")
-    elif event_type == "commit_provisional":
-        if lineage["final"]:
-            raise ValueError("commit_provisional trace cannot claim finality")
-        if lineage["witness_count"] >= lineage["witness_quorum"]:
-            raise ValueError("commit_provisional trace must remain below witness quorum")
-        proposal_present = "proposal_digest" in lineage
-        value_present = "commit_value_root" in lineage
-        if lineage["witness_count"] == 0 and (proposal_present or value_present):
-            raise ValueError(
-                "zero-witness provisional trace cannot claim a proposal/value"
-            )
-        if lineage["witness_count"] > 0 and (
-            not proposal_present or not value_present
-        ):
-            raise ValueError(
-                "witness-bearing provisional trace requires the exact proposal/value"
-            )
-    elif event_type == "certificate_conflict":
-        if not lineage["frozen"]:
-            raise ValueError("certificate conflict trace must freeze the epoch")
-        if len(lineage["commit_value_roots"]) < 2:
-            raise ValueError(
-                "certificate conflict trace requires distinct commit values"
-            )
-    elif event_type == "quorum_witness" and not lineage["verified"]:
+    validator = _EVENT_SEMANTIC_VALIDATORS.get(event_type)
+    if validator is not None:
+        validator(lineage)
+
+
+def _validate_window_advanced_semantics(lineage: Mapping[str, Any]) -> None:
+    if lineage["required_stability_steps"] <= 0:
+        raise ValueError("commit window required_stability_steps must be positive")
+    if lineage["leader_candidate_id"] and lineage["stability_count"] <= 0:
+        raise ValueError("ready commit window stability_count must be positive")
+    if not lineage["leader_candidate_id"] and lineage["stability_count"] != 0:
+        raise ValueError("non-ready commit window stability_count must be zero")
+
+
+def _validate_window_reset_semantics(lineage: Mapping[str, Any]) -> None:
+    if lineage["reset_count"] <= 0:
+        raise ValueError("commit window reset_count must be positive")
+    if lineage["window_ref"] == lineage["prior_window_ref"]:
+        raise ValueError("commit window reset must issue a new window state")
+
+
+def _validate_provisional_semantics(lineage: Mapping[str, Any]) -> None:
+    if lineage["final"]:
+        raise ValueError("commit_provisional trace cannot claim finality")
+    if lineage["witness_count"] >= lineage["witness_quorum"]:
+        raise ValueError("commit_provisional trace must remain below witness quorum")
+    proposal_present = "proposal_digest" in lineage
+    value_present = "commit_value_root" in lineage
+    if lineage["witness_count"] == 0 and (proposal_present or value_present):
+        raise ValueError("zero-witness provisional trace cannot claim a proposal/value")
+    if lineage["witness_count"] > 0 and not (proposal_present and value_present):
+        raise ValueError(
+            "witness-bearing provisional trace requires the exact proposal/value"
+        )
+
+
+def _validate_certificate_conflict_semantics(lineage: Mapping[str, Any]) -> None:
+    if not lineage["frozen"]:
+        raise ValueError("certificate conflict trace must freeze the epoch")
+    if len(lineage["commit_value_roots"]) < 2:
+        raise ValueError("certificate conflict trace requires distinct commit values")
+
+
+def _validate_quorum_witness_semantics(lineage: Mapping[str, Any]) -> None:
+    if not lineage["verified"]:
         raise ValueError("quorum_witness trace must contain a verified witness")
-    elif event_type == "commit_certificate_issued":
-        if lineage["claim_fingerprint"] and _ROOT_RE.fullmatch(
-            lineage["claim_fingerprint"]
-        ) is None:
-            raise ValueError(
-                "commit certificate trace claim must be empty or a canonical root"
-            )
-        if lineage["certificate_kind"] != "outcome" and not (
-            lineage["candidate_id"] and _ROOT_RE.fullmatch(lineage["claim_fingerprint"])
-        ):
-            raise ValueError(
-                "commit certificate trace requires a substantive candidate and claim"
-            )
-        value_present = "commit_value_root" in lineage
-        if (lineage["certificate_kind"] == "distributed_commit") is not value_present:
-            raise ValueError(
-                "distributed certificate trace must exclusively bind a commit value root"
-            )
-    elif event_type == "decision_outcome":
-        committed = lineage["kind"] == "evidence_commit"
-        if lineage["authoritative_commit"] != committed:
-            raise ValueError("decision outcome authoritative_commit is inconsistent")
-        if lineage["epistemically_committed"] != committed:
-            raise ValueError("decision outcome epistemically_committed is inconsistent")
-        if committed and "certificate_ref" not in lineage:
-            raise ValueError("evidence commit outcome requires certificate_ref")
-        if not committed and "certificate_ref" in lineage:
-            raise ValueError("non-commit outcome cannot carry a commit certificate_ref")
+
+
+def _validate_certificate_issued_semantics(lineage: Mapping[str, Any]) -> None:
+    claim = lineage["claim_fingerprint"]
+    if claim and _ROOT_RE.fullmatch(claim) is None:
+        raise ValueError(
+            "commit certificate trace claim must be empty or a canonical root"
+        )
+    if lineage["certificate_kind"] != "outcome" and not (
+        lineage["candidate_id"] and _ROOT_RE.fullmatch(claim)
+    ):
+        raise ValueError(
+            "commit certificate trace requires a substantive candidate and claim"
+        )
+    value_present = "commit_value_root" in lineage
+    if (lineage["certificate_kind"] == "distributed_commit") is not value_present:
+        raise ValueError(
+            "distributed certificate trace must exclusively bind a commit value root"
+        )
+
+
+def _validate_decision_outcome_semantics(lineage: Mapping[str, Any]) -> None:
+    committed = lineage["kind"] == "evidence_commit"
+    if lineage["authoritative_commit"] != committed:
+        raise ValueError("decision outcome authoritative_commit is inconsistent")
+    if lineage["epistemically_committed"] != committed:
+        raise ValueError("decision outcome epistemically_committed is inconsistent")
+    if committed and "certificate_ref" not in lineage:
+        raise ValueError("evidence commit outcome requires certificate_ref")
+    if not committed and "certificate_ref" in lineage:
+        raise ValueError("non-commit outcome cannot carry a commit certificate_ref")
+
+
+_EVENT_SEMANTIC_VALIDATORS: Mapping[str, Callable[[Mapping[str, Any]], None]] = (
+    MappingProxyType(
+        {
+            "commit_window_advanced": _validate_window_advanced_semantics,
+            "commit_window_reset": _validate_window_reset_semantics,
+            "commit_provisional": _validate_provisional_semantics,
+            "certificate_conflict": _validate_certificate_conflict_semantics,
+            "quorum_witness": _validate_quorum_witness_semantics,
+            "commit_certificate_issued": _validate_certificate_issued_semantics,
+            "decision_outcome": _validate_decision_outcome_semantics,
+        }
+    )
+)
 
 
 def _validate_terminal_path(
@@ -1099,15 +1252,17 @@ def _validate_terminal_path(
             item.lineage["certificate_ref"]
             for item in by_type["commit_certificate_issued"]
         }:
-            raise ValueError("evidence commit outcome references an untraced certificate")
+            raise ValueError(
+                "evidence commit outcome references an untraced certificate"
+            )
     elif outcome_kind == "safety_violation":
         if not by_type.get("certificate_conflict"):
             raise ValueError("safety violation trace lacks a certificate conflict")
     elif outcome_kind == "finality_unavailable":
-        if not (
-            by_type.get("commit_provisional") or by_type.get("quorum_pending")
-        ):
-            raise ValueError("finality unavailable trace lacks pending finality lineage")
+        if not (by_type.get("commit_provisional") or by_type.get("quorum_pending")):
+            raise ValueError(
+                "finality unavailable trace lacks pending finality lineage"
+            )
 
 
 def _validate_terminal_output(
@@ -1119,12 +1274,16 @@ def _validate_terminal_output(
         raise ValueError("every terminal commit outcome must be deliverable")
     if outcome_kind != "evidence_commit" and output["execute"]:
         raise ValueError("non-commit terminal outcome cannot authorize execute")
-    if outcome_kind in {
-        "blocked",
-        "invalid",
-        "finality_unavailable",
-        "safety_violation",
-    } and output["publish"]:
+    if (
+        outcome_kind
+        in {
+            "blocked",
+            "invalid",
+            "finality_unavailable",
+            "safety_violation",
+        }
+        and output["publish"]
+    ):
         raise ValueError(f"{outcome_kind} cannot publish an authoritative result")
     if outcome_kind == "evidence_commit":
         certificate_ref = outcome["certificate_ref"]
@@ -1134,17 +1293,19 @@ def _validate_terminal_output(
 
 def _validate_field(event_type: str, name: str, value: Any, spec: object) -> None:
     path = f"{event_type} trace {name}"
-    if spec == _TEXT:
-        _require_text(value, path)
-    elif spec == _STRING:
-        _require_string(value, path)
-    elif spec == _ROOT:
-        _require_root(value, path)
-    elif spec in {_STEP, _COUNT}:
-        _require_integer(value, path)
-    elif spec == _INTEGER:
-        _require_signed_integer(value, path)
-    elif spec == _BOOL:
+    scalar_validators: dict[object, Callable[[Any, str], None]] = {
+        _TEXT: _require_text,
+        _STRING: _require_string,
+        _ROOT: _require_root,
+        _STEP: _require_integer,
+        _COUNT: _require_integer,
+        _INTEGER: _require_signed_integer,
+    }
+    scalar_validator = scalar_validators.get(spec)
+    if scalar_validator is not None:
+        scalar_validator(value, path)
+        return
+    if spec == _BOOL:
         if type(value) is not bool:
             raise ValueError(f"{path} must be a boolean")
     elif spec == _TEXTS:
@@ -1154,11 +1315,8 @@ def _validate_field(event_type: str, name: str, value: Any, spec: object) -> Non
     elif spec == _PAYLOAD:
         if not isinstance(value, dict):
             raise ValueError(f"{path} must be a JSON object")
-    elif isinstance(spec, frozenset):
-        if _enum_value(value) not in spec:
-            raise ValueError(f"{path} has an unsupported value")
-    else:  # pragma: no cover - contract authoring invariant
-        raise AssertionError(f"unknown commit trace field specification: {spec!r}")
+    elif _enum_value(value) not in cast(frozenset[Any], spec):
+        raise ValueError(f"{path} has an unsupported value")
 
 
 def _require_text(value: Any, path: str) -> None:
@@ -1216,46 +1374,49 @@ def _validate_extensions(value: Any, *, event_type: str) -> None:
     for key in value:
         _require_text(key, f"{event_type} trace extension key")
         if key.startswith(_CRITICAL_EXTENSION_PREFIXES):
-            raise ValueError(f"{event_type} trace contains an unknown critical extension")
+            raise ValueError(
+                f"{event_type} trace contains an unknown critical extension"
+            )
         if _NONCRITICAL_EXTENSION_RE.fullmatch(key) is None:
             raise ValueError(f"{event_type} trace extension key must be namespaced")
 
 
 def _field_schema(spec: object) -> dict[str, Any]:
-    if spec == _TEXT:
-        return {"type": "string", "minLength": 1}
-    if spec == _STRING:
-        return {"type": "string"}
-    if spec == _ROOT:
-        return {"type": "string", "pattern": r"^sha256:[0-9a-f]{64}$"}
-    if spec in {_STEP, _COUNT}:
-        return {
+    schemas: dict[object, dict[str, Any]] = {
+        _TEXT: {"type": "string", "minLength": 1},
+        _STRING: {"type": "string"},
+        _ROOT: {"type": "string", "pattern": r"^sha256:[0-9a-f]{64}$"},
+        _STEP: {
             "type": "integer",
             "minimum": 0,
             "maximum": MAX_AUTHORITY_INTEGER,
-        }
-    if spec == _INTEGER:
-        return {
+        },
+        _COUNT: {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": MAX_AUTHORITY_INTEGER,
+        },
+        _INTEGER: {
             "type": "integer",
             "minimum": -MAX_AUTHORITY_INTEGER,
             "maximum": MAX_AUTHORITY_INTEGER,
-        }
-    if spec == _BOOL:
-        return {"type": "boolean"}
-    if spec == _TEXTS:
-        return {
+        },
+        _BOOL: {"type": "boolean"},
+        _TEXTS: {
             "type": "array",
             "items": {"type": "string", "minLength": 1},
             "uniqueItems": True,
-        }
-    if spec == _ROOTS:
-        return {
+        },
+        _ROOTS: {
             "type": "array",
             "items": {"type": "string", "pattern": r"^sha256:[0-9a-f]{64}$"},
             "uniqueItems": True,
-        }
-    if spec == _PAYLOAD:
-        return {"type": "object"}
+        },
+        _PAYLOAD: {"type": "object"},
+    }
+    schema = schemas.get(spec)
+    if schema is not None:
+        return schema
     if isinstance(spec, frozenset):
         return {"enum": sorted(spec)}
     raise AssertionError(f"unknown commit trace schema specification: {spec!r}")
@@ -1306,6 +1467,8 @@ def _portable_value(value: Any, *, path: str) -> Any:
         normalized: dict[str, Any] = {}
         for key, item in value.items():
             _require_text(key, f"{path} key")
+            if key in normalized:
+                raise ValueError(f"{path} contains duplicate keys")
             normalized[key] = _portable_value(item, path=f"{path}.{key}")
         return normalized
     if isinstance(value, (tuple, list)):

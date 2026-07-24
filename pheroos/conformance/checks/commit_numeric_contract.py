@@ -63,7 +63,10 @@ def check(manifest: CapabilityManifest) -> CheckResult:
         problems.append("canonical_reference_vector")
     if canonical_commit_payload(reordered, **canonical_args) != _REFERENCE_CANONICAL:
         problems.append("canonical_object_key_order")
-    if commit_payload_fingerprint(reference, **canonical_args) != _REFERENCE_FINGERPRINT:
+    if (
+        commit_payload_fingerprint(reference, **canonical_args)
+        != _REFERENCE_FINGERPRINT
+    ):
         problems.append("fingerprint_reference_vector")
     if canonical_commit_set(("zeta", "alpha", "mu")) != (
         "mu",

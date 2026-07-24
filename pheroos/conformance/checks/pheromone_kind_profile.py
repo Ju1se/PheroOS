@@ -3,18 +3,24 @@ from __future__ import annotations
 from dataclasses import replace
 from math import isclose
 
-from pheroos.conformance.checks._manifest import active_target, candidate_set, exercise_candidate_id
+from pheroos.conformance.checks._manifest import (
+    active_target,
+    candidate_set,
+    exercise_candidate_id,
+)
 from pheroos.conformance.report import CheckResult
 from pheroos.governance import (
-    PheromoneTrail,
+    CandidateSet,
     PheromoneBudgetState,
+    PheromoneKindProfile,
+    PheromonePolicy,
+    PheromoneTrail,
     collect_pheromone_source_diversity,
     deposit_pheromone_trails,
     evaporate_trails,
     pheromone_policy_from_collective,
     score_pheromone_trails_result,
 )
-from pheroos.governance.errors import GovernanceError
 from pheroos.protocol.models import (
     CapabilityManifest,
     SUPPORTED_PHEROMONE_KINDS,
@@ -58,85 +64,17 @@ def kind_profile_problems(manifest: CapabilityManifest) -> list[str]:
     problems: list[str] = []
 
     for kind, profile in sorted(policy.kind_profiles.items()):
-        competitive_singleton = (
-            policy.response_model == "competitive"
-            or policy.competition_mode == "normalize"
-            or profile.response_model == "competitive"
-        ) and len(candidates.candidates) == 1
-        subject_types = effective_pheromone_scored_subject_types(
-            kind,
-            profile,
-            policy.scored_subject_types,
-        )
-        # Stale is a mandatory no-score terminal state even though its profile
-        # deliberately declares no scored subjects. A namespaced extension kind
-        # with no per-kind subject declaration is likewise exercised as a
-        # mandatory metadata-only path.
-        exercise_subjects = subject_types or (
-            ("candidate",)
-            if kind == "stale" or kind not in SUPPORTED_PHEROMONE_KINDS
-            else ()
-        )
-        if (
-            not exercise_subjects
-            and profile.weight > 0
-            and kind in SUPPORTED_PHEROMONE_KINDS
-        ):
-            problems.append(f"{kind}_no_scored_subjects")
-
-        for subject_type in exercise_subjects:
-            items = profile_trails(
-                candidate_id,
-                target=target,
+        problems.extend(
+            _declared_kind_problems(
                 kind=kind,
-                subject_type=subject_type,
-                strength=strength,
-                source_count=policy.min_source_diversity,
-            )
-            score_result = score_pheromone_trails_result(
-                candidate_set=candidates,
+                profile=profile,
+                candidates=candidates,
+                candidate_id=candidate_id,
+                target=target,
                 policy=policy,
-                trails=items,
-            )
-            observed = float(
-                score_result.kind_breakdown[candidate_id].get(kind, 0.0)
-            )
-            response_active = bool(subject_types) and kind_response_can_score(
-                kind,
-                strength,
-                profile.weight,
-                policy,
-            )
-            label = f"{kind}_{subject_type}"
-            if kind == "stale" or not response_active:
-                if observed != 0.0:
-                    problems.append(f"{label}_unexpected_score")
-            elif not competitive_singleton and kind in NEGATIVE_KINDS and observed >= 0.0:
-                problems.append(f"{label}_pressure")
-            elif not competitive_singleton and kind not in NEGATIVE_KINDS and observed <= 0.0:
-                problems.append(f"{label}_pressure")
-
-        if profile.ttl_steps is not None:
-            ttl_subject = subject_types[0] if subject_types else "candidate"
-            expiring = profile_trails(
-                candidate_id,
-                target=target,
-                kind=kind,
-                subject_type=ttl_subject,
                 strength=strength,
-                source_count=1,
-            )[0]
-            expired = evaporate_trails(
-                [expiring],
-                policy,
-                current_step=profile.ttl_steps,
-            )[0]
-            if expired.kind != "stale" or not isclose(
-                expired.strength,
-                float(policy.min_strength),
-                abs_tol=1e-9,
-            ):
-                problems.append(f"{kind}_profile_ttl")
+            )
+        )
 
     problems.extend(
         kind_priority_problems(
@@ -165,12 +103,155 @@ def kind_profile_problems(manifest: CapabilityManifest) -> list[str]:
     return problems
 
 
-def post_cap_source_diversity_problems(
+def _declared_kind_problems(
     *,
-    candidates: object,
+    kind: str,
+    profile: PheromoneKindProfile,
+    candidates: CandidateSet,
     candidate_id: str,
     target: str,
-    policy: object,
+    policy: PheromonePolicy,
+    strength: float,
+) -> list[str]:
+    competitive_singleton = (
+        policy.response_model == "competitive"
+        or policy.competition_mode == "normalize"
+        or profile.response_model == "competitive"
+    ) and len(candidates.candidates) == 1
+    subject_types = effective_pheromone_scored_subject_types(
+        kind,
+        profile,
+        policy.scored_subject_types,
+    )
+    # Stale is a mandatory no-score terminal state even though its profile
+    # deliberately declares no scored subjects. A namespaced extension kind
+    # with no per-kind subject declaration is likewise exercised as a
+    # mandatory metadata-only path.
+    exercise_subjects = subject_types or (
+        ("candidate",)
+        if kind == "stale" or kind not in SUPPORTED_PHEROMONE_KINDS
+        else ()
+    )
+    problems: list[str] = []
+    if (
+        not exercise_subjects
+        and profile.weight > 0
+        and kind in SUPPORTED_PHEROMONE_KINDS
+    ):
+        problems.append(f"{kind}_no_scored_subjects")
+    for subject_type in exercise_subjects:
+        problems.extend(
+            _kind_subject_score_problems(
+                kind=kind,
+                profile=profile,
+                subject_type=subject_type,
+                subject_types=subject_types,
+                competitive_singleton=competitive_singleton,
+                candidates=candidates,
+                candidate_id=candidate_id,
+                target=target,
+                policy=policy,
+                strength=strength,
+            )
+        )
+    problems.extend(
+        _kind_ttl_problems(
+            kind=kind,
+            profile=profile,
+            subject_types=subject_types,
+            candidate_id=candidate_id,
+            target=target,
+            policy=policy,
+            strength=strength,
+        )
+    )
+    return problems
+
+
+def _kind_subject_score_problems(
+    *,
+    kind: str,
+    profile: PheromoneKindProfile,
+    subject_type: str,
+    subject_types: tuple[str, ...],
+    competitive_singleton: bool,
+    candidates: CandidateSet,
+    candidate_id: str,
+    target: str,
+    policy: PheromonePolicy,
+    strength: float,
+) -> list[str]:
+    items = profile_trails(
+        candidate_id,
+        target=target,
+        kind=kind,
+        subject_type=subject_type,
+        strength=strength,
+        source_count=policy.min_source_diversity,
+    )
+    score_result = score_pheromone_trails_result(
+        candidate_set=candidates,
+        policy=policy,
+        trails=items,
+    )
+    observed = float(score_result.kind_breakdown[candidate_id].get(kind, 0.0))
+    response_active = bool(subject_types) and kind_response_can_score(
+        kind,
+        strength,
+        profile.weight,
+        policy,
+    )
+    label = f"{kind}_{subject_type}"
+    if kind == "stale" or not response_active:
+        return [f"{label}_unexpected_score"] if observed != 0.0 else []
+    if not competitive_singleton and kind in NEGATIVE_KINDS and observed >= 0.0:
+        return [f"{label}_pressure"]
+    if not competitive_singleton and kind not in NEGATIVE_KINDS and observed <= 0.0:
+        return [f"{label}_pressure"]
+    return []
+
+
+def _kind_ttl_problems(
+    *,
+    kind: str,
+    profile: PheromoneKindProfile,
+    subject_types: tuple[str, ...],
+    candidate_id: str,
+    target: str,
+    policy: PheromonePolicy,
+    strength: float,
+) -> list[str]:
+    if profile.ttl_steps is None:
+        return []
+    ttl_subject = subject_types[0] if subject_types else "candidate"
+    expiring = profile_trails(
+        candidate_id,
+        target=target,
+        kind=kind,
+        subject_type=ttl_subject,
+        strength=strength,
+        source_count=1,
+    )[0]
+    expired = evaporate_trails(
+        [expiring],
+        policy,
+        current_step=profile.ttl_steps,
+    )[0]
+    if expired.kind != "stale" or not isclose(
+        expired.strength,
+        float(policy.min_strength),
+        abs_tol=1e-9,
+    ):
+        return [f"{kind}_profile_ttl"]
+    return []
+
+
+def post_cap_source_diversity_problems(
+    *,
+    candidates: CandidateSet,
+    candidate_id: str,
+    target: str,
+    policy: PheromonePolicy,
 ) -> list[str]:
     """Prove a globally exhausted source cannot unlock another candidate."""
 
@@ -189,12 +270,14 @@ def post_cap_source_diversity_problems(
     if alarm_profile is None or positive_profile is None:
         return []
     if (
-        "candidate" not in effective_pheromone_scored_subject_types(
+        "candidate"
+        not in effective_pheromone_scored_subject_types(
             "alarm",
             alarm_profile,
             policy.scored_subject_types,
         )
-        or "candidate" not in effective_pheromone_scored_subject_types(
+        or "candidate"
+        not in effective_pheromone_scored_subject_types(
             "positive",
             positive_profile,
             policy.scored_subject_types,
@@ -283,17 +366,20 @@ def post_cap_source_diversity_problems(
         abs_tol=1e-9,
     ):
         problems.append("post_cap_source_diversity_gate")
-    if reverse_diversity != observed_diversity or reverse_result.scores != result.scores:
+    if (
+        reverse_diversity != observed_diversity
+        or reverse_result.scores != result.scores
+    ):
         problems.append("post_cap_source_diversity_permutation")
     return problems
 
 
 def kind_priority_problems(
     *,
-    candidates: object,
+    candidates: CandidateSet,
     candidate_id: str,
     target: str,
-    policy: object,
+    policy: PheromonePolicy,
 ) -> list[str]:
     strength = min(
         float(policy.max_strength),
@@ -325,7 +411,9 @@ def kind_priority_problems(
     )
     forward_kinds = [record.kind for record in forward.records]
     reverse_kinds = [record.kind for record in reverse.records]
-    observed_priorities = [policy.kind_profiles[kind].priority for kind in forward_kinds]
+    observed_priorities = [
+        policy.kind_profiles[kind].priority for kind in forward_kinds
+    ]
     problems: list[str] = []
     if sorted(forward_kinds) != sorted(policy.kind_profiles):
         problems.append("kind_priority_coverage")
@@ -346,10 +434,10 @@ def kind_priority_problems(
 
 def same_source_priority_problems(
     *,
-    candidates: object,
+    candidates: CandidateSet,
     candidate_id: str,
     target: str,
-    policy: object,
+    policy: PheromonePolicy,
 ) -> list[str]:
     """Prove higher-priority emergency memory wins one shared source budget."""
 
@@ -451,10 +539,10 @@ def same_source_priority_problems(
 
 def kind_suppression_problems(
     *,
-    candidates: object,
+    candidates: CandidateSet,
     candidate_id: str,
     target: str,
-    policy: object,
+    policy: PheromonePolicy,
 ) -> list[str]:
     positive_profile = policy.kind_profiles.get("positive")
     positive_subjects = (
@@ -504,9 +592,8 @@ def kind_suppression_problems(
         suppression = float(
             combined.kind_breakdown[candidate_id].get("cautionary_suppression", 0.0)
         )
-        threshold_reached = (
-            pressure_value > 0
-            and pressure_value >= float(policy.cautionary_override_threshold)
+        threshold_reached = pressure_value > 0 and pressure_value >= float(
+            policy.cautionary_override_threshold
         )
         if profile.can_suppress_positive and threshold_reached:
             positive_value = float(
@@ -523,11 +610,21 @@ def kind_suppression_problems(
     return problems
 
 
-def kind_response_can_score(kind: str, strength: float, weight: float, policy: object) -> bool:
+def kind_response_can_score(
+    kind: str,
+    strength: float,
+    weight: float,
+    policy: PheromonePolicy,
+) -> bool:
     return kind_response_magnitude(kind, strength, weight, policy) > 0
 
 
-def kind_response_magnitude(kind: str, strength: float, weight: float, policy: object) -> float:
+def kind_response_magnitude(
+    kind: str,
+    strength: float,
+    weight: float,
+    policy: PheromonePolicy,
+) -> float:
     if kind == "stale" or weight <= 0 or strength <= 0:
         return 0.0
     if kind == "novelty" and not policy.exploration_enabled:
@@ -539,9 +636,9 @@ def kind_response_magnitude(kind: str, strength: float, weight: float, policy: o
     if profile.response_model == "saturating":
         if policy.saturation_threshold <= 0:
             return 0.0
-        return (
-            raw_magnitude * float(policy.saturation_threshold)
-        ) / (raw_magnitude + float(policy.saturation_threshold))
+        return (raw_magnitude * float(policy.saturation_threshold)) / (
+            raw_magnitude + float(policy.saturation_threshold)
+        )
     return raw_magnitude
 
 
@@ -554,7 +651,11 @@ def profile_trails(
     strength: float,
     source_count: int,
 ) -> list[PheromoneTrail]:
-    subject_id = candidate_id if subject_type == "candidate" else f"{subject_type}:conformance:{kind}"
+    subject_id = (
+        candidate_id
+        if subject_type == "candidate"
+        else f"{subject_type}:conformance:{kind}"
+    )
     return [
         PheromoneTrail(
             candidate_id=candidate_id,

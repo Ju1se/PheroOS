@@ -1157,6 +1157,20 @@ def _validate_support_replay_receipt(
 def _validate_support_replay_state_shape(
     state: SupportLeaseReplayState,
 ) -> None:
+    profile, revision, initialized, last_issued = _validate_support_replay_header(state)
+    receipts = _validate_support_replay_receipts(state, revision=revision)
+    _validate_support_replay_root(state, receipts=receipts, profile=profile)
+    _validate_support_replay_predecessor(
+        state,
+        revision=revision,
+        initialized=initialized,
+        last_issued=last_issued,
+    )
+
+
+def _validate_support_replay_header(
+    state: SupportLeaseReplayState,
+) -> tuple[str, int, int, int]:
     profile = require_commit_profile(state.profile, "support replay state profile")
     protocol_id = require_commit_text(
         state.protocol_id,
@@ -1189,6 +1203,14 @@ def _validate_support_replay_state_shape(
         )
     require_commit_text(state.provenance, "support replay state provenance")
     require_commit_text(state.trace_event_id, "support replay state trace_event_id")
+    return profile, revision, initialized, last_issued
+
+
+def _validate_support_replay_receipts(
+    state: SupportLeaseReplayState,
+    *,
+    revision: int,
+) -> tuple[SupportLeaseReplayReceipt, ...]:
     receipts = _canonical_support_replay_receipts(state.receipts)
     if receipts != state.receipts:
         raise GovernanceError("support replay state receipts are not canonical")
@@ -1200,9 +1222,27 @@ def _validate_support_replay_state_shape(
             raise GovernanceError(
                 f"support replay state contains duplicate {field_name} receipts"
             )
+    return receipts
+
+
+def _validate_support_replay_root(
+    state: SupportLeaseReplayState,
+    *,
+    receipts: Sequence[SupportLeaseReplayReceipt],
+    profile: str,
+) -> None:
     require_commit_fingerprint(state.replay_root, "support replay state replay_root")
     if state.replay_root != _support_replay_root(receipts, profile=profile):
         raise GovernanceError("support replay state root does not match its receipts")
+
+
+def _validate_support_replay_predecessor(
+    state: SupportLeaseReplayState,
+    *,
+    revision: int,
+    initialized: int,
+    last_issued: int,
+) -> None:
     if revision == 0:
         if state.previous_state_fingerprint:
             raise GovernanceError("empty support replay state has a predecessor")

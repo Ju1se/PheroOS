@@ -11,17 +11,19 @@ def active_target(manifest: CapabilityManifest) -> str:
 def candidate_set(manifest: CapabilityManifest) -> CandidateSet:
     target = active_target(manifest)
     return CandidateSet(
-        [
+        tuple(
             Candidate(item.id, item.target, item.safe_fallback)
             for item in manifest.protocol.candidates
             if item.target == target
-        ]
+        )
     )
 
 
 def target_candidate_ids(manifest: CapabilityManifest) -> list[str]:
     target = active_target(manifest)
-    return sorted(item.id for item in manifest.protocol.candidates if item.target == target)
+    return sorted(
+        item.id for item in manifest.protocol.candidates if item.target == target
+    )
 
 
 def exercise_candidate_id(manifest: CapabilityManifest) -> str | None:
@@ -38,4 +40,9 @@ def exercise_candidate_id(manifest: CapabilityManifest) -> str | None:
     return sorted(item.id for item in active)[0] if active else None
 
 
-__all__ = ["active_target", "candidate_set", "exercise_candidate_id", "target_candidate_ids"]
+__all__ = [
+    "active_target",
+    "candidate_set",
+    "exercise_candidate_id",
+    "target_candidate_ids",
+]

@@ -364,9 +364,7 @@ def _observation(
         authority=AuthorityLevel.GOVERNANCE,
         current_step=3,
         verification_provenance="urn:test:observation-verification",
-        verification_trace_event_id=(
-            f"trace:observation-verified:{run_id}:{index}"
-        ),
+        verification_trace_event_id=(f"trace:observation-verified:{run_id}:{index}"),
         prior_observations=(),
     )
 
@@ -420,9 +418,7 @@ def _challenge(
         authority=AuthorityLevel.GOVERNANCE,
         current_step=3,
         verification_provenance="urn:test:challenge-verification",
-        verification_trace_event_id=(
-            f"trace:challenge-verified:{run_id}:{index}"
-        ),
+        verification_trace_event_id=(f"trace:challenge-verified:{run_id}:{index}"),
         prior_challenges=(),
     )
 
@@ -657,9 +653,7 @@ def _scenario(
         policy_root=policy_root,
         policy=policy,
         run_id=run_id,
-        nonce=(
-            leader_observation.nonce if shared_observation_nonce else None
-        ),
+        nonce=(leader_observation.nonce if shared_observation_nonce else None),
     )
     other_extra = (
         _observation(
@@ -1049,9 +1043,7 @@ def _assess(
         scenario.context,
         manifest=scenario.manifest,
         candidate_inputs=(
-            scenario.candidate_inputs
-            if candidate_inputs is None
-            else candidate_inputs
+            scenario.candidate_inputs if candidate_inputs is None else candidate_inputs
         ),
         leases=scenario.leases if leases is None else leases,
         revocations=revocations,
@@ -1101,7 +1093,9 @@ def _context_request(scenario: _Scenario) -> tuple[CapabilityManifest, dict]:
     }
 
 
-def test_optimal_commit_reconstructs_metrics_and_issues_tamper_evident_assessment() -> None:
+def test_optimal_commit_reconstructs_metrics_and_issues_tamper_evident_assessment() -> (
+    None
+):
     scenario = _scenario()
     assessment = _assess(scenario)
 
@@ -1149,9 +1143,7 @@ def test_leader_margin_uses_zero_baseline_when_every_competitor_is_negative() ->
     scenario = _scenario(other_counterevidence_count=2)
 
     assessment = _assess(scenario)
-    metrics = {
-        item.candidate_id: item for item in assessment.candidate_metrics
-    }
+    metrics = {item.candidate_id: item for item in assessment.candidate_metrics}
 
     assert metrics[scenario.leader_id].net_evidence == 2_000_000
     assert metrics[scenario.other_id].net_evidence == -1_000_000
@@ -1220,10 +1212,7 @@ def test_active_risk_threshold_is_reapplied_instead_of_baseline_summary_gate() -
     assert leader.positive_threshold_satisfied is False
     assert leader.ready_for_stability is False
     assert assessment.status is CommitAssessmentStatus.NOT_READY
-    assert (
-        CommitReasonCode.POSITIVE_EVIDENCE_INSUFFICIENT.value
-        in leader.reason_codes
-    )
+    assert CommitReasonCode.POSITIVE_EVIDENCE_INSUFFICIENT.value in leader.reason_codes
 
 
 @pytest.mark.parametrize(
@@ -1303,7 +1292,9 @@ def test_context_claim_and_candidate_coverage_fail_closed_with_exact_codes() -> 
                 scenario.candidate_inputs[1],
             ),
         )
-    assert multiple_claims.value.reason_code is CommitReasonCode.CANDIDATE_CLAIM_CONFLICT
+    assert (
+        multiple_claims.value.reason_code is CommitReasonCode.CANDIDATE_CLAIM_CONFLICT
+    )
 
 
 def test_context_authority_is_idempotent_strong_concurrent_and_fork_free() -> None:
@@ -1349,7 +1340,9 @@ def test_context_authority_is_idempotent_strong_concurrent_and_fork_free() -> No
     assert id(reissued) == expected_identity
 
 
-def test_tampered_context_binding_and_evidence_root_are_invalid_not_safety_findings() -> None:
+def test_tampered_context_binding_and_evidence_root_are_invalid_not_safety_findings() -> (
+    None
+):
     scenario = _scenario()
     forged_context = replace(
         scenario.context,
@@ -1373,7 +1366,9 @@ def test_tampered_context_binding_and_evidence_root_are_invalid_not_safety_findi
     assert evidence_error.value.kind is CommitEvaluationFailureKind.INVALID
 
 
-def test_cross_candidate_replay_and_support_equivocation_are_safety_assessments() -> None:
+def test_cross_candidate_replay_and_support_equivocation_are_safety_assessments() -> (
+    None
+):
     replay = _scenario(shared_observation_nonce=True)
     replay_assessment = _assess(replay)
     assert replay_assessment.status is CommitAssessmentStatus.SAFETY_VIOLATION
@@ -1444,7 +1439,9 @@ def test_unrecorded_disposition_and_revocation_cannot_bypass_central_replay() ->
     )
     with pytest.raises(CommitEvaluationError) as disposition_error:
         _assess(scenario, candidate_inputs=disposition_inputs)
-    assert disposition_error.value.reason_code is CommitReasonCode.REPLAY_COVERAGE_MISMATCH
+    assert (
+        disposition_error.value.reason_code is CommitReasonCode.REPLAY_COVERAGE_MISMATCH
+    )
     assert disposition_fingerprint in disposition_error.value.references
 
     revocation = revoke_support_lease(
@@ -1470,7 +1467,9 @@ def test_unrecorded_disposition_and_revocation_cannot_bypass_central_replay() ->
     )
     with pytest.raises(CommitEvaluationError) as revocation_error:
         _assess(scenario, revocations=(revocation,))
-    assert revocation_error.value.reason_code is CommitReasonCode.REPLAY_COVERAGE_MISMATCH
+    assert (
+        revocation_error.value.reason_code is CommitReasonCode.REPLAY_COVERAGE_MISMATCH
+    )
     assert revocation_fingerprint in revocation_error.value.references
 
 
@@ -1493,7 +1492,9 @@ def test_unrelated_replay_namespaces_and_scopes_do_not_block_commit() -> None:
     assert assessment.leader_candidate_id == scenario.leader_id
 
 
-def test_optimal_commit_api_has_no_attention_pheromone_or_caller_metric_channel() -> None:
+def test_optimal_commit_api_has_no_attention_pheromone_or_caller_metric_channel() -> (
+    None
+):
     signature = inspect.signature(assess_optimal_commit)
     forbidden = {
         "attention",

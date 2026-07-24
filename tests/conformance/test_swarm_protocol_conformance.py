@@ -4,7 +4,12 @@ from dataclasses import replace
 import pytest
 
 from pheroos.conformance import run_conformance, validate_manifest
-from pheroos.conformance.checks import hybrid_trace_contract, pheromone_behavior, pheromone_policy, swarm_trace_contract
+from pheroos.conformance.checks import (
+    hybrid_trace_contract,
+    pheromone_behavior,
+    pheromone_policy,
+    swarm_trace_contract,
+)
 from pheroos.governance import (
     PheromoneNeighborhood,
     PheromoneSubject,
@@ -61,7 +66,9 @@ def test_hybrid_pheromone_protocol_validate_and_conformance_pass() -> None:
 
 
 def test_hybrid_trace_replay_requires_matching_governance_issued_prior_state() -> None:
-    manifest = load_capability_manifest("examples/hybrid-pheromone-protocol/capability.json")
+    manifest = load_capability_manifest(
+        "examples/hybrid-pheromone-protocol/capability.json"
+    )
     first, _ = hybrid_trace_contract.manifest_replay(manifest)
     replay_state = replay_state_from_hybrid_step(first)
     second, output_event = hybrid_trace_contract.manifest_replay(
@@ -129,8 +136,12 @@ def test_hybrid_trace_replay_requires_matching_governance_issued_prior_state() -
     assert "authority_replay_state_not_issued" in tampered.detail
 
 
-def test_hybrid_trace_rejects_coordinated_phantom_replay_event_and_score_anchor() -> None:
-    manifest = load_capability_manifest("examples/hybrid-pheromone-protocol/capability.json")
+def test_hybrid_trace_rejects_coordinated_phantom_replay_event_and_score_anchor() -> (
+    None
+):
+    manifest = load_capability_manifest(
+        "examples/hybrid-pheromone-protocol/capability.json"
+    )
     step, output_event = hybrid_trace_contract.manifest_replay(manifest)
     events = [*step.trace_events, output_event]
     accepted = next(
@@ -166,11 +177,15 @@ def test_hybrid_trace_rejects_coordinated_phantom_replay_event_and_score_anchor(
         },
     )
     insert_at = next(
-        index for index, event in enumerate(events) if event.event_type == "layer_proposal"
+        index
+        for index, event in enumerate(events)
+        if event.event_type == "layer_proposal"
     )
     events.insert(insert_at, phantom)
     score_index = next(
-        index for index, event in enumerate(events) if event.event_type == "pheromone_score"
+        index
+        for index, event in enumerate(events)
+        if event.event_type == "pheromone_score"
     )
     score_lineage = deepcopy(dict(events[score_index].lineage))
     score_lineage["processed_replay_receipts"]["adjustment"][phantom_id] = fingerprint
@@ -183,7 +198,9 @@ def test_hybrid_trace_rejects_coordinated_phantom_replay_event_and_score_anchor(
 
 
 def test_hybrid_trace_rejects_replay_payload_and_anchor_mutated_together() -> None:
-    manifest = load_capability_manifest("examples/hybrid-pheromone-protocol/capability.json")
+    manifest = load_capability_manifest(
+        "examples/hybrid-pheromone-protocol/capability.json"
+    )
     first, _ = hybrid_trace_contract.manifest_replay(manifest)
     replay_state = replay_state_from_hybrid_step(first)
     second, output_event = hybrid_trace_contract.manifest_replay(
@@ -210,7 +227,9 @@ def test_hybrid_trace_rejects_replay_payload_and_anchor_mutated_together() -> No
     )
     events[replay_index] = replace(events[replay_index], lineage=lineage)
     score_index = next(
-        index for index, event in enumerate(events) if event.event_type == "pheromone_score"
+        index
+        for index, event in enumerate(events)
+        if event.event_type == "pheromone_score"
     )
     score_lineage = deepcopy(dict(events[score_index].lineage))
     trace_event_id = lineage["source_trace_event_id"]
@@ -235,7 +254,9 @@ def test_swarm_trace_contract_skips_quorum_collective_mode() -> None:
             mode="quorum",
             fallback_candidate="candidate:safe_fallback",
         ),
-        trace_policy=TracePolicy(required_events=["block", "commit", "recovery", "output"]),
+        trace_policy=TracePolicy(
+            required_events=["block", "commit", "recovery", "output"]
+        ),
     )
 
     result = swarm_trace_contract.check(replace(manifest, protocol=protocol))
@@ -244,10 +265,14 @@ def test_swarm_trace_contract_skips_quorum_collective_mode() -> None:
 
 
 def test_hybrid_trace_contract_reports_missing_hybrid_events() -> None:
-    manifest = load_capability_manifest("examples/hybrid-pheromone-protocol/capability.json")
+    manifest = load_capability_manifest(
+        "examples/hybrid-pheromone-protocol/capability.json"
+    )
     protocol = replace(
         manifest.protocol,
-        trace_policy=TracePolicy(required_events=["block", "commit", "recovery", "output"]),
+        trace_policy=TracePolicy(
+            required_events=["block", "commit", "recovery", "output"]
+        ),
     )
 
     result = hybrid_trace_contract.check(replace(manifest, protocol=protocol))
@@ -287,29 +312,42 @@ def test_hybrid_trace_coverage_requires_real_positive_reinforcement() -> None:
         no_change,
         lineage={"delta": 0.25, "old_strength": 1.0, "new_strength": 1.25},
     )
-    assert hybrid_trace_contract.actual_trace_coverage_problems(
-        policy,
-        observed,
-        events=[reinforced],
-    ) == []
+    assert (
+        hybrid_trace_contract.actual_trace_coverage_problems(
+            policy,
+            observed,
+            events=[reinforced],
+        )
+        == []
+    )
 
 
 def test_hybrid_trace_contract_validates_actual_decision_lineage() -> None:
-    manifest = load_capability_manifest("examples/hybrid-pheromone-protocol/capability.json")
-    step, output_event = hybrid_trace_contract.manifest_replay(manifest, force_fallback=True)
+    manifest = load_capability_manifest(
+        "examples/hybrid-pheromone-protocol/capability.json"
+    )
+    step, output_event = hybrid_trace_contract.manifest_replay(
+        manifest, force_fallback=True
+    )
     events = [*step.trace_events, output_event]
 
-    result = hybrid_trace_contract.check_actual_trace(manifest, events, decision=step.decision)
+    result = hybrid_trace_contract.check_actual_trace(
+        manifest, events, decision=step.decision
+    )
 
     assert result.ok is True, result.detail
 
 
 def test_hybrid_trace_contract_rejects_zeroed_score_and_diversity_with_commit() -> None:
-    manifest = load_capability_manifest("examples/hybrid-pheromone-protocol/capability.json")
+    manifest = load_capability_manifest(
+        "examples/hybrid-pheromone-protocol/capability.json"
+    )
     step, output_event = hybrid_trace_contract.manifest_replay(manifest)
     events = [*step.trace_events, output_event]
     score_index = next(
-        index for index, event in enumerate(events) if event.event_type == "candidate_score"
+        index
+        for index, event in enumerate(events)
+        if event.event_type == "candidate_score"
     )
     lineage = dict(events[score_index].lineage)
     lineage["scores"] = {candidate_id: 0.0 for candidate_id in lineage["scores"]}
@@ -338,14 +376,20 @@ def test_hybrid_trace_contract_rejects_zeroed_score_and_diversity_with_commit() 
 
 
 def test_hybrid_trace_contract_rejects_forward_layer_deposit_lineage() -> None:
-    manifest = load_capability_manifest("examples/hybrid-pheromone-protocol/capability.json")
+    manifest = load_capability_manifest(
+        "examples/hybrid-pheromone-protocol/capability.json"
+    )
     step, output_event = hybrid_trace_contract.manifest_replay(manifest)
     events = [*step.trace_events, output_event]
     proposal_index = next(
-        index for index, event in enumerate(events) if event.event_type == "layer_proposal"
+        index
+        for index, event in enumerate(events)
+        if event.event_type == "layer_proposal"
     )
     deposit_index = next(
-        index for index, event in enumerate(events) if event.event_type == "pheromone_deposit"
+        index
+        for index, event in enumerate(events)
+        if event.event_type == "pheromone_deposit"
     )
     deposit = events[deposit_index]
     proposal_lineage = dict(events[proposal_index].lineage)
@@ -378,14 +422,19 @@ def test_hybrid_trace_contract_rejects_forward_layer_deposit_lineage() -> None:
     assert "authority_layer_pheromone_forward_reference" in result.detail
 
 
-def test_hybrid_trace_contract_rejects_manifest_threshold_and_commit_lineage_tampering() -> None:
-    manifest = load_capability_manifest("examples/hybrid-pheromone-protocol/capability.json")
+def test_hybrid_trace_contract_rejects_manifest_threshold_and_commit_lineage_tampering() -> (
+    None
+):
+    manifest = load_capability_manifest(
+        "examples/hybrid-pheromone-protocol/capability.json"
+    )
     step, output_event = hybrid_trace_contract.manifest_replay(manifest)
     original = [*step.trace_events, output_event]
 
     threshold_events = list(original)
     consensus_index = next(
-        index for index, event in enumerate(threshold_events)
+        index
+        for index, event in enumerate(threshold_events)
         if event.event_type == "consensus_check"
     )
     consensus_lineage = dict(threshold_events[consensus_index].lineage)
@@ -394,11 +443,15 @@ def test_hybrid_trace_contract_rejects_manifest_threshold_and_commit_lineage_tam
         threshold_events[consensus_index],
         lineage=consensus_lineage,
     )
-    threshold_result = hybrid_trace_contract.check_actual_trace(manifest, threshold_events)
+    threshold_result = hybrid_trace_contract.check_actual_trace(
+        manifest, threshold_events
+    )
 
     lineage_events = list(original)
     commit_index = next(
-        index for index, event in enumerate(lineage_events) if event.event_type == "commit"
+        index
+        for index, event in enumerate(lineage_events)
+        if event.event_type == "commit"
     )
     commit_lineage = dict(lineage_events[commit_index].lineage)
     commit_lineage["upstream_score_lineage"] = ["candidate_score"]
@@ -415,13 +468,17 @@ def test_hybrid_trace_contract_rejects_manifest_threshold_and_commit_lineage_tam
 
 
 def test_hybrid_trace_contract_rejects_impossible_signal_and_pheromone_bounds() -> None:
-    manifest = load_capability_manifest("examples/hybrid-pheromone-protocol/capability.json")
+    manifest = load_capability_manifest(
+        "examples/hybrid-pheromone-protocol/capability.json"
+    )
     step, output_event = hybrid_trace_contract.manifest_replay(manifest)
     original = [*step.trace_events, output_event]
 
     signal_events = list(original)
     scout_index = next(
-        index for index, event in enumerate(signal_events) if event.event_type == "scout_report"
+        index
+        for index, event in enumerate(signal_events)
+        if event.event_type == "scout_report"
     )
     scout = dict(signal_events[scout_index].lineage)
     excess = 1e100
@@ -429,7 +486,9 @@ def test_hybrid_trace_contract_rejects_impossible_signal_and_pheromone_bounds() 
     scout["support"] = excess
     signal_events[scout_index] = replace(signal_events[scout_index], lineage=scout)
     score_index = next(
-        index for index, event in enumerate(signal_events) if event.event_type == "candidate_score"
+        index
+        for index, event in enumerate(signal_events)
+        if event.event_type == "candidate_score"
     )
     score = dict(signal_events[score_index].lineage)
     score["scores"] = dict(score["scores"])
@@ -444,7 +503,8 @@ def test_hybrid_trace_contract_rejects_impossible_signal_and_pheromone_bounds() 
 
     lifecycle_events = list(original)
     deposit_index = next(
-        index for index, event in enumerate(lifecycle_events)
+        index
+        for index, event in enumerate(lifecycle_events)
         if event.event_type == "pheromone_deposit"
     )
     deposit = dict(lifecycle_events[deposit_index].lineage)
@@ -455,7 +515,9 @@ def test_hybrid_trace_contract_rejects_impossible_signal_and_pheromone_bounds() 
     )
 
     signal_result = hybrid_trace_contract.check_actual_trace(manifest, signal_events)
-    lifecycle_result = hybrid_trace_contract.check_actual_trace(manifest, lifecycle_events)
+    lifecycle_result = hybrid_trace_contract.check_actual_trace(
+        manifest, lifecycle_events
+    )
 
     assert signal_result.ok is False
     assert "authority_scout_strength_bound" in signal_result.detail
@@ -464,7 +526,9 @@ def test_hybrid_trace_contract_rejects_impossible_signal_and_pheromone_bounds() 
 
 
 def test_hybrid_trace_contract_causally_replays_every_pheromone_lifecycle() -> None:
-    manifest = load_capability_manifest("examples/hybrid-pheromone-protocol/capability.json")
+    manifest = load_capability_manifest(
+        "examples/hybrid-pheromone-protocol/capability.json"
+    )
 
     primary, primary_output = hybrid_trace_contract.manifest_replay(manifest)
     deposit_events = [*primary.trace_events, primary_output]
@@ -584,7 +648,9 @@ def test_hybrid_trace_contract_causally_replays_every_pheromone_lifecycle() -> N
 
 
 def test_hybrid_trace_contract_rejects_forged_lifecycle_budget_lineage() -> None:
-    manifest = load_capability_manifest("examples/hybrid-pheromone-protocol/capability.json")
+    manifest = load_capability_manifest(
+        "examples/hybrid-pheromone-protocol/capability.json"
+    )
     diffusion_step, diffusion_output = hybrid_trace_contract.manifest_replay(
         manifest,
         force_fallback=True,
@@ -634,7 +700,9 @@ def test_hybrid_trace_contract_rejects_forged_lifecycle_budget_lineage() -> None
 
 
 def test_hybrid_trace_contract_reconstructs_normalization_from_scored_memory() -> None:
-    manifest = load_capability_manifest("examples/hybrid-pheromone-protocol/capability.json")
+    manifest = load_capability_manifest(
+        "examples/hybrid-pheromone-protocol/capability.json"
+    )
     step, output_event = hybrid_trace_contract.manifest_replay(manifest)
     original = [*step.trace_events, output_event]
     normalize_index = next(
@@ -673,14 +741,15 @@ def test_hybrid_trace_contract_reconstructs_normalization_from_scored_memory() -
 
 
 def test_hybrid_trace_contract_reconstructs_exploration_observations() -> None:
-    manifest = load_capability_manifest("examples/hybrid-pheromone-protocol/capability.json")
+    manifest = load_capability_manifest(
+        "examples/hybrid-pheromone-protocol/capability.json"
+    )
     step, output_event = hybrid_trace_contract.manifest_replay(manifest)
     original = [*step.trace_events, output_event]
     state_index = next(
         index
         for index, event in enumerate(original)
-        if event.event_type == "pheromone_observe"
-        and "candidate_id" in event.lineage
+        if event.event_type == "pheromone_observe" and "candidate_id" in event.lineage
     )
     floor_index = next(
         index
@@ -729,7 +798,9 @@ def test_hybrid_trace_contract_reconstructs_exploration_observations() -> None:
 
 
 def test_hybrid_trace_contract_binds_lifecycle_and_active_trail_timing() -> None:
-    manifest = load_capability_manifest("examples/hybrid-pheromone-protocol/capability.json")
+    manifest = load_capability_manifest(
+        "examples/hybrid-pheromone-protocol/capability.json"
+    )
     step, output_event = hybrid_trace_contract.manifest_replay(manifest)
     original = [*step.trace_events, output_event]
 
@@ -771,7 +842,9 @@ def test_hybrid_trace_contract_binds_lifecycle_and_active_trail_timing() -> None
 
 
 def test_hybrid_trace_contract_reconstructs_commit_and_fallback_reasons() -> None:
-    manifest = load_capability_manifest("examples/hybrid-pheromone-protocol/capability.json")
+    manifest = load_capability_manifest(
+        "examples/hybrid-pheromone-protocol/capability.json"
+    )
     cases = (
         (False, "safe_collective_fallback"),
         (True, "collective_consensus"),
@@ -802,7 +875,9 @@ def test_hybrid_trace_contract_reconstructs_commit_and_fallback_reasons() -> Non
 
 
 def test_hybrid_trace_contract_binds_rejected_diffusion_clip_lineage() -> None:
-    manifest = load_capability_manifest("examples/hybrid-pheromone-protocol/capability.json")
+    manifest = load_capability_manifest(
+        "examples/hybrid-pheromone-protocol/capability.json"
+    )
     step, output_event = hybrid_trace_contract.manifest_replay(manifest)
     original = [*step.trace_events, output_event]
     clip_index = next(
@@ -842,7 +917,9 @@ def test_hybrid_trace_contract_binds_rejected_diffusion_clip_lineage() -> None:
 
 
 def test_rejected_diffusion_clip_receipt_binds_every_causal_input_leaf() -> None:
-    manifest = load_capability_manifest("examples/hybrid-pheromone-protocol/capability.json")
+    manifest = load_capability_manifest(
+        "examples/hybrid-pheromone-protocol/capability.json"
+    )
     step, output_event = hybrid_trace_contract.manifest_replay(manifest)
     original = [*step.trace_events, output_event]
     clip_index = next(
@@ -873,7 +950,9 @@ def test_rejected_diffusion_clip_receipt_binds_every_causal_input_leaf() -> None
 def test_rejected_diffusion_clip_requires_both_receipt_fields(
     missing_field: str,
 ) -> None:
-    manifest = load_capability_manifest("examples/hybrid-pheromone-protocol/capability.json")
+    manifest = load_capability_manifest(
+        "examples/hybrid-pheromone-protocol/capability.json"
+    )
     step, output_event = hybrid_trace_contract.manifest_replay(manifest)
     events = [*step.trace_events, output_event]
     clip_index = next(
@@ -893,11 +972,15 @@ def test_rejected_diffusion_clip_requires_both_receipt_fields(
 
 
 def test_hybrid_trace_contract_binds_raw_and_inherited_active_ttl() -> None:
-    manifest = load_capability_manifest("examples/hybrid-pheromone-protocol/capability.json")
+    manifest = load_capability_manifest(
+        "examples/hybrid-pheromone-protocol/capability.json"
+    )
     step, output_event = hybrid_trace_contract.manifest_replay(manifest)
     original = [*step.trace_events, output_event]
     score_index = next(
-        index for index, event in enumerate(original) if event.event_type == "pheromone_score"
+        index
+        for index, event in enumerate(original)
+        if event.event_type == "pheromone_score"
     )
     cases = (
         ("trace:deposit:primary", 1, "authority_pheromone_active_transition"),
@@ -931,7 +1014,9 @@ def test_hybrid_trace_contract_binds_raw_and_inherited_active_ttl() -> None:
 
 
 def test_hybrid_trace_contract_binds_adjustment_replay_and_layer_effect() -> None:
-    manifest = load_capability_manifest("examples/hybrid-pheromone-protocol/capability.json")
+    manifest = load_capability_manifest(
+        "examples/hybrid-pheromone-protocol/capability.json"
+    )
     step, output_event = hybrid_trace_contract.manifest_replay(manifest)
     original = [*step.trace_events, output_event]
 
@@ -965,7 +1050,9 @@ def test_hybrid_trace_contract_binds_adjustment_replay_and_layer_effect() -> Non
     adjustment_result = hybrid_trace_contract.check_actual_trace(
         manifest, adjustment_events
     )
-    proposal_result = hybrid_trace_contract.check_actual_trace(manifest, proposal_events)
+    proposal_result = hybrid_trace_contract.check_actual_trace(
+        manifest, proposal_events
+    )
 
     assert adjustment_result.ok is False
     assert "authority_policy_adjustment_replayed" in adjustment_result.detail
@@ -974,7 +1061,9 @@ def test_hybrid_trace_contract_binds_adjustment_replay_and_layer_effect() -> Non
 
 
 def test_hybrid_trace_contract_binds_feedback_clip_outcome_and_trace_identity() -> None:
-    manifest = load_capability_manifest("examples/hybrid-pheromone-protocol/capability.json")
+    manifest = load_capability_manifest(
+        "examples/hybrid-pheromone-protocol/capability.json"
+    )
     step, output_event = hybrid_trace_contract.manifest_replay(manifest)
     original = [*step.trace_events, output_event]
     clip_index = next(
@@ -984,8 +1073,16 @@ def test_hybrid_trace_contract_binds_feedback_clip_outcome_and_trace_identity() 
         and event.lineage.get("lifecycle") == "feedback"
     )
     cases = (
-        ("source_trace_event_id", "trace:forged", "authority_pheromone_clip_feedback_new_trail_lineage"),
-        ("feedback_trace_event_id", "trace:forged", "authority_pheromone_clip_feedback_lineage"),
+        (
+            "source_trace_event_id",
+            "trace:forged",
+            "authority_pheromone_clip_feedback_new_trail_lineage",
+        ),
+        (
+            "feedback_trace_event_id",
+            "trace:forged",
+            "authority_pheromone_clip_feedback_lineage",
+        ),
         ("trace_event_id", "trace:forged", "authority_pheromone_clip_feedback_lineage"),
         ("kind", "negative", "authority_pheromone_clip_feedback_outcome_kind"),
         ("source_kind", "negative", "authority_pheromone_clip_feedback_source_kind"),
@@ -1008,7 +1105,9 @@ def test_hybrid_trace_contract_binds_feedback_clip_outcome_and_trace_identity() 
 
 
 def test_hybrid_trace_contract_allows_memory_only_feedback_clip_subject() -> None:
-    manifest = load_capability_manifest("examples/hybrid-pheromone-protocol/capability.json")
+    manifest = load_capability_manifest(
+        "examples/hybrid-pheromone-protocol/capability.json"
+    )
     step, output_event = hybrid_trace_contract.manifest_replay(
         manifest,
         memory_only_feedback=True,
@@ -1044,7 +1143,9 @@ def test_rejected_feedback_clip_receipt_rejects_reported_single_field_mutations(
     field_name: str,
     forged_value: object,
 ) -> None:
-    manifest = load_capability_manifest("examples/hybrid-pheromone-protocol/capability.json")
+    manifest = load_capability_manifest(
+        "examples/hybrid-pheromone-protocol/capability.json"
+    )
     step, output_event = hybrid_trace_contract.manifest_replay(manifest)
     events = [*step.trace_events, output_event]
     clip_index = next(
@@ -1067,8 +1168,12 @@ def test_rejected_feedback_clip_receipt_rejects_reported_single_field_mutations(
     assert "pheromone_clip" in result.detail
 
 
-def test_rejected_feedback_clip_receipt_binds_every_input_and_source_state_leaf() -> None:
-    manifest = load_capability_manifest("examples/hybrid-pheromone-protocol/capability.json")
+def test_rejected_feedback_clip_receipt_binds_every_input_and_source_state_leaf() -> (
+    None
+):
+    manifest = load_capability_manifest(
+        "examples/hybrid-pheromone-protocol/capability.json"
+    )
     step, output_event = hybrid_trace_contract.manifest_replay(manifest)
     original = [*step.trace_events, output_event]
     clip_index = next(
@@ -1096,8 +1201,12 @@ def test_rejected_feedback_clip_receipt_binds_every_input_and_source_state_leaf(
 
 
 @pytest.mark.parametrize("missing_field", ["causal_payload", "causal_fingerprint"])
-def test_rejected_feedback_clip_requires_both_receipt_fields(missing_field: str) -> None:
-    manifest = load_capability_manifest("examples/hybrid-pheromone-protocol/capability.json")
+def test_rejected_feedback_clip_requires_both_receipt_fields(
+    missing_field: str,
+) -> None:
+    manifest = load_capability_manifest(
+        "examples/hybrid-pheromone-protocol/capability.json"
+    )
     step, output_event = hybrid_trace_contract.manifest_replay(manifest)
     events = [*step.trace_events, output_event]
     clip_index = next(
@@ -1117,7 +1226,9 @@ def test_rejected_feedback_clip_requires_both_receipt_fields(missing_field: str)
 
 
 def test_hybrid_trace_contract_binds_applied_reinforcement_semantics() -> None:
-    manifest = load_capability_manifest("examples/hybrid-pheromone-protocol/capability.json")
+    manifest = load_capability_manifest(
+        "examples/hybrid-pheromone-protocol/capability.json"
+    )
     step, output_event = hybrid_trace_contract.manifest_replay(
         manifest,
         force_fallback=True,
@@ -1173,7 +1284,9 @@ def test_hybrid_trace_contract_binds_applied_reinforcement_semantics() -> None:
 
 
 def test_hybrid_trace_contract_binds_shared_deposit_clip_authority() -> None:
-    manifest = load_capability_manifest("examples/hybrid-pheromone-protocol/capability.json")
+    manifest = load_capability_manifest(
+        "examples/hybrid-pheromone-protocol/capability.json"
+    )
     step, output_event = hybrid_trace_contract.manifest_replay(manifest)
     original = [*step.trace_events, output_event]
     clip_index = next(
@@ -1287,8 +1400,12 @@ def test_rejected_deposit_clip_requires_both_receipt_fields(
     assert "causal_payload and causal_fingerprint" in result.detail
 
 
-def test_rejected_deposit_requires_declared_scored_subject_but_allows_global_evidence_memory() -> None:
-    manifest = load_capability_manifest("examples/hybrid-pheromone-protocol/capability.json")
+def test_rejected_deposit_requires_declared_scored_subject_but_allows_global_evidence_memory() -> (
+    None
+):
+    manifest = load_capability_manifest(
+        "examples/hybrid-pheromone-protocol/capability.json"
+    )
     policy = replace(
         manifest.protocol.collective_decision_policy,
         pheromone_min_strength=1.0,
@@ -1354,7 +1471,9 @@ def test_rejected_deposit_requires_declared_scored_subject_but_allows_global_evi
 
 
 def test_hybrid_trace_contract_binds_output_commit_gate_to_decision() -> None:
-    manifest = load_capability_manifest("examples/hybrid-pheromone-protocol/capability.json")
+    manifest = load_capability_manifest(
+        "examples/hybrid-pheromone-protocol/capability.json"
+    )
     step, output_event = hybrid_trace_contract.manifest_replay(manifest)
     events = [*step.trace_events, output_event]
     output_index = next(
@@ -1377,11 +1496,15 @@ def test_hybrid_trace_contract_binds_output_commit_gate_to_decision() -> None:
 
 
 def test_hybrid_trace_contract_rejects_forbidden_adjustment_authority() -> None:
-    manifest = load_capability_manifest("examples/hybrid-pheromone-protocol/capability.json")
+    manifest = load_capability_manifest(
+        "examples/hybrid-pheromone-protocol/capability.json"
+    )
     step, output_event = hybrid_trace_contract.manifest_replay(manifest)
     events = [*step.trace_events, output_event]
     adjustment_index = next(
-        index for index, event in enumerate(events) if event.event_type == "policy_adjustment"
+        index
+        for index, event in enumerate(events)
+        if event.event_type == "policy_adjustment"
     )
     lineage = dict(events[adjustment_index].lineage)
     lineage["proposed_values"] = {"fallback_candidate": "candidate:alpha"}
@@ -1398,7 +1521,9 @@ def test_hybrid_trace_contract_rejects_forbidden_adjustment_authority() -> None:
 
 
 def test_hybrid_trace_contract_requires_all_score_affecting_upstream_lineage() -> None:
-    manifest = load_capability_manifest("examples/hybrid-pheromone-protocol/capability.json")
+    manifest = load_capability_manifest(
+        "examples/hybrid-pheromone-protocol/capability.json"
+    )
     step, output_event = hybrid_trace_contract.manifest_replay(manifest)
     events = [*step.trace_events, output_event]
     commit_index = next(
@@ -1418,11 +1543,15 @@ def test_hybrid_trace_contract_requires_all_score_affecting_upstream_lineage() -
 
 
 def test_hybrid_trace_contract_rejects_ambiguous_collective_trace_ids() -> None:
-    manifest = load_capability_manifest("examples/hybrid-pheromone-protocol/capability.json")
+    manifest = load_capability_manifest(
+        "examples/hybrid-pheromone-protocol/capability.json"
+    )
     step, output_event = hybrid_trace_contract.manifest_replay(manifest)
     events = [*step.trace_events, output_event]
     scout_indexes = [
-        index for index, event in enumerate(events) if event.event_type == "scout_report"
+        index
+        for index, event in enumerate(events)
+        if event.event_type == "scout_report"
     ]
     first_trace = events[scout_indexes[0]].lineage["source_trace_event_id"]
     lineage = dict(events[scout_indexes[1]].lineage)
@@ -1436,11 +1565,15 @@ def test_hybrid_trace_contract_rejects_ambiguous_collective_trace_ids() -> None:
 
 
 def test_hybrid_trace_contract_rejects_phantom_pheromone_score() -> None:
-    manifest = load_capability_manifest("examples/hybrid-pheromone-protocol/capability.json")
+    manifest = load_capability_manifest(
+        "examples/hybrid-pheromone-protocol/capability.json"
+    )
     step, output_event = hybrid_trace_contract.manifest_replay(manifest)
     events = [*step.trace_events, output_event]
     score_index = next(
-        index for index, event in enumerate(events) if event.event_type == "pheromone_score"
+        index
+        for index, event in enumerate(events)
+        if event.event_type == "pheromone_score"
     )
     lineage = dict(events[score_index].lineage)
     lineage["active_trails"] = []
@@ -1452,8 +1585,12 @@ def test_hybrid_trace_contract_rejects_phantom_pheromone_score() -> None:
     assert "authority_pheromone_reconstruction" in result.detail
 
 
-def test_hybrid_trace_contract_rejects_altered_coordination_confidence_and_phantom_weight() -> None:
-    manifest = load_capability_manifest("examples/hybrid-pheromone-protocol/capability.json")
+def test_hybrid_trace_contract_rejects_altered_coordination_confidence_and_phantom_weight() -> (
+    None
+):
+    manifest = load_capability_manifest(
+        "examples/hybrid-pheromone-protocol/capability.json"
+    )
     step, output_event = hybrid_trace_contract.manifest_replay(manifest)
     original = [*step.trace_events, output_event]
     assess_index = next(
@@ -1487,8 +1624,7 @@ def test_hybrid_trace_contract_rejects_altered_coordination_confidence_and_phant
     coverage_events = list(original)
     coverage = dict(coverage_events[assess_index].lineage)
     coverage["coverage"] = {
-        key: dict(value)
-        for key, value in coverage["coverage"].items()
+        key: dict(value) for key, value in coverage["coverage"].items()
     }
     coverage["coverage"]["learned"]["mean_confidence"] = 0.01
     coverage_events[assess_index] = replace(
@@ -1509,7 +1645,9 @@ def test_hybrid_trace_contract_rejects_altered_coordination_confidence_and_phant
 
 
 def test_hybrid_trace_contract_rejects_forged_coordination_resolution_fields() -> None:
-    manifest = load_capability_manifest("examples/hybrid-pheromone-protocol/capability.json")
+    manifest = load_capability_manifest(
+        "examples/hybrid-pheromone-protocol/capability.json"
+    )
     step, output_event = hybrid_trace_contract.manifest_replay(manifest)
     original = [*step.trace_events, output_event]
     resolve_index = next(
@@ -1555,7 +1693,9 @@ def test_hybrid_trace_contract_rejects_forged_coordination_resolution_fields() -
 
 
 def test_hybrid_trace_contract_replays_zero_proposal_coordination() -> None:
-    manifest = load_capability_manifest("examples/hybrid-pheromone-protocol/capability.json")
+    manifest = load_capability_manifest(
+        "examples/hybrid-pheromone-protocol/capability.json"
+    )
     step, output_event = hybrid_trace_contract.manifest_replay(
         manifest,
         force_fallback=True,
@@ -1582,7 +1722,9 @@ def test_hybrid_trace_contract_replays_zero_proposal_coordination() -> None:
 
 
 def test_hybrid_trace_contract_rejects_safe_fallback_when_consensus_exists() -> None:
-    manifest = load_capability_manifest("examples/hybrid-pheromone-protocol/capability.json")
+    manifest = load_capability_manifest(
+        "examples/hybrid-pheromone-protocol/capability.json"
+    )
     step, output_event = hybrid_trace_contract.manifest_replay(manifest)
     events = [*step.trace_events, output_event]
     commit_index = next(
@@ -1609,7 +1751,9 @@ def test_hybrid_trace_contract_rejects_safe_fallback_when_consensus_exists() -> 
 
 
 def test_hybrid_trace_contract_replays_real_manifest_policy_and_transitions() -> None:
-    manifest = load_capability_manifest("examples/hybrid-pheromone-protocol/capability.json")
+    manifest = load_capability_manifest(
+        "examples/hybrid-pheromone-protocol/capability.json"
+    )
 
     step, output_event = hybrid_trace_contract.manifest_replay(manifest)
     events = [*step.trace_events, output_event]
@@ -1630,7 +1774,9 @@ def test_hybrid_trace_contract_replays_real_manifest_policy_and_transitions() ->
 
 
 def test_hybrid_trace_contract_covers_lifecycle_under_tight_legal_budget() -> None:
-    manifest = load_capability_manifest("examples/hybrid-pheromone-protocol/capability.json")
+    manifest = load_capability_manifest(
+        "examples/hybrid-pheromone-protocol/capability.json"
+    )
     policy = manifest.protocol.collective_decision_policy
     assert policy is not None
     tight = replace(
@@ -1671,8 +1817,12 @@ def test_hybrid_trace_contract_covers_lifecycle_under_tight_legal_budget() -> No
     assert reinforcement.lineage["delta"] > 0
 
 
-def test_hybrid_trace_contract_rejects_malformed_actual_event_without_throwing() -> None:
-    manifest = load_capability_manifest("examples/hybrid-pheromone-protocol/capability.json")
+def test_hybrid_trace_contract_rejects_malformed_actual_event_without_throwing() -> (
+    None
+):
+    manifest = load_capability_manifest(
+        "examples/hybrid-pheromone-protocol/capability.json"
+    )
     target = manifest.protocol.quorum_policy.target
     malformed = TraceEvent(
         event_type="candidate_score",
@@ -1728,7 +1878,9 @@ def test_pheromone_behavior_conformance_proves_runtime_boundaries() -> None:
     assert result.detail == ""
 
 
-def test_pheromone_policy_conformance_does_not_overconstrain_trace_policy_flags() -> None:
+def test_pheromone_policy_conformance_does_not_overconstrain_trace_policy_flags() -> (
+    None
+):
     manifest = load_capability_manifest("examples/swarm-protocol/capability.json")
     protocol = replace(
         manifest.protocol,
@@ -1745,7 +1897,9 @@ def test_pheromone_policy_conformance_does_not_overconstrain_trace_policy_flags(
 
 
 def _rejected_deposit_trace():
-    manifest = load_capability_manifest("examples/hybrid-pheromone-protocol/capability.json")
+    manifest = load_capability_manifest(
+        "examples/hybrid-pheromone-protocol/capability.json"
+    )
     policy = manifest.protocol.collective_decision_policy
     assert policy is not None
     policy = replace(

@@ -1,11 +1,12 @@
+"""Local commit receipt issuance, matching, and finality verification."""
+
 from __future__ import annotations
 
-"""Local commit receipt issuance, matching, and finality verification."""
+from typing import TypedDict
 
 from pheroos.governance._certificate.invariants import (
     _issue_typed_finality_verification,
     _validate_policy_binding,
-    output_payload_fingerprint,
 )
 from pheroos.governance._commit_validation import (
     require_commit_fingerprint,
@@ -25,6 +26,8 @@ from pheroos.governance._commit.local_receipt import (
 )
 from pheroos.governance.authority import AuthorityLevel, can_verify
 from pheroos.governance.commit import (
+    CandidateClaimBinding,
+    CandidateCommitMetrics,
     CommitAssessment,
     CommitAssessmentStatus,
     CommitEvaluationContext,
@@ -68,6 +71,43 @@ from pheroos.governance.support_lease import (
     support_lease_replay_state_is_current,
 )
 from pheroos.protocol.commit_models import CollectiveCommitPolicy, CommitAssurance
+
+
+class _StableCommitLeaves(TypedDict):
+    profile: str
+    assurance: CommitAssurance
+    manifest_root: str
+    commit_policy_root: str
+    protocol_id: str
+    run_id: str
+    target: str
+    epoch: int
+    candidate_id: str
+    claim_fingerprint: str
+    output_payload_fingerprint: str
+    risk_chain_state_root: str
+    risk_assessment_root: str
+    risk_policy_root: str
+    membership_snapshot_root: str
+    membership_epoch_state_root: str
+    membership_root: str
+    threshold_root: str
+    replay_state_root: str
+    replay_root: str
+    support_replay_state_root: str
+    support_replay_root: str
+    candidate_evidence_root: str
+    candidate_challenge_root: str
+    candidate_lease_root: str
+    evidence_root: str
+    challenge_root: str
+    lease_root: str
+    window_state_root: str
+    window_root: str
+    stop_resolution_root: str
+    permission_root: str
+    context_root: str
+    assessment_root: str
 
 
 def issue_local_commit_receipt(
@@ -134,6 +174,7 @@ def issue_local_commit_receipt(
     _seal_commit_window_from_local_receipt(window_state, registered)
     return registered
 
+
 def local_commit_receipt_matches(
     receipt: LocalCommitReceipt | None,
     context: CommitEvaluationContext,
@@ -182,6 +223,7 @@ def local_commit_receipt_matches(
         return all(getattr(receipt, name) == value for name, value in expected.items())
     except (GovernanceError, TypeError, ValueError):
         return False
+
 
 def verify_local_commit_finality(
     receipt: LocalCommitReceipt,
@@ -244,6 +286,7 @@ def verify_local_commit_finality(
         trace_event_id=trace_event_id,
     )
 
+
 def _stable_commit_leaves(
     context: CommitEvaluationContext,
     assessment: CommitAssessment,
@@ -259,7 +302,149 @@ def _stable_commit_leaves(
     support_replay_state: SupportLeaseReplayState,
     output_fingerprint: str,
     current_step: int,
-) -> dict[str, object]:
+) -> _StableCommitLeaves:
+    _validate_local_receipt_authority(
+        context,
+        assessment=assessment,
+        window_state=window_state,
+        commit_policy=commit_policy,
+    )
+    _validate_local_receipt_external_heads(
+        context,
+        commit_policy=commit_policy,
+        risk_chain_state=risk_chain_state,
+        risk_assessment=risk_assessment,
+        threshold_snapshot=threshold_snapshot,
+        membership_snapshot=membership_snapshot,
+        membership_epoch_state=membership_epoch_state,
+        replay_state=replay_state,
+        support_replay_state=support_replay_state,
+        current_step=current_step,
+    )
+    current_head_fingerprints = _local_receipt_head_fingerprints(
+        risk_chain_state=risk_chain_state,
+        risk_assessment=risk_assessment,
+        threshold_snapshot=threshold_snapshot,
+        membership_snapshot=membership_snapshot,
+        membership_epoch_state=membership_epoch_state,
+        replay_state=replay_state,
+        support_replay_state=support_replay_state,
+    )
+    _validate_local_receipt_context_heads(
+        context,
+        assessment=assessment,
+        replay_state=replay_state,
+        support_replay_state=support_replay_state,
+        current_head_fingerprints=current_head_fingerprints,
+    )
+    _validate_local_receipt_window_lineage(
+        context,
+        assessment=assessment,
+        window_state=window_state,
+    )
+    context_ref, assessment_ref = _validate_local_receipt_ready_assessment(
+        context,
+        assessment=assessment,
+        window_state=window_state,
+        current_step=current_step,
+    )
+    claim, metrics = _local_receipt_leader_bindings(
+        context,
+        assessment=assessment,
+        window_state=window_state,
+    )
+    output_ref = require_commit_fingerprint(
+        output_fingerprint,
+        "local receipt output_payload_fingerprint",
+    )
+    return {
+        "profile": context.profile,
+        "assurance": context.assurance,
+        "manifest_root": context.manifest_root,
+        "commit_policy_root": context.commit_policy_root,
+        "protocol_id": context.protocol_id,
+        "run_id": context.run_id,
+        "target": context.target,
+        "epoch": context.epoch,
+        "candidate_id": assessment.leader_candidate_id,
+        "claim_fingerprint": claim.claim_fingerprint,
+        "output_payload_fingerprint": output_ref,
+        "risk_chain_state_root": assessment.risk_chain_state_fingerprint,
+        "risk_assessment_root": assessment.risk_assessment_fingerprint,
+        "risk_policy_root": assessment.risk_policy_root,
+        "membership_snapshot_root": assessment.membership_snapshot_fingerprint,
+        "membership_epoch_state_root": assessment.membership_epoch_state_fingerprint,
+        "membership_root": assessment.membership_root,
+        "threshold_root": assessment.threshold_fingerprint,
+        "replay_state_root": assessment.replay_state_fingerprint,
+        "replay_root": assessment.replay_receipt_root,
+        "support_replay_state_root": assessment.support_replay_state_fingerprint,
+        "support_replay_root": assessment.support_replay_root,
+        "candidate_evidence_root": metrics.evidence_root,
+        "candidate_challenge_root": metrics.challenge_root,
+        "candidate_lease_root": metrics.lease_root,
+        "evidence_root": assessment.collective_evidence_root,
+        "challenge_root": assessment.collective_challenge_root,
+        "lease_root": assessment.collective_lease_root,
+        "window_state_root": commit_window_state_fingerprint(window_state),
+        "window_root": window_state.window_root,
+        "stop_resolution_root": assessment.stop_resolution_fingerprint,
+        "permission_root": assessment.permission_fingerprint,
+        "context_root": context_ref,
+        "assessment_root": assessment_ref,
+    }
+
+
+def _stable_commit_leaves_from_receipt(
+    receipt: LocalCommitReceipt,
+) -> _StableCommitLeaves:
+    """Project the typed authority leaves without re-entering wire decoding."""
+
+    return {
+        "profile": receipt.profile,
+        "assurance": receipt.assurance,
+        "manifest_root": receipt.manifest_root,
+        "commit_policy_root": receipt.commit_policy_root,
+        "protocol_id": receipt.protocol_id,
+        "run_id": receipt.run_id,
+        "target": receipt.target,
+        "epoch": receipt.epoch,
+        "candidate_id": receipt.candidate_id,
+        "claim_fingerprint": receipt.claim_fingerprint,
+        "output_payload_fingerprint": receipt.output_payload_fingerprint,
+        "risk_chain_state_root": receipt.risk_chain_state_root,
+        "risk_assessment_root": receipt.risk_assessment_root,
+        "risk_policy_root": receipt.risk_policy_root,
+        "membership_snapshot_root": receipt.membership_snapshot_root,
+        "membership_epoch_state_root": receipt.membership_epoch_state_root,
+        "membership_root": receipt.membership_root,
+        "threshold_root": receipt.threshold_root,
+        "replay_state_root": receipt.replay_state_root,
+        "replay_root": receipt.replay_root,
+        "support_replay_state_root": receipt.support_replay_state_root,
+        "support_replay_root": receipt.support_replay_root,
+        "candidate_evidence_root": receipt.candidate_evidence_root,
+        "candidate_challenge_root": receipt.candidate_challenge_root,
+        "candidate_lease_root": receipt.candidate_lease_root,
+        "evidence_root": receipt.evidence_root,
+        "challenge_root": receipt.challenge_root,
+        "lease_root": receipt.lease_root,
+        "window_state_root": receipt.window_state_root,
+        "window_root": receipt.window_root,
+        "stop_resolution_root": receipt.stop_resolution_root,
+        "permission_root": receipt.permission_root,
+        "context_root": receipt.context_root,
+        "assessment_root": receipt.assessment_root,
+    }
+
+
+def _validate_local_receipt_authority(
+    context: CommitEvaluationContext,
+    *,
+    assessment: CommitAssessment,
+    window_state: CommitWindowState,
+    commit_policy: CollectiveCommitPolicy,
+) -> None:
     if not commit_evaluation_context_is_authoritative(context):
         raise GovernanceError("local receipt requires authoritative context")
     if not commit_assessment_is_authoritative(assessment):
@@ -279,6 +464,21 @@ def _stable_commit_leaves(
     )
     if context.assurance is CommitAssurance.ADVISORY:
         raise GovernanceError("advisory assurance cannot issue a local commit receipt")
+
+
+def _validate_local_receipt_external_heads(
+    context: CommitEvaluationContext,
+    *,
+    commit_policy: CollectiveCommitPolicy,
+    risk_chain_state: RiskAssessmentChainState,
+    risk_assessment: RiskAssessment,
+    threshold_snapshot: CommitThresholdSnapshot,
+    membership_snapshot: EligiblePrincipalSnapshot,
+    membership_epoch_state: EligibleMembershipEpochState,
+    replay_state: CommitReplayState,
+    support_replay_state: SupportLeaseReplayState,
+    current_step: int,
+) -> None:
     if not commit_threshold_snapshot_matches(
         threshold_snapshot,
         assessment=risk_assessment,
@@ -322,13 +522,23 @@ def _stable_commit_leaves(
         and support_replay_state.last_issued_at_step <= current_step
     ):
         raise GovernanceError("local receipt support replay head is stale")
-    current_head_fingerprints = {
+
+
+def _local_receipt_head_fingerprints(
+    *,
+    risk_chain_state: RiskAssessmentChainState,
+    risk_assessment: RiskAssessment,
+    threshold_snapshot: CommitThresholdSnapshot,
+    membership_snapshot: EligiblePrincipalSnapshot,
+    membership_epoch_state: EligibleMembershipEpochState,
+    replay_state: CommitReplayState,
+    support_replay_state: SupportLeaseReplayState,
+) -> dict[str, str]:
+    return {
         "risk_chain_state_fingerprint": risk_assessment_chain_state_fingerprint(
             risk_chain_state
         ),
-        "risk_assessment_fingerprint": risk_assessment_fingerprint(
-            risk_assessment
-        ),
+        "risk_assessment_fingerprint": risk_assessment_fingerprint(risk_assessment),
         "threshold_fingerprint": commit_threshold_snapshot_fingerprint(
             threshold_snapshot
         ),
@@ -338,13 +548,21 @@ def _stable_commit_leaves(
         "membership_epoch_state_fingerprint": (
             eligible_membership_epoch_state_fingerprint(membership_epoch_state)
         ),
-        "replay_state_fingerprint": commit_replay_state_fingerprint(
-            replay_state
-        ),
+        "replay_state_fingerprint": commit_replay_state_fingerprint(replay_state),
         "support_replay_state_fingerprint": (
             support_lease_replay_state_fingerprint(support_replay_state)
         ),
     }
+
+
+def _validate_local_receipt_context_heads(
+    context: CommitEvaluationContext,
+    *,
+    assessment: CommitAssessment,
+    replay_state: CommitReplayState,
+    support_replay_state: SupportLeaseReplayState,
+    current_head_fingerprints: dict[str, str],
+) -> None:
     for name, observed in current_head_fingerprints.items():
         if getattr(context, name) != observed or getattr(assessment, name) != observed:
             raise GovernanceError(f"local receipt current {name} lineage mismatch")
@@ -355,6 +573,14 @@ def _stable_commit_leaves(
         or assessment.support_replay_root != support_replay_state.replay_root
     ):
         raise GovernanceError("local receipt current replay roots mismatch")
+
+
+def _validate_local_receipt_window_lineage(
+    context: CommitEvaluationContext,
+    *,
+    assessment: CommitAssessment,
+    window_state: CommitWindowState,
+) -> None:
     common = (
         "profile",
         "assurance",
@@ -367,7 +593,10 @@ def _stable_commit_leaves(
     )
     for name in common:
         expected = getattr(context, name)
-        if getattr(assessment, name) != expected or getattr(window_state, name) != expected:
+        if (
+            getattr(assessment, name) != expected
+            or getattr(window_state, name) != expected
+        ):
             raise GovernanceError(f"local receipt {name} lineage mismatch")
     for window_name, assessment_name in (
         ("risk_chain_state_root", "risk_chain_state_fingerprint"),
@@ -392,6 +621,15 @@ def _stable_commit_leaves(
             raise GovernanceError(
                 f"local receipt window {window_name} lineage mismatch"
             )
+
+
+def _validate_local_receipt_ready_assessment(
+    context: CommitEvaluationContext,
+    *,
+    assessment: CommitAssessment,
+    window_state: CommitWindowState,
+    current_step: int,
+) -> tuple[str, str]:
     context_ref = commit_evaluation_context_fingerprint(context)
     assessment_ref = commit_assessment_fingerprint(assessment)
     if assessment.context_fingerprint != context_ref:
@@ -418,6 +656,15 @@ def _stable_commit_leaves(
         or window_state.last_evaluated_step != current_step
     ):
         raise GovernanceError("local receipt does not bind the stable window head")
+    return context_ref, assessment_ref
+
+
+def _local_receipt_leader_bindings(
+    context: CommitEvaluationContext,
+    *,
+    assessment: CommitAssessment,
+    window_state: CommitWindowState,
+) -> tuple[CandidateClaimBinding, CandidateCommitMetrics]:
     claim = next(
         (
             item
@@ -448,46 +695,8 @@ def _stable_commit_leaves(
         or window_state.candidate_lease_root != metrics.lease_root
     ):
         raise GovernanceError("local receipt leader metric roots mismatch")
-    output_ref = require_commit_fingerprint(
-        output_fingerprint,
-        "local receipt output_payload_fingerprint",
-    )
-    return {
-        "profile": context.profile,
-        "assurance": context.assurance,
-        "manifest_root": context.manifest_root,
-        "commit_policy_root": context.commit_policy_root,
-        "protocol_id": context.protocol_id,
-        "run_id": context.run_id,
-        "target": context.target,
-        "epoch": context.epoch,
-        "candidate_id": assessment.leader_candidate_id,
-        "claim_fingerprint": claim.claim_fingerprint,
-        "output_payload_fingerprint": output_ref,
-        "risk_chain_state_root": assessment.risk_chain_state_fingerprint,
-        "risk_assessment_root": assessment.risk_assessment_fingerprint,
-        "risk_policy_root": assessment.risk_policy_root,
-        "membership_snapshot_root": assessment.membership_snapshot_fingerprint,
-        "membership_epoch_state_root": assessment.membership_epoch_state_fingerprint,
-        "membership_root": assessment.membership_root,
-        "threshold_root": assessment.threshold_fingerprint,
-        "replay_state_root": assessment.replay_state_fingerprint,
-        "replay_root": assessment.replay_receipt_root,
-        "support_replay_state_root": assessment.support_replay_state_fingerprint,
-        "support_replay_root": assessment.support_replay_root,
-        "candidate_evidence_root": metrics.evidence_root,
-        "candidate_challenge_root": metrics.challenge_root,
-        "candidate_lease_root": metrics.lease_root,
-        "evidence_root": assessment.collective_evidence_root,
-        "challenge_root": assessment.collective_challenge_root,
-        "lease_root": assessment.collective_lease_root,
-        "window_state_root": commit_window_state_fingerprint(window_state),
-        "window_root": window_state.window_root,
-        "stop_resolution_root": assessment.stop_resolution_fingerprint,
-        "permission_root": assessment.permission_fingerprint,
-        "context_root": context_ref,
-        "assessment_root": assessment_ref,
-    }
+    return claim, metrics
+
 
 def _current_authority_heads_match_receipt(
     receipt: LocalCommitReceipt,
@@ -561,10 +770,8 @@ def _current_authority_heads_match_receipt(
             and window_state.window_root == receipt.window_root
             and window_state.leader_candidate_id == receipt.candidate_id
             and window_state.last_assessment_ref == receipt.assessment_root
-            and commit_evaluation_context_fingerprint(context)
-            == receipt.context_root
-            and commit_assessment_fingerprint(assessment)
-            == receipt.assessment_root
+            and commit_evaluation_context_fingerprint(context) == receipt.context_root
+            and commit_assessment_fingerprint(assessment) == receipt.assessment_root
         ):
             return False
         current_roots = {
@@ -572,16 +779,12 @@ def _current_authority_heads_match_receipt(
                 risk_chain_state
             ),
             "risk_assessment_root": risk_assessment_fingerprint(risk_assessment),
-            "threshold_root": commit_threshold_snapshot_fingerprint(
-                threshold_snapshot
-            ),
+            "threshold_root": commit_threshold_snapshot_fingerprint(threshold_snapshot),
             "membership_snapshot_root": eligible_principal_snapshot_fingerprint(
                 membership_snapshot
             ),
             "membership_epoch_state_root": (
-                eligible_membership_epoch_state_fingerprint(
-                    membership_epoch_state
-                )
+                eligible_membership_epoch_state_fingerprint(membership_epoch_state)
             ),
             "membership_root": membership_snapshot.membership_root,
             "replay_state_root": commit_replay_state_fingerprint(replay_state),

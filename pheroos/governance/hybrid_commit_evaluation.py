@@ -1,6 +1,6 @@
-from __future__ import annotations
+"""Public Draft facade for the diagnostic-total Hybrid Commit evaluator."""
 
-"""Stable public facade for the diagnostic-total Hybrid Commit evaluator."""
+from __future__ import annotations
 
 import warnings
 
@@ -40,9 +40,7 @@ commit_window_state_fingerprint = _commit_window_state_fingerprint
 
 # Direct declarations retain the historical public binding owner.
 HYBRID_COMMIT_EVALUATION_VERSION = "pheroos-hybrid-commit-evaluation-v1"
-HYBRID_COMMIT_EVALUATION_REQUEST_VERSION = (
-    "pheroos-hybrid-commit-evaluation-request-v1"
-)
+HYBRID_COMMIT_EVALUATION_REQUEST_VERSION = "pheroos-hybrid-commit-evaluation-request-v1"
 HYBRID_COMMIT_EVALUATION_DIAGNOSTIC_VERSION = (
     "pheroos-hybrid-commit-evaluation-diagnostic-v1"
 )

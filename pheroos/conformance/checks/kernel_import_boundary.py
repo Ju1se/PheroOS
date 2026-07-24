@@ -32,15 +32,36 @@ FORBIDDEN_IMPORT_ROOTS = {
     "tools",
     "uvicorn",
 }
-ROOT_FOUNDATION_MODULES = {"_digest", "_immutable", "_scope", "_version"}
+ROOT_FOUNDATION_MODULES = {
+    "_digest",
+    "_immutable",
+    "_scope",
+    "_unicode",
+    "_version",
+}
 PACKAGE_IMPORT_ALLOWLIST = {
     "protocol": {"protocol"},
     "kernel": {"kernel", "protocol", "drivers"},
     "governance": {"governance", "protocol", "trace"},
     "drivers": {"drivers"},
     "trace": {"trace"},
-    "conformance": {"conformance", "protocol", "kernel", "governance", "drivers", "trace"},
-    "cli": {"cli", "protocol", "kernel", "governance", "drivers", "trace", "conformance"},
+    "conformance": {
+        "conformance",
+        "protocol",
+        "kernel",
+        "governance",
+        "drivers",
+        "trace",
+    },
+    "cli": {
+        "cli",
+        "protocol",
+        "kernel",
+        "governance",
+        "drivers",
+        "trace",
+        "conformance",
+    },
 }
 
 
@@ -58,10 +79,14 @@ def check(root: Path) -> CheckResult:
             elif isinstance(node, ast.ImportFrom):
                 for module in resolved_import_from_modules(root, path, node):
                     record_if_forbidden(root, path, module, offenders)
-    return CheckResult("package_import_boundary", not offenders, "; ".join(sorted(set(offenders))))
+    return CheckResult(
+        "package_import_boundary", not offenders, "; ".join(sorted(set(offenders)))
+    )
 
 
-def resolved_import_from_modules(root: Path, path: Path, node: ast.ImportFrom) -> tuple[str, ...]:
+def resolved_import_from_modules(
+    root: Path, path: Path, node: ast.ImportFrom
+) -> tuple[str, ...]:
     if node.level == 0:
         if node.module == "pheroos":
             return tuple(f"pheroos.{alias.name}" for alias in node.names)
@@ -94,7 +119,9 @@ def package_for_path(root: Path, path: Path) -> str:
     return ".".join(parts)
 
 
-def record_if_forbidden(root: Path, path: Path, module: str, offenders: list[str]) -> None:
+def record_if_forbidden(
+    root: Path, path: Path, module: str, offenders: list[str]
+) -> None:
     if module.split(".", 1)[0] in FORBIDDEN_IMPORT_ROOTS:
         offenders.append(f"{path.relative_to(root).as_posix()}:{module}")
         return

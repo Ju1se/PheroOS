@@ -1,58 +1,22 @@
 #!/usr/bin/env python3
-"""Generate strict v2 schemas and verify all frozen v1 schema roots."""
+"""Generate writeable schemas and verify the closed artifact catalog."""
 
 from __future__ import annotations
 
 import argparse
-from hashlib import sha256
-import json
 from pathlib import Path
 import sys
-from typing import Any, Callable
 
 
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from pheroos.drivers.schema import driver_schema, driver_schema_v2  # noqa: E402
-from pheroos.kernel.schema import kernel_schema, kernel_schema_v2  # noqa: E402
-from pheroos.protocol.schema import (  # noqa: E402
-    capability_schema,
-    capability_schema_v2,
-    protocol_schema,
-    protocol_schema_v2,
+from pheroos.conformance.schema_catalog import (  # noqa: E402
+    SCHEMA_ARTIFACT_SPECS,
+    render_schema_artifact,
+    schema_catalog_problems,
 )
-
-
-_FROZEN_V1_ROOTS = {
-    "schemas/capability.schema.json": (
-        "5d3a88ed54d9acf83813713abec493ebb85e245cd6766de9fffa03351cdb62cf"
-    ),
-    "schemas/protocol.schema.json": (
-        "1abc0b228c72fc05f8ec6272d327d9c06ca3e3a7e37ea2487ccfeff60c86cdb6"
-    ),
-    "schemas/driver.schema.json": (
-        "44171e85e1076231d9120f67abafcf521748ccbb8932a805df12c43823587fbd"
-    ),
-    "schemas/kernel.schema.json": (
-        "da2e2001a61c19d2726bc96ef05392e1acb8618c6bb6a3dfb233bcc0398e0822"
-    ),
-}
-_SCHEMAS: tuple[tuple[str, Callable[[], dict[str, Any]], bool], ...] = (
-    ("schemas/capability.schema.json", capability_schema, True),
-    ("schemas/capability-v2.schema.json", capability_schema_v2, False),
-    ("schemas/protocol.schema.json", protocol_schema, True),
-    ("schemas/protocol-v2.schema.json", protocol_schema_v2, False),
-    ("schemas/driver.schema.json", driver_schema, True),
-    ("schemas/driver-v2.schema.json", driver_schema_v2, False),
-    ("schemas/kernel.schema.json", kernel_schema, True),
-    ("schemas/kernel-v2.schema.json", kernel_schema_v2, False),
-)
-
-
-def _render(factory: Callable[[], dict[str, Any]]) -> bytes:
-    return (json.dumps(factory(), indent=2, sort_keys=True) + "\n").encode()
 
 
 def main() -> int:
@@ -61,45 +25,57 @@ def main() -> int:
     mode.add_argument(
         "--write",
         action="store_true",
-        help="write v2 artifacts; frozen v1 artifacts are verification-only",
+        help="write only catalog entries explicitly marked writeable",
     )
     mode.add_argument(
         "--check",
         action="store_true",
-        help="verify generator parity and immutable v1 roots",
+        help="verify catalog closure, exact bytes, IDs, aliases, and frozen roots",
     )
     args = parser.parse_args()
 
-    failed = False
-    for relative, factory, frozen in _SCHEMAS:
-        path = ROOT / relative
-        expected = _render(factory)
-        if frozen:
-            expected_root = _FROZEN_V1_ROOTS[relative]
-            if sha256(expected).hexdigest() != expected_root:
-                print(f"generator drifted from frozen v1 root: {relative}")
-                failed = True
+    if args.write:
+        blockers = _write_blockers(schema_catalog_problems(ROOT))
+        if blockers:
+            for problem in blockers:
+                print(problem)
+            print("refusing to write while the schema catalog is structurally invalid")
+            return 1
+        for spec in SCHEMA_ARTIFACT_SPECS:
+            path = ROOT / spec.path
+            expected = render_schema_artifact(spec)
+            observed = path.read_bytes() if path.is_file() else None
+            if spec.frozen:
+                print(f"verified frozen {spec.path}")
                 continue
-        if args.write and not frozen:
+            if observed == expected:
+                print(f"verified {spec.path}")
+                continue
+            path.parent.mkdir(parents=True, exist_ok=True)
             path.write_bytes(expected)
-            print(f"wrote {relative}")
-            continue
-        try:
-            observed = path.read_bytes()
-        except FileNotFoundError:
-            print(f"missing {relative}")
-            failed = True
-            continue
-        if observed != expected:
-            print(f"stale {relative}")
-            failed = True
-            continue
-        if frozen and sha256(observed).hexdigest() != _FROZEN_V1_ROOTS[relative]:
-            print(f"frozen v1 root changed: {relative}")
-            failed = True
-            continue
-        print(f"verified {relative}")
-    return int(failed)
+            print(f"wrote {spec.path}")
+
+    problems = schema_catalog_problems(ROOT)
+    if problems:
+        for problem in problems:
+            print(problem)
+        if not args.write:
+            print("run scripts/generate_schema_artifacts.py --write")
+        return 1
+    print(f"verified {len(SCHEMA_ARTIFACT_SPECS)} cataloged schema artifacts")
+    return 0
+
+
+def _write_blockers(problems: tuple[str, ...]) -> tuple[str, ...]:
+    writeable = {
+        spec.surface: spec for spec in SCHEMA_ARTIFACT_SPECS if not spec.frozen
+    }
+    writeable_paths = {spec.path for spec in writeable.values()}
+    allowed = {
+        *(f"bytes:{surface}" for surface in writeable),
+        *(f"missing:{path}" for path in writeable_paths),
+    }
+    return tuple(problem for problem in problems if problem not in allowed)
 
 
 if __name__ == "__main__":

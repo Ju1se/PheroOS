@@ -28,19 +28,18 @@ class EvidenceGraph:
         object.__setattr__(self, "edges", tuple(deepcopy(self.edges)))
 
     def has_evidence(self) -> bool:
-        if not self.nodes or any(not isinstance(node, EvidenceNode) for node in self.nodes):
+        if not self.nodes or any(
+            not isinstance(node, EvidenceNode) for node in self.nodes
+        ):
             return False
         identifiers = [node.id for node in self.nodes]
-        return (
-            all(
-                isinstance(node.id, str)
-                and bool(node.id.strip())
-                and isinstance(node.content, str)
-                and bool(node.content.strip())
-                for node in self.nodes
-            )
-            and len(set(identifiers)) == len(identifiers)
-        )
+        return all(
+            isinstance(node.id, str)
+            and bool(node.id.strip())
+            and isinstance(node.content, str)
+            and bool(node.content.strip())
+            for node in self.nodes
+        ) and len(set(identifiers)) == len(identifiers)
 
     def has_provenance(self) -> bool:
         return bool(self.nodes) and all(

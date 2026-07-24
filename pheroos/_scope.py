@@ -5,6 +5,8 @@ import json
 
 
 RUNTIME_SCOPE_VERSION = "pheroos-runtime-scope-v1"
+RUNTIME_SCOPE_SCHEMA_V1_ID = "https://pheroos.dev/schemas/runtime-scope-v1.schema.json"
+RUNTIME_SCOPE_COMPONENT_MAX_LENGTH = 1024
 
 
 def runtime_scope_ref(tenant_id: str, run_id: str) -> str:
@@ -27,4 +29,8 @@ def runtime_scope_ref(tenant_id: str, run_id: str) -> str:
     return "sha256:" + sha256(canonical.encode("utf-8")).hexdigest()
 
 
-__all__ = ["RUNTIME_SCOPE_VERSION", "runtime_scope_ref"]
+__all__ = [
+    "RUNTIME_SCOPE_SCHEMA_V1_ID",
+    "RUNTIME_SCOPE_VERSION",
+    "runtime_scope_ref",
+]

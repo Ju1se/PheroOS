@@ -64,9 +64,11 @@ def _validate_commit_context_semantics(payload: Mapping[str, Any]) -> list[str]:
     expected_substantive = list(
         canonical_commit_set(
             tuple(
-                candidate_id
-                for candidate_id in candidate_ids
-                if candidate_id != fallback_id
+                dict.fromkeys(
+                    candidate_id
+                    for candidate_id in candidate_ids
+                    if candidate_id != fallback_id
+                )
             )
         )
     )
@@ -75,6 +77,7 @@ def _validate_commit_context_semantics(payload: Mapping[str, Any]) -> list[str]:
             "$.payload.substantive_candidate_ids: candidate projection mismatch"
         )
     return errors
+
 
 _CANDIDATE_READY_GATES = (
     "roots_valid",
@@ -95,6 +98,7 @@ _CANDIDATE_READY_GATES = (
     "equivocation_clear",
 )
 
+
 def _validate_candidate_metrics_semantics(
     payload: Mapping[str, Any],
     *,
@@ -106,12 +110,10 @@ def _validate_candidate_metrics_semantics(
     ):
         errors.append(f"{path}.ready_for_stability: gate conjunction mismatch")
     combined_support = bool(
-        payload["support_cluster_satisfied"]
-        and payload["support_ratio_satisfied"]
+        payload["support_cluster_satisfied"] and payload["support_ratio_satisfied"]
     )
     if combined_support is not (
-        payload["active_support_clusters"]
-        >= payload["support_threshold_clusters"]
+        payload["active_support_clusters"] >= payload["support_threshold_clusters"]
     ):
         errors.append(f"{path}: support threshold gate mismatch")
     for field_name in (
@@ -135,6 +137,7 @@ def _validate_candidate_metrics_semantics(
         )
     return errors
 
+
 def _collective_metrics_root(
     metrics: list[Mapping[str, Any]],
     *,
@@ -146,8 +149,7 @@ def _collective_metrics_root(
     root = commit_payload_fingerprint(
         {
             "candidate_roots": sorted(
-                (item["candidate_id"], item[item_root_name])
-                for item in metrics
+                (item["candidate_id"], item[item_root_name]) for item in metrics
             )
         },
         schema=schema,
@@ -155,12 +157,48 @@ def _collective_metrics_root(
     )
     return field_name, root
 
+
 def _validate_commit_assessment_semantics(
     payload: Mapping[str, Any],
     profile: str,
 ) -> list[str]:
     errors: list[str] = []
     metrics = payload["candidate_metrics"]
+    _validate_commit_assessment_metrics(
+        metrics,
+        errors=errors,
+    )
+    _validate_commit_assessment_roots(
+        payload,
+        metrics,
+        profile=profile,
+        errors=errors,
+    )
+    expected_leader, expected_ties = _commit_assessment_argmax(
+        metrics,
+        errors=errors,
+    )
+    expected_unique, expected_ready = _validate_commit_assessment_leader_fields(
+        payload,
+        metrics=metrics,
+        expected_leader=expected_leader,
+        expected_ties=expected_ties,
+        errors=errors,
+    )
+    _validate_commit_assessment_status(
+        payload,
+        expected_unique=expected_unique,
+        expected_ready=expected_ready,
+        errors=errors,
+    )
+    return errors
+
+
+def _validate_commit_assessment_metrics(
+    metrics: list[Mapping[str, Any]],
+    *,
+    errors: list[str],
+) -> None:
     ids = [item["candidate_id"] for item in metrics]
     if ids != sorted(ids):
         errors.append("$.payload.candidate_metrics: candidate order is not lexical")
@@ -173,6 +211,15 @@ def _validate_commit_assessment_semantics(
                 path=f"$.payload.candidate_metrics[{index}]",
             )
         )
+
+
+def _validate_commit_assessment_roots(
+    payload: Mapping[str, Any],
+    metrics: list[Mapping[str, Any]],
+    *,
+    profile: str,
+    errors: list[str],
+) -> None:
     for field_name, expected in (
         _collective_metrics_root(
             metrics,
@@ -198,6 +245,13 @@ def _validate_commit_assessment_semantics(
     ):
         if payload[field_name] != expected:
             errors.append(f"$.payload.{field_name}: reconstructable root mismatch")
+
+
+def _commit_assessment_argmax(
+    metrics: list[Mapping[str, Any]],
+    *,
+    errors: list[str],
+) -> tuple[str, list[str]]:
     scores = {item["candidate_id"]: item["net_evidence"] for item in metrics}
     expected_leader = ""
     expected_ties: list[str] = []
@@ -210,7 +264,11 @@ def _validate_commit_assessment_semantics(
             expected_ties = maxima
         for index, item in enumerate(metrics):
             other_best = max(
-                (score for name, score in scores.items() if name != item["candidate_id"]),
+                (
+                    score
+                    for name, score in scores.items()
+                    if name != item["candidate_id"]
+                ),
                 default=0,
             )
             expected_margin = item["net_evidence"] - max(other_best, 0)
@@ -218,12 +276,21 @@ def _validate_commit_assessment_semantics(
                 errors.append(
                     f"$.payload.candidate_metrics[{index}].margin: argmax margin mismatch"
                 )
-            if item["unique_leader"] is not (
-                item["candidate_id"] == expected_leader
-            ):
+            if item["unique_leader"] is not (item["candidate_id"] == expected_leader):
                 errors.append(
                     f"$.payload.candidate_metrics[{index}].unique_leader: argmax mismatch"
                 )
+    return expected_leader, expected_ties
+
+
+def _validate_commit_assessment_leader_fields(
+    payload: Mapping[str, Any],
+    *,
+    metrics: list[Mapping[str, Any]],
+    expected_leader: str,
+    expected_ties: list[str],
+    errors: list[str],
+) -> tuple[bool, bool]:
     if payload["leader_candidate_id"] != expected_leader:
         errors.append("$.payload.leader_candidate_id: unique argmax mismatch")
     if payload["tied_candidate_ids"] != expected_ties:
@@ -241,20 +308,60 @@ def _validate_commit_assessment_semantics(
     expected_ready = bool(leader and leader["ready_for_stability"])
     if payload["leader_ready_for_stability"] is not expected_ready:
         errors.append("$.payload.leader_ready_for_stability: leader gate mismatch")
+    return expected_unique, expected_ready
+
+
+def _validate_commit_assessment_status(
+    payload: Mapping[str, Any],
+    *,
+    expected_unique: bool,
+    expected_ready: bool,
+    errors: list[str],
+) -> None:
     if payload["status"] == "ready" and not (expected_unique and expected_ready):
         errors.append("$.payload.status: ready requires one fully gated leader")
     if payload["status"] == "safety_violation" and not (
-        payload["equivocation_finding_ids"]
-        or payload["replay_conflict_references"]
+        payload["equivocation_finding_ids"] or payload["replay_conflict_references"]
     ):
         errors.append("$.payload.status: safety violation lacks concrete finding")
-    return errors
+
 
 def _validate_commit_window_semantics(
     payload: Mapping[str, Any],
     profile: str,
 ) -> list[str]:
     errors: list[str] = []
+    _validate_commit_window_roots(payload, profile=profile, errors=errors)
+    _validate_commit_window_progress(payload, errors=errors)
+    has_assessment = bool(payload["last_assessment_ref"])
+    window_lineage = {
+        "assessment_ref": payload["last_assessment_ref"],
+        "context_ref": payload["last_context_ref"],
+        **{name: payload[name] for name in _ASSESSMENT_LINEAGE_ROOTS},
+        **{name: payload[name] for name in _CANDIDATE_LINEAGE_ROOTS},
+    }
+    errors.extend(_validate_assessment_lineage_semantics(window_lineage))
+    _validate_commit_window_assessment_metadata(
+        payload,
+        has_assessment=has_assessment,
+        errors=errors,
+    )
+    _validate_commit_window_ready_state(
+        payload,
+        has_assessment=has_assessment,
+        errors=errors,
+    )
+    if payload["reset_budget_exhausted"] and payload["last_ready"]:
+        errors.append("$.payload: exhausted reset budget retained a ready window")
+    return errors
+
+
+def _validate_commit_window_roots(
+    payload: Mapping[str, Any],
+    *,
+    profile: str,
+    errors: list[str],
+) -> None:
     expected_chain_id = commit_payload_fingerprint(
         {
             "protocol_id": payload["protocol_id"],
@@ -277,11 +384,22 @@ def _validate_commit_window_semantics(
     )
     if payload["window_root"] != expected_window_root:
         errors.append("$.payload.window_root: ordered lineage mismatch")
+
+
+def _validate_commit_window_progress(
+    payload: Mapping[str, Any],
+    *,
+    errors: list[str],
+) -> None:
     if payload["revision"] == 0:
         if payload["previous_state_fingerprint"]:
-            errors.append("$.payload.previous_state_fingerprint: initial state has predecessor")
+            errors.append(
+                "$.payload.previous_state_fingerprint: initial state has predecessor"
+            )
     elif not payload["previous_state_fingerprint"]:
-        errors.append("$.payload.previous_state_fingerprint: advanced state lacks predecessor")
+        errors.append(
+            "$.payload.previous_state_fingerprint: advanced state lacks predecessor"
+        )
     if payload["last_evaluated_step"] < payload["initialized_at_step"]:
         errors.append("$.payload.last_evaluated_step: predates initialization")
     if payload["last_evaluated_step"] >= payload["absolute_deadline_step"]:
@@ -289,18 +407,22 @@ def _validate_commit_window_semantics(
     if payload["absolute_deadline_step"] > payload["absolute_run_deadline_step"]:
         errors.append("$.payload: deadline exceeds run deadline")
     if payload["absolute_deadline_step"] <= payload["initialized_at_step"]:
-        errors.append("$.payload.absolute_deadline_step: deadline must follow initialization")
-    has_assessment = bool(payload["last_assessment_ref"])
-    window_lineage = {
-        "assessment_ref": payload["last_assessment_ref"],
-        "context_ref": payload["last_context_ref"],
-        **{name: payload[name] for name in _ASSESSMENT_LINEAGE_ROOTS},
-        **{name: payload[name] for name in _CANDIDATE_LINEAGE_ROOTS},
-    }
-    errors.extend(_validate_assessment_lineage_semantics(window_lineage))
+        errors.append(
+            "$.payload.absolute_deadline_step: deadline must follow initialization"
+        )
+
+
+def _validate_commit_window_assessment_metadata(
+    payload: Mapping[str, Any],
+    *,
+    has_assessment: bool,
+    errors: list[str],
+) -> None:
     if has_assessment:
         if not payload["last_assessment_status"]:
-            errors.append("$.payload.last_assessment_status: assessment status is absent")
+            errors.append(
+                "$.payload.last_assessment_status: assessment status is absent"
+            )
         for name in ("assessment_replay_state_ref", "assessment_replay_root"):
             if not payload[name]:
                 errors.append(f"$.payload.{name}: assessment replay lineage is absent")
@@ -311,6 +433,14 @@ def _validate_commit_window_semantics(
         or payload["assessment_replay_root"]
     ):
         errors.append("$.payload: empty assessment carries assessment metadata")
+
+
+def _validate_commit_window_ready_state(
+    payload: Mapping[str, Any],
+    *,
+    has_assessment: bool,
+    errors: list[str],
+) -> None:
     references = payload["ordered_assessment_refs"]
     if payload["last_ready"]:
         if not payload["leader_candidate_id"]:
@@ -323,12 +453,12 @@ def _validate_commit_window_semantics(
             or not references
             or references[-1] != payload["last_assessment_ref"]
         ):
-            errors.append("$.payload: ready window does not end at latest ready assessment")
+            errors.append(
+                "$.payload: ready window does not end at latest ready assessment"
+            )
     elif payload["leader_candidate_id"] or payload["window_count"] != 0 or references:
         errors.append("$.payload: non-ready window must be empty")
-    if payload["reset_budget_exhausted"] and payload["last_ready"]:
-        errors.append("$.payload: exhausted reset budget retained a ready window")
-    return errors
+
 
 def _validate_commit_window_seal_semantics(
     payload: Mapping[str, Any],
@@ -345,6 +475,7 @@ def _validate_commit_window_seal_semantics(
     except (GovernanceError, TypeError, ValueError):
         return ["$.payload: commit window seal typed lineage is invalid"]
     return []
+
 
 def _validate_commit_liveness_input_semantics(
     payload: Mapping[str, Any],
@@ -374,6 +505,7 @@ def _validate_commit_liveness_input_semantics(
         errors.append("$.payload: only sealed finality may report heartbeat loss")
     return errors
 
+
 def _validate_commit_finality_verification_semantics(
     payload: Mapping[str, Any],
 ) -> list[str]:
@@ -383,10 +515,9 @@ def _validate_commit_finality_verification_semantics(
         "distributed": "distributed_commit_certificate",
     }.get(payload["assurance"])
     if payload["certificate_kind"] != expected_kind:
-        return [
-            "$.payload.certificate_kind: kind does not match assurance"
-        ]
+        return ["$.payload.certificate_kind: kind does not match assurance"]
     return []
+
 
 def _validate_commit_replay_state_semantics(
     payload: Mapping[str, Any],
@@ -411,6 +542,27 @@ def _validate_commit_replay_state_semantics(
         errors.append("$.payload.current_step: predates replay initialization")
 
     receipts = payload["receipts"]
+    _validate_commit_replay_receipts(receipts, errors=errors)
+    expected_root = commit_payload_fingerprint(
+        {
+            "receipt_fingerprints": [
+                _replay_receipt_fingerprint(item, profile=profile) for item in receipts
+            ]
+        },
+        schema="pheroos-commit-replay-receipt-root-v1",
+        profile=profile,
+    )
+    if payload["receipt_root"] != expected_root:
+        errors.append("$.payload.receipt_root: reconstructable root mismatch")
+    _validate_commit_replay_revision(payload, receipts=receipts, errors=errors)
+    return errors
+
+
+def _validate_commit_replay_receipts(
+    receipts: list[Mapping[str, Any]],
+    *,
+    errors: list[str],
+) -> None:
     authority_order = sorted(
         receipts,
         key=lambda item: _replay_receipt_fingerprint(
@@ -429,18 +581,13 @@ def _validate_commit_replay_state_semantics(
         if len(values) != len(set(values)):
             errors.append(f"$.payload.receipts: {key_name} safety collision")
 
-    expected_root = commit_payload_fingerprint(
-        {
-            "receipt_fingerprints": [
-                _replay_receipt_fingerprint(item, profile=profile)
-                for item in receipts
-            ]
-        },
-        schema="pheroos-commit-replay-receipt-root-v1",
-        profile=profile,
-    )
-    if payload["receipt_root"] != expected_root:
-        errors.append("$.payload.receipt_root: reconstructable root mismatch")
+
+def _validate_commit_replay_revision(
+    payload: Mapping[str, Any],
+    *,
+    receipts: list[Mapping[str, Any]],
+    errors: list[str],
+) -> None:
     if payload["revision"] == 0:
         if payload["previous_state_fingerprint"] or receipts:
             errors.append("$.payload: initial replay state must be empty")
@@ -451,7 +598,7 @@ def _validate_commit_replay_state_semantics(
             )
         if not receipts:
             errors.append("$.payload.receipts: advanced replay state requires receipts")
-    return errors
+
 
 def _replay_receipt_fingerprint(
     payload: Mapping[str, Any],
@@ -463,6 +610,7 @@ def _replay_receipt_fingerprint(
         schema="pheroos-commit-replay-receipt-v1",
         profile=profile,
     )
+
 
 def commit_evaluation_context_payload_schema() -> dict[str, Any]:
     return strict_object_schema(
@@ -496,6 +644,7 @@ def commit_evaluation_context_payload_schema() -> dict[str, Any]:
             "trace_event_id": canonical_text_schema(),
         }
     )
+
 
 def candidate_commit_metrics_payload_schema() -> dict[str, Any]:
     properties: dict[str, Any] = {
@@ -550,6 +699,7 @@ def candidate_commit_metrics_payload_schema() -> dict[str, Any]:
         properties[name] = {"type": "boolean"}
     return strict_object_schema(properties)
 
+
 def commit_assessment_payload_schema() -> dict[str, Any]:
     return strict_object_schema(
         {
@@ -594,6 +744,7 @@ def commit_assessment_payload_schema() -> dict[str, Any]:
             "unique_leader": {"type": "boolean"},
         }
     )
+
 
 def commit_window_state_payload_schema() -> dict[str, Any]:
     return strict_object_schema(
@@ -652,6 +803,7 @@ def commit_window_state_payload_schema() -> dict[str, Any]:
         }
     )
 
+
 def commit_window_seal_payload_schema() -> dict[str, Any]:
     roots = {
         name: fingerprint_schema()
@@ -702,6 +854,7 @@ def commit_window_seal_payload_schema() -> dict[str, Any]:
             "trace_event_id": canonical_text_schema(),
         }
     )
+
 
 def commit_liveness_input_payload_schema() -> dict[str, Any]:
     return strict_object_schema(
@@ -768,6 +921,7 @@ def commit_liveness_input_payload_schema() -> dict[str, Any]:
         }
     )
 
+
 def commit_finality_verification_payload_schema() -> dict[str, Any]:
     lineage = {
         name: fingerprint_schema()
@@ -819,6 +973,7 @@ def commit_finality_verification_payload_schema() -> dict[str, Any]:
         }
     )
 
+
 def commit_replay_state_payload_schema() -> dict[str, Any]:
     return strict_object_schema(
         {
@@ -845,6 +1000,7 @@ def commit_replay_state_payload_schema() -> dict[str, Any]:
             "trace_event_id": canonical_text_schema(),
         }
     )
+
 
 def replay_receipt_payload_schema() -> dict[str, Any]:
     return strict_object_schema(

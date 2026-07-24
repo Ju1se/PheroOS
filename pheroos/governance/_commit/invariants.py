@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from collections.abc import Iterable
+
 from pheroos.governance._commit.records import (
     CommitEvaluationError,
     CommitReasonCode,
@@ -133,8 +135,9 @@ def _require_authoritative_heads(
             "support replay state is not the authoritative current head",
         )
 
+
 def _collective_root(
-    values: object,
+    values: Iterable[tuple[str, str]],
     *,
     schema: str,
     profile: str,
@@ -145,6 +148,7 @@ def _collective_root(
         schema=schema,
         profile=profile,
     )
+
 
 def _canonical_stop_fingerprint(value: object) -> str:
     if type(value) is not StopResolutionVerification:
@@ -159,6 +163,7 @@ def _canonical_stop_fingerprint(value: object) -> str:
             CommitReasonCode.STOP_RESOLUTION_UNRESOLVED,
             f"commit stop resolution is malformed: {exc}",
         ) from exc
+
 
 def _canonical_permission_fingerprint(value: object) -> str:
     if type(value) is not ActionPermission:

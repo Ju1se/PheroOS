@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
+from typing import TYPE_CHECKING, Protocol
 
 from pheroos.governance._commit_validation import (
     require_commit_fingerprint,
@@ -28,6 +29,73 @@ from pheroos.protocol.commit_models import (
     DISTRIBUTED_COMMIT_PROFILE_VERSION,
     CommitAssurance,
 )
+
+
+if TYPE_CHECKING:
+
+    class _DistributedProposalView(Protocol):
+        @property
+        def proposal_version(self) -> str: ...
+
+        @property
+        def wire_version(self) -> str: ...
+
+        @property
+        def canonicalization(self) -> str: ...
+
+        @property
+        def hash_algorithm(self) -> str: ...
+
+        @property
+        def profile(self) -> str: ...
+
+        @property
+        def assurance(self) -> CommitAssurance: ...
+
+        @property
+        def epoch(self) -> int: ...
+
+        @property
+        def proposed_at_step(self) -> int: ...
+
+        @property
+        def portable_certificate_version(self) -> str: ...
+
+        @property
+        def local_receipt_version(self) -> str: ...
+
+        @property
+        def commit_value_root(self) -> str: ...
+
+        @property
+        def proposal_digest(self) -> str: ...
+
+        @property
+        def local_receipt_ref(self) -> str: ...
+
+        @property
+        def portable_certificate_ref(self) -> str: ...
+
+        @property
+        def membership_snapshot_root(self) -> str: ...
+
+        @property
+        def membership_root(self) -> str: ...
+
+    class _PortableMembershipView(Protocol):
+        @property
+        def snapshot_fingerprint(self) -> str: ...
+
+        @property
+        def membership_root(self) -> str: ...
+else:
+
+    class _DistributedProposalView(Protocol):
+        pass
+
+    class _PortableMembershipView(Protocol):
+        pass
+
 
 _PROPOSAL_ROOT_FIELDS = (
     "manifest_root",
@@ -144,7 +212,7 @@ _CENTRAL_LINEAGE_FIELDS = (
 
 
 def validate_distributed_commit_proposal(
-    proposal: object,
+    proposal: _DistributedProposalView,
     *,
     proposal_version: str,
     commit_value_version: str,
@@ -302,7 +370,7 @@ def distributed_commit_value_root_from_mapping(
 
 
 def _distributed_proposal_body_payload(
-    proposal: object,
+    proposal: _DistributedProposalView,
 ) -> dict[str, object]:
     payload = _public_dataclass_payload(proposal)
     payload.pop("proposal_digest")
@@ -384,7 +452,7 @@ def _validate_receipt_certificate_lineage(
 
 
 def _validate_proposal_certificate_lineage(
-    proposal: object,
+    proposal: _DistributedProposalView,
     certificate: EvidenceCommitCertificate,
 ) -> None:
     for name in _CENTRAL_LINEAGE_FIELDS:
@@ -402,8 +470,8 @@ def _validate_proposal_certificate_lineage(
 
 
 def _validate_proposal_membership(
-    proposal: object,
-    membership: object,
+    proposal: _DistributedProposalView,
+    membership: _PortableMembershipView,
 ) -> None:
     for name in (
         "profile",

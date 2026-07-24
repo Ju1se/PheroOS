@@ -2,11 +2,19 @@ from __future__ import annotations
 
 from math import isclose
 
-from pheroos.conformance.checks._manifest import active_target, candidate_set, exercise_candidate_id
+from pheroos.conformance.checks._manifest import (
+    active_target,
+    candidate_set,
+    exercise_candidate_id,
+)
 from pheroos.conformance.report import CheckResult
 from pheroos.governance import (
+    PheromoneBatchResult,
+    PheromoneDiffusionPolicy,
     PheromoneEdge,
+    PheromoneLifecycleRecord,
     PheromoneNeighborhood,
+    PheromonePolicy,
     PheromoneSubject,
     PheromoneTrail,
     diffusion_policy_from_collective,
@@ -49,13 +57,23 @@ def diffusion_problems(manifest: CapabilityManifest) -> list[str]:
     diffusion_policy = diffusion_policy_from_collective(collective_policy)
     neighborhood = PheromoneNeighborhood(
         subjects=[
-            PheromoneSubject("route", "route:alpha", candidate_id=candidate_id, target=target),
-            PheromoneSubject("candidate", candidate_id, candidate_id=candidate_id, target=target),
-            PheromoneSubject("tool", "tool:terminal", candidate_id=candidate_id, target=target),
+            PheromoneSubject(
+                "route", "route:alpha", candidate_id=candidate_id, target=target
+            ),
+            PheromoneSubject(
+                "candidate", candidate_id, candidate_id=candidate_id, target=target
+            ),
+            PheromoneSubject(
+                "tool", "tool:terminal", candidate_id=candidate_id, target=target
+            ),
         ],
         edges=[
-            PheromoneEdge("route", "route:alpha", "candidate", candidate_id, attenuation=1.0),
-            PheromoneEdge("candidate", candidate_id, "tool", "tool:terminal", attenuation=1.0),
+            PheromoneEdge(
+                "route", "route:alpha", "candidate", candidate_id, attenuation=1.0
+            ),
+            PheromoneEdge(
+                "candidate", candidate_id, "tool", "tool:terminal", attenuation=1.0
+            ),
         ],
     )
     source_strength = float(policy.max_strength)
@@ -78,12 +96,16 @@ def diffusion_problems(manifest: CapabilityManifest) -> list[str]:
     unbound_topology = PheromoneNeighborhood(
         subjects=[
             PheromoneSubject("route", "route:unbound", target=target),
-            PheromoneSubject("candidate", candidate_id, candidate_id=candidate_id, target=target),
+            PheromoneSubject(
+                "candidate", candidate_id, candidate_id=candidate_id, target=target
+            ),
         ],
         edges=[PheromoneEdge("route", "route:unbound", "candidate", candidate_id)],
     )
     try:
-        validate_pheromone_topology(unbound_topology, candidate_set=candidates, target=target)
+        validate_pheromone_topology(
+            unbound_topology, candidate_set=candidates, target=target
+        )
     except GovernanceError:
         pass
     else:
@@ -91,12 +113,16 @@ def diffusion_problems(manifest: CapabilityManifest) -> list[str]:
 
     bad_topology = PheromoneNeighborhood(
         subjects=[
-            PheromoneSubject("route", "route:alpha", candidate_id=candidate_id, target=target)
+            PheromoneSubject(
+                "route", "route:alpha", candidate_id=candidate_id, target=target
+            )
         ],
         edges=[PheromoneEdge("route", "route:alpha", "candidate", "candidate:missing")],
     )
     try:
-        validate_pheromone_topology(bad_topology, candidate_set=candidates, target=target)
+        validate_pheromone_topology(
+            bad_topology, candidate_set=candidates, target=target
+        )
     except GovernanceError:
         pass
     else:
@@ -113,7 +139,11 @@ def diffusion_problems(manifest: CapabilityManifest) -> list[str]:
     if alternate_candidate_id is not None:
         try:
             diffuse_pheromone_trails_with_records(
-                [trail(alternate_candidate_id, target=target, strength=source_strength)],
+                [
+                    trail(
+                        alternate_candidate_id, target=target, strength=source_strength
+                    )
+                ],
                 neighborhood,
                 policy,
                 diffusion_policy,
@@ -128,12 +158,12 @@ def diffusion_problems(manifest: CapabilityManifest) -> list[str]:
 
 
 def expected_diffusion_problems(
-    result: object,
+    result: PheromoneBatchResult,
     *,
     candidate_id: str,
     source_strength: float,
-    policy: object,
-    diffusion_policy: object,
+    policy: PheromonePolicy,
+    diffusion_policy: PheromoneDiffusionPolicy,
 ) -> list[str]:
     problems: list[str] = []
     derived = {
@@ -158,35 +188,71 @@ def expected_diffusion_problems(
         if applied < policy.min_strength:
             applied = 0.0
         record = records_by_hop.get(hop)
-        if record is None:
-            problems.append(f"diffusion_record_missing:{hop}")
+        hop_problems, should_continue = _diffusion_hop_problems(
+            record=record,
+            observed=derived.get(destination),
+            requested=requested,
+            applied=applied,
+            attenuation=float(diffusion_policy.attenuation),
+            hop=hop,
+        )
+        problems.extend(hop_problems)
+        if not should_continue:
             break
-        if not isclose(record.requested_strength, requested, abs_tol=1e-9):
-            problems.append(f"attenuation:{hop}")
-        if not isclose(record.applied_strength, applied, abs_tol=1e-9):
-            problems.append(f"budget_application:{hop}")
-        if not isclose(
-            record.attenuation,
-            float(diffusion_policy.attenuation),
-            abs_tol=1e-9,
-        ):
-            problems.append(f"recorded_attenuation:{hop}")
-        observed = derived.get(destination)
-        if applied <= 0:
-            if observed is not None or record.action != "diffuse_rejected":
-                problems.append(f"rejected_diffusion_materialized:{hop}")
-            break
-        if observed is None:
-            problems.append(f"declared_hop_not_applied:{hop}")
-            break
-        if not isclose(observed.strength, applied, abs_tol=1e-9):
-            problems.append(f"diffused_strength:{hop}")
         remaining_source -= applied
         remaining_round -= applied
         frontier_strength = applied
 
     if any(record.hop > diffusion_policy.max_hops for record in result.records):
         problems.append("record_exceeded_max_hops")
+    return problems
+
+
+def _diffusion_hop_problems(
+    *,
+    record: PheromoneLifecycleRecord | None,
+    observed: PheromoneTrail | None,
+    requested: float,
+    applied: float,
+    attenuation: float,
+    hop: int,
+) -> tuple[list[str], bool]:
+    if record is None:
+        return [f"diffusion_record_missing:{hop}"], False
+    problems = _diffusion_record_problems(
+        record=record,
+        requested=requested,
+        applied=applied,
+        attenuation=attenuation,
+        hop=hop,
+    )
+    if applied <= 0:
+        if observed is not None or record.action != "diffuse_rejected":
+            problems.append(f"rejected_diffusion_materialized:{hop}")
+        return problems, False
+    if observed is None:
+        problems.append(f"declared_hop_not_applied:{hop}")
+        return problems, False
+    if not isclose(observed.strength, applied, abs_tol=1e-9):
+        problems.append(f"diffused_strength:{hop}")
+    return problems, True
+
+
+def _diffusion_record_problems(
+    *,
+    record: PheromoneLifecycleRecord,
+    requested: float,
+    applied: float,
+    attenuation: float,
+    hop: int,
+) -> list[str]:
+    problems: list[str] = []
+    if not isclose(record.requested_strength, requested, abs_tol=1e-9):
+        problems.append(f"attenuation:{hop}")
+    if not isclose(record.applied_strength, applied, abs_tol=1e-9):
+        problems.append(f"budget_application:{hop}")
+    if not isclose(record.attenuation, attenuation, abs_tol=1e-9):
+        problems.append(f"recorded_attenuation:{hop}")
     return problems
 
 

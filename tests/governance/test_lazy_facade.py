@@ -111,9 +111,7 @@ print(json.dumps({
         "pheroos.governance",
         "pheroos.governance._public_api",
     ]
-    assert set(result["public_dir"]) == set(PUBLIC_API) | set(
-        COMPATIBILITY_MODULES
-    )
+    assert set(result["public_dir"]) == set(PUBLIC_API) | set(COMPATIBILITY_MODULES)
 
 
 def test_first_lazy_access_is_thread_safe_and_imports_once() -> None:
@@ -181,9 +179,10 @@ def test_from_import_star_import_and_every_binding_preserve_identity() -> None:
         "from pheroos.governance import Candidate as imported_candidate",
         from_namespace,
     )
-    assert from_namespace["imported_candidate"] is import_module(
-        "pheroos.governance.candidate"
-    ).Candidate
+    assert (
+        from_namespace["imported_candidate"]
+        is import_module("pheroos.governance.candidate").Candidate
+    )
 
     star_namespace: dict[str, object] = {}
     exec("from pheroos.governance import *", star_namespace)
@@ -237,11 +236,11 @@ def test_cold_import_stays_within_the_governance_budget() -> None:
     assert result["median_ms"] <= result["budget_ms"] == 120.0
     assert all(
         observation["loaded_pheroos_modules"]
-            == [
-                "pheroos",
-                "pheroos._version",
-                "pheroos.governance",
-                "pheroos.governance._public_api",
+        == [
+            "pheroos",
+            "pheroos._version",
+            "pheroos.governance",
+            "pheroos.governance._public_api",
         ]
         for observation in result["observations"]
     )

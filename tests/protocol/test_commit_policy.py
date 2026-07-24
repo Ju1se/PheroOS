@@ -76,10 +76,54 @@ def commit_policy_payload() -> dict[str, object]:
             "cluster_verification_required": True,
         },
         "risk_bands": {
-            "LOW": risk_band(2_000_000, 500_000, 200_000, 2, 500_000, 2, 250_000, 2, challenges, "evidence_bound"),
-            "MODERATE": risk_band(2_500_000, 400_000, 150_000, 2, 600_000, 2, 300_000, 3, challenges, "evidence_bound"),
-            "HIGH": risk_band(3_000_000, 300_000, 100_000, 3, 700_000, 3, 400_000, 4, [*challenges, "counter_search"], "certified"),
-            "CRITICAL": risk_band(4_000_000, 200_000, 50_000, 4, 800_000, 4, 500_000, 5, [*challenges, "counter_search", "failure_domain_review"], "distributed"),
+            "LOW": risk_band(
+                2_000_000,
+                500_000,
+                200_000,
+                2,
+                500_000,
+                2,
+                250_000,
+                2,
+                challenges,
+                "evidence_bound",
+            ),
+            "MODERATE": risk_band(
+                2_500_000,
+                400_000,
+                150_000,
+                2,
+                600_000,
+                2,
+                300_000,
+                3,
+                challenges,
+                "evidence_bound",
+            ),
+            "HIGH": risk_band(
+                3_000_000,
+                300_000,
+                100_000,
+                3,
+                700_000,
+                3,
+                400_000,
+                4,
+                [*challenges, "counter_search"],
+                "certified",
+            ),
+            "CRITICAL": risk_band(
+                4_000_000,
+                200_000,
+                50_000,
+                4,
+                800_000,
+                4,
+                500_000,
+                5,
+                [*challenges, "counter_search", "failure_domain_review"],
+                "distributed",
+            ),
         },
         "commit_window": {
             "minimum_stability_steps": 2,
@@ -146,7 +190,9 @@ def risk_band(
     }
 
 
-def test_complete_commit_policy_loads_and_validates_without_changing_legacy_fields() -> None:
+def test_complete_commit_policy_loads_and_validates_without_changing_legacy_fields() -> (
+    None
+):
     manifest = capability_manifest_from_dict(capability_payload())
     policy = manifest.protocol.collective_commit_policy
 
@@ -205,16 +251,13 @@ def test_unknown_critical_commit_extensions_fail_closed(
 ) -> None:
     payload = capability_payload()
     policy = payload["protocol"]["collective_commit_policy"]
-    policy["evidence_qualification"]["extensions"] = {
-        critical_key: {"required": True}
-    }
+    policy["evidence_qualification"]["extensions"] = {critical_key: {"required": True}}
 
     manifest = capability_manifest_from_dict(payload)
     diagnostics = validate_capability_manifest(manifest)
 
     assert any(
-        item.code == "commit_unknown_critical_extension"
-        and critical_key in item.path
+        item.code == "commit_unknown_critical_extension" and critical_key in item.path
         for item in diagnostics
     )
 
@@ -231,11 +274,15 @@ def test_unknown_critical_commit_extensions_fail_closed(
             "support_lease.lease_ttl_steps",
         ),
         (
-            lambda policy: policy["commit_window"].__setitem__("maximum_leader_resets", True),
+            lambda policy: policy["commit_window"].__setitem__(
+                "maximum_leader_resets", True
+            ),
             "commit_window.maximum_leader_resets",
         ),
         (
-            lambda policy: policy["risk_bands"]["LOW"]["required_challenge_categories"].append("independent_replication"),
+            lambda policy: policy["risk_bands"]["LOW"][
+                "required_challenge_categories"
+            ].append("independent_replication"),
             "risk_bands.LOW.required_challenge_categories",
         ),
         (
@@ -267,7 +314,9 @@ def test_commit_policy_raw_shape_is_rejected_by_schema_and_loader(
     assert expected_path in str(exc.value)
 
 
-def test_commit_parser_rejects_integral_float_without_coercing_authority_value() -> None:
+def test_commit_parser_rejects_integral_float_without_coercing_authority_value() -> (
+    None
+):
     payload = capability_payload()
     payload["protocol"]["collective_commit_policy"]["evidence_qualification"][
         "positive_group_cap"
@@ -279,9 +328,7 @@ def test_commit_parser_rejects_integral_float_without_coercing_authority_value()
 
 def test_commit_parser_rejects_non_nfc_authority_text() -> None:
     payload = capability_payload()
-    payload["protocol"]["collective_commit_policy"]["target"] = (
-        "de\u0301cision:review"
-    )
+    payload["protocol"]["collective_commit_policy"]["target"] = "de\u0301cision:review"
 
     with pytest.raises(ValueError, match="canonical non-blank string: target"):
         protocol_manifest_from_dict(payload["protocol"])
@@ -290,9 +337,18 @@ def test_commit_parser_rejects_non_nfc_authority_text() -> None:
 @pytest.mark.parametrize(
     ("mutation", "expected_code"),
     [
-        (lambda policy: replace(policy, policy_version="v0"), "commit_policy_version_unsupported"),
-        (lambda policy: replace(policy, assurance="unknown"), "commit_assurance_unsupported"),
-        (lambda policy: replace(policy, target="decision:other"), "commit_target_missing"),
+        (
+            lambda policy: replace(policy, policy_version="v0"),
+            "commit_policy_version_unsupported",
+        ),
+        (
+            lambda policy: replace(policy, assurance="unknown"),
+            "commit_assurance_unsupported",
+        ),
+        (
+            lambda policy: replace(policy, target="decision:other"),
+            "commit_target_missing",
+        ),
         (
             lambda policy: replace(
                 policy,
@@ -420,18 +476,19 @@ def test_generated_protocol_schema_exposes_complete_commit_policy_shape() -> Non
         "certificate",
         "distributed",
     ]
-    assert commit["properties"]["policy_version"] == {
-        "const": COMMIT_POLICY_VERSION
-    }
+    assert commit["properties"]["policy_version"] == {"const": COMMIT_POLICY_VERSION}
     assert commit["properties"]["risk_bands"]["required"] == [
         "LOW",
         "MODERATE",
         "HIGH",
         "CRITICAL",
     ]
-    assert commit["properties"]["commit_window"]["properties"]["reset_rules"][
-        "uniqueItems"
-    ] is True
+    assert (
+        commit["properties"]["commit_window"]["properties"]["reset_rules"][
+            "uniqueItems"
+        ]
+        is True
+    )
 
 
 def test_legacy_manifests_remain_commit_policy_free_and_validation_clean() -> None:
@@ -454,13 +511,19 @@ def test_commit_policy_input_permutation_is_semantically_stable() -> None:
         reversed(list(bands.items()))
     )
 
-    first_policy = capability_manifest_from_dict(first).protocol.collective_commit_policy
-    second_policy = capability_manifest_from_dict(second).protocol.collective_commit_policy
+    first_policy = capability_manifest_from_dict(
+        first
+    ).protocol.collective_commit_policy
+    second_policy = capability_manifest_from_dict(
+        second
+    ).protocol.collective_commit_policy
 
     assert first_policy == second_policy
 
 
-def test_commit_authority_roots_exclude_extensions_attention_and_legacy_threshold() -> None:
+def test_commit_authority_roots_exclude_extensions_attention_and_legacy_threshold() -> (
+    None
+):
     first_payload = capability_payload()
     second_payload = deepcopy(first_payload)
     second_payload["protocol"]["collective_commit_policy"]["x-observer"] = {
@@ -549,13 +612,13 @@ def test_commit_manifest_root_binds_output_trace_and_signal_authority() -> None:
 def test_commit_authority_roots_change_for_critical_policy_leaf_not_set_order() -> None:
     base_payload = capability_payload()
     critical_payload = deepcopy(base_payload)
-    critical_payload["protocol"]["collective_commit_policy"][
-        "evidence_qualification"
-    ]["positive_group_cap"] += 1
+    critical_payload["protocol"]["collective_commit_policy"]["evidence_qualification"][
+        "positive_group_cap"
+    ] += 1
     reordered_payload = deepcopy(base_payload)
-    reordered_payload["protocol"]["collective_commit_policy"]["risk_bands"][
-        "CRITICAL"
-    ]["required_challenge_categories"].reverse()
+    reordered_payload["protocol"]["collective_commit_policy"]["risk_bands"]["CRITICAL"][
+        "required_challenge_categories"
+    ].reverse()
 
     base = capability_manifest_from_dict(base_payload).protocol.collective_commit_policy
     critical = capability_manifest_from_dict(
@@ -566,11 +629,15 @@ def test_commit_authority_roots_change_for_critical_policy_leaf_not_set_order() 
     ).protocol.collective_commit_policy
     profile = "pheroos-commit-integrity-v1"
 
-    assert commit_policy_fingerprint(base, profile=profile) != commit_policy_fingerprint(
+    assert commit_policy_fingerprint(
+        base, profile=profile
+    ) != commit_policy_fingerprint(
         critical,
         profile=profile,
     )
-    assert commit_policy_fingerprint(base, profile=profile) == commit_policy_fingerprint(
+    assert commit_policy_fingerprint(
+        base, profile=profile
+    ) == commit_policy_fingerprint(
         reordered,
         profile=profile,
     )

@@ -9,15 +9,11 @@ CASES = (24, 25, 26)
 
 
 def main() -> None:
-    vectors = {
-        vector.matrix_case: vector for vector in load_commit_tck_vectors()
-    }
+    vectors = {vector.matrix_case: vector for vector in load_commit_tck_vectors()}
     report = run_commit_tck(tuple(vectors[case] for case in CASES))
     if not report.ok:
         failures = {
-            item.matrix_case: item.detail
-            for item in report.results
-            if not item.ok
+            item.matrix_case: item.detail for item in report.results if not item.ok
         }
         raise SystemExit(f"certificate replay reference failed: {failures}")
     print(

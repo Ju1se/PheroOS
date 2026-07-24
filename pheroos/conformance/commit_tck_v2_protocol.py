@@ -1,6 +1,6 @@
-from __future__ import annotations
-
 """Provider-neutral Commit TCK v2 request/response and JSONL server ABI."""
+
+from __future__ import annotations
 
 from collections.abc import Callable, Mapping, Sequence
 from copy import deepcopy
@@ -95,7 +95,9 @@ class CommitTckRequest:
                 "commit TCK request prior state must be an object"
             )
         if not isinstance(self.inputs, dict):
-            raise CommitTckV2ProtocolError("commit TCK request inputs must be an object")
+            raise CommitTckV2ProtocolError(
+                "commit TCK request inputs must be an object"
+            )
         _require_text(
             self.inputs.get("operation"),
             "commit TCK request operation",
@@ -117,9 +119,7 @@ class CommitTckRequest:
             "title": self.title,
             "manifest": deepcopy(self.manifest),
             "profile": self.profile,
-            "prior_authoritative_state": deepcopy(
-                self.prior_authoritative_state
-            ),
+            "prior_authoritative_state": deepcopy(self.prior_authoritative_state),
             "inputs": deepcopy(self.inputs),
         }
 
@@ -134,9 +134,7 @@ class CommitTckRequest:
             title=value["title"],
             manifest=deepcopy(value["manifest"]),
             profile=value["profile"],
-            prior_authoritative_state=deepcopy(
-                value["prior_authoritative_state"]
-            ),
+            prior_authoritative_state=deepcopy(value["prior_authoritative_state"]),
             inputs=deepcopy(value["inputs"]),
         )
 
@@ -249,9 +247,7 @@ def commit_tck_request_v2_schema() -> dict[str, Any]:
             "inputs": {
                 "type": "object",
                 "required": ["operation"],
-                "properties": {
-                    "operation": {"type": "string", "minLength": 1}
-                },
+                "properties": {"operation": {"type": "string", "minLength": 1}},
             },
         },
     }
@@ -304,15 +300,46 @@ def serve_commit_tck_v2_jsonl(
 
     _require_text(implementation_id, "commit TCK implementation id")
     _require_text(implementation_version, "commit TCK implementation version")
-    operations = tuple(supported_operations)
-    if not operations or any(
+    operations = _validated_supported_operations(supported_operations)
+    session_id = _read_commit_tck_handshake(input_stream, operations=operations)
+    _write_handshake_ack(
+        output_stream,
+        session_id=session_id,
+        implementation_id=implementation_id,
+        implementation_version=implementation_version,
+        operations=operations,
+    )
+    for raw_line in input_stream:
+        if _serve_commit_tck_message(
+            raw_line,
+            evaluator=evaluator,
+            implementation_id=implementation_id,
+            operations=operations,
+            session_id=session_id,
+            output_stream=output_stream,
+        ):
+            return
+    raise CommitTckV2ProtocolError("commit TCK JSONL session ended before close")
+
+
+def _validated_supported_operations(values: Sequence[str]) -> tuple[str, ...]:
+    operations = tuple(values)
+    invalid = not operations or any(
         not isinstance(item, str) or not item or item != item.strip()
         for item in operations
-    ) or len(set(operations)) != len(operations):
+    )
+    if invalid or len(set(operations)) != len(operations):
         raise CommitTckV2ProtocolError(
             "commit TCK supported operations must be unique non-blank strings"
         )
+    return operations
 
+
+def _read_commit_tck_handshake(
+    input_stream: TextIO,
+    *,
+    operations: Sequence[str],
+) -> str:
     first = _read_jsonl(input_stream, "commit TCK handshake")
     handshake_fields = frozenset(
         {
@@ -352,6 +379,17 @@ def serve_commit_tck_v2_jsonl(
         )
     if not set(requested).issubset(operations):
         raise CommitTckV2ProtocolError("commit TCK operation is unsupported")
+    return session_id
+
+
+def _write_handshake_ack(
+    output_stream: TextIO,
+    *,
+    session_id: str,
+    implementation_id: str,
+    implementation_version: str,
+    operations: Sequence[str],
+) -> None:
     _write_jsonl(
         output_stream,
         {
@@ -367,65 +405,110 @@ def serve_commit_tck_v2_jsonl(
         },
     )
 
-    for raw_line in input_stream:
-        if not raw_line.strip():
-            raise CommitTckV2ProtocolError("commit TCK JSONL line must not be blank")
-        message = loads_commit_tck_json(raw_line)
-        if not isinstance(message, dict):
-            raise CommitTckV2ProtocolError("commit TCK JSONL message must be an object")
-        message_type = message.get("message_type")
-        if message_type == "evaluate":
-            envelope = _exact_object(
-                message,
-                frozenset({"message_type", "session_id", "request"}),
-                "commit TCK evaluate envelope",
-            )
-            if envelope["session_id"] != session_id:
-                raise CommitTckV2ProtocolError("commit TCK session id mismatch")
-            request = CommitTckRequest.from_dict(envelope["request"])
-            if request.tck_version != COMMIT_TCK_V2_VERSION:
-                raise CommitTckV2ProtocolError("commit TCK request version mismatch")
-            if request.inputs["operation"] not in operations:
-                raise CommitTckV2ProtocolError("commit TCK operation is unsupported")
-            response = evaluator(request)
-            if not isinstance(response, CommitTckResponse):
-                raise CommitTckV2ProtocolError(
-                    "commit TCK evaluator returned an invalid response type"
-                )
-            if response.request_id != request.id:
-                raise CommitTckV2ProtocolError(
-                    "commit TCK response request id mismatch"
-                )
-            if response.implementation_id != implementation_id:
-                raise CommitTckV2ProtocolError(
-                    "commit TCK response implementation id mismatch"
-                )
-            _write_jsonl(
-                output_stream,
-                {
-                    "message_type": "result",
-                    "session_id": session_id,
-                    "response": response.to_dict(),
-                },
-            )
-            continue
-        if message_type == "close":
-            close = _exact_object(
-                message,
-                frozenset({"message_type", "session_id"}),
-                "commit TCK close envelope",
-            )
-            if close["session_id"] != session_id:
-                raise CommitTckV2ProtocolError("commit TCK session id mismatch")
-            _write_jsonl(
-                output_stream,
-                {"message_type": "closed", "session_id": session_id},
-            )
-            return
-        raise CommitTckV2ProtocolError(
-            f"commit TCK JSONL message type is unsupported: {message_type!r}"
+
+def _serve_commit_tck_message(
+    raw_line: str,
+    *,
+    evaluator: Callable[[CommitTckRequest], CommitTckResponse],
+    implementation_id: str,
+    operations: Sequence[str],
+    session_id: str,
+    output_stream: TextIO,
+) -> bool:
+    if not raw_line.strip():
+        raise CommitTckV2ProtocolError("commit TCK JSONL line must not be blank")
+    message = loads_commit_tck_json(raw_line)
+    if not isinstance(message, dict):
+        raise CommitTckV2ProtocolError("commit TCK JSONL message must be an object")
+    message_type = message.get("message_type")
+    if message_type == "evaluate":
+        _serve_commit_tck_evaluation(
+            message,
+            evaluator=evaluator,
+            implementation_id=implementation_id,
+            operations=operations,
+            session_id=session_id,
+            output_stream=output_stream,
         )
-    raise CommitTckV2ProtocolError("commit TCK JSONL session ended before close")
+        return False
+    if message_type == "close":
+        _serve_commit_tck_close(
+            message, session_id=session_id, output_stream=output_stream
+        )
+        return True
+    raise CommitTckV2ProtocolError(
+        f"commit TCK JSONL message type is unsupported: {message_type!r}"
+    )
+
+
+def _serve_commit_tck_evaluation(
+    message: Mapping[str, Any],
+    *,
+    evaluator: Callable[[CommitTckRequest], CommitTckResponse],
+    implementation_id: str,
+    operations: Sequence[str],
+    session_id: str,
+    output_stream: TextIO,
+) -> None:
+    envelope = _exact_object(
+        message,
+        frozenset({"message_type", "session_id", "request"}),
+        "commit TCK evaluate envelope",
+    )
+    if envelope["session_id"] != session_id:
+        raise CommitTckV2ProtocolError("commit TCK session id mismatch")
+    request = CommitTckRequest.from_dict(envelope["request"])
+    if request.tck_version != COMMIT_TCK_V2_VERSION:
+        raise CommitTckV2ProtocolError("commit TCK request version mismatch")
+    if request.inputs["operation"] not in operations:
+        raise CommitTckV2ProtocolError("commit TCK operation is unsupported")
+    response = evaluator(request)
+    _validate_commit_tck_response(
+        response, request=request, implementation_id=implementation_id
+    )
+    _write_jsonl(
+        output_stream,
+        {
+            "message_type": "result",
+            "session_id": session_id,
+            "response": response.to_dict(),
+        },
+    )
+
+
+def _validate_commit_tck_response(
+    response: object,
+    *,
+    request: CommitTckRequest,
+    implementation_id: str,
+) -> None:
+    if not isinstance(response, CommitTckResponse):
+        raise CommitTckV2ProtocolError(
+            "commit TCK evaluator returned an invalid response type"
+        )
+    if response.request_id != request.id:
+        raise CommitTckV2ProtocolError("commit TCK response request id mismatch")
+    if response.implementation_id != implementation_id:
+        raise CommitTckV2ProtocolError("commit TCK response implementation id mismatch")
+
+
+def _serve_commit_tck_close(
+    message: Mapping[str, Any],
+    *,
+    session_id: str,
+    output_stream: TextIO,
+) -> None:
+    close = _exact_object(
+        message,
+        frozenset({"message_type", "session_id"}),
+        "commit TCK close envelope",
+    )
+    if close["session_id"] != session_id:
+        raise CommitTckV2ProtocolError("commit TCK session id mismatch")
+    _write_jsonl(
+        output_stream,
+        {"message_type": "closed", "session_id": session_id},
+    )
 
 
 def loads_commit_tck_json(value: str) -> Any:

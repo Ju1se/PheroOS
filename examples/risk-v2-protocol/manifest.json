@@ -1,0 +1,225 @@
+{
+  "protocol_version": "pheroos.protocol.v2",
+  "id": "risk.durable-state",
+  "targets": [
+    {
+      "id": "decision:risk-v2",
+      "description": "A provider-free durable Risk v2 target."
+    }
+  ],
+  "candidates": [
+    {
+      "id": "candidate:risk-v2:accept",
+      "target": "decision:risk-v2"
+    },
+    {
+      "id": "candidate:risk-v2:safe",
+      "target": "decision:risk-v2",
+      "safe_fallback": true
+    }
+  ],
+  "quorum_policy": {
+    "target": "decision:risk-v2",
+    "fallback_candidate": "candidate:risk-v2:safe",
+    "commit_threshold": 2
+  },
+  "authority_policy": {
+    "policy_version": "pheroos-scoped-authority-policy-v2",
+    "profile": "pheroos-scoped-authority-local-v2",
+    "wire_version": "pheroos-authority-wire-v2",
+    "canonical_version": "pheroos-authority-canonical-v2",
+    "ledger_version": "pheroos-governance-authority-ledger-v2",
+    "state_store_version": "pheroos-governance-state-store-v2",
+    "trace_batch_version": "pheroos-governance-trace-batch-v2",
+    "read_set_version": "pheroos-governance-authority-read-set-v2"
+  },
+  "evidence_policy": {
+    "require_provenance": true,
+    "allow_agent_fact_creation": false
+  },
+  "output_policy": {
+    "policy_version": "pheroos-baseline-output-policy-v2",
+    "decision_mode": "quorum",
+    "actions": [
+      {
+        "action_ref": "action:risk-v2:publish",
+        "effect": "publish",
+        "target": "decision:risk-v2",
+        "allowed_outcomes": [
+          "evidence_commit",
+          "safe_fallback"
+        ]
+      }
+    ]
+  },
+  "trace_policy": {
+    "required_events": [
+      "baseline_action_permission_issued",
+      "baseline_decision_evaluated",
+      "baseline_evidence_qualified",
+      "baseline_manifest_activated",
+      "baseline_output_committed",
+      "baseline_stop_resolved",
+      "block",
+      "commit",
+      "output",
+      "recovery",
+      "risk_assessed_v2",
+      "risk_state_advanced"
+    ]
+  },
+  "collective_commit_policy": {
+    "policy_version": "pheroos-collective-commit-policy-v1",
+    "model": "optimal_evidence_v1",
+    "assurance": "evidence_bound",
+    "target": "decision:risk-v2",
+    "evidence_qualification": {
+      "numeric_scale": 1000000,
+      "minimum_quality_ppm": 500000,
+      "minimum_relevance_ppm": 500000,
+      "positive_group_cap": 1000000,
+      "counter_group_cap": 1000000,
+      "counter_weight_ppm": 1000000,
+      "minimum_positive_evidence": 2000000,
+      "maximum_counterevidence": 500000,
+      "maximum_counterevidence_ratio_ppm": 200000,
+      "domain_contribution_floor": 250000,
+      "minimum_source_diversity": 2,
+      "required_challenge_categories": [
+        "independent_replication"
+      ],
+      "observation_ttl_steps": 8,
+      "require_provenance": true,
+      "require_trace": true
+    },
+    "support_lease": {
+      "minimum_support_clusters": 2,
+      "support_ratio_ppm": 500000,
+      "lease_ttl_steps": 6,
+      "membership_mode": "verified_snapshot_v1",
+      "switch_mode": "revoke_then_issue_v1",
+      "equivocation_mode": "exclude_conflicts_v1",
+      "evidence_reference_required": true,
+      "cluster_verification_required": true
+    },
+    "risk_bands": {
+      "LOW": {
+        "minimum_positive_evidence": 2000000,
+        "maximum_counterevidence": 500000,
+        "maximum_counterevidence_ratio_ppm": 200000,
+        "minimum_support_clusters": 2,
+        "minimum_support_ratio_ppm": 500000,
+        "minimum_source_diversity": 2,
+        "minimum_margin": 250000,
+        "stability_steps": 2,
+        "required_challenge_categories": [
+          "independent_replication"
+        ],
+        "minimum_assurance": "evidence_bound",
+        "publishable_outcomes": [
+          "evidence_commit"
+        ],
+        "executable_outcomes": []
+      },
+      "MODERATE": {
+        "minimum_positive_evidence": 2500000,
+        "maximum_counterevidence": 400000,
+        "maximum_counterevidence_ratio_ppm": 150000,
+        "minimum_support_clusters": 2,
+        "minimum_support_ratio_ppm": 600000,
+        "minimum_source_diversity": 2,
+        "minimum_margin": 250000,
+        "stability_steps": 3,
+        "required_challenge_categories": [
+          "independent_replication"
+        ],
+        "minimum_assurance": "evidence_bound",
+        "publishable_outcomes": [
+          "evidence_commit"
+        ],
+        "executable_outcomes": []
+      },
+      "HIGH": {
+        "minimum_positive_evidence": 3000000,
+        "maximum_counterevidence": 300000,
+        "maximum_counterevidence_ratio_ppm": 100000,
+        "minimum_support_clusters": 3,
+        "minimum_support_ratio_ppm": 700000,
+        "minimum_source_diversity": 3,
+        "minimum_margin": 250000,
+        "stability_steps": 4,
+        "required_challenge_categories": [
+          "independent_replication"
+        ],
+        "minimum_assurance": "certified",
+        "publishable_outcomes": [
+          "evidence_commit"
+        ],
+        "executable_outcomes": []
+      },
+      "CRITICAL": {
+        "minimum_positive_evidence": 4000000,
+        "maximum_counterevidence": 200000,
+        "maximum_counterevidence_ratio_ppm": 50000,
+        "minimum_support_clusters": 4,
+        "minimum_support_ratio_ppm": 800000,
+        "minimum_source_diversity": 4,
+        "minimum_margin": 250000,
+        "stability_steps": 5,
+        "required_challenge_categories": [
+          "independent_replication"
+        ],
+        "minimum_assurance": "distributed",
+        "publishable_outcomes": [
+          "evidence_commit"
+        ],
+        "executable_outcomes": []
+      }
+    },
+    "commit_window": {
+      "minimum_stability_steps": 2,
+      "deliberation_deadline_steps": 8,
+      "maximum_leader_resets": 2,
+      "maximum_epoch_restarts": 1,
+      "run_deadline_steps": 12,
+      "reset_rules": [
+        "epoch_change",
+        "membership_change",
+        "policy_change",
+        "risk_change",
+        "leader_change",
+        "gate_failure",
+        "step_gap"
+      ]
+    },
+    "terminal_outcome": {
+      "safe_fallback_candidate": "candidate:risk-v2:safe",
+      "deadline_outcome": "safe_fallback",
+      "policy_incomplete_outcome": "invalid",
+      "finality_unavailable_outcome": "finality_unavailable",
+      "deliverable_outcomes": [
+        "advisory",
+        "blocked",
+        "evidence_commit",
+        "finality_unavailable",
+        "invalid",
+        "safe_fallback",
+        "safety_violation"
+      ],
+      "publishable_outcomes": [
+        "evidence_commit",
+        "safe_fallback"
+      ],
+      "executable_outcomes": []
+    },
+    "certificate": {
+      "mode": "local_receipt",
+      "wire_version": "pheroos-commit-wire-v1",
+      "canonicalization": "pheroos-commit-canonical-v1",
+      "hash_algorithm": "sha256",
+      "issuer_attestation_required": false,
+      "independent_verification_required": false
+    },
+    "distributed": null
+  }
+}

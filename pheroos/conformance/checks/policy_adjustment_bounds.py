@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
+from typing import cast
 from pheroos.conformance.report import CheckResult
 from pheroos.governance import (
     PolicyAdjustmentProposal,
@@ -8,7 +9,11 @@ from pheroos.governance import (
     validate_policy_adjustment_proposal,
 )
 from pheroos.governance.errors import GovernanceError
-from pheroos.protocol.models import CapabilityManifest, has_hybrid_pheromone_features
+from pheroos.protocol.models import (
+    CapabilityManifest,
+    CollectiveDecisionPolicy,
+    has_hybrid_pheromone_features,
+)
 
 
 SAFETY_CRITICAL_FIELDS = frozenset(
@@ -33,53 +38,89 @@ def check(manifest: CapabilityManifest) -> CheckResult:
     policy = manifest.protocol.collective_decision_policy
     if not has_hybrid_pheromone_features(policy):
         return CheckResult("policy_adjustment_bounds", True)
-    bounds = dict(policy.policy_adjustment_bounds if policy is not None else {})
+    if policy is None:
+        return CheckResult("policy_adjustment_bounds", True)
+    bounds = dict(policy.policy_adjustment_bounds)
     problems = []
     unsafe = sorted(set(bounds) & SAFETY_CRITICAL_FIELDS)
     if unsafe:
         problems.append("unsafe:" + ",".join(unsafe))
     if bounds:
-        try:
-            validate_policy_adjustment_proposal(proposal({"unbounded_field": 0}), policy)
-        except GovernanceError:
-            rejects_unbounded = True
-        else:
-            rejects_unbounded = False
-        for key in sorted(bounds):
-            accepted_value = accepted_value_for(bounds[key])
-            try:
-                overlay = validate_policy_adjustment_proposal(proposal({key: accepted_value}), policy)
-            except GovernanceError:
-                problems.append(f"bounded_rejected:{key}")
-            else:
-                if dict(overlay) != {key: accepted_value}:
-                    problems.append(f"overlay_mismatch:{key}")
-                else:
-                    effective = apply_policy_adjustment_overlay(policy, overlay)
-                    if not effective_adjustment_applied(effective, key, accepted_value):
-                        problems.append(f"effective_policy_mismatch:{key}")
-            rejected_value = rejected_value_for(bounds[key])
-            try:
-                validate_policy_adjustment_proposal(proposal({key: rejected_value}), policy)
-            except GovernanceError:
-                pass
-            else:
-                problems.append(f"out_of_bounds_accepted:{key}")
-        if not rejects_unbounded:
-            problems.append("unbounded_accepted")
+        problems.extend(_declared_bounds_problems(policy, bounds))
     else:
-        try:
-            validate_policy_adjustment_proposal(
-                proposal({"pheromone_evaporation_rate": 0.1}),
-                policy,
-            )
-        except GovernanceError:
-            rejects_when_undeclared = True
-        else:
-            rejects_when_undeclared = False
-        if not rejects_when_undeclared:
-            problems.append("undeclared_adjustment_accepted")
+        problems.extend(_undeclared_bounds_problems(policy))
     return CheckResult("policy_adjustment_bounds", not problems, ", ".join(problems))
+
+
+def _declared_bounds_problems(
+    policy: CollectiveDecisionPolicy,
+    bounds: dict[str, object],
+) -> list[str]:
+    rejects_unbounded = _proposal_rejected(
+        proposal({"unbounded_field": 0}),
+        policy,
+    )
+    problems: list[str] = []
+    for key in sorted(bounds):
+        problems.extend(
+            _bounded_adjustment_problems(
+                policy,
+                key,
+                bounds[key],
+            )
+        )
+    if not rejects_unbounded:
+        problems.append("unbounded_accepted")
+    return problems
+
+
+def _bounded_adjustment_problems(
+    policy: CollectiveDecisionPolicy,
+    key: str,
+    bounds: object,
+) -> list[str]:
+    problems: list[str] = []
+    accepted_value = accepted_value_for(bounds)
+    try:
+        overlay = validate_policy_adjustment_proposal(
+            proposal({key: accepted_value}),
+            policy,
+        )
+    except GovernanceError:
+        problems.append(f"bounded_rejected:{key}")
+    else:
+        if dict(overlay) != {key: accepted_value}:
+            problems.append(f"overlay_mismatch:{key}")
+        else:
+            effective = apply_policy_adjustment_overlay(policy, overlay)
+            if not effective_adjustment_applied(effective, key, accepted_value):
+                problems.append(f"effective_policy_mismatch:{key}")
+    rejected_value = rejected_value_for(bounds)
+    if not _proposal_rejected(proposal({key: rejected_value}), policy):
+        problems.append(f"out_of_bounds_accepted:{key}")
+    return problems
+
+
+def _undeclared_bounds_problems(
+    policy: CollectiveDecisionPolicy,
+) -> list[str]:
+    if _proposal_rejected(
+        proposal({"pheromone_evaporation_rate": 0.1}),
+        policy,
+    ):
+        return []
+    return ["undeclared_adjustment_accepted"]
+
+
+def _proposal_rejected(
+    item: PolicyAdjustmentProposal,
+    policy: CollectiveDecisionPolicy,
+) -> bool:
+    try:
+        validate_policy_adjustment_proposal(item, policy)
+    except GovernanceError:
+        return True
+    return False
 
 
 def proposal(adjustments: dict[str, object]) -> PolicyAdjustmentProposal:
@@ -114,7 +155,11 @@ def rejected_value_for(bounds: object) -> object:
     return object()
 
 
-def effective_adjustment_applied(policy: object, key: str, expected: object) -> bool:
+def effective_adjustment_applied(
+    policy: CollectiveDecisionPolicy,
+    key: str,
+    expected: object,
+) -> bool:
     """Prove every declared adjustment reaches its owned effective policy field."""
 
     scalar_fields = {
@@ -124,7 +169,10 @@ def effective_adjustment_applied(policy: object, key: str, expected: object) -> 
         "pheromone_cautionary_override_threshold": "pheromone_cautionary_override_threshold",
         "layer_emergency_override_threshold": "layer_emergency_override_threshold",
     }
-    if key in scalar_fields and getattr(policy, scalar_fields[key], object()) != expected:
+    if (
+        key in scalar_fields
+        and getattr(policy, scalar_fields[key], object()) != expected
+    ):
         return False
     kind_fields = {
         "pheromone_positive_weight": ("positive", "pheromone_positive_weight"),
@@ -136,7 +184,9 @@ def effective_adjustment_applied(policy: object, key: str, expected: object) -> 
     if key in kind_fields:
         kind, scalar = kind_fields[key]
         profile = policy.pheromone_kind_profiles.get(kind)
-        if profile is None or profile.weight != float(expected):
+        if profile is None or profile.weight != float(
+            cast(float | int | str, expected)
+        ):
             return False
         if scalar is not None and getattr(policy, scalar) != expected:
             return False
@@ -145,10 +195,12 @@ def effective_adjustment_applied(policy: object, key: str, expected: object) -> 
         "layer_evolutionary_weight": "evolutionary",
         "layer_metacognitive_weight": "metacognitive",
     }
-    if key in layer_fields and policy.layer_default_weights.get(layer_fields[key]) != float(expected):
+    if key in layer_fields and policy.layer_default_weights.get(
+        layer_fields[key]
+    ) != float(cast(float | int | str, expected)):
         return False
     if key == "pheromone_evaporation_rate" and any(
-        profile.evaporation_rate != float(expected)
+        profile.evaporation_rate != float(cast(float | int | str, expected))
         for profile in policy.pheromone_kind_profiles.values()
     ):
         return False

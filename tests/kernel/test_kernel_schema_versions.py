@@ -8,19 +8,24 @@ import pytest
 from jsonschema import Draft202012Validator, ValidationError
 
 from pheroos.drivers import DriverProbeSnapshot
+from pheroos._scope import RUNTIME_SCOPE_COMPONENT_MAX_LENGTH
 from pheroos.kernel import (
     KERNEL_PLAN_VERSION_V2,
     KERNEL_SCHEMA_V1_ID,
     KERNEL_SCHEMA_V2_ID,
+    RUNTIME_SCOPE_SCHEMA_V1_ID,
+    RUNTIME_SCOPE_VERSION,
     ConnectionReadiness,
     KernelPlanVersionError,
     LegacyOSPlan,
     OSPlanDocument,
+    RuntimeScope,
     kernel_schema,
     kernel_schema_v2,
     os_plan_from_dict,
     os_plan_v1_from_dict,
     runtime_scope_ref,
+    runtime_scope_schema_v1,
     upgrade_os_plan_v1,
 )
 
@@ -30,9 +35,7 @@ V1_ROOT = "da2e2001a61c19d2726bc96ef05392e1acb8618c6bb6a3dfb233bcc0398e0822"
 
 
 def _fixture() -> dict[str, object]:
-    return json.loads(
-        (ROOT / "tests/fixtures/schema-v1/kernel-plan.json").read_text()
-    )
+    return json.loads((ROOT / "tests/fixtures/schema-v1/kernel-plan.json").read_text())
 
 
 def test_kernel_v1_artifact_is_frozen_and_alias_is_byte_equivalent() -> None:
@@ -51,9 +54,51 @@ def test_kernel_v2_artifact_is_versioned_and_checked_in() -> None:
     Draft202012Validator.check_schema(generated)
     assert artifact == generated
     assert generated["$id"] == KERNEL_SCHEMA_V2_ID
-    assert generated["properties"]["plan_version"] == {
-        "const": KERNEL_PLAN_VERSION_V2
-    }
+    assert generated["properties"]["plan_version"] == {"const": KERNEL_PLAN_VERSION_V2}
+
+
+def test_runtime_scope_v1_artifact_is_versioned_exact_and_checked_in() -> None:
+    generated = runtime_scope_schema_v1()
+    artifact = json.loads((ROOT / "schemas/runtime-scope-v1.schema.json").read_text())
+
+    Draft202012Validator.check_schema(generated)
+    assert artifact == generated
+    assert generated["$id"] == RUNTIME_SCOPE_SCHEMA_V1_ID
+    assert generated["additionalProperties"] is False
+    assert generated["properties"]["scope_version"] == {"const": RUNTIME_SCOPE_VERSION}
+    for name in ("tenant_id", "run_id", "request_id"):
+        assert generated["properties"][name]["maxLength"] == (
+            RUNTIME_SCOPE_COMPONENT_MAX_LENGTH
+        )
+
+
+def test_runtime_scope_schema_shape_is_not_derived_identity_authority() -> None:
+    payload = RuntimeScope("tenant-a", "run-1", "request-1").to_dict()
+    forged = payload | {"scope_ref": "sha256:" + "0" * 64}
+
+    Draft202012Validator(runtime_scope_schema_v1()).validate(forged)
+    with pytest.raises(ValueError, match="scope_ref"):
+        RuntimeScope.from_dict(forged)
+
+
+@pytest.mark.parametrize(
+    "change",
+    [
+        {"scope_version": "pheroos-runtime-scope-v999"},
+        {"request_id": " request"},
+        {"request_id": "request "},
+        {"request_id": "request\x00suffix"},
+        {"request_id": "r" * 1025},
+        {"unknown": "field"},
+    ],
+)
+def test_runtime_scope_v1_schema_rejects_nonportable_documents(
+    change: dict[str, str],
+) -> None:
+    payload = RuntimeScope("tenant-a", "run-1", "request-1").to_dict()
+
+    with pytest.raises(ValidationError):
+        Draft202012Validator(runtime_scope_schema_v1()).validate(payload | change)
 
 
 def test_kernel_v1_reader_does_not_synthesize_scope_or_readiness_authority() -> None:
@@ -73,9 +118,7 @@ def test_kernel_v1_reader_does_not_synthesize_scope_or_readiness_authority() -> 
 def test_kernel_v1_upgrade_requires_explicit_driver_and_readiness_authority() -> None:
     legacy = os_plan_v1_from_dict(_fixture())
     scope_ref = runtime_scope_ref("tenant:legacy", "run:upgrade")
-    readiness = (
-        ConnectionReadiness(connection="connection:evidence", available=True),
-    )
+    readiness = (ConnectionReadiness(connection="connection:evidence", available=True),)
     probes = (
         DriverProbeSnapshot(
             driver_id="driver:legacy",
@@ -117,10 +160,14 @@ def test_kernel_v1_upgrade_requires_explicit_driver_and_readiness_authority() ->
     ("payload", "code"),
     [
         ({}, "kernel_plan_version_missing"),
-        ({"plan_version": "pheroos-kernel-plan-v999"},
-         "kernel_plan_version_unsupported"),
-        ({"plan_version": "pheroos-driver-descriptor-v2"},
-         "kernel_plan_version_unsupported"),
+        (
+            {"plan_version": "pheroos-kernel-plan-v999"},
+            "kernel_plan_version_unsupported",
+        ),
+        (
+            {"plan_version": "pheroos-driver-descriptor-v2"},
+            "kernel_plan_version_unsupported",
+        ),
     ],
 )
 def test_kernel_authoritative_reader_fails_closed_on_missing_unknown_or_cross_version(

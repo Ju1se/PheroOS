@@ -46,7 +46,9 @@ def _validate_hybrid_commit_step_semantics(
     ):
         errors.append("$.payload.commit.assessment_status: ready leader is incomplete")
     if not commit["unique_leader"] and commit["leader_candidate_id"]:
-        errors.append("$.payload.commit.leader_candidate_id: non-unique step names leader")
+        errors.append(
+            "$.payload.commit.leader_candidate_id: non-unique step names leader"
+        )
     expected_composition = commit_payload_fingerprint(
         {
             "attention": payload["attention"],
@@ -60,54 +62,93 @@ def _validate_hybrid_commit_step_semantics(
         errors.append("$.payload.composition_root: reconstructable root mismatch")
     return errors
 
+
 def _validate_hybrid_commit_evaluation_semantics(
     payload: Mapping[str, Any],
 ) -> list[str]:
     errors: list[str] = []
-    authoritative = payload["authoritative"]
-    status = payload["status"]
-    terminal = payload["terminal"]
-    progress_ref = payload["progress_ref"]
-    outcome_ref = payload["outcome_ref"]
-    if authoritative:
-        for field_name in (
-            "assessment_ref",
-            "context_ref",
-            "window_state_ref",
-            "replay_state_ref",
-        ):
-            if not payload[field_name]:
-                errors.append(
-                    f"$.payload.{field_name}: authoritative evaluation lacks authority ref"
-                )
-        if status == "progress":
-            if terminal or not progress_ref or outcome_ref:
-                errors.append("$.payload: authoritative progress is inconsistent")
-            if payload["deliver_authorization_ref"]:
-                errors.append(
-                    "$.payload.deliver_authorization_ref: progress cannot deliver"
-                )
-        elif not terminal or progress_ref or not outcome_ref:
-            errors.append("$.payload: authoritative terminal outcome is inconsistent")
-        elif not payload["deliver_authorization_ref"]:
-            errors.append(
-                "$.payload.deliver_authorization_ref: terminal evaluation must deliver"
-            )
+    if payload["authoritative"]:
+        _validate_authoritative_evaluation_refs(payload, errors=errors)
+        _validate_authoritative_evaluation_status(payload, errors=errors)
         if not payload["trace_event_ids"]:
             errors.append("$.payload.trace_event_ids: authority trace is empty")
-    elif (
-        status != "invalid"
-        or terminal is not True
-        or progress_ref
-        or outcome_ref
+    elif _non_authoritative_evaluation_is_inconsistent(payload):
+        errors.append(
+            "$.payload: non-authoritative evaluation must be terminal invalid"
+        )
+    _validate_evaluation_diagnostics(payload, errors=errors)
+    _validate_evaluation_roots(payload, errors=errors)
+    return errors
+
+
+def _validate_authoritative_evaluation_refs(
+    payload: Mapping[str, Any],
+    *,
+    errors: list[str],
+) -> None:
+    for field_name in (
+        "assessment_ref",
+        "context_ref",
+        "window_state_ref",
+        "replay_state_ref",
     ):
-        errors.append("$.payload: non-authoritative evaluation must be terminal invalid")
+        if not payload[field_name]:
+            errors.append(
+                f"$.payload.{field_name}: authoritative evaluation lacks authority ref"
+            )
+
+
+def _validate_authoritative_evaluation_status(
+    payload: Mapping[str, Any],
+    *,
+    errors: list[str],
+) -> None:
+    if payload["status"] == "progress":
+        if payload["terminal"] or not payload["progress_ref"] or payload["outcome_ref"]:
+            errors.append("$.payload: authoritative progress is inconsistent")
+        if payload["deliver_authorization_ref"]:
+            errors.append(
+                "$.payload.deliver_authorization_ref: progress cannot deliver"
+            )
+    elif (
+        not payload["terminal"] or payload["progress_ref"] or not payload["outcome_ref"]
+    ):
+        errors.append("$.payload: authoritative terminal outcome is inconsistent")
+    elif not payload["deliver_authorization_ref"]:
+        errors.append(
+            "$.payload.deliver_authorization_ref: terminal evaluation must deliver"
+        )
+
+
+def _non_authoritative_evaluation_is_inconsistent(
+    payload: Mapping[str, Any],
+) -> bool:
+    return bool(
+        payload["status"] != "invalid"
+        or payload["terminal"] is not True
+        or payload["progress_ref"]
+        or payload["outcome_ref"]
+    )
+
+
+def _validate_evaluation_diagnostics(
+    payload: Mapping[str, Any],
+    *,
+    errors: list[str],
+) -> None:
     for index, diagnostic in enumerate(payload["diagnostics"]):
         _validate_canonical_set(
             diagnostic["references"],
             path=f"$.payload.diagnostics[{index}].references",
             errors=errors,
         )
+
+
+def _validate_evaluation_roots(
+    payload: Mapping[str, Any],
+    *,
+    errors: list[str],
+) -> None:
     expected_trace_root = commit_payload_fingerprint(
         {"event_ids": tuple(payload["trace_event_ids"])},
         schema="pheroos-hybrid-commit-evaluation-trace-root-v1",
@@ -116,24 +157,18 @@ def _validate_hybrid_commit_evaluation_semantics(
     if payload["trace_root"] != expected_trace_root:
         errors.append("$.payload.trace_root: chronology root mismatch")
     expected_root = commit_payload_fingerprint(
-        {
-            key: value
-            for key, value in payload.items()
-            if key != "evaluation_root"
-        },
+        {key: value for key, value in payload.items() if key != "evaluation_root"},
         schema="pheroos-hybrid-commit-evaluation-v1",
         profile=str(payload["profile"]),
     )
     if payload["evaluation_root"] != expected_root:
         errors.append("$.payload.evaluation_root: reconstructable root mismatch")
-    return errors
+
 
 def hybrid_commit_truth_payload_schema() -> dict[str, Any]:
     return strict_object_schema(
         {
-            "assessment_status": {
-                "enum": ["not_ready", "ready", "safety_violation"]
-            },
+            "assessment_status": {"enum": ["not_ready", "ready", "safety_violation"]},
             "assurance": {"enum": sorted(SUPPORTED_COMMIT_ASSURANCES)},
             "commit_assessment_fingerprint": fingerprint_schema(),
             "commit_authority_source": {"const": "optimal_commit_assessment_only"},
@@ -156,6 +191,7 @@ def hybrid_commit_truth_payload_schema() -> dict[str, Any]:
         }
     )
 
+
 def hybrid_attention_binding_payload_schema() -> dict[str, Any]:
     return strict_object_schema(
         {
@@ -170,6 +206,7 @@ def hybrid_attention_binding_payload_schema() -> dict[str, Any]:
         }
     )
 
+
 def hybrid_commit_step_payload_schema() -> dict[str, Any]:
     return strict_object_schema(
         {
@@ -179,6 +216,7 @@ def hybrid_commit_step_payload_schema() -> dict[str, Any]:
             "composition_root": fingerprint_schema(),
         }
     )
+
 
 def hybrid_commit_diagnostic_schema() -> dict[str, Any]:
     return strict_object_schema(
@@ -191,6 +229,7 @@ def hybrid_commit_diagnostic_schema() -> dict[str, Any]:
             "references": fingerprint_set_schema(),
         }
     )
+
 
 def hybrid_commit_evaluation_payload_schema() -> dict[str, Any]:
     optional_root_names = (
@@ -217,9 +256,7 @@ def hybrid_commit_evaluation_payload_schema() -> dict[str, Any]:
     )
     schema = strict_object_schema(
         {
-            "evaluation_version": {
-                "const": "pheroos-hybrid-commit-evaluation-v1"
-            },
+            "evaluation_version": {"const": "pheroos-hybrid-commit-evaluation-v1"},
             "request_ref": fingerprint_schema(),
             "status": {"enum": ["invalid", "outcome", "progress"]},
             "authoritative": {"type": "boolean"},
@@ -233,10 +270,7 @@ def hybrid_commit_evaluation_payload_schema() -> dict[str, Any]:
             "epoch": authority_integer_schema(),
             "current_step": authority_integer_schema(),
             "attention_status": {"enum": ["unavailable", "verified"]},
-            **{
-                name: optional_fingerprint_schema()
-                for name in optional_root_names
-            },
+            **{name: optional_fingerprint_schema() for name in optional_root_names},
             "trace_event_ids": fingerprint_set_schema(),
             "trace_root": fingerprint_schema(),
             "diagnostics": {
@@ -352,9 +386,7 @@ def hybrid_commit_evaluation_payload_schema() -> dict[str, Any]:
                                                 "const": "attention_channel_unavailable"
                                             },
                                             "severity": {"const": "warning"},
-                                            "stage": {
-                                                "const": "exploration_directive"
-                                            },
+                                            "stage": {"const": "exploration_directive"},
                                             "message": {
                                                 "const": (
                                                     "Hybrid exploration directive is "

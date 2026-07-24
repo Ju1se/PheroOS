@@ -58,7 +58,9 @@ def _validate_portable_membership_semantics(
             item["principal_verification_fingerprint"] for item in principals
         )
     if len(all_principal_ids) != len(set(all_principal_ids)):
-        errors.append(f"{path}.eligible_clusters: principal belongs to multiple clusters")
+        errors.append(
+            f"{path}.eligible_clusters: principal belongs to multiple clusters"
+        )
     if len(all_verification_refs) != len(set(all_verification_refs)):
         errors.append(f"{path}.eligible_clusters: verification is reused")
     snapshot_body = dict(payload)
@@ -88,6 +90,7 @@ def _validate_portable_membership_semantics(
         errors.append(f"{path}.membership_root: reconstructable root mismatch")
     return errors
 
+
 def _validate_distributed_proposal_semantics(
     payload: Mapping[str, Any],
     profile: str,
@@ -116,6 +119,7 @@ def _validate_distributed_proposal_semantics(
         errors.append(f"{path}.proposal_digest: reconstructable digest mismatch")
     return errors
 
+
 def _distributed_commit_value_from_proposal(
     payload: Mapping[str, Any],
 ) -> dict[str, Any]:
@@ -133,6 +137,7 @@ def _distributed_commit_value_from_proposal(
         **{name: value for name, value in payload.items() if name not in excluded},
     }
 
+
 def _validate_distributed_commit_value_semantics(
     payload: Mapping[str, Any],
     profile: str,
@@ -141,12 +146,14 @@ def _validate_distributed_commit_value_semantics(
         return ["$.payload.profile: envelope profile mismatch"]
     return []
 
+
 def _quorum_witness_fingerprint(payload: Mapping[str, Any], *, profile: str) -> str:
     return commit_payload_fingerprint(
         payload,
         schema="pheroos-quorum-witness-v1",
         profile=profile,
     )
+
 
 def _quorum_witness_signing_root(
     payload: Mapping[str, Any],
@@ -160,6 +167,7 @@ def _quorum_witness_signing_root(
         schema="pheroos-quorum-witness-signing-v1",
         profile=profile,
     )
+
 
 def _validate_quorum_witness_semantics(
     payload: Mapping[str, Any],
@@ -180,6 +188,7 @@ def _validate_quorum_witness_semantics(
     )
     return errors
 
+
 def _witness_verification_fingerprint(
     payload: Mapping[str, Any],
     *,
@@ -190,6 +199,7 @@ def _witness_verification_fingerprint(
         schema="pheroos-witness-verification-v1",
         profile=profile,
     )
+
 
 def _validate_witness_verification_semantics(
     payload: Mapping[str, Any],
@@ -215,6 +225,7 @@ def _validate_witness_verification_semantics(
         errors.append(f"{path}.expires_at_step: exceeds witness expiry")
     return errors
 
+
 def _witness_receipt_from_verification(
     verification: Mapping[str, Any],
 ) -> dict[str, Any]:
@@ -232,6 +243,7 @@ def _witness_receipt_from_verification(
         "witness_fingerprint": verification["witness_fingerprint"],
         "witness_id": witness["witness_id"],
     }
+
 
 def _witness_receipt_root(
     verifications: list[Mapping[str, Any]],
@@ -252,8 +264,10 @@ def _witness_receipt_root(
         profile=profile,
     )
 
+
 def _quorum_intersection_is_safe(n: int, f: int, q: int) -> bool:
     return bool(n >= 3 * f + 1 and q <= n - f and 2 * q - n > f)
+
 
 def _validate_distributed_state_semantics(
     payload: Mapping[str, Any],
@@ -264,6 +278,34 @@ def _validate_distributed_state_semantics(
         profile,
         path="$.payload.membership_snapshot",
     )
+    _validate_distributed_state_authority(payload, profile=profile, errors=errors)
+    membership = payload["membership_snapshot"]
+    _validate_distributed_state_membership(payload, membership, errors=errors)
+    verifications = payload["witness_verifications"]
+    _validate_distributed_state_verifications(
+        payload,
+        verifications,
+        profile=profile,
+        errors=errors,
+    )
+    expected_receipt_root = _witness_receipt_root(verifications, profile=profile)
+    if payload["witness_receipt_root"] != expected_receipt_root:
+        errors.append("$.payload.witness_receipt_root: reconstructable root mismatch")
+    _validate_distributed_state_equivocation(
+        payload,
+        verifications,
+        errors=errors,
+    )
+    _validate_distributed_state_finality(payload, errors=errors)
+    return errors
+
+
+def _validate_distributed_state_authority(
+    payload: Mapping[str, Any],
+    *,
+    profile: str,
+    errors: list[str],
+) -> None:
     expected_chain = commit_payload_fingerprint(
         {
             "commit_policy_root": payload["commit_policy_root"],
@@ -282,9 +324,13 @@ def _validate_distributed_state_semantics(
         errors.append("$.payload.chain_id: distributed authority scope mismatch")
     if payload["revision"] == 0:
         if payload["previous_state_fingerprint"]:
-            errors.append("$.payload.previous_state_fingerprint: initial state has predecessor")
+            errors.append(
+                "$.payload.previous_state_fingerprint: initial state has predecessor"
+            )
     elif not payload["previous_state_fingerprint"]:
-        errors.append("$.payload.previous_state_fingerprint: advanced state lacks predecessor")
+        errors.append(
+            "$.payload.previous_state_fingerprint: advanced state lacks predecessor"
+        )
     if payload["current_step"] < payload["initialized_at_step"]:
         errors.append("$.payload.current_step: predates initialization")
     if not _quorum_intersection_is_safe(
@@ -295,7 +341,14 @@ def _validate_distributed_state_semantics(
         errors.append("$.payload: Byzantine quorum intersection is unsafe")
     if payload["minimum_failure_domain_diversity"] > payload["witness_quorum"]:
         errors.append("$.payload.minimum_failure_domain_diversity: unreachable")
-    membership = payload["membership_snapshot"]
+
+
+def _validate_distributed_state_membership(
+    payload: Mapping[str, Any],
+    membership: Mapping[str, Any],
+    *,
+    errors: list[str],
+) -> None:
     for field_name, expected in (
         ("membership_snapshot_root", membership["snapshot_fingerprint"]),
         ("membership_root", membership["membership_root"]),
@@ -315,8 +368,18 @@ def _validate_distributed_state_semantics(
         "epoch",
     ):
         if payload[name] != membership[name]:
-            errors.append(f"$.payload.membership_snapshot.{name}: state binding mismatch")
-    verifications = payload["witness_verifications"]
+            errors.append(
+                f"$.payload.membership_snapshot.{name}: state binding mismatch"
+            )
+
+
+def _validate_distributed_state_verifications(
+    payload: Mapping[str, Any],
+    verifications: list[Mapping[str, Any]],
+    *,
+    profile: str,
+    errors: list[str],
+) -> None:
     verification_refs = [
         _witness_verification_fingerprint(item, profile=profile)
         for item in verifications
@@ -332,7 +395,14 @@ def _validate_distributed_state_semantics(
             )
         )
         witness = verification["witness"]
-        for name in ("profile", "assurance", "protocol_id", "run_id", "target", "epoch"):
+        for name in (
+            "profile",
+            "assurance",
+            "protocol_id",
+            "run_id",
+            "target",
+            "epoch",
+        ):
             if witness[name] != payload[name]:
                 errors.append(
                     f"$.payload.witness_verifications[{index}].witness.{name}: state binding mismatch"
@@ -341,9 +411,14 @@ def _validate_distributed_state_semantics(
             errors.append(
                 f"$.payload.witness_verifications[{index}].witness.membership_root: state binding mismatch"
             )
-    expected_receipt_root = _witness_receipt_root(verifications, profile=profile)
-    if payload["witness_receipt_root"] != expected_receipt_root:
-        errors.append("$.payload.witness_receipt_root: reconstructable root mismatch")
+
+
+def _validate_distributed_state_equivocation(
+    payload: Mapping[str, Any],
+    verifications: list[Mapping[str, Any]],
+    *,
+    errors: list[str],
+) -> None:
     finding_clusters = {
         item["principal_cluster_id"] for item in payload["equivocation_findings"]
     }
@@ -362,7 +437,16 @@ def _validate_distributed_state_semantics(
             "$.payload.equivocation_findings: semantic equivocation projection mismatch"
         )
     if set(payload["excluded_cluster_ids"]) != finding_clusters:
-        errors.append("$.payload.excluded_cluster_ids: equivocation projection mismatch")
+        errors.append(
+            "$.payload.excluded_cluster_ids: equivocation projection mismatch"
+        )
+
+
+def _validate_distributed_state_finality(
+    payload: Mapping[str, Any],
+    *,
+    errors: list[str],
+) -> None:
     registration_values = {
         item["commit_value_root"] for item in payload["final_registrations"]
     }
@@ -374,7 +458,7 @@ def _validate_distributed_state_semantics(
         errors.append("$.payload.frozen: conflict projection mismatch")
     if payload["transitioned"] is not bool(payload["epoch_transition_certificate_ref"]):
         errors.append("$.payload.transitioned: epoch proof projection mismatch")
-    return errors
+
 
 def _witness_verification_root(
     verifications: list[Mapping[str, Any]],
@@ -396,6 +480,7 @@ def _witness_verification_root(
         profile=profile,
     )
 
+
 def _validate_distributed_certificate_semantics(
     payload: Mapping[str, Any],
     profile: str,
@@ -412,6 +497,42 @@ def _validate_distributed_certificate_semantics(
             path="$.payload.membership_snapshot",
         )
     )
+    membership = payload["membership_snapshot"]
+    _validate_distributed_certificate_membership(
+        payload,
+        membership,
+        errors=errors,
+    )
+    proposal = payload["proposal"]
+    _validate_distributed_certificate_proposal_binding(
+        payload,
+        proposal,
+        errors=errors,
+    )
+    verifications = payload["witnesses"]
+    clusters, domains = _validate_distributed_certificate_witnesses(
+        payload,
+        verifications,
+        profile=profile,
+        errors=errors,
+    )
+    _validate_distributed_certificate_roots(
+        payload,
+        verifications=verifications,
+        clusters=clusters,
+        domains=domains,
+        profile=profile,
+        errors=errors,
+    )
+    return errors
+
+
+def _validate_distributed_certificate_membership(
+    payload: Mapping[str, Any],
+    membership: Mapping[str, Any],
+    *,
+    errors: list[str],
+) -> None:
     if not _quorum_intersection_is_safe(
         payload["membership_size"],
         payload["max_byzantine_faults"],
@@ -420,7 +541,6 @@ def _validate_distributed_certificate_semantics(
         errors.append("$.payload: Byzantine quorum intersection is unsafe")
     if payload["minimum_failure_domain_diversity"] > payload["witness_quorum"]:
         errors.append("$.payload.minimum_failure_domain_diversity: unreachable")
-    membership = payload["membership_snapshot"]
     if payload["membership_size"] != len(membership["eligible_clusters"]):
         errors.append("$.payload.membership_size: snapshot cardinality mismatch")
     if payload["membership_snapshot_root"] != membership["snapshot_fingerprint"]:
@@ -433,7 +553,14 @@ def _validate_distributed_certificate_semantics(
         < membership["expires_at_step"]
     ):
         errors.append("$.payload.issued_at_step: membership is not fresh")
-    proposal = payload["proposal"]
+
+
+def _validate_distributed_certificate_proposal_binding(
+    payload: Mapping[str, Any],
+    proposal: Mapping[str, Any],
+    *,
+    errors: list[str],
+) -> None:
     for name in (
         "profile",
         "assurance",
@@ -453,8 +580,19 @@ def _validate_distributed_certificate_semantics(
     ):
         if payload[name] != proposal[name]:
             errors.append(f"$.payload.{name}: proposal binding mismatch")
-    verifications = payload["witnesses"]
-    refs = [_witness_verification_fingerprint(item, profile=profile) for item in verifications]
+
+
+def _validate_distributed_certificate_witnesses(
+    payload: Mapping[str, Any],
+    verifications: list[Mapping[str, Any]],
+    *,
+    profile: str,
+    errors: list[str],
+) -> tuple[list[str], set[str]]:
+    refs = [
+        _witness_verification_fingerprint(item, profile=profile)
+        for item in verifications
+    ]
     if refs != sorted(refs):
         errors.append("$.payload.witnesses: order is not canonical")
     clusters: list[str] = []
@@ -481,6 +619,18 @@ def _validate_distributed_certificate_semantics(
         errors.append("$.payload.witnesses: cluster counted twice")
     if set(clusters).intersection(payload["excluded_cluster_ids"]):
         errors.append("$.payload.witnesses: excluded cluster was counted")
+    return clusters, domains
+
+
+def _validate_distributed_certificate_roots(
+    payload: Mapping[str, Any],
+    *,
+    verifications: list[Mapping[str, Any]],
+    clusters: list[str],
+    domains: set[str],
+    profile: str,
+    errors: list[str],
+) -> None:
     expected_witness_root = _witness_verification_root(
         verifications,
         profile=profile,
@@ -517,7 +667,7 @@ def _validate_distributed_certificate_semantics(
     )
     if payload["certificate_root"] != expected_root:
         errors.append("$.payload.certificate_root: reconstructable root mismatch")
-    return errors
+
 
 def _validate_epoch_transition_semantics(
     payload: Mapping[str, Any],
@@ -554,7 +704,9 @@ def _validate_epoch_transition_semantics(
         ("membership_root", payload["new_membership_root"]),
     ):
         if membership[name] != expected:
-            errors.append(f"$.payload.new_membership_snapshot.{name}: transition binding mismatch")
+            errors.append(
+                f"$.payload.new_membership_snapshot.{name}: transition binding mismatch"
+            )
     body = dict(payload)
     attestations = body.pop("issuer_attestation_refs")
     body.pop("certificate_body_root")
@@ -578,31 +730,43 @@ def _validate_epoch_transition_semantics(
         errors.append("$.payload.certificate_root: reconstructable root mismatch")
     return errors
 
+
 def _validate_distributed_finality_semantics(
     payload: Mapping[str, Any],
 ) -> list[str]:
     errors: list[str] = []
     kind = payload["kind"]
     if kind in {"pending", "provisional"} and (
-        payload["terminal"]
-        or payload["authoritative_commit"]
-        or payload["outcome_ref"]
+        payload["terminal"] or payload["authoritative_commit"] or payload["outcome_ref"]
     ):
         errors.append("$.payload: pending/provisional finality cannot be terminal")
     if kind == "pending" and payload["distributed_certificate_ref"]:
-        errors.append("$.payload.distributed_certificate_ref: pending finality has proof")
+        errors.append(
+            "$.payload.distributed_certificate_ref: pending finality has proof"
+        )
     if kind == "provisional" and not payload["distributed_certificate_ref"]:
-        errors.append("$.payload.distributed_certificate_ref: provisional proof is absent")
+        errors.append(
+            "$.payload.distributed_certificate_ref: provisional proof is absent"
+        )
     if kind == "final":
-        if not payload["authoritative_commit"] or not payload["distributed_certificate_ref"]:
+        if (
+            not payload["authoritative_commit"]
+            or not payload["distributed_certificate_ref"]
+        ):
             errors.append("$.payload: final distributed decision lacks authority")
     elif payload["authoritative_commit"]:
-        errors.append("$.payload.authoritative_commit: non-final decision claims commit")
+        errors.append(
+            "$.payload.authoritative_commit: non-final decision claims commit"
+        )
     if payload["terminal"] is not bool(payload["outcome_ref"]):
         errors.append("$.payload.outcome_ref: terminal/outcome binding mismatch")
-    if kind in {"finality_unavailable", "non_commit_terminal"} and not payload["terminal"]:
+    if (
+        kind in {"finality_unavailable", "non_commit_terminal"}
+        and not payload["terminal"]
+    ):
         errors.append("$.payload.terminal: non-commit finality must be terminal")
     return errors
+
 
 def distributed_binding_properties() -> dict[str, Any]:
     return {
@@ -616,6 +780,7 @@ def distributed_binding_properties() -> dict[str, Any]:
         "target": canonical_text_schema(),
     }
 
+
 def portable_eligible_principal_schema() -> dict[str, Any]:
     return strict_object_schema(
         {
@@ -626,6 +791,7 @@ def portable_eligible_principal_schema() -> dict[str, Any]:
             "verified_method": canonical_text_schema(),
         }
     )
+
 
 def portable_eligible_cluster_schema() -> dict[str, Any]:
     return strict_object_schema(
@@ -639,6 +805,7 @@ def portable_eligible_cluster_schema() -> dict[str, Any]:
             },
         }
     )
+
 
 def portable_membership_snapshot_payload_schema() -> dict[str, Any]:
     return strict_object_schema(
@@ -662,6 +829,7 @@ def portable_membership_snapshot_payload_schema() -> dict[str, Any]:
             "trace_event_id": canonical_text_schema(),
         }
     )
+
 
 def distributed_commit_proposal_payload_schema() -> dict[str, Any]:
     roots = {
@@ -705,9 +873,7 @@ def distributed_commit_proposal_payload_schema() -> dict[str, Any]:
             "candidate_id": canonical_text_schema(),
             "canonicalization": {"const": "pheroos-commit-canonical-v1"},
             "hash_algorithm": {"const": "sha256"},
-            "local_receipt_version": {
-                "const": "pheroos-local-commit-receipt-v1"
-            },
+            "local_receipt_version": {"const": "pheroos-local-commit-receipt-v1"},
             "portable_certificate_version": {
                 "const": "pheroos-evidence-commit-certificate-v1"
             },
@@ -717,6 +883,7 @@ def distributed_commit_proposal_payload_schema() -> dict[str, Any]:
             "wire_version": {"const": COMMIT_WIRE_VERSION},
         }
     )
+
 
 def distributed_commit_value_payload_schema() -> dict[str, Any]:
     proposal = distributed_commit_proposal_payload_schema()["properties"]
@@ -734,10 +901,9 @@ def distributed_commit_value_payload_schema() -> dict[str, Any]:
         for name, schema in proposal.items()
         if name not in excluded
     }
-    properties["value_version"] = {
-        "const": "pheroos-distributed-commit-value-v1"
-    }
+    properties["value_version"] = {"const": "pheroos-distributed-commit-value-v1"}
     return strict_object_schema(properties)
+
 
 def quorum_witness_payload_schema() -> dict[str, Any]:
     return strict_object_schema(
@@ -766,6 +932,7 @@ def quorum_witness_payload_schema() -> dict[str, Any]:
         }
     )
 
+
 def witness_verification_payload_schema() -> dict[str, Any]:
     return strict_object_schema(
         {
@@ -784,6 +951,7 @@ def witness_verification_payload_schema() -> dict[str, Any]:
         }
     )
 
+
 def witness_replay_receipt_payload_schema() -> dict[str, Any]:
     return strict_object_schema(
         {
@@ -801,6 +969,7 @@ def witness_replay_receipt_payload_schema() -> dict[str, Any]:
         }
     )
 
+
 def witness_equivocation_finding_schema() -> dict[str, Any]:
     return strict_object_schema(
         {
@@ -814,6 +983,7 @@ def witness_equivocation_finding_schema() -> dict[str, Any]:
         }
     )
 
+
 def final_certificate_registration_schema() -> dict[str, Any]:
     return strict_object_schema(
         {
@@ -824,6 +994,7 @@ def final_certificate_registration_schema() -> dict[str, Any]:
             "registered_at_step": authority_integer_schema(),
         }
     )
+
 
 def certificate_conflict_finding_schema() -> dict[str, Any]:
     return strict_object_schema(
@@ -838,6 +1009,7 @@ def certificate_conflict_finding_schema() -> dict[str, Any]:
             "target": canonical_text_schema(),
         }
     )
+
 
 def distributed_commit_state_payload_schema() -> dict[str, Any]:
     return strict_object_schema(
@@ -889,6 +1061,7 @@ def distributed_commit_state_payload_schema() -> dict[str, Any]:
         }
     )
 
+
 def distributed_commit_certificate_payload_schema() -> dict[str, Any]:
     return strict_object_schema(
         {
@@ -935,6 +1108,7 @@ def distributed_commit_certificate_payload_schema() -> dict[str, Any]:
         }
     )
 
+
 def epoch_transition_certificate_payload_schema() -> dict[str, Any]:
     return strict_object_schema(
         {
@@ -944,9 +1118,7 @@ def epoch_transition_certificate_payload_schema() -> dict[str, Any]:
             "certificate_body_root": fingerprint_schema(),
             "certificate_id": canonical_text_schema(),
             "certificate_root": fingerprint_schema(),
-            "certificate_version": {
-                "const": "pheroos-epoch-transition-certificate-v1"
-            },
+            "certificate_version": {"const": "pheroos-epoch-transition-certificate-v1"},
             "commit_policy_root": fingerprint_schema(),
             "declared_recovery_ref": optional_fingerprint_schema(),
             "declared_transition_rule": canonical_text_schema(),
@@ -978,6 +1150,7 @@ def epoch_transition_certificate_payload_schema() -> dict[str, Any]:
             "wire_version": {"const": COMMIT_WIRE_VERSION},
         }
     )
+
 
 def distributed_finality_decision_payload_schema() -> dict[str, Any]:
     return strict_object_schema(

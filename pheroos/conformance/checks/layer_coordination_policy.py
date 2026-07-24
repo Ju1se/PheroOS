@@ -10,6 +10,9 @@ from pheroos.conformance.checks._manifest import (
 )
 from pheroos.conformance.report import CheckResult
 from pheroos.governance import (
+    CandidateSet,
+    LayerCoordinationPolicy,
+    LayerCoordinationState,
     LayerPerformanceSnapshot,
     LayerProposal,
     evaluate_layer_coordination,
@@ -22,6 +25,7 @@ from pheroos.governance.errors import GovernanceError
 from pheroos.governance.layer_coordination import SUPPORTED_LAYER_ACTIONS
 from pheroos.protocol.models import (
     CapabilityManifest,
+    CollectiveDecisionPolicy,
     collective_fallback_id,
     has_hybrid_pheromone_features,
 )
@@ -143,9 +147,9 @@ def layer_coordination_problems(manifest: CapabilityManifest) -> list[str]:
 
 def builtin_action_problems(
     *,
-    collective_policy: object,
-    policy: object,
-    candidates: object,
+    collective_policy: CollectiveDecisionPolicy,
+    policy: LayerCoordinationPolicy,
+    candidates: CandidateSet,
     target: str,
     primary: str,
     fallback_id: str,
@@ -154,7 +158,11 @@ def builtin_action_problems(
     observed: set[str] = set()
     if set(BUILTIN_ACTION_EFFECTS) != set(SUPPORTED_LAYER_ACTIONS):
         problems.append("builtin_action_contract")
-    for action, (layer_id, expected_effect, expected_sign) in BUILTIN_ACTION_EFFECTS.items():
+    for action, (
+        layer_id,
+        expected_effect,
+        expected_sign,
+    ) in BUILTIN_ACTION_EFFECTS.items():
         item = action_proposal(
             action,
             layer_id=layer_id,
@@ -173,53 +181,134 @@ def builtin_action_problems(
             proposals=[item],
         )
         observed.add(action)
-        if effect != expected_effect or state.action_effects.get(item.trace_event_id) != expected_effect:
-            problems.append(f"action_effect:{action}")
-        if item.trace_event_id not in state.trace_lineage:
-            problems.append(f"action_lineage:{action}")
-        category = f"layer_{layer_id}"
-        score = float(state.score_breakdown[primary][category])
-        weight = float(state.allocated_weights.get(layer_id, 0.0))
-        if expected_sign == "positive" and weight > 0 and score <= 0:
-            problems.append(f"action_score:{action}")
-        elif expected_sign == "negative" and weight > 0 and score >= 0:
-            problems.append(f"action_score:{action}")
-        elif expected_sign == "zero" and not isclose(score, 0.0, abs_tol=1e-9):
-            problems.append(f"action_score:{action}")
-        if action == "request_scouting" and "scouting_requested" not in state.conflicts:
-            problems.append("action_conflict:request_scouting")
-        if action == "fallback_pressure" and "fallback_pressure" not in state.conflicts:
-            problems.append("action_conflict:fallback_pressure")
-        if action in {"alarm", "cautionary"} and "reactive_emergency_pressure" not in state.conflicts:
-            problems.append(f"action_conflict:{action}")
-        if action == "confirm_trace_coverage" and state.trace_coverage_confirmations.get(primary) != item.confidence:
-            problems.append("action_confirmation:confirm_trace_coverage")
-        if action == "propose_pheromone":
-            trails = materialize_layer_pheromone_proposals(
-                proposals=[item],
-                candidate_set=candidates,
+        problems.extend(
+            _action_state_problems(
+                action=action,
+                layer_id=layer_id,
+                effect=effect,
+                expected_effect=expected_effect,
+                expected_sign=expected_sign,
+                primary=primary,
+                item=item,
+                state=state,
+            )
+        )
+        problems.extend(
+            _action_interaction_problems(
+                action=action,
+                primary=primary,
+                item=item,
+                state=state,
+                candidates=candidates,
                 target=target,
-                current_step=1,
                 policy=policy,
             )
-            expected_strength = item.proposed_strength * item.confidence
-            if (
-                len(trails) != 1
-                or trails[0].trace_event_id != item.trace_event_id
-                or trails[0].candidate_id != primary
-                or trails[0].kind != "positive"
-                or not isclose(trails[0].strength, expected_strength, abs_tol=1e-9)
-            ):
-                problems.append("action_materialization:propose_pheromone")
+        )
     if observed != set(BUILTIN_ACTION_EFFECTS):
         problems.append("builtin_action_coverage")
     return problems
 
 
+def _action_state_problems(
+    *,
+    action: str,
+    layer_id: str,
+    effect: str,
+    expected_effect: str,
+    expected_sign: str,
+    primary: str,
+    item: LayerProposal,
+    state: LayerCoordinationState,
+) -> list[str]:
+    problems: list[str] = []
+    if (
+        effect != expected_effect
+        or state.action_effects.get(item.trace_event_id) != expected_effect
+    ):
+        problems.append(f"action_effect:{action}")
+    if item.trace_event_id not in state.trace_lineage:
+        problems.append(f"action_lineage:{action}")
+    category = f"layer_{layer_id}"
+    score = float(state.score_breakdown[primary][category])
+    weight = float(state.allocated_weights.get(layer_id, 0.0))
+    if expected_sign == "positive" and weight > 0 and score <= 0:
+        problems.append(f"action_score:{action}")
+    elif expected_sign == "negative" and weight > 0 and score >= 0:
+        problems.append(f"action_score:{action}")
+    elif expected_sign == "zero" and not isclose(score, 0.0, abs_tol=1e-9):
+        problems.append(f"action_score:{action}")
+    return problems
+
+
+def _action_interaction_problems(
+    *,
+    action: str,
+    primary: str,
+    item: LayerProposal,
+    state: LayerCoordinationState,
+    candidates: CandidateSet,
+    target: str,
+    policy: LayerCoordinationPolicy,
+) -> list[str]:
+    problems: list[str] = []
+    if action == "request_scouting" and "scouting_requested" not in state.conflicts:
+        problems.append("action_conflict:request_scouting")
+    if action == "fallback_pressure" and "fallback_pressure" not in state.conflicts:
+        problems.append("action_conflict:fallback_pressure")
+    if (
+        action in {"alarm", "cautionary"}
+        and "reactive_emergency_pressure" not in state.conflicts
+    ):
+        problems.append(f"action_conflict:{action}")
+    if (
+        action == "confirm_trace_coverage"
+        and state.trace_coverage_confirmations.get(primary) != item.confidence
+    ):
+        problems.append("action_confirmation:confirm_trace_coverage")
+    if action == "propose_pheromone":
+        problems.extend(
+            _pheromone_materialization_problems(
+                primary=primary,
+                item=item,
+                candidates=candidates,
+                target=target,
+                policy=policy,
+            )
+        )
+    return problems
+
+
+def _pheromone_materialization_problems(
+    *,
+    primary: str,
+    item: LayerProposal,
+    candidates: CandidateSet,
+    target: str,
+    policy: LayerCoordinationPolicy,
+) -> list[str]:
+    trails = materialize_layer_pheromone_proposals(
+        proposals=[item],
+        candidate_set=candidates,
+        target=target,
+        current_step=1,
+        policy=policy,
+    )
+    expected_strength = item.proposed_strength * item.confidence
+    if (
+        len(trails) != 1
+        or trails[0].trace_event_id != item.trace_event_id
+        or trails[0].candidate_id != primary
+        or trails[0].kind != "positive"
+        or not isclose(trails[0].strength, expected_strength, abs_tol=1e-9)
+    ):
+        return ["action_materialization:propose_pheromone"]
+    return []
+
+
 def coordination_interaction_problems(
     *,
-    policy: object,
-    candidates: object,
+    policy: LayerCoordinationPolicy,
+    candidates: CandidateSet,
     target: str,
     primary: str,
     secondary: str | None,
@@ -345,8 +434,8 @@ def coordination_interaction_problems(
 
 def snapshot_weight_problems(
     *,
-    policy: object,
-    candidates: object,
+    policy: LayerCoordinationPolicy,
+    candidates: CandidateSet,
     target: str,
     primary: str,
     fallback_id: str,
@@ -437,7 +526,12 @@ def snapshot_weight_problems(
     return problems
 
 
-def action_confidence(policy: object, layer_id: str, *, emergency: bool = False) -> float:
+def action_confidence(
+    policy: LayerCoordinationPolicy,
+    layer_id: str,
+    *,
+    emergency: bool = False,
+) -> float:
     thresholds = [float(policy.confidence_thresholds.get(layer_id, 0.0)), 0.9]
     if emergency:
         thresholds.append(float(policy.emergency_override_threshold))
@@ -450,8 +544,8 @@ def action_proposal(
     layer_id: str,
     candidate_id: str,
     target: str,
-    policy: object,
-    collective_policy: object | None = None,
+    policy: LayerCoordinationPolicy,
+    collective_policy: CollectiveDecisionPolicy | None = None,
     suffix: str = "exercise",
 ) -> LayerProposal:
     confidence = action_confidence(
@@ -459,7 +553,12 @@ def action_proposal(
         layer_id,
         emergency=action in {"alarm", "cautionary"},
     )
-    support = 1.0 if action in {"support", "prefer_candidate", "route_preference", "resolve_conflict"} else 0.0
+    support = (
+        1.0
+        if action
+        in {"support", "prefer_candidate", "route_preference", "resolve_conflict"}
+        else 0.0
+    )
     risk = 1.0 if action in {"risk", "alarm", "cautionary"} else 0.0
     proposed_kind = action if action in {"alarm", "cautionary"} else ""
     proposed_strength = 1.0 if action in {"alarm", "cautionary"} else 0.0
@@ -492,11 +591,14 @@ def action_proposal(
     )
 
 
-def declared_policy_problems(policy: object) -> list[str]:
+def declared_policy_problems(policy: CollectiveDecisionPolicy) -> list[str]:
     problems: list[str] = []
     if policy.layer_min_provenance <= 0:
         problems.append("min_layer_provenance")
-    if policy.layer_conflict_threshold < 0 or policy.layer_emergency_override_threshold < 0:
+    if (
+        policy.layer_conflict_threshold < 0
+        or policy.layer_emergency_override_threshold < 0
+    ):
         problems.append("thresholds")
     for layer_id, weight in policy.layer_default_weights.items():
         if layer_id not in {"reactive", "learned", "evolutionary", "metacognitive"}:

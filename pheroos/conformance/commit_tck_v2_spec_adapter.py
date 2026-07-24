@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 """Independent stdlib-only spec model for the declarative Commit TCK v2 slice.
 
 This module deliberately does not import ``pheroos.governance``, the v1
@@ -7,10 +5,12 @@ reference adapter, or the v2 PheroOS subject adapter.  It models only the
 normative operations declared by the checked v2 artifact.
 """
 
-from copy import deepcopy
-from hashlib import sha256
+from __future__ import annotations
+
 import json
 import sys
+from copy import deepcopy
+from hashlib import sha256
 from typing import Any
 
 from pheroos.conformance.commit_tck_v2_protocol import (
@@ -20,7 +20,6 @@ from pheroos.conformance.commit_tck_v2_protocol import (
     empty_commit_tck_actual,
     serve_commit_tck_v2_jsonl,
 )
-
 
 SPEC_MODEL_IMPLEMENTATION_ID = "pheroos-commit-spec-model-v2"
 SPEC_MODEL_OPERATIONS = (
@@ -48,60 +47,60 @@ class IndependentCommitSpecModelAdapter:
     implementation_id = SPEC_MODEL_IMPLEMENTATION_ID
 
     def evaluate(self, request: CommitTckRequest) -> CommitTckResponse:
-        operation = request.inputs["operation"]
-        if operation == "fixed_point_multiply":
-            left = _bounded_nonnegative_integer(request.inputs.get("left"), "left")
-            right = _bounded_nonnegative_integer(
-                request.inputs.get("right"),
-                "right",
-            )
-            scale = _positive_scale(request.inputs.get("scale"))
-            value = (left * right) // scale
-            if value > _MAX_AUTHORITY_INTEGER:
-                raise CommitTckV2ProtocolError("fixed-point product exceeds the bound")
-            actual = empty_commit_tck_actual(metrics={"value": value})
-        elif operation == "fixed_point_ratio":
-            numerator = _nonnegative_integer(
-                request.inputs.get("numerator"),
-                "numerator",
-            )
-            denominator = _nonnegative_integer(
-                request.inputs.get("denominator"),
-                "denominator",
-            )
-            scale = _positive_scale(request.inputs.get("scale"))
-            if denominator == 0:
-                value = scale
-            else:
-                if numerator > denominator:
-                    raise CommitTckV2ProtocolError(
-                        "ratio numerator cannot exceed denominator"
-                    )
-                value = (numerator * scale) // denominator
-            actual = empty_commit_tck_actual(metrics={"value": value})
-        elif operation == "manifest_deadline_outcome":
-            actual = _manifest_deadline_outcome(request)
-        elif operation == "manifest_threshold_assessment":
-            actual = _manifest_threshold_assessment(request)
-        elif operation == "manifest_assurance_requirements":
-            actual = _manifest_assurance_requirements(request)
-        elif operation == "manifest_distributed_quorum":
-            actual = _manifest_distributed_quorum(request)
-        elif operation == "attention_truth_invariance":
-            actual = _attention_truth_invariance(request)
-        elif operation == "certificate_leaf_binding":
-            actual = _certificate_leaf_binding(request)
-        elif operation == "trace_leaf_binding":
-            actual = _trace_leaf_binding(request)
-        else:
-            raise CommitTckV2ProtocolError(
-                f"spec-model operation is unsupported: {operation!r}"
-            )
+        actual = _evaluate_operation(request)
         return CommitTckResponse(
             request_id=request.id,
             implementation_id=self.implementation_id,
             actual=actual,
         )
+
+
+def _evaluate_operation(request: CommitTckRequest) -> dict[str, Any]:
+    operation = request.inputs["operation"]
+    operations = {
+        "fixed_point_multiply": _fixed_point_multiply,
+        "fixed_point_ratio": _fixed_point_ratio,
+        "manifest_deadline_outcome": _manifest_deadline_outcome,
+        "manifest_threshold_assessment": _manifest_threshold_assessment,
+        "manifest_assurance_requirements": _manifest_assurance_requirements,
+        "manifest_distributed_quorum": _manifest_distributed_quorum,
+        "attention_truth_invariance": _attention_truth_invariance,
+        "certificate_leaf_binding": _certificate_leaf_binding,
+        "trace_leaf_binding": _trace_leaf_binding,
+    }
+    try:
+        evaluator = operations[operation]
+    except KeyError as exc:
+        raise CommitTckV2ProtocolError(
+            f"spec-model operation is unsupported: {operation!r}"
+        ) from exc
+    return evaluator(request)
+
+
+def _fixed_point_multiply(request: CommitTckRequest) -> dict[str, Any]:
+    left = _bounded_nonnegative_integer(request.inputs.get("left"), "left")
+    right = _bounded_nonnegative_integer(request.inputs.get("right"), "right")
+    scale = _positive_scale(request.inputs.get("scale"))
+    value = (left * right) // scale
+    if value > _MAX_AUTHORITY_INTEGER:
+        raise CommitTckV2ProtocolError("fixed-point product exceeds the bound")
+    return empty_commit_tck_actual(metrics={"value": value})
+
+
+def _fixed_point_ratio(request: CommitTckRequest) -> dict[str, Any]:
+    numerator = _nonnegative_integer(request.inputs.get("numerator"), "numerator")
+    denominator = _nonnegative_integer(
+        request.inputs.get("denominator"),
+        "denominator",
+    )
+    scale = _positive_scale(request.inputs.get("scale"))
+    if denominator == 0:
+        value = scale
+    else:
+        if numerator > denominator:
+            raise CommitTckV2ProtocolError("ratio numerator cannot exceed denominator")
+        value = (numerator * scale) // denominator
+    return empty_commit_tck_actual(metrics={"value": value})
 
 
 def _manifest_deadline_outcome(request: CommitTckRequest) -> dict[str, Any]:
@@ -125,8 +124,7 @@ def _manifest_deadline_outcome(request: CommitTckRequest) -> dict[str, Any]:
         "elapsed_steps",
     )
     conditions = {
-        name: _boolean(request.inputs.get(name), name)
-        for name in _TERMINAL_KINDS
+        name: _boolean(request.inputs.get(name), name) for name in _TERMINAL_KINDS
     }
     deadline_reached = elapsed_steps >= run_deadline_steps
     selected: str | None = None
@@ -493,7 +491,7 @@ def _trace_leaf_binding(request: CommitTckRequest) -> dict[str, Any]:
     event_type = _text(request.inputs.get("event_type"), "event_type")
     protocol_id = _text(request.inputs.get("protocol_id"), "protocol_id")
     target = _text(request.inputs.get("target"), "target")
-    reason = _text(request.inputs.get("reason"), "reason")
+    _reason = _text(request.inputs.get("reason"), "reason")
     lineage = deepcopy(_object(request.inputs.get("lineage"), "lineage"))
     base_valid = _trace_lineage_is_valid(
         event_type=event_type,
@@ -563,9 +561,7 @@ def _object(value: object, label: str) -> dict[str, Any]:
 
 def _nonnegative_integer(value: object, label: str) -> int:
     if type(value) is not int or value < 0:
-        raise CommitTckV2ProtocolError(
-            f"{label} must be a non-negative exact integer"
-        )
+        raise CommitTckV2ProtocolError(f"{label} must be a non-negative exact integer")
     return value
 
 
@@ -624,7 +620,7 @@ def _manifest_policy(request: CommitTckRequest) -> dict[str, Any]:
 
 
 def _threshold_observations(inputs: dict[str, Any]) -> dict[str, Any]:
-    observed = {
+    observed: dict[str, Any] = {
         name: _nonnegative_integer(inputs.get(name), name)
         for name in (
             "positive_evidence",
@@ -867,9 +863,8 @@ def _trace_lineage_is_valid(
                 return False
             if record_payload.get("threshold_ref") != lineage.get("threshold_ref"):
                 return False
-            if (
-                record_payload.get("risk_chain_revision")
-                != lineage.get("risk_chain_revision")
+            if record_payload.get("risk_chain_revision") != lineage.get(
+                "risk_chain_revision"
             ):
                 return False
         return lineage.get("event_id") == _trace_event_id(
@@ -896,9 +891,7 @@ def _scalar_leaf_paths(
     elif value is None or type(value) in {bool, int, str}:
         paths.append(prefix)
     else:
-        raise CommitTckV2ProtocolError(
-            "authority payload contains a non-JSON scalar"
-        )
+        raise CommitTckV2ProtocolError("authority payload contains a non-JSON scalar")
     return tuple(paths)
 
 
@@ -936,11 +929,7 @@ def _mutate_json_leaf(payload: object, path: tuple[object, ...]) -> None:
 def _read_child(parent: object, key: object) -> Any:
     if isinstance(parent, dict) and isinstance(key, str) and key in parent:
         return parent[key]
-    if (
-        isinstance(parent, list)
-        and type(key) is int
-        and 0 <= key < len(parent)
-    ):
+    if isinstance(parent, list) and type(key) is int and 0 <= key < len(parent):
         return parent[key]
     raise CommitTckV2ProtocolError("authority mutation path is missing")
 
@@ -962,7 +951,7 @@ def main() -> int:
     return 0
 
 
-if __name__ == "__main__":  # pragma: no cover
+if __name__ == "__main__":
     raise SystemExit(main())
 
 

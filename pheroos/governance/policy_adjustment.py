@@ -5,7 +5,7 @@ from copy import deepcopy
 import math
 from dataclasses import dataclass, replace
 from types import MappingProxyType
-from typing import Any
+from typing import Any, TypeGuard
 
 from pheroos.governance._validation import is_nonblank_string
 from pheroos.governance.errors import GovernanceError
@@ -17,9 +17,13 @@ from pheroos.protocol.models import (
 )
 
 
-SUPPORTED_POLICY_ADJUSTMENT_LAYER_IDS = frozenset({"reactive", "learned", "evolutionary", "metacognitive"})
+SUPPORTED_POLICY_ADJUSTMENT_LAYER_IDS = frozenset(
+    {"reactive", "learned", "evolutionary", "metacognitive"}
+)
 ADJUSTMENT_PROPOSER_LAYER_IDS = frozenset({"learned", "evolutionary", "metacognitive"})
-SUPPORTED_RESPONSE_MODELS = frozenset({"linear", "saturating", "threshold", "competitive"})
+SUPPORTED_RESPONSE_MODELS = frozenset(
+    {"linear", "saturating", "threshold", "competitive"}
+)
 SUPPORTED_KIND_WEIGHT_FIELDS = frozenset(
     {
         "pheromone_positive_weight",
@@ -76,6 +80,10 @@ class RunScopedPolicyOverlay(Mapping[str, Any]):
     """Immutable run overlay; only governance validation can issue authority."""
 
     __slots__ = ("_values", "source_ids", "trace_event_ids", "_issuance")
+    _values: Mapping[str, Any]
+    source_ids: tuple[str, ...]
+    trace_event_ids: tuple[str, ...]
+    _issuance: object | None
 
     def __init__(
         self,
@@ -192,7 +200,9 @@ def run_scoped_policy_overlay_is_authoritative(overlay: object) -> bool:
                     bool(overlay.source_ids)
                     and bool(overlay.trace_event_ids)
                     and all(is_nonblank_string(item) for item in overlay.source_ids)
-                    and all(is_nonblank_string(item) for item in overlay.trace_event_ids)
+                    and all(
+                        is_nonblank_string(item) for item in overlay.trace_event_ids
+                    )
                 )
             )
         )
@@ -237,23 +247,31 @@ def validate_policy_adjustment_proposals(
     items = list(proposals)
     validated: list[tuple[PolicyAdjustmentProposal, dict[str, Any]]] = []
     for proposal in items:
-        validated.append((proposal, _validate_policy_adjustment_proposal(proposal, policy)))
+        validated.append(
+            (proposal, _validate_policy_adjustment_proposal(proposal, policy))
+        )
     trace_ids: set[str] = set()
     for proposal, _ in validated:
         if proposal.trace_event_id in trace_ids:
-            raise GovernanceError(f"duplicate policy adjustment trace_event_id: {proposal.trace_event_id}")
+            raise GovernanceError(
+                f"duplicate policy adjustment trace_event_id: {proposal.trace_event_id}"
+            )
         trace_ids.add(proposal.trace_event_id)
 
     processed = set(processed_trace_event_ids)
     pending = [item for item in validated if item[0].trace_event_id not in processed]
-    pending.sort(key=lambda item: (item[0].layer_id, item[0].source_id, item[0].trace_event_id))
+    pending.sort(
+        key=lambda item: (item[0].layer_id, item[0].source_id, item[0].trace_event_id)
+    )
     accepted: dict[str, Any] = {}
     accepted_sources: list[str] = []
     accepted_events: list[str] = []
     for proposal, values in pending:
         for key, value in sorted(values.items()):
             if key in accepted:
-                raise GovernanceError(f"policy adjustment key is proposed more than once in a batch: {key}")
+                raise GovernanceError(
+                    f"policy adjustment key is proposed more than once in a batch: {key}"
+                )
             accepted[key] = value
         accepted_sources.append(proposal.source_id)
         accepted_events.append(proposal.trace_event_id)
@@ -274,7 +292,7 @@ def validate_policy_adjustment_bounds(policy: object) -> None:
     """Validate every declared adjustment dimension at the runtime boundary."""
 
     declared_bounds = getattr(policy, "policy_adjustment_bounds", None)
-    if not isinstance(declared_bounds, dict) and not hasattr(declared_bounds, "items"):
+    if not isinstance(declared_bounds, Mapping):
         raise GovernanceError("active policy does not expose adjustment bounds")
     for key, bounds in sorted(declared_bounds.items()):
         if not isinstance(key, str) or key not in SUPPORTED_POLICY_ADJUSTMENT_FIELDS:
@@ -282,7 +300,11 @@ def validate_policy_adjustment_bounds(policy: object) -> None:
         values: tuple[Any, ...]
         numeric_bounds: tuple[float, float] | None = None
         if isinstance(bounds, (list, tuple)) and len(bounds) == 2:
-            if not numeric(bounds[0]) or not numeric(bounds[1]) or float(bounds[0]) > float(bounds[1]):
+            if (
+                not numeric(bounds[0])
+                or not numeric(bounds[1])
+                or float(bounds[0]) > float(bounds[1])
+            ):
                 raise GovernanceError(f"policy adjustment bounds are invalid: {key}")
             values = (bounds[0], bounds[1])
             numeric_bounds = (float(bounds[0]), float(bounds[1]))
@@ -298,7 +320,9 @@ def validate_policy_adjustment_bounds(policy: object) -> None:
         elif isinstance(bounds, Mapping) and set(bounds) == {"allowed_values"}:
             allowed = bounds["allowed_values"]
             if not isinstance(allowed, (list, tuple)) or not allowed:
-                raise GovernanceError(f"policy adjustment allowed values are invalid: {key}")
+                raise GovernanceError(
+                    f"policy adjustment allowed values are invalid: {key}"
+                )
             values = tuple(allowed)
         else:
             raise GovernanceError(f"policy adjustment bounds are invalid: {key}")
@@ -344,7 +368,9 @@ def _validate_policy_adjustment_proposal(
     validate_policy_adjustment_bounds(policy)
     for field_name in ("layer_id", "source_id", "provenance", "trace_event_id"):
         if not isinstance(getattr(proposal, field_name), str):
-            raise GovernanceError(f"policy adjustment proposal {field_name} must be a string")
+            raise GovernanceError(
+                f"policy adjustment proposal {field_name} must be a string"
+            )
     if proposal.layer_id not in SUPPORTED_POLICY_ADJUSTMENT_LAYER_IDS:
         raise GovernanceError(f"unsupported layer id: {proposal.layer_id}")
     if proposal.layer_id not in ADJUSTMENT_PROPOSER_LAYER_IDS:
@@ -356,20 +382,26 @@ def _validate_policy_adjustment_proposal(
     if not is_nonblank_string(proposal.trace_event_id):
         raise GovernanceError("policy adjustment proposal is missing trace event id")
     if not proposal.adjustments:
-        raise GovernanceError("policy adjustment proposal must contain at least one adjustment")
+        raise GovernanceError(
+            "policy adjustment proposal must contain at least one adjustment"
+        )
     declared_bounds = getattr(policy, "policy_adjustment_bounds", None)
-    if not isinstance(declared_bounds, dict) and not hasattr(declared_bounds, "items"):
+    if not isinstance(declared_bounds, Mapping):
         raise GovernanceError("active policy does not expose adjustment bounds")
     accepted: dict[str, Any] = {}
     for key, value in sorted(proposal.adjustments.items()):
         if not isinstance(key, str) or key not in SUPPORTED_POLICY_ADJUSTMENT_FIELDS:
             raise GovernanceError(f"policy adjustment field is not allowlisted: {key}")
         if key not in declared_bounds:
-            raise GovernanceError(f"policy adjustment is outside declared bounds: {key}")
+            raise GovernanceError(
+                f"policy adjustment is outside declared bounds: {key}"
+            )
         validate_absolute_adjustment_value(key, value)
         bounds = declared_bounds[key]
         if not adjustment_value_allowed(value, bounds):
-            raise GovernanceError(f"policy adjustment value is outside declared bounds: {key}")
+            raise GovernanceError(
+                f"policy adjustment value is outside declared bounds: {key}"
+            )
         accepted[key] = value
     return accepted
 
@@ -383,15 +415,26 @@ def validate_absolute_adjustment_value(key: str, value: Any) -> None:
         raise GovernanceError(f"policy adjustment value must be a finite number: {key}")
     number = float(value)
     if key == "pheromone_evaporation_rate" and not 0 <= number <= 1:
-        raise GovernanceError("pheromone evaporation adjustment is outside absolute bounds")
+        raise GovernanceError(
+            "pheromone evaporation adjustment is outside absolute bounds"
+        )
     if key == "pheromone_exploration_floor" and not 0 <= number <= 1:
-        raise GovernanceError("pheromone exploration adjustment is outside absolute bounds")
-    if key in SUPPORTED_KIND_WEIGHT_FIELDS | SUPPORTED_LAYER_WEIGHT_FIELDS and not 0 <= number <= 10:
+        raise GovernanceError(
+            "pheromone exploration adjustment is outside absolute bounds"
+        )
+    if (
+        key in SUPPORTED_KIND_WEIGHT_FIELDS | SUPPORTED_LAYER_WEIGHT_FIELDS
+        and not 0 <= number <= 10
+    ):
         raise GovernanceError("policy weight adjustment is outside absolute bounds")
     if key == "pheromone_cautionary_override_threshold" and not 0 <= number <= 10:
-        raise GovernanceError("pheromone threshold adjustment is outside absolute bounds")
+        raise GovernanceError(
+            "pheromone threshold adjustment is outside absolute bounds"
+        )
     if key == "layer_emergency_override_threshold" and not 0 <= number <= 1:
-        raise GovernanceError("layer emergency threshold adjustment is outside absolute bounds")
+        raise GovernanceError(
+            "layer emergency threshold adjustment is outside absolute bounds"
+        )
 
 
 def apply_policy_adjustment_overlay(
@@ -407,10 +450,14 @@ def apply_policy_adjustment_overlay(
         if key not in SUPPORTED_POLICY_ADJUSTMENT_FIELDS:
             raise GovernanceError(f"policy adjustment field is not allowlisted: {key}")
         if key not in policy.policy_adjustment_bounds:
-            raise GovernanceError(f"policy adjustment is outside declared bounds: {key}")
+            raise GovernanceError(
+                f"policy adjustment is outside declared bounds: {key}"
+            )
         validate_absolute_adjustment_value(key, value)
         if not adjustment_value_allowed(value, policy.policy_adjustment_bounds[key]):
-            raise GovernanceError(f"policy adjustment value is outside declared bounds: {key}")
+            raise GovernanceError(
+                f"policy adjustment value is outside declared bounds: {key}"
+            )
 
     scalar_updates: dict[str, Any] = {}
     scalar_mapping = {
@@ -488,7 +535,10 @@ def adjustment_value_allowed(value: Any, bounds: Any) -> bool:
             allowed_values = bounds["allowed_values"]
             if not isinstance(allowed_values, (list, tuple)) or not allowed_values:
                 return False
-            return any(type(value) is type(allowed) and value == allowed for allowed in allowed_values)
+            return any(
+                type(value) is type(allowed) and value == allowed
+                for allowed in allowed_values
+            )
         if set(bounds) == {"min", "max"}:
             return (
                 numeric(value)
@@ -499,7 +549,7 @@ def adjustment_value_allowed(value: Any, bounds: Any) -> bool:
     return False
 
 
-def numeric(value: Any) -> bool:
+def numeric(value: object) -> TypeGuard[int | float]:
     if isinstance(value, bool) or not isinstance(value, (int, float)):
         return False
     return math.isfinite(float(value))

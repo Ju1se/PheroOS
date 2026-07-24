@@ -2,6 +2,9 @@ from __future__ import annotations
 
 from hashlib import sha256
 from importlib import import_module
+from pathlib import Path
+import subprocess
+import sys
 
 import pheroos.governance as governance
 import pheroos.conformance as conformance
@@ -10,13 +13,33 @@ import pheroos.trace as trace
 
 
 EXPECTED_PUBLIC_API = {
-    "pheroos.protocol": (77, "96e546b5f54892c8251268b41b1214586f578826f3b44b7262547d13787005b4"),
-    "pheroos.governance": (527, "c59888cc742fb0dbf2eb5bf9ab62fa216e127a897ac0d675dc4ac9002b4f3ad4"),
-    "pheroos.kernel": (28, "52523a670adbde14b3bd0c3c8872095d4f08c8bc4903faa5c08a743c6f2de907"),
-    "pheroos.drivers": (37, "b551bfec64fc9fd0d5dee669897edad6045a197145e3dab9deaab44478887bde"),
-    "pheroos.trace": (25, "ebe198475258c7dc4719e0eb9c4c3d2eb1dd70bcc1fb64bd525a36d125668a68"),
-    "pheroos.conformance": (33, "0253154cabb5bcb029f1f84be01d332e37083af0fcee6e0b989fcba7d9bb1091"),
+    "pheroos.protocol": (
+        99,
+        "b1fb302d39161462380dd63f3e66993604e1b464a9a8bdd095580b201aa07213",
+    ),
+    "pheroos.governance": (
+        1068,
+        "d3edea818e2fa962ad7d3907c86b3b7fecd96fbeca5172a7148b00bd34667327",
+    ),
+    "pheroos.kernel": (
+        31,
+        "54505137a3a46f76e0268f760996df7ed2f296abaaf99644c98b0be1ca547be3",
+    ),
+    "pheroos.drivers": (
+        54,
+        "aa02e021b652d26e5cc1dcdef8413ef57b7165ed03a3fbda9e1b9fda54719791",
+    ),
+    "pheroos.trace": (
+        38,
+        "87cc4cdd905bfa6ea469c2083297dd4a2828f2a69d087802c7195dc093cebdd5",
+    ),
+    "pheroos.conformance": (
+        118,
+        "95d24961d4a00badc9fba7a452532bd2af2f45c85af269267b5d2a3165b0c20b",
+    ),
 }
+
+ROOT = Path(__file__).resolve().parents[1]
 
 
 def test_public_package_exports_match_the_intentional_abi_snapshot() -> None:
@@ -28,10 +51,64 @@ def test_public_package_exports_match_the_intentional_abi_snapshot() -> None:
         assert len(exported) == len(set(exported))
         assert all(hasattr(module, name) for name in exported)
         observed = sha256("\n".join(sorted(exported)).encode()).hexdigest()
-        assert observed == expected_digest, f"undeclared public ABI drift in {module_name}"
+        assert observed == expected_digest, (
+            f"undeclared public ABI drift in {module_name}"
+        )
+
+
+def test_conformance_compatibility_module_uses_the_lazy_facade_branch() -> None:
+    completed = subprocess.run(
+        [
+            sys.executable,
+            "-c",
+            (
+                "import importlib; import pheroos.conformance as facade; "
+                "assert 'runner' not in facade.__dict__; "
+                "assert facade.runner is "
+                "importlib.import_module('pheroos.conformance.runner')"
+            ),
+        ],
+        cwd=ROOT,
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+
+    assert completed.returncode == 0, completed.stdout + completed.stderr
 
 
 def test_canonical_public_types_are_owned_by_their_declared_surfaces() -> None:
+    assert governance.AuthorityDiagnosticCodeV2 is (protocol.AuthorityDiagnosticCodeV2)
+    assert governance.GovernanceAuthorityReadSetV2 is (
+        protocol.GovernanceAuthorityReadSetV2
+    )
+    assert protocol.AuthorityDiagnosticCodeV2.__module__ == (
+        "pheroos.protocol.authority_v2"
+    )
+    assert governance.AuthorityDomainV2.__module__ == (
+        "pheroos.governance.authority_store_v2"
+    )
+    assert governance.GovernanceIssuerGrantV2.__module__ == (
+        "pheroos.governance.authority_session_v2"
+    )
+    assert governance.GovernanceIssuerCapabilityV2.__module__ == (
+        "pheroos.governance.authority_session_v2"
+    )
+    assert governance.GovernanceAuthoritySessionV2.__module__ == (
+        "pheroos.governance.authority_session_v2"
+    )
+    assert governance.commit_verified_signal_v2.__module__ == (
+        "pheroos.governance.authority_session_v2"
+    )
+    assert conformance.GovernanceStateStoreConformanceAdapterV2.__module__ == (
+        "pheroos.conformance"
+    )
+    assert conformance.run_governance_authority_session_conformance_v2.__module__ == (
+        "pheroos.conformance"
+    )
+    assert conformance.run_governance_baseline_output_conformance_v2.__module__ == (
+        "pheroos.conformance"
+    )
     assert governance.CommitAssurance is protocol.CommitAssurance
     assert governance.CommitAction is protocol.CommitAction
     assert protocol.CommitAssurance.__module__ == "pheroos.protocol.commit_models"
@@ -41,8 +118,13 @@ def test_canonical_public_types_are_owned_by_their_declared_surfaces() -> None:
     assert governance.TraceEvent is trace.TraceEvent
     assert trace.TraceEvent.__module__ == "pheroos.trace"
     assert governance.PheromoneTrail.__module__ == "pheroos.governance.pheromone"
-    assert governance.LayerProposal.__module__ == "pheroos.governance.layer_coordination"
-    assert governance.PolicyAdjustmentProposal.__module__ == "pheroos.governance.policy_adjustment"
+    assert (
+        governance.LayerProposal.__module__ == "pheroos.governance.layer_coordination"
+    )
+    assert (
+        governance.PolicyAdjustmentProposal.__module__
+        == "pheroos.governance.policy_adjustment"
+    )
     assert governance.HybridCollectiveStep.__module__ == "pheroos.governance.collective"
     assert governance.HybridReplayState.__module__ == "pheroos.governance.collective"
     assert governance.CommitAssessment.__module__ == "pheroos.governance.commit"

@@ -104,9 +104,9 @@ def test_public_abi_boundary_rejects_stale_lifecycle_metadata(
         encoding="utf-8",
     )
     lifecycle = build_public_api_lifecycle(ROOT)
-    lifecycle["packages"]["pheroos.drivers"]["exports"][0][
-        "replacement"
-    ] = "pheroos.drivers.NoSuchDescriptor"
+    lifecycle["packages"]["pheroos.drivers"]["exports"][0]["replacement"] = (
+        "pheroos.drivers.NoSuchDescriptor"
+    )
     lifecycle_artifact = tmp_path / PUBLIC_API_LIFECYCLE_PATH
     lifecycle_artifact.write_text(json.dumps(lifecycle), encoding="utf-8")
 

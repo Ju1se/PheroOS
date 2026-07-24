@@ -1,10 +1,16 @@
 from __future__ import annotations
 
+from copy import deepcopy
 import json
 from pathlib import Path
 from typing import Any
 
 from pheroos.cli.main import main
+from pheroos.conformance.public_api_inventory import build_public_api_inventory
+from pheroos.conformance.stable_api_candidate import load_stable_api_candidate
+
+
+ROOT = Path(__file__).resolve().parents[2]
 
 
 def _invoke(capsys: Any, *argv: str) -> tuple[int, dict[str, Any]]:
@@ -23,10 +29,12 @@ def test_version_reports_all_versioned_management_surfaces(capsys: Any) -> None:
     assert payload["capability_schema_versions"] == [
         "pheroos-capability-schema-v1",
         "pheroos-capability-schema-v2",
+        "pheroos-capability-schema-v3",
     ]
     assert payload["protocol_schema_versions"] == [
         "pheroos-protocol-schema-v1",
         "pheroos-protocol-schema-v2",
+        "pheroos-protocol-schema-v3",
     ]
     assert payload["authority_ledger_version"].endswith("-v1")
     assert payload["driver_descriptor_version"] == "pheroos-driver-descriptor-v2"
@@ -131,6 +139,102 @@ def test_abi_show_and_runtime_diff_use_packaged_inventory(capsys: Any) -> None:
     assert diff_code == 0
     assert diffed["ok"] is True
     assert diffed["differences"] == []
+
+
+def test_abi_stable_only_reads_and_builds_the_draft_candidate(capsys: Any) -> None:
+    show_code, shown = _invoke(
+        capsys,
+        "abi",
+        "show",
+        "--stable-only",
+        "--package",
+        "pheroos.kernel",
+    )
+    diff_code, diffed = _invoke(capsys, "abi", "diff", "--stable-only")
+
+    assert show_code == diff_code == 0
+    assert shown["stable_only"] is True
+    assert shown["inventory"]["artifact_version"] == ("pheroos-stable-python-api-v1")
+    assert shown["inventory"]["surface"]["closure_count"] > 0
+    assert diffed["candidate_status"] == "promotion_candidate"
+    assert diffed["formal_stable"] is False
+    assert diffed["stable_breaking"] is False
+    assert diffed["breaking_differences"] == []
+    assert diffed["differences"] == []
+
+
+def test_abi_stable_only_ignores_draft_changes_outside_candidate_closure(
+    capsys: Any,
+    tmp_path: Path,
+) -> None:
+    candidate = load_stable_api_candidate(ROOT)
+    closure = {
+        entry["binding"]
+        for package in candidate["packages"].values()
+        for entry in package["exports"]
+    }
+    closure.update(entry["binding"] for entry in candidate["constant_dependencies"])
+    observed = deepcopy(build_public_api_inventory())
+    package_name, shape = next(
+        (name, item)
+        for name, package in observed["packages"].items()
+        for item in package["exports"]
+        if f"{name}.{item['name']}" not in closure
+    )
+    shape["signature"] = {"synthetic": "expert-draft-change"}
+    artifact = tmp_path / "observed.json"
+    artifact.write_text(json.dumps(observed), encoding="utf-8")
+
+    code, payload = _invoke(
+        capsys,
+        "abi",
+        "diff",
+        "--stable-only",
+        str(artifact),
+    )
+
+    assert package_name.startswith("pheroos.")
+    assert code == 0
+    assert payload["ok"] is True
+    assert payload["differences"] == []
+    assert payload["stable_breaking"] is False
+
+
+def test_abi_stable_only_reports_candidate_drift_without_calling_it_stable(
+    capsys: Any,
+    tmp_path: Path,
+) -> None:
+    candidate = load_stable_api_candidate(ROOT)
+    observed = deepcopy(build_public_api_inventory())
+    selected = next(
+        entry["binding"]
+        for package in candidate["packages"].values()
+        for entry in package["exports"]
+    )
+    package_name, export_name = selected.rsplit(".", 1)
+    shape = next(
+        item
+        for item in observed["packages"][package_name]["exports"]
+        if item["name"] == export_name
+    )
+    shape["signature"] = {"synthetic": "candidate-drift"}
+    artifact = tmp_path / "observed.json"
+    artifact.write_text(json.dumps(observed), encoding="utf-8")
+
+    code, payload = _invoke(
+        capsys,
+        "abi",
+        "diff",
+        "--stable-only",
+        str(artifact),
+    )
+
+    assert code == 1
+    assert payload["ok"] is False
+    assert payload["differences"]
+    assert payload["formal_stable"] is False
+    assert payload["stable_breaking"] is False
+    assert payload["breaking_differences"] == []
 
 
 def test_invalid_management_input_has_stable_error_envelope(capsys: Any) -> None:

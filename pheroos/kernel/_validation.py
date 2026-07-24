@@ -46,7 +46,9 @@ def validate_tool_exposure(exposure: object) -> None:
 
 
 def validate_permissions(value: object, *, subject: str) -> None:
-    if not isinstance(value, tuple) or not all(is_nonblank_text(item) for item in value):
+    if not isinstance(value, tuple) or not all(
+        is_nonblank_text(item) for item in value
+    ):
         raise KernelError(f"{subject} permissions must be immutable nonblank strings")
 
 
@@ -64,7 +66,9 @@ def validate_os_plan(plan: object) -> OSPlan:
         scope_ref=plan.scope_ref,
         subject="OS plan",
     )
-    if plan.runtime_ready not in (True, False) or not isinstance(plan.runtime_ready, bool):
+    if plan.runtime_ready not in (True, False) or not isinstance(
+        plan.runtime_ready, bool
+    ):
         raise KernelError("OS plan runtime_ready must be boolean")
     if plan.degraded not in (True, False) or not isinstance(plan.degraded, bool):
         raise KernelError("OS plan degraded must be boolean")
@@ -93,14 +97,29 @@ def validate_runtime_context(context: object) -> RuntimeContext:
             raise KernelError(f"runtime context {name} must be immutable")
     for grant in context.permission_grants:
         _validate_permission_grant(grant)
-    for exposure in context.driver_exposures:
-        validate_driver_exposure(exposure)
-    for exposure in context.tool_exposures:
-        validate_tool_exposure(exposure)
+    for driver_exposure in context.driver_exposures:
+        validate_driver_exposure(driver_exposure)
+    for tool_exposure in context.tool_exposures:
+        validate_tool_exposure(tool_exposure)
     return context
 
 
 def _validate_plan_collections(plan: OSPlan) -> None:
+    _validate_immutable_plan_collections(plan)
+    _validate_capability_resolutions(plan.capability_resolutions)
+    for grant in plan.permission_grants:
+        _validate_permission_grant(grant)
+    _validate_connection_requirements(plan.connection_requirements)
+    _validate_connection_readiness(plan.connection_readiness)
+    _validate_driver_probe_snapshots(plan.driver_probe_snapshots)
+    for driver_exposure in plan.driver_exposures:
+        validate_driver_exposure(driver_exposure)
+    for tool_exposure in plan.tool_exposures:
+        validate_tool_exposure(tool_exposure)
+    _validate_kernel_diagnostics(plan.diagnostics)
+
+
+def _validate_immutable_plan_collections(plan: OSPlan) -> None:
     names = (
         "capability_resolutions",
         "permission_grants",
@@ -114,16 +133,22 @@ def _validate_plan_collections(plan: OSPlan) -> None:
     for name in names:
         if not isinstance(getattr(plan, name), tuple):
             raise KernelError(f"OS plan {name} must be immutable")
-    for resolution in plan.capability_resolutions:
+
+
+def _validate_capability_resolutions(values: tuple[CapabilityResolution, ...]) -> None:
+    for resolution in values:
         if not isinstance(resolution, CapabilityResolution):
             raise KernelError("capability resolution is invalid")
         if not is_nonblank_text(resolution.capability_id):
             raise KernelError("capability resolution id is required")
         if not isinstance(resolution.available, bool):
             raise KernelError("capability resolution availability must be boolean")
-    for grant in plan.permission_grants:
-        _validate_permission_grant(grant)
-    for requirement in plan.connection_requirements:
+
+
+def _validate_connection_requirements(
+    values: tuple[ConnectionRequirement, ...],
+) -> None:
+    for requirement in values:
         if not isinstance(requirement, ConnectionRequirement):
             raise KernelError("connection requirement is invalid")
         if not is_nonblank_text(requirement.capability_id):
@@ -132,7 +157,10 @@ def _validate_plan_collections(plan: OSPlan) -> None:
             raise KernelError("connection requirement identity is required")
         if not isinstance(requirement.required, bool):
             raise KernelError("connection requirement required flag must be boolean")
-    for readiness in plan.connection_readiness:
+
+
+def _validate_connection_readiness(values: tuple[ConnectionReadiness, ...]) -> None:
+    for readiness in values:
         if not isinstance(readiness, ConnectionReadiness):
             raise KernelError("connection readiness snapshot is invalid")
         if not is_nonblank_text(readiness.connection):
@@ -141,7 +169,10 @@ def _validate_plan_collections(plan: OSPlan) -> None:
             raise KernelError("connection readiness availability must be boolean")
         if not isinstance(readiness.detail, str):
             raise KernelError("connection readiness detail must be text")
-    for snapshot in plan.driver_probe_snapshots:
+
+
+def _validate_driver_probe_snapshots(values: tuple[DriverProbeSnapshot, ...]) -> None:
+    for snapshot in values:
         if not isinstance(snapshot, DriverProbeSnapshot):
             raise KernelError("driver probe snapshot is invalid")
         if not is_nonblank_text(snapshot.driver_id):
@@ -158,11 +189,10 @@ def _validate_plan_collections(plan: OSPlan) -> None:
             raise KernelError(
                 "driver probe snapshot capabilities must be immutable nonblank strings"
             )
-    for exposure in plan.driver_exposures:
-        validate_driver_exposure(exposure)
-    for exposure in plan.tool_exposures:
-        validate_tool_exposure(exposure)
-    for diagnostic in plan.diagnostics:
+
+
+def _validate_kernel_diagnostics(values: tuple[KernelDiagnostic, ...]) -> None:
+    for diagnostic in values:
         if not isinstance(diagnostic, KernelDiagnostic):
             raise KernelError("kernel diagnostic is invalid")
         if not all(
@@ -198,6 +228,7 @@ def _validate_scope(
             request_id=request_id,  # type: ignore[arg-type]
             scope_ref=scope_ref,  # type: ignore[arg-type]
         )
+        RuntimeScope.from_dict(scope.to_dict())
     except ValueError as exc:
         raise KernelError(f"{subject} scope is invalid: {exc}") from exc
     if scope.scope_ref != scope_ref:

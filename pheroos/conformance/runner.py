@@ -140,7 +140,7 @@ def validate_manifest(path: str | Path) -> ConformanceReport:
     checks.append(profile_contract_check(MANIFEST_PROFILE, checks))
     return ConformanceReport(
         target=str(manifest_path),
-        checks=checks,
+        checks=tuple(checks),
         profile=MANIFEST_PROFILE.version,
         subject_kind=ConformanceSubjectKind.MANIFEST,
         implementation_identity=PHEROOS_IMPLEMENTATION_ID,
@@ -148,7 +148,9 @@ def validate_manifest(path: str | Path) -> ConformanceReport:
     )
 
 
-def run_conformance(path: str | Path, *, root: str | Path | None = None) -> ConformanceReport:
+def run_conformance(
+    path: str | Path, *, root: str | Path | None = None
+) -> ConformanceReport:
     """Run only the checks declared by the manifest-selected ABI profile.
 
     ``root`` remains accepted for source compatibility, but manifest
@@ -179,13 +181,17 @@ def run_conformance(path: str | Path, *, root: str | Path | None = None) -> Conf
                     continue
                 check = MANIFEST_CHECKS.get(check_name)
                 if check is None:
-                    checks.append(CheckResult(check_name, False, "check implementation is not registered"))
+                    checks.append(
+                        CheckResult(
+                            check_name, False, "check implementation is not registered"
+                        )
+                    )
                     continue
                 checks.append(safe_check(check_name, check, manifest))
     checks.append(profile_contract_check(profile, checks))
     return ConformanceReport(
         target=str(target),
-        checks=checks,
+        checks=tuple(checks),
         profile=profile.version,
         subject_kind=ConformanceSubjectKind.MANIFEST,
         implementation_identity=PHEROOS_IMPLEMENTATION_ID,
@@ -203,10 +209,16 @@ def run_source_conformance(core_root: str | Path | None = None) -> ConformanceRe
     receiving an empty-scan pass.
     """
 
-    root = Path(core_root).resolve() if core_root is not None else Path(__file__).resolve().parents[2]
+    root = (
+        Path(core_root).resolve()
+        if core_root is not None
+        else Path(__file__).resolve().parents[2]
+    )
     checks = [
         safe_check("source_surface", source_surface.check, root),
-        safe_check("domain_neutrality_public_core", domain_neutrality.check_public_core, root),
+        safe_check(
+            "domain_neutrality_public_core", domain_neutrality.check_public_core, root
+        ),
         safe_check("package_import_boundary", kernel_import_boundary.check, root),
         safe_check("driver_lifecycle_boundary", driver_lifecycle_boundary.check),
         safe_check("runtime_scope_contract", runtime_scope_contract.check),
@@ -217,7 +229,7 @@ def run_source_conformance(core_root: str | Path | None = None) -> ConformanceRe
     checks.append(profile_contract_check(SOURCE_PROFILE, checks))
     return ConformanceReport(
         target=str(root),
-        checks=checks,
+        checks=tuple(checks),
         profile=SOURCE_PROFILE.version,
         subject_kind=ConformanceSubjectKind.SOURCE_ABI,
         implementation_identity=PHEROOS_IMPLEMENTATION_ID,
@@ -252,7 +264,9 @@ def artifact_digest(path: str | Path, *, source_surface: bool = False) -> str:
             candidates.extend(base.rglob(pattern))
     if (target / "pyproject.toml").is_file():
         candidates.append(target / "pyproject.toml")
-    for item in sorted(set(candidates), key=lambda value: value.relative_to(target).as_posix()):
+    for item in sorted(
+        set(candidates), key=lambda value: value.relative_to(target).as_posix()
+    ):
         relative = item.relative_to(target).as_posix().encode("utf-8")
         payload = item.read_bytes()
         digest.update(len(relative).to_bytes(8, "big"))
@@ -268,9 +282,13 @@ def safe_check(name: str, check: Callable[..., CheckResult], *args: Any) -> Chec
     except Exception as exc:
         return exception_result(name, exc)
     if not isinstance(result, CheckResult):
-        return CheckResult(name, False, f"invalid check result type: {type(result).__name__}")
+        return CheckResult(
+            name, False, f"invalid check result type: {type(result).__name__}"
+        )
     if result.name != name:
-        return CheckResult(name, False, f"check returned mismatched name: {result.name}")
+        return CheckResult(
+            name, False, f"check returned mismatched name: {result.name}"
+        )
     return result
 
 
@@ -280,11 +298,19 @@ def exception_result(name: str, exc: Exception) -> CheckResult:
     return CheckResult(name, False, f"{type(exc).__name__}{suffix}")
 
 
-def profile_contract_check(profile: ConformanceProfile, checks: list[CheckResult]) -> CheckResult:
+def profile_contract_check(
+    profile: ConformanceProfile, checks: list[CheckResult]
+) -> CheckResult:
     observed = {check.name: check for check in checks}
     missing = [name for name in profile.required_checks if name not in observed]
-    failing = [name for name in profile.required_checks if name in observed and not observed[name].ok]
-    detail = ", ".join([f"missing:{name}" for name in missing] + [f"failed:{name}" for name in failing])
+    failing = [
+        name
+        for name in profile.required_checks
+        if name in observed and not observed[name].ok
+    ]
+    detail = ", ".join(
+        [f"missing:{name}" for name in missing] + [f"failed:{name}" for name in failing]
+    )
     return CheckResult("profile_contract", not missing and not failing, detail)
 
 

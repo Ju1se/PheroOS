@@ -1,8 +1,9 @@
-from __future__ import annotations
-
 """Typed terminal outcome certificate issuance and verification."""
 
+from __future__ import annotations
+
 from collections.abc import Mapping, Sequence
+from typing import Any, cast
 
 from pheroos.governance._certificate.invariants import (
     _attestations_match,
@@ -18,7 +19,6 @@ from pheroos.governance._certificate.invariants import (
     _require_sequence,
     _strict_payload_values,
     _validate_policy_binding,
-    output_payload_fingerprint,
 )
 from pheroos.governance._certificate.records import (
     OUTCOME_CERTIFICATE_DISCRIMINATOR,
@@ -96,6 +96,7 @@ def outcome_certificate_body_root(
         profile=outcome.profile,
     )
 
+
 def issue_outcome_certificate(
     outcome: DecisionOutcome,
     window_state: CommitWindowState,
@@ -153,7 +154,7 @@ def issue_outcome_certificate(
         profile=outcome.profile,
     )
     certificate = OutcomeCertificate(
-        **body,
+        **cast(Any, body),
         issuer_attestation_refs=attestations,
         certificate_body_root=body_root,
         certificate_root=certificate_root,
@@ -164,6 +165,7 @@ def issue_outcome_certificate(
         certificate_ref=certificate_ref,
     )
 
+
 def outcome_certificate_payload(
     certificate: OutcomeCertificate,
 ) -> dict[str, object]:
@@ -172,12 +174,14 @@ def outcome_certificate_payload(
     _validate_outcome_certificate(certificate)
     return _dataclass_public_payload(certificate)
 
+
 def outcome_certificate_fingerprint(certificate: OutcomeCertificate) -> str:
     return commit_payload_fingerprint(
         outcome_certificate_payload(certificate),
         schema=OUTCOME_CERTIFICATE_VERSION,
         profile=certificate.profile,
     )
+
 
 def outcome_certificate_is_authoritative(certificate: object) -> bool:
     if type(certificate) is not OutcomeCertificate:
@@ -205,6 +209,7 @@ def outcome_certificate_is_authoritative(certificate: object) -> bool:
     except Exception:
         return False
 
+
 def outcome_certificate_from_payload(
     payload: Mapping[str, object],
 ) -> OutcomeCertificate:
@@ -215,19 +220,18 @@ def outcome_certificate_from_payload(
     )
     values["outcome_kind"] = _coerce_outcome_kind(values["outcome_kind"])
     values["assurance"] = _coerce_assurance(values["assurance"])
-    values["authority_scope"] = _coerce_authority_scope(
-        values["authority_scope"]
-    )
+    values["authority_scope"] = _coerce_authority_scope(values["authority_scope"])
     values["authority"] = _coerce_authority(values["authority"])
     values["issuer_attestation_refs"] = tuple(
         _require_sequence(values["issuer_attestation_refs"], "issuer attestations")
     )
     try:
-        return OutcomeCertificate(**values)
+        # This is the wire-decoder boundary: the strict field registry and the
+        # enum/tuple coercions above have already narrowed every input value.
+        return OutcomeCertificate(**cast(Any, values))
     except (TypeError, ValueError, GovernanceError) as exc:
-        raise GovernanceError(
-            f"outcome certificate payload is invalid: {exc}"
-        ) from exc
+        raise GovernanceError(f"outcome certificate payload is invalid: {exc}") from exc
+
 
 def verify_outcome_certificate(
     certificate_or_payload: OutcomeCertificate | Mapping[str, object],
@@ -237,11 +241,12 @@ def verify_outcome_certificate(
     expected_output_payload_fingerprint: str = "",
 ) -> bool:
     try:
-        certificate = (
-            certificate_or_payload
-            if type(certificate_or_payload) is OutcomeCertificate
-            else outcome_certificate_from_payload(certificate_or_payload)
-        )
+        if type(certificate_or_payload) is OutcomeCertificate:
+            certificate = certificate_or_payload
+        else:
+            certificate = outcome_certificate_from_payload(
+                cast(Mapping[str, object], certificate_or_payload)
+            )
         assert type(certificate) is OutcomeCertificate
         _validate_outcome_certificate(certificate)
         if certificate.issuer_attestation_refs:
@@ -274,6 +279,7 @@ def verify_outcome_certificate(
     except (AssertionError, TypeError, ValueError, GovernanceError):
         return False
 
+
 def _register_outcome_certificate(
     certificate: OutcomeCertificate,
     *,
@@ -288,9 +294,8 @@ def _register_outcome_certificate(
         existing = registry.get(_LEGACY_CERTIFICATE_IDENTITIES, key)
         if existing is not None:
             existing_ref, existing_record = existing
-            if (
-                existing_ref == certificate_ref
-                and outcome_certificate_is_authoritative(existing_record)
+            if existing_ref == certificate_ref and outcome_certificate_is_authoritative(
+                existing_record
             ):
                 assert type(existing_record) is OutcomeCertificate
                 return existing_record
@@ -308,6 +313,7 @@ def _register_outcome_certificate(
             (certificate_ref, certificate),
         )
         return certificate
+
 
 def _outcome_certificate_body(
     outcome: DecisionOutcome,
@@ -337,120 +343,12 @@ def _outcome_certificate_body(
         target=outcome.target,
         commit_policy_root=outcome.commit_policy_root,
     )
-    window_ref = commit_window_state_fingerprint(window_state)
-    for name in (
-        "profile",
-        "assurance",
-        "manifest_root",
-        "commit_policy_root",
-        "protocol_id",
-        "run_id",
-        "target",
-        "epoch",
-    ):
-        if getattr(window_state, name) != getattr(outcome, name):
-            raise GovernanceError(f"outcome certificate window {name} mismatch")
-    if (
-        outcome.window_state_ref != window_ref
-        or outcome.window_root != window_state.window_root
-        or outcome.risk_assessment_root != window_state.risk_assessment_root
-        or outcome.membership_root != window_state.membership_root
-        or outcome.threshold_root != window_state.threshold_root
-    ):
-        raise GovernanceError("outcome certificate window lineage mismatch")
-    for name in (
-        "risk_chain_state_root",
-        "risk_policy_root",
-        "membership_snapshot_root",
-        "membership_epoch_state_root",
-        "support_replay_state_root",
-        "support_replay_root",
-        "collective_evidence_root",
-        "collective_challenge_root",
-        "collective_lease_root",
-        "candidate_evidence_root",
-        "candidate_challenge_root",
-        "candidate_lease_root",
-        "stop_resolution_root",
-        "permission_root",
-    ):
-        if getattr(outcome, name) != getattr(window_state, name):
-            raise GovernanceError(
-                f"outcome certificate window {name} lineage mismatch"
-            )
-
-    context_root = ""
-    claim_fingerprint = ""
-    if context is not None:
-        if not commit_evaluation_context_is_authoritative(context):
-            raise GovernanceError("outcome certificate context is not authoritative")
-        context_root = commit_evaluation_context_fingerprint(context)
-        if outcome.context_ref and context_root != outcome.context_ref:
-            raise GovernanceError("outcome certificate context ref mismatch")
-        _require_same_scope(outcome, context, "outcome certificate context")
-        if outcome.candidate_id:
-            claim = next(
-                (
-                    item
-                    for item in context.candidate_claims
-                    if item.candidate_id == outcome.candidate_id
-                ),
-                None,
-            )
-            if claim is None:
-                raise GovernanceError("outcome certificate candidate is undeclared")
-            claim_fingerprint = claim.claim_fingerprint
-    elif outcome.candidate_id:
-        raise GovernanceError("candidate outcome requires claim-bound context")
-
-    assessment_root = ""
-    evidence_root = ""
-    challenge_root = ""
-    lease_root = ""
-    stop_root = ""
-    permission_root = ""
-    if outcome.assessment_ref:
-        if not commit_assessment_is_authoritative(assessment):
-            raise GovernanceError("outcome certificate assessment is not authoritative")
-        assert assessment is not None
-        assessment_root = commit_assessment_fingerprint(assessment)
-        if assessment_root != outcome.assessment_ref:
-            raise GovernanceError("outcome certificate assessment ref mismatch")
-        _require_same_scope(outcome, assessment, "outcome certificate assessment")
-        if assessment.context_fingerprint != outcome.context_ref:
-            raise GovernanceError("outcome certificate assessment context mismatch")
-        for outcome_name, assessment_name in (
-            ("risk_chain_state_root", "risk_chain_state_fingerprint"),
-            ("risk_assessment_root", "risk_assessment_fingerprint"),
-            ("risk_policy_root", "risk_policy_root"),
-            ("membership_snapshot_root", "membership_snapshot_fingerprint"),
-            ("membership_epoch_state_root", "membership_epoch_state_fingerprint"),
-            ("membership_root", "membership_root"),
-            ("threshold_root", "threshold_fingerprint"),
-            ("replay_state_ref", "replay_state_fingerprint"),
-            ("replay_root", "replay_receipt_root"),
-            ("support_replay_state_root", "support_replay_state_fingerprint"),
-            ("support_replay_root", "support_replay_root"),
-            ("collective_evidence_root", "collective_evidence_root"),
-            ("collective_challenge_root", "collective_challenge_root"),
-            ("collective_lease_root", "collective_lease_root"),
-            ("stop_resolution_root", "stop_resolution_fingerprint"),
-            ("permission_root", "permission_fingerprint"),
-        ):
-            if getattr(outcome, outcome_name) != getattr(
-                assessment,
-                assessment_name,
-            ):
-                raise GovernanceError(
-                    f"outcome certificate {outcome_name} assessment mismatch"
-                )
-        evidence_root = assessment.collective_evidence_root
-        challenge_root = assessment.collective_challenge_root
-        lease_root = assessment.collective_lease_root
-        stop_root = assessment.stop_resolution_fingerprint
-        permission_root = assessment.permission_fingerprint
-    elif assessment is not None:
-        raise GovernanceError("outcome certificate received unbound assessment")
+    window_ref = _validate_outcome_certificate_window(outcome, window_state)
+    context_root, claim_fingerprint = _outcome_certificate_context(outcome, context)
+    assessment_root, stop_root, permission_root = _outcome_certificate_assessment(
+        outcome,
+        assessment,
+    )
 
     return {
         "schema_discriminator": OUTCOME_CERTIFICATE_DISCRIMINATOR,
@@ -523,6 +421,132 @@ def _outcome_certificate_body(
             "outcome certificate trace_event_id",
         ),
     }
+
+
+def _validate_outcome_certificate_window(
+    outcome: DecisionOutcome,
+    window_state: CommitWindowState,
+) -> str:
+    window_ref = commit_window_state_fingerprint(window_state)
+    for name in (
+        "profile",
+        "assurance",
+        "manifest_root",
+        "commit_policy_root",
+        "protocol_id",
+        "run_id",
+        "target",
+        "epoch",
+    ):
+        if getattr(window_state, name) != getattr(outcome, name):
+            raise GovernanceError(f"outcome certificate window {name} mismatch")
+    if (
+        outcome.window_state_ref != window_ref
+        or outcome.window_root != window_state.window_root
+        or outcome.risk_assessment_root != window_state.risk_assessment_root
+        or outcome.membership_root != window_state.membership_root
+        or outcome.threshold_root != window_state.threshold_root
+    ):
+        raise GovernanceError("outcome certificate window lineage mismatch")
+    for name in (
+        "risk_chain_state_root",
+        "risk_policy_root",
+        "membership_snapshot_root",
+        "membership_epoch_state_root",
+        "support_replay_state_root",
+        "support_replay_root",
+        "collective_evidence_root",
+        "collective_challenge_root",
+        "collective_lease_root",
+        "candidate_evidence_root",
+        "candidate_challenge_root",
+        "candidate_lease_root",
+        "stop_resolution_root",
+        "permission_root",
+    ):
+        if getattr(outcome, name) != getattr(window_state, name):
+            raise GovernanceError(f"outcome certificate window {name} lineage mismatch")
+    return window_ref
+
+
+def _outcome_certificate_context(
+    outcome: DecisionOutcome,
+    context: CommitEvaluationContext | None,
+) -> tuple[str, str]:
+    context_root = ""
+    claim_fingerprint = ""
+    if context is not None:
+        if not commit_evaluation_context_is_authoritative(context):
+            raise GovernanceError("outcome certificate context is not authoritative")
+        context_root = commit_evaluation_context_fingerprint(context)
+        if outcome.context_ref and context_root != outcome.context_ref:
+            raise GovernanceError("outcome certificate context ref mismatch")
+        _require_same_scope(outcome, context, "outcome certificate context")
+        if outcome.candidate_id:
+            claim = next(
+                (
+                    item
+                    for item in context.candidate_claims
+                    if item.candidate_id == outcome.candidate_id
+                ),
+                None,
+            )
+            if claim is None:
+                raise GovernanceError("outcome certificate candidate is undeclared")
+            claim_fingerprint = claim.claim_fingerprint
+    elif outcome.candidate_id:
+        raise GovernanceError("candidate outcome requires claim-bound context")
+    return context_root, claim_fingerprint
+
+
+def _outcome_certificate_assessment(
+    outcome: DecisionOutcome,
+    assessment: CommitAssessment | None,
+) -> tuple[str, str, str]:
+    assessment_root = ""
+    stop_root = ""
+    permission_root = ""
+    if outcome.assessment_ref:
+        if not commit_assessment_is_authoritative(assessment):
+            raise GovernanceError("outcome certificate assessment is not authoritative")
+        assert assessment is not None
+        assessment_root = commit_assessment_fingerprint(assessment)
+        if assessment_root != outcome.assessment_ref:
+            raise GovernanceError("outcome certificate assessment ref mismatch")
+        _require_same_scope(outcome, assessment, "outcome certificate assessment")
+        if assessment.context_fingerprint != outcome.context_ref:
+            raise GovernanceError("outcome certificate assessment context mismatch")
+        for outcome_name, assessment_name in (
+            ("risk_chain_state_root", "risk_chain_state_fingerprint"),
+            ("risk_assessment_root", "risk_assessment_fingerprint"),
+            ("risk_policy_root", "risk_policy_root"),
+            ("membership_snapshot_root", "membership_snapshot_fingerprint"),
+            ("membership_epoch_state_root", "membership_epoch_state_fingerprint"),
+            ("membership_root", "membership_root"),
+            ("threshold_root", "threshold_fingerprint"),
+            ("replay_state_ref", "replay_state_fingerprint"),
+            ("replay_root", "replay_receipt_root"),
+            ("support_replay_state_root", "support_replay_state_fingerprint"),
+            ("support_replay_root", "support_replay_root"),
+            ("collective_evidence_root", "collective_evidence_root"),
+            ("collective_challenge_root", "collective_challenge_root"),
+            ("collective_lease_root", "collective_lease_root"),
+            ("stop_resolution_root", "stop_resolution_fingerprint"),
+            ("permission_root", "permission_fingerprint"),
+        ):
+            if getattr(outcome, outcome_name) != getattr(
+                assessment,
+                assessment_name,
+            ):
+                raise GovernanceError(
+                    f"outcome certificate {outcome_name} assessment mismatch"
+                )
+        stop_root = assessment.stop_resolution_fingerprint
+        permission_root = assessment.permission_fingerprint
+    elif assessment is not None:
+        raise GovernanceError("outcome certificate received unbound assessment")
+    return assessment_root, stop_root, permission_root
+
 
 def _require_outcome_certificate_issue_step(
     value: object,

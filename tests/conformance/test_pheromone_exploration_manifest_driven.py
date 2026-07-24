@@ -41,7 +41,9 @@ def test_response_check_exercises_manifest_exploration_boundaries(updates) -> No
     assert result.ok is True, result.detail
 
 
-def test_response_check_passes_declared_exploration_values_to_governance(monkeypatch) -> None:
+def test_response_check_passes_declared_exploration_values_to_governance(
+    monkeypatch,
+) -> None:
     manifest = hybrid_manifest(
         novelty_decay_rate=0.375,
         stale_route_reopen_threshold=0.625,
@@ -123,7 +125,9 @@ def test_response_check_does_not_enable_undeclared_exploration(monkeypatch) -> N
         {"stale_route_reopen_threshold": "invalid"},
     ],
 )
-def test_response_check_is_total_for_malformed_direct_exploration_policy(updates) -> None:
+def test_response_check_is_total_for_malformed_direct_exploration_policy(
+    updates,
+) -> None:
     manifest = hybrid_manifest(**updates)
 
     result = pheromone_response_model.check(manifest)

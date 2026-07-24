@@ -189,23 +189,33 @@ class AtomicHybridCommitResult:
         if self.receipt_root:
             _require_digest(self.receipt_root, "atomic Hybrid Commit receipt root")
         if not isinstance(self.details, Mapping):
-            raise GovernanceError("atomic Hybrid Commit result details must be a mapping")
+            raise GovernanceError(
+                "atomic Hybrid Commit result details must be a mapping"
+            )
         frozen_details = _freeze_json(self.details, path="atomic_result.details")
-        if not isinstance(frozen_details, Mapping):  # pragma: no cover
-            raise GovernanceError("atomic Hybrid Commit result details must be a mapping")
         object.__setattr__(self, "details", frozen_details)
 
         if self.status is AtomicHybridCommitStatus.COMMITTED:
             if not self.authoritative or self.retry_required:
-                raise GovernanceError("committed Hybrid result authority flags are invalid")
+                raise GovernanceError(
+                    "committed Hybrid result authority flags are invalid"
+                )
             if self.evaluation is None or self.receipt is None:
-                raise GovernanceError("committed Hybrid result requires evaluation and receipt")
+                raise GovernanceError(
+                    "committed Hybrid result requires evaluation and receipt"
+                )
             if self.receipt.receipt_root != self.receipt_root:
-                raise GovernanceError("committed Hybrid result receipt root is mismatched")
+                raise GovernanceError(
+                    "committed Hybrid result receipt root is mismatched"
+                )
             if self.evaluation.evaluation_root != self.evaluation_root:
-                raise GovernanceError("committed Hybrid result evaluation root is mismatched")
+                raise GovernanceError(
+                    "committed Hybrid result evaluation root is mismatched"
+                )
             if self.terminal != self.evaluation.terminal:
-                raise GovernanceError("committed Hybrid result terminal flag is mismatched")
+                raise GovernanceError(
+                    "committed Hybrid result terminal flag is mismatched"
+                )
             expected_output = bool(
                 self.evaluation.terminal
                 and self.evaluation.deliver_authorization is not None
@@ -218,7 +228,11 @@ class AtomicHybridCommitResult:
                 raise GovernanceError(
                     "uncommitted Hybrid result cannot carry decision authority"
                 )
-            if self.evaluation is not None or self.receipt is not None or self.receipt_root:
+            if (
+                self.evaluation is not None
+                or self.receipt is not None
+                or self.receipt_root
+            ):
                 raise GovernanceError(
                     "uncommitted Hybrid result cannot expose evaluation or receipt objects"
                 )
@@ -235,7 +249,9 @@ class AtomicHybridCommitResult:
 
         expected_root = _root(_ATOMIC_RESULT_SCHEMA, self._root_payload())
         if self.result_root != expected_root:
-            raise GovernanceError("atomic Hybrid result root does not match its payload")
+            raise GovernanceError(
+                "atomic Hybrid result root does not match its payload"
+            )
 
     def _root_payload(self) -> dict[str, Any]:
         return {
@@ -345,8 +361,8 @@ def prepare_hybrid_commit_transition(
         )
         for event in evaluation.trace_events
     )
-    if not trace_records:
-        raise GovernanceError("atomic Hybrid Commit requires authoritative trace records")
+    # GovernanceCommitBatch is the canonical owner of the non-empty Trace
+    # invariant, so preparation must not duplicate that validation branch.
     batch = GovernanceCommitBatch(
         transition=transition,
         trace_records=trace_records,
@@ -591,12 +607,12 @@ def _scoped_trace_record(
         if event.event_type in COMMIT_EVENT_TYPES
         else event.lineage.get("trace_event_id")
     )
-    _require_text(trace_id, "atomic Hybrid Commit trace id")
+    normalized_trace_id = _require_text(trace_id, "atomic Hybrid Commit trace id")
     return ScopedTraceEvent(
         scope_ref=scope_ref,
         stream=stream,
         transition_id=transition_id,
-        trace_id=trace_id,
+        trace_id=normalized_trace_id,
         event=event,
     ).to_dict()
 
@@ -762,7 +778,10 @@ def _freeze_json(value: Any, *, path: str) -> Any:
         if not all(isinstance(key, str) and key for key in value):
             raise GovernanceError(f"{path} keys must be non-empty strings")
         return MappingProxyType(
-            {key: _freeze_json(value[key], path=f"{path}.{key}") for key in sorted(value)}
+            {
+                key: _freeze_json(value[key], path=f"{path}.{key}")
+                for key in sorted(value)
+            }
         )
     if isinstance(value, (tuple, list)):
         return tuple(

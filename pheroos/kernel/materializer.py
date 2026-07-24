@@ -11,19 +11,25 @@ class RuntimeMaterializer:
     def materialize(self, plan: OSPlan) -> RuntimeContext:
         validate_os_plan(plan)
         allowed_drivers = [
-            exposure for exposure in plan.driver_exposures if exposure.permissions and plan.runtime_ready
+            exposure
+            for exposure in plan.driver_exposures
+            if exposure.permissions and plan.runtime_ready
         ]
         allowed_tools = [
-            exposure for exposure in plan.tool_exposures if exposure.permissions and plan.runtime_ready
+            exposure
+            for exposure in plan.tool_exposures
+            if exposure.permissions and plan.runtime_ready
         ]
         return RuntimeContext(
             tenant_id=plan.tenant_id,
             request_id=plan.request_id,
             run_id=plan.run_id,
             scope_ref=plan.scope_ref,
-            permission_grants=[grant for grant in plan.permission_grants if grant.granted],
-            driver_exposures=allowed_drivers,
-            tool_exposures=allowed_tools,
+            permission_grants=tuple(
+                grant for grant in plan.permission_grants if grant.granted
+            ),
+            driver_exposures=tuple(allowed_drivers),
+            tool_exposures=tuple(allowed_tools),
             ready=plan.runtime_ready,
             degraded=plan.degraded,
         )

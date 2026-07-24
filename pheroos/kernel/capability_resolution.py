@@ -1,14 +1,27 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
+from typing import TypeAlias, TypeGuard
 
 from pheroos.drivers.base import DriverProbeSnapshot
 from pheroos.kernel.input_envelope import InputEnvelope
 from pheroos.kernel.connection import ConnectionReadiness, ConnectionRequirement
-from pheroos.kernel.os_plan import CapabilityResolution, DriverExposure, KernelDiagnostic, OSPlan
+from pheroos.kernel.errors import KernelError
+from pheroos.kernel.os_plan import (
+    CapabilityResolution,
+    DriverExposure,
+    KernelDiagnostic,
+    OSPlan,
+)
 from pheroos.kernel.permission import PermissionGrant
+from pheroos.kernel.run_scope import RuntimeScope
+from pheroos.protocol.authority_manifest_v2 import ScopedCapabilityManifestV2
 from pheroos.protocol.models import CapabilityManifest, DriverSpec
+from pheroos.protocol.models import ValidationDiagnostic
 from pheroos.protocol.validation import validate_capability_manifest
+
+
+_CapabilityDeclaration: TypeAlias = CapabilityManifest | ScopedCapabilityManifestV2
 
 
 class OSKernel:
@@ -17,15 +30,18 @@ class OSKernel:
     def plan(
         self,
         envelope: InputEnvelope,
-        capabilities: list[CapabilityManifest],
+        capabilities: list[_CapabilityDeclaration],
         *,
         driver_probe_snapshots: Sequence[DriverProbeSnapshot] = (),
         connection_readiness: Sequence[ConnectionReadiness] = (),
     ) -> OSPlan:
-        request_id = str(envelope.metadata.get("request_id") or "request")
-        run_id = str(envelope.metadata.get("run_id") or request_id)
+        scope = _runtime_scope_from_envelope(envelope)
+        request_id = scope.request_id
+        run_id = scope.run_id
         diagnostics: list[KernelDiagnostic] = []
-        probes, ambiguous_probes = _index_driver_probes(driver_probe_snapshots, diagnostics)
+        probes, ambiguous_probes = _index_driver_probes(
+            driver_probe_snapshots, diagnostics
+        )
         connections, ambiguous_connections = _index_connection_readiness(
             connection_readiness,
             diagnostics,
@@ -38,190 +54,335 @@ class OSKernel:
                     severity="warning",
                 )
             )
+        validated_capabilities = [
+            (capability, validate_capability_manifest(capability))
+            for capability in capabilities
+        ]
+        resolvable_capabilities = [
+            capability
+            for capability, manifest_diagnostics in validated_capabilities
+            if _is_supported_capability(capability)
+            and _can_resolve_capability(capability, manifest_diagnostics)
+        ]
         permission_grants = [
             PermissionGrant(capability_id=capability.id, permission=permission)
-            for capability in capabilities
+            for capability in resolvable_capabilities
             for permission in capability.permissions
         ]
         connection_requirements = [
             ConnectionRequirement(capability_id=capability.id, connection=connection)
-            for capability in capabilities
+            for capability in resolvable_capabilities
             for connection in capability.required_connections
         ]
         driver_exposures: list[DriverExposure] = []
         resolutions: list[CapabilityResolution] = []
-        for capability in capabilities:
-            failure_codes: list[str] = []
-            manifest_errors = [
-                item
-                for item in validate_capability_manifest(capability)
-                if item.level == "error"
-            ]
-            for item in manifest_errors:
-                code = f"manifest_{item.code}"
-                failure_codes.append(code)
-                diagnostics.append(
-                    KernelDiagnostic(
-                        code=code,
-                        message=f"Capability {capability.id}: {item.message}",
-                        severity="error",
-                    )
-                )
-
-            for connection in capability.required_connections:
-                if connection in ambiguous_connections:
-                    failure_codes.append("connection_readiness_ambiguous")
-                    diagnostics.append(
-                        KernelDiagnostic(
-                            code="connection_readiness_ambiguous",
-                            message=f"Connection {connection} has conflicting readiness snapshots.",
-                            severity="error",
-                        )
-                    )
-                    continue
-                readiness = connections.get(connection)
-                if readiness is None:
-                    failure_codes.append("connection_readiness_missing")
-                    diagnostics.append(
-                        KernelDiagnostic(
-                            code="connection_readiness_missing",
-                            message=f"Connection {connection} has no readiness snapshot.",
-                            severity="warning",
-                        )
-                    )
-                elif not readiness.available:
-                    failure_codes.append("connection_unavailable")
-                    diagnostics.append(
-                        KernelDiagnostic(
-                            code="connection_unavailable",
-                            message=(
-                                f"Connection {connection} is unavailable"
-                                + (f": {readiness.detail}" if readiness.detail else ".")
-                            ),
-                            severity="warning",
-                        )
-                    )
-
-            pending_exposures: list[DriverExposure] = []
-            for driver in capability.drivers:
-                driver_id = driver_spec_id(driver)
-                if not driver_id:
-                    failure_codes.append("driver_identity_missing")
-                    diagnostics.append(
-                        KernelDiagnostic(
-                            code="driver_identity_missing",
-                            message=f"Capability {capability.id} has a driver without an id.",
-                            severity="error",
-                        )
-                    )
-                    continue
-                permissions = driver_spec_permissions(driver)
-                if not permissions:
-                    failure_codes.append("driver_permissions_missing")
-                    diagnostics.append(
-                        KernelDiagnostic(
-                            code="driver_permissions_missing",
-                            message=f"Driver {driver_id} has no declared driver permissions.",
-                            severity="warning",
-                        )
-                    )
-                    continue
-                if driver_id in ambiguous_probes:
-                    failure_codes.append("driver_probe_ambiguous")
-                    diagnostics.append(
-                        KernelDiagnostic(
-                            code="driver_probe_ambiguous",
-                            message=f"Driver {driver_id} has conflicting probe snapshots.",
-                            severity="error",
-                        )
-                    )
-                    continue
-                probe_snapshot = probes.get(driver_id)
-                if probe_snapshot is None:
-                    failure_codes.append("driver_probe_missing")
-                    diagnostics.append(
-                        KernelDiagnostic(
-                            code="driver_probe_missing",
-                            message=f"Driver {driver_id} has no probe snapshot.",
-                            severity="warning",
-                        )
-                    )
-                    continue
-                if not probe_snapshot.available:
-                    failure_codes.append("driver_probe_unavailable")
-                    diagnostics.append(
-                        KernelDiagnostic(
-                            code="driver_probe_unavailable",
-                            message=(
-                                f"Driver {driver_id} is unavailable"
-                                + (f": {probe_snapshot.detail}" if probe_snapshot.detail else ".")
-                            ),
-                            severity="warning",
-                        )
-                    )
-                    continue
-                if probe_snapshot.version != driver.version:
-                    failure_codes.append("driver_version_mismatch")
-                    diagnostics.append(
-                        KernelDiagnostic(
-                            code="driver_version_mismatch",
-                            message=(
-                                f"Driver {driver_id} version {probe_snapshot.version!r} does not "
-                                f"match required version {driver.version!r}."
-                            ),
-                            severity="error",
-                        )
-                    )
-                    continue
-                missing_capabilities = sorted(
-                    set(driver.capabilities) - set(probe_snapshot.capabilities)
-                )
-                if missing_capabilities:
-                    failure_codes.append("driver_capability_mismatch")
-                    diagnostics.append(
-                        KernelDiagnostic(
-                            code="driver_capability_mismatch",
-                            message=(
-                                f"Driver {driver_id} is missing required capabilities: "
-                                + ", ".join(missing_capabilities)
-                            ),
-                            severity="error",
-                        )
-                    )
-                    continue
-                pending_exposures.append(
-                    DriverExposure(
-                        driver_id=driver_id,
-                        capability_id=capability.id,
-                        permissions=permissions,
-                        capabilities=list(driver.capabilities),
-                    )
-                )
-            available = not failure_codes
-            if available:
-                driver_exposures.extend(pending_exposures)
-            resolutions.append(
-                CapabilityResolution(
-                    capability_id=capability.id,
-                    available=available,
-                    reason=",".join(dict.fromkeys(failure_codes)),
-                )
+        for capability, manifest_diagnostics in validated_capabilities:
+            resolution, exposures = _resolve_capability(
+                capability,
+                manifest_diagnostics,
+                diagnostics,
+                probes=probes,
+                ambiguous_probes=ambiguous_probes,
+                connections=connections,
+                ambiguous_connections=ambiguous_connections,
             )
-        runtime_ready = bool(resolutions) and all(item.available for item in resolutions)
+            resolutions.append(resolution)
+            driver_exposures.extend(exposures)
+        runtime_ready = bool(resolutions) and all(
+            item.available for item in resolutions
+        )
         return OSPlan(
-            tenant_id=envelope.tenant_id,
+            tenant_id=scope.tenant_id,
             request_id=request_id,
             run_id=run_id,
-            capability_resolutions=resolutions,
-            permission_grants=permission_grants,
-            connection_requirements=connection_requirements,
+            scope_ref=scope.scope_ref,
+            capability_resolutions=tuple(resolutions),
+            permission_grants=tuple(permission_grants),
+            connection_requirements=tuple(connection_requirements),
             connection_readiness=tuple(connections.values()),
             driver_probe_snapshots=tuple(probes.values()),
-            driver_exposures=driver_exposures,
-            diagnostics=diagnostics,
+            driver_exposures=tuple(driver_exposures),
+            diagnostics=tuple(diagnostics),
             runtime_ready=runtime_ready,
             degraded=not runtime_ready,
         )
+
+
+def _resolve_capability(
+    capability: object,
+    manifest_diagnostics: Sequence[ValidationDiagnostic],
+    diagnostics: list[KernelDiagnostic],
+    *,
+    probes: dict[str, DriverProbeSnapshot],
+    ambiguous_probes: set[str],
+    connections: dict[str, ConnectionReadiness],
+    ambiguous_connections: set[str],
+) -> tuple[CapabilityResolution, tuple[DriverExposure, ...]]:
+    capability_id, failure_codes = _record_manifest_diagnostics(
+        capability,
+        manifest_diagnostics,
+        diagnostics,
+    )
+    if not _is_resolvable_capability(capability, manifest_diagnostics):
+        return _capability_resolution(capability_id, failure_codes), ()
+    _record_connection_failures(
+        capability.required_connections,
+        failure_codes,
+        diagnostics,
+        connections=connections,
+        ambiguous_connections=ambiguous_connections,
+    )
+    pending_exposures = _resolve_driver_exposures(
+        capability,
+        failure_codes,
+        diagnostics,
+        probes=probes,
+        ambiguous_probes=ambiguous_probes,
+    )
+    resolution = _capability_resolution(capability.id, failure_codes)
+    return resolution, tuple(pending_exposures) if resolution.available else ()
+
+
+def _capability_resolution(
+    capability_id: str,
+    failure_codes: Sequence[str],
+) -> CapabilityResolution:
+    return CapabilityResolution(
+        capability_id=capability_id,
+        available=not failure_codes,
+        reason=",".join(dict.fromkeys(failure_codes)),
+    )
+
+
+def _record_connection_failures(
+    required_connections: Sequence[str],
+    failure_codes: list[str],
+    diagnostics: list[KernelDiagnostic],
+    *,
+    connections: dict[str, ConnectionReadiness],
+    ambiguous_connections: set[str],
+) -> None:
+    for connection in required_connections:
+        problem = _connection_problem(
+            connection,
+            connections=connections,
+            ambiguous_connections=ambiguous_connections,
+        )
+        if problem is not None:
+            code, message, severity = problem
+            failure_codes.append(code)
+            diagnostics.append(
+                KernelDiagnostic(code=code, message=message, severity=severity)
+            )
+
+
+def _connection_problem(
+    connection: str,
+    *,
+    connections: dict[str, ConnectionReadiness],
+    ambiguous_connections: set[str],
+) -> tuple[str, str, str] | None:
+    if connection in ambiguous_connections:
+        return (
+            "connection_readiness_ambiguous",
+            f"Connection {connection} has conflicting readiness snapshots.",
+            "error",
+        )
+    readiness = connections.get(connection)
+    if readiness is None:
+        return (
+            "connection_readiness_missing",
+            f"Connection {connection} has no readiness snapshot.",
+            "warning",
+        )
+    if not readiness.available:
+        detail = f": {readiness.detail}" if readiness.detail else "."
+        return (
+            "connection_unavailable",
+            f"Connection {connection} is unavailable{detail}",
+            "warning",
+        )
+    return None
+
+
+def _resolve_driver_exposures(
+    capability: _CapabilityDeclaration,
+    failure_codes: list[str],
+    diagnostics: list[KernelDiagnostic],
+    *,
+    probes: dict[str, DriverProbeSnapshot],
+    ambiguous_probes: set[str],
+) -> list[DriverExposure]:
+    exposures: list[DriverExposure] = []
+    for driver in capability.drivers:
+        exposure, problem = _driver_exposure_or_problem(
+            capability,
+            driver,
+            probes=probes,
+            ambiguous_probes=ambiguous_probes,
+        )
+        if problem is not None:
+            code, message, severity = problem
+            failure_codes.append(code)
+            diagnostics.append(
+                KernelDiagnostic(code=code, message=message, severity=severity)
+            )
+        elif exposure is not None:
+            exposures.append(exposure)
+    return exposures
+
+
+def _driver_exposure_or_problem(
+    capability: _CapabilityDeclaration,
+    driver: DriverSpec,
+    *,
+    probes: dict[str, DriverProbeSnapshot],
+    ambiguous_probes: set[str],
+) -> tuple[DriverExposure | None, tuple[str, str, str] | None]:
+    driver_id = driver_spec_id(driver)
+    if not driver_id:
+        return None, (
+            "driver_identity_missing",
+            f"Capability {capability.id} has a driver without an id.",
+            "error",
+        )
+    permissions = driver_spec_permissions(driver)
+    problem = _driver_probe_problem(
+        driver,
+        driver_id=driver_id,
+        permissions=permissions,
+        probes=probes,
+        ambiguous_probes=ambiguous_probes,
+    )
+    if problem is not None:
+        return None, problem
+    return (
+        DriverExposure(
+            driver_id=driver_id,
+            capability_id=capability.id,
+            permissions=tuple(permissions),
+            capabilities=tuple(driver.capabilities),
+        ),
+        None,
+    )
+
+
+def _driver_probe_problem(
+    driver: DriverSpec,
+    *,
+    driver_id: str,
+    permissions: Sequence[str],
+    probes: dict[str, DriverProbeSnapshot],
+    ambiguous_probes: set[str],
+) -> tuple[str, str, str] | None:
+    if not permissions:
+        return (
+            "driver_permissions_missing",
+            f"Driver {driver_id} has no declared driver permissions.",
+            "warning",
+        )
+    if driver_id in ambiguous_probes:
+        return (
+            "driver_probe_ambiguous",
+            f"Driver {driver_id} has conflicting probe snapshots.",
+            "error",
+        )
+    probe_snapshot = probes.get(driver_id)
+    if probe_snapshot is None:
+        return (
+            "driver_probe_missing",
+            f"Driver {driver_id} has no probe snapshot.",
+            "warning",
+        )
+    if not probe_snapshot.available:
+        detail = f": {probe_snapshot.detail}" if probe_snapshot.detail else "."
+        return (
+            "driver_probe_unavailable",
+            f"Driver {driver_id} is unavailable{detail}",
+            "warning",
+        )
+    if probe_snapshot.version != driver.version:
+        return (
+            "driver_version_mismatch",
+            f"Driver {driver_id} version {probe_snapshot.version!r} does not "
+            f"match required version {driver.version!r}.",
+            "error",
+        )
+    missing = sorted(set(driver.capabilities) - set(probe_snapshot.capabilities))
+    if missing:
+        return (
+            "driver_capability_mismatch",
+            f"Driver {driver_id} is missing required capabilities: "
+            + ", ".join(missing),
+            "error",
+        )
+    return None
+
+
+def _runtime_scope_from_envelope(envelope: InputEnvelope) -> RuntimeScope:
+    metadata = envelope.metadata
+    request_id = metadata["request_id"] if "request_id" in metadata else "request"
+    run_id = metadata["run_id"] if "run_id" in metadata else request_id
+    try:
+        scope = RuntimeScope(
+            tenant_id=envelope.tenant_id,
+            run_id=run_id,
+            request_id=request_id,
+        )
+        RuntimeScope.from_dict(scope.to_dict())
+    except (TypeError, ValueError) as exc:
+        raise KernelError(f"runtime scope input is invalid: {exc}") from exc
+    return scope
+
+
+def _is_supported_capability(value: object) -> TypeGuard[_CapabilityDeclaration]:
+    return (
+        isinstance(value, CapabilityManifest)
+        or type(value) is ScopedCapabilityManifestV2
+    )
+
+
+def _record_manifest_diagnostics(
+    capability: object,
+    manifest_diagnostics: Sequence[ValidationDiagnostic],
+    diagnostics: list[KernelDiagnostic],
+) -> tuple[str, list[str]]:
+    capability_id = (
+        capability.id if _is_supported_capability(capability) else "<unsupported>"
+    )
+    failure_codes: list[str] = []
+    for item in manifest_diagnostics:
+        if item.level != "error":
+            continue
+        code = f"manifest_{item.code}"
+        failure_codes.append(code)
+        diagnostics.append(
+            KernelDiagnostic(
+                code=code,
+                message=f"Capability {capability_id}: {item.message}",
+                severity="error",
+            )
+        )
+    return capability_id, failure_codes
+
+
+def _is_resolvable_capability(
+    capability: object,
+    diagnostics: Sequence[ValidationDiagnostic],
+) -> TypeGuard[_CapabilityDeclaration]:
+    return _is_supported_capability(capability) and _can_resolve_capability(
+        capability,
+        diagnostics,
+    )
+
+
+def _can_resolve_capability(
+    capability: _CapabilityDeclaration,
+    diagnostics: Sequence[ValidationDiagnostic],
+) -> bool:
+    return type(capability) is not ScopedCapabilityManifestV2 or not any(
+        item.level == "error" for item in diagnostics
+    )
 
 
 def text_list(value: object) -> list[str]:

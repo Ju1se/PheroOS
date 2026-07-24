@@ -18,6 +18,7 @@ from pheroos.trace import TraceEvent
 from types import MappingProxyType
 from typing import Any
 
+
 @dataclass(frozen=True)
 class CollectiveDecisionState:
     scores: dict[str, float] = field(default_factory=dict)
@@ -53,7 +54,9 @@ class CollectiveDecisionState:
                 }
             ),
         )
-        object.__setattr__(self, "layer_coordination", deepcopy(self.layer_coordination))
+        object.__setattr__(
+            self, "layer_coordination", deepcopy(self.layer_coordination)
+        )
 
     def __deepcopy__(self, memo: dict[int, object]) -> CollectiveDecisionState:
         del memo
@@ -67,7 +70,9 @@ class CollectiveDecisionStep:
     pheromone_trails: list[PheromoneTrail] = field(default_factory=list)
 
     def __post_init__(self) -> None:
-        object.__setattr__(self, "pheromone_trails", tuple(deepcopy(self.pheromone_trails)))
+        object.__setattr__(
+            self, "pheromone_trails", tuple(deepcopy(self.pheromone_trails))
+        )
 
 
 @dataclass(frozen=True)
@@ -92,7 +97,9 @@ class HybridCollectiveStep:
     adjustment_replay_receipts: dict[str, tuple[Any, ...]] = field(default_factory=dict)
     budget_state: PheromoneBudgetState | None = None
     trace_events: tuple[TraceEvent, ...] = ()
-    _issuance: object | None = field(default=None, init=False, repr=False, compare=False)
+    _issuance: object | None = field(
+        default=None, init=False, repr=False, compare=False
+    )
 
     def __post_init__(self) -> None:
         for field_name in (
@@ -104,14 +111,20 @@ class HybridCollectiveStep:
             "exploration_observations",
             "trace_events",
         ):
-            object.__setattr__(self, field_name, tuple(deepcopy(getattr(self, field_name))))
+            object.__setattr__(
+                self, field_name, tuple(deepcopy(getattr(self, field_name)))
+            )
         object.__setattr__(
             self,
             "processed_pheromone_event_ids",
             frozenset(self.processed_pheromone_event_ids),
         )
-        object.__setattr__(self, "processed_feedback_ids", frozenset(self.processed_feedback_ids))
-        object.__setattr__(self, "processed_adjustment_ids", frozenset(self.processed_adjustment_ids))
+        object.__setattr__(
+            self, "processed_feedback_ids", frozenset(self.processed_feedback_ids)
+        )
+        object.__setattr__(
+            self, "processed_adjustment_ids", frozenset(self.processed_adjustment_ids)
+        )
         for field_name in (
             "deposit_replay_receipts",
             "diffusion_replay_receipts",
@@ -143,7 +156,9 @@ class HybridReplayState:
     diffusion_replay_receipts: dict[str, tuple[Any, ...]] = field(default_factory=dict)
     feedback_replay_receipts: dict[str, tuple[Any, ...]] = field(default_factory=dict)
     adjustment_replay_receipts: dict[str, tuple[Any, ...]] = field(default_factory=dict)
-    _issuance: object | None = field(default=None, init=False, repr=False, compare=False)
+    _issuance: object | None = field(
+        default=None, init=False, repr=False, compare=False
+    )
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "active_trails", tuple(deepcopy(self.active_trails)))
@@ -152,8 +167,12 @@ class HybridReplayState:
             "processed_pheromone_event_ids",
             frozenset(self.processed_pheromone_event_ids),
         )
-        object.__setattr__(self, "processed_feedback_ids", frozenset(self.processed_feedback_ids))
-        object.__setattr__(self, "processed_adjustment_ids", frozenset(self.processed_adjustment_ids))
+        object.__setattr__(
+            self, "processed_feedback_ids", frozenset(self.processed_feedback_ids)
+        )
+        object.__setattr__(
+            self, "processed_adjustment_ids", frozenset(self.processed_adjustment_ids)
+        )
         for field_name in (
             "deposit_replay_receipts",
             "diffusion_replay_receipts",
@@ -169,7 +188,7 @@ class HybridReplayState:
 
 def _freeze_replay_receipts(
     receipts: Mapping[str, tuple[Any, ...]],
-) -> MappingProxyType:
+) -> MappingProxyType[str, tuple[Any, ...]]:
     return MappingProxyType(
         {
             trace_event_id: tuple(deepcopy(fingerprint))
@@ -179,17 +198,30 @@ def _freeze_replay_receipts(
 
 
 for _compat_function in (_freeze_replay_receipts,):
-    _compat_function.__module__ = 'pheroos.governance.collective'
+    _compat_function.__module__ = "pheroos.governance.collective"
 del _compat_function
-for _compat_type in (CollectiveDecisionState, CollectiveDecisionStep, HybridCollectiveStep, HybridReplayState,):
-    _compat_type.__module__ = 'pheroos.governance.collective'
+for _compat_type in (
+    CollectiveDecisionState,
+    CollectiveDecisionStep,
+    HybridCollectiveStep,
+    HybridReplayState,
+):
+    _compat_type.__module__ = "pheroos.governance.collective"
     for _compat_descriptor in _compat_type.__dict__.values():
         if isinstance(_compat_descriptor, (staticmethod, classmethod)):
             _compat_member = _compat_descriptor.__func__
         else:
             _compat_member = _compat_descriptor
-        if callable(_compat_member) and hasattr(_compat_member, '__module__'):
-            _compat_member.__module__ = 'pheroos.governance.collective'
+        if callable(_compat_member) and hasattr(_compat_member, "__module__"):
+            _compat_member.__module__ = "pheroos.governance.collective"
 del _compat_descriptor, _compat_member, _compat_type
 
-__all__ = ('CollectiveDecisionState', 'CollectiveDecisionStep', 'HybridCollectiveStep', 'HybridReplayState', '_HYBRID_REPLAY_STATE_ISSUANCE', '_HYBRID_STEP_ISSUANCE', '_freeze_replay_receipts')
+__all__ = (
+    "CollectiveDecisionState",
+    "CollectiveDecisionStep",
+    "HybridCollectiveStep",
+    "HybridReplayState",
+    "_HYBRID_REPLAY_STATE_ISSUANCE",
+    "_HYBRID_STEP_ISSUANCE",
+    "_freeze_replay_receipts",
+)

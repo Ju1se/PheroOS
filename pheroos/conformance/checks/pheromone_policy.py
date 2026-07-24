@@ -3,6 +3,7 @@ from __future__ import annotations
 from pheroos.conformance.report import CheckResult
 from pheroos.protocol.models import (
     CapabilityManifest,
+    CollectiveDecisionPolicy,
     SUPPORTED_PHEROMONE_COMPETITION_MODES,
     SUPPORTED_PHEROMONE_DECAY_MODELS,
     SUPPORTED_PHEROMONE_RESPONSE_MODELS,
@@ -14,6 +15,13 @@ def check(manifest: CapabilityManifest) -> CheckResult:
     policy = manifest.protocol.collective_decision_policy
     if policy is None:
         return CheckResult("pheromone_policy", True)
+    problems = _memory_policy_problems(policy)
+    problems.extend(_response_policy_problems(policy))
+    problems.extend(_kind_profile_policy_problems(policy))
+    return CheckResult("pheromone_policy", not problems, ", ".join(problems))
+
+
+def _memory_policy_problems(policy: CollectiveDecisionPolicy) -> list[str]:
     problems: list[str] = []
     if not 0 <= policy.pheromone_evaporation_rate <= 1:
         problems.append("evaporation_rate")
@@ -30,10 +38,18 @@ def check(manifest: CapabilityManifest) -> CheckResult:
         problems.append("weights")
     if policy.pheromone_cautionary_override_threshold < 0:
         problems.append("cautionary_threshold")
-    if policy.pheromone_per_source_cap < 0 or policy.pheromone_per_round_deposit_cap < 0:
+    if (
+        policy.pheromone_per_source_cap < 0
+        or policy.pheromone_per_round_deposit_cap < 0
+    ):
         problems.append("caps")
     if policy.pheromone_min_source_diversity <= 0:
         problems.append("min_source_diversity")
+    return problems
+
+
+def _response_policy_problems(policy: CollectiveDecisionPolicy) -> list[str]:
+    problems: list[str] = []
     if any(
         not isinstance(subject_type, str)
         or not is_scored_pheromone_subject_type(subject_type)
@@ -52,14 +68,25 @@ def check(manifest: CapabilityManifest) -> CheckResult:
         or policy.stale_route_reopen_threshold < 0
     ):
         problems.append("thresholds")
-    if policy.pheromone_diffusion_max_hops < 0 or not 0 <= policy.pheromone_diffusion_attenuation <= 1:
+    if (
+        policy.pheromone_diffusion_max_hops < 0
+        or not 0 <= policy.pheromone_diffusion_attenuation <= 1
+    ):
         problems.append("diffusion")
     if not 0 <= policy.novelty_decay_rate <= 1:
         problems.append("novelty_decay")
+    return problems
+
+
+def _kind_profile_policy_problems(policy: CollectiveDecisionPolicy) -> list[str]:
+    problems: list[str] = []
     for kind, profile in policy.pheromone_kind_profiles.items():
         if (
             profile.weight < 0
-            or (profile.evaporation_rate is not None and not 0 <= profile.evaporation_rate <= 1)
+            or (
+                profile.evaporation_rate is not None
+                and not 0 <= profile.evaporation_rate <= 1
+            )
             or (profile.ttl_steps is not None and profile.ttl_steps < 0)
             or profile.response_model not in SUPPORTED_PHEROMONE_RESPONSE_MODELS
             or any(
@@ -73,4 +100,4 @@ def check(manifest: CapabilityManifest) -> CheckResult:
         if kind == "stale" and (profile.weight != 0 or profile.scored_subject_types):
             problems.append("stale_profile")
             break
-    return CheckResult("pheromone_policy", not problems, ", ".join(problems))
+    return problems

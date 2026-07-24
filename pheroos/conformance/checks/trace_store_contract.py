@@ -75,6 +75,16 @@ def check() -> CheckResult:
 
 
 def _evaluate_trace_store(store: TraceStore, problems: list[str]) -> None:
+    first = _exercise_first_append(store, problems)
+    _exercise_snapshot_isolation(store, first, problems)
+    _exercise_invalid_append(store, problems)
+    _exercise_chronological_append(store, problems)
+
+
+def _exercise_first_append(
+    store: TraceStore,
+    problems: list[str],
+) -> TraceEvent:
     if store.records:
         problems.append("fresh_store_not_empty")
 
@@ -90,7 +100,14 @@ def _evaluate_trace_store(store: TraceStore, problems: list[str]) -> None:
         problems.append("first_record_binding")
     if store.records != (first_record,):
         problems.append("first_record_snapshot")
+    return first
 
+
+def _exercise_snapshot_isolation(
+    store: TraceStore,
+    first: TraceEvent,
+    problems: list[str],
+) -> None:
     first.lineage["ordinal"] = 999
     observed = store.records
     if not observed or observed[0].event.lineage != {"ordinal": 1}:
@@ -100,6 +117,11 @@ def _evaluate_trace_store(store: TraceStore, problems: list[str]) -> None:
         if store.records[0].event.lineage != {"ordinal": 1}:
             problems.append("output_snapshot_isolation")
 
+
+def _exercise_invalid_append(
+    store: TraceStore,
+    problems: list[str],
+) -> None:
     before_invalid = store.records
     try:
         store.append(
@@ -117,6 +139,11 @@ def _evaluate_trace_store(store: TraceStore, problems: list[str]) -> None:
     if store.records != before_invalid:
         problems.append("invalid_event_mutated_store")
 
+
+def _exercise_chronological_append(
+    store: TraceStore,
+    problems: list[str],
+) -> None:
     second = TraceEvent(
         event_type="x-pheroos.trace_store_conformance_completed",
         protocol_id="protocol:trace-store-conformance",

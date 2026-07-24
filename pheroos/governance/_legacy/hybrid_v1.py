@@ -44,7 +44,9 @@ def select_legacy_blended_decision(
         )
         return fallback, "safe_layer_coordination_fallback"
 
-    for candidate_id, score in sorted(scores.items(), key=lambda item: (-item[1], item[0])):
+    for candidate_id, score in sorted(
+        scores.items(), key=lambda item: (-item[1], item[0])
+    ):
         if (
             len(independent_scouts[candidate_id]) >= policy.min_independent_scouts
             and score >= policy.quorum_threshold

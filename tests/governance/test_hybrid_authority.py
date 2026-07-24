@@ -183,7 +183,9 @@ def test_hybrid_signal_strength_cannot_exceed_declared_collective_bound() -> Non
         support=1.01,
     )
 
-    with pytest.raises(GovernanceError, match="exceeds the declared collective threshold bound"):
+    with pytest.raises(
+        GovernanceError, match="exceeds the declared collective threshold bound"
+    ):
         score_candidates(
             candidate_set=candidates(),
             policy=policy(quorum_threshold=1),
@@ -213,7 +215,9 @@ def test_direct_hybrid_policy_rejects_unreachable_activation_threshold() -> None
         )
 
 
-@pytest.mark.parametrize("field_name", ["target", "source_id", "subject_id", "verifier_id"])
+@pytest.mark.parametrize(
+    "field_name", ["target", "source_id", "subject_id", "verifier_id"]
+)
 def test_signal_verification_rejects_whitespace_identity(field_name: str) -> None:
     values = {
         "target": TARGET,
@@ -256,12 +260,16 @@ def test_governance_records_snapshot_caller_owned_collections() -> None:
     candidate_items.append(Candidate("candidate:forged", TARGET))
     evidence_items.clear()
 
-    assert [candidate.id for candidate in candidate_set.candidates] == ["candidate:alpha"]
+    assert [candidate.id for candidate in candidate_set.candidates] == [
+        "candidate:alpha"
+    ]
     assert [node.id for node in evidence.nodes] == ["evidence:a"]
     with pytest.raises(AttributeError):
         candidate_set.candidates.append(Candidate("candidate:forged", TARGET))
     with pytest.raises(AttributeError):
-        evidence.nodes.append(EvidenceNode("evidence:forged", "content", "driver:forged"))
+        evidence.nodes.append(
+            EvidenceNode("evidence:forged", "content", "driver:forged")
+        )
 
 
 @pytest.mark.parametrize(
@@ -338,7 +346,9 @@ def verified_scout(source_id: str, candidate_id: str) -> ScoutReport:
     )
 
 
-def verified_recruitment(source_id: str, candidate_id: str, strength: float) -> RecruitmentSignal:
+def verified_recruitment(
+    source_id: str, candidate_id: str, strength: float
+) -> RecruitmentSignal:
     trace_id = f"trace:{source_id}"
     return RecruitmentSignal(
         source_id=source_id,
@@ -351,7 +361,9 @@ def verified_recruitment(source_id: str, candidate_id: str, strength: float) -> 
     )
 
 
-def verified_inhibition(source_id: str, candidate_id: str, strength: float) -> InhibitionSignal:
+def verified_inhibition(
+    source_id: str, candidate_id: str, strength: float
+) -> InhibitionSignal:
     trace_id = f"trace:{source_id}"
     return InhibitionSignal(
         source_id=source_id,

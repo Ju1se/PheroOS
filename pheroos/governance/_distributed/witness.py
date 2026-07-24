@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
+from typing import cast
 
 from dataclasses import dataclass, field
 
@@ -9,7 +10,9 @@ from pheroos.governance._distributed.invariants import (
     _canonical_fingerprints,
     _coerce_assurance,
     _coerce_authority,
+    _construct_dataclass,
     _public_dataclass_payload,
+    _require_mapping,
     _require_sequence,
     _strict_dataclass_payload,
     _validate_distributed_policy,
@@ -275,7 +278,7 @@ def quorum_witness_from_payload(payload: Mapping[str, object]) -> QuorumWitness:
     )
     values["assurance"] = _coerce_assurance(values["assurance"])
     try:
-        return QuorumWitness(**values)
+        return _construct_dataclass(QuorumWitness, values)
     except (TypeError, ValueError, GovernanceError) as exc:
         raise GovernanceError(f"quorum witness payload is invalid: {exc}") from exc
 
@@ -425,7 +428,7 @@ def verify_quorum_witness(
                 raise GovernanceError(
                     "witness id/nonce replay collision is a safety violation"
                 )
-            return existing
+            return cast(WitnessVerification, existing)
         object.__setattr__(
             verification,
             "_issuance",
@@ -484,10 +487,12 @@ def witness_verification_from_payload(
         WitnessVerification,
         "witness verification payload",
     )
-    values["witness"] = quorum_witness_from_payload(values["witness"])
+    values["witness"] = quorum_witness_from_payload(
+        _require_mapping(values["witness"], "witness verification witness")
+    )
     values["authority"] = _coerce_authority(values["authority"])
     try:
-        return WitnessVerification(**values)
+        return _construct_dataclass(WitnessVerification, values)
     except (TypeError, ValueError, GovernanceError) as exc:
         raise GovernanceError(
             f"witness verification payload is invalid: {exc}"
@@ -502,12 +507,16 @@ def verify_portable_witness_verification(
     issued_at_step: int,
 ) -> bool:
     try:
-        verification = (
-            verification_or_payload
-            if type(verification_or_payload) is WitnessVerification
-            else witness_verification_from_payload(verification_or_payload)
-        )
-        assert type(verification) is WitnessVerification
+        if type(verification_or_payload) is WitnessVerification:
+            assert isinstance(verification_or_payload, WitnessVerification)
+            verification = verification_or_payload
+        else:
+            verification = witness_verification_from_payload(
+                _require_mapping(
+                    verification_or_payload,
+                    "witness verification payload",
+                )
+            )
         current = require_commit_step(
             issued_at_step,
             "portable witness certificate issuance step",
@@ -583,7 +592,7 @@ def witness_replay_receipt_from_payload(
         "witness replay receipt payload",
     )
     try:
-        return WitnessReplayReceipt(**values)
+        return _construct_dataclass(WitnessReplayReceipt, values)
     except (TypeError, ValueError, GovernanceError) as exc:
         raise GovernanceError(
             f"witness replay receipt payload is invalid: {exc}"
@@ -804,7 +813,7 @@ def _equivocation_finding_from_payload(
             "witness equivocation witness fingerprints",
         )
     )
-    return WitnessEquivocationFinding(**values)
+    return _construct_dataclass(WitnessEquivocationFinding, values)
 
 
 for _name in (

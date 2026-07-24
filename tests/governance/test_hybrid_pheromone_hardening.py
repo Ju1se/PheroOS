@@ -95,7 +95,9 @@ def trail(
         candidate_id=candidate_id,
         strength=strength,
         subject_type=subject_type,
-        subject_id=subject_id if subject_id is not None else (candidate_id if subject_type == "candidate" else "route:a"),
+        subject_id=subject_id
+        if subject_id is not None
+        else (candidate_id if subject_type == "candidate" else "route:a"),
         target=target,
         kind=kind,
         source_id=source_id,
@@ -157,9 +159,18 @@ def proposal(
 def layer_policy(**overrides: object) -> LayerCoordinationPolicy:
     values: dict[str, object] = {
         "enabled": True,
-        "default_layer_weights": {layer: 1.0 for layer in ("reactive", "learned", "evolutionary", "metacognitive")},
-        "layer_weight_bounds": {layer: (0.0, 2.0) for layer in ("reactive", "learned", "evolutionary", "metacognitive")},
-        "confidence_thresholds": {layer: 0.5 for layer in ("reactive", "learned", "evolutionary", "metacognitive")},
+        "default_layer_weights": {
+            layer: 1.0
+            for layer in ("reactive", "learned", "evolutionary", "metacognitive")
+        },
+        "layer_weight_bounds": {
+            layer: (0.0, 2.0)
+            for layer in ("reactive", "learned", "evolutionary", "metacognitive")
+        },
+        "confidence_thresholds": {
+            layer: 0.5
+            for layer in ("reactive", "learned", "evolutionary", "metacognitive")
+        },
         "conflict_threshold": 0.1,
         "emergency_override_threshold": 0.8,
         "min_layer_provenance": 1,
@@ -188,7 +199,12 @@ def test_target_binding_duplicate_topology_and_cross_target_edges_fail_closed() 
     cross_target = PheromoneNeighborhood(
         subjects=[
             PheromoneSubject("route", "route:a", "candidate:alpha", TARGET),
-            PheromoneSubject("candidate", "candidate:foreign", "candidate:foreign", "decision:foreign"),
+            PheromoneSubject(
+                "candidate",
+                "candidate:foreign",
+                "candidate:foreign",
+                "decision:foreign",
+            ),
         ],
         edges=[PheromoneEdge("route", "route:a", "candidate", "candidate:foreign")],
     )
@@ -214,7 +230,9 @@ def test_topology_requires_one_explicit_candidate_binding_per_subject_key() -> N
         ],
         edges=[PheromoneEdge("route", "route:a", "candidate", "candidate:alpha")],
     )
-    with pytest.raises(GovernanceError, match="candidate binding does not match topology"):
+    with pytest.raises(
+        GovernanceError, match="candidate binding does not match topology"
+    ):
         diffuse_pheromone_trails_with_records(
             [trail("candidate:beta", subject_type="route", subject_id="route:a")],
             bound,
@@ -244,10 +262,17 @@ def test_feedback_must_match_declared_topology_subject_candidate_binding() -> No
         edges=[PheromoneEdge("route", "route:a", "candidate", "candidate:alpha")],
     )
 
-    with pytest.raises(GovernanceError, match="candidate binding does not match topology"):
+    with pytest.raises(
+        GovernanceError, match="candidate binding does not match topology"
+    ):
         reinforce_pheromone_trails_with_records(
             [],
-            [replace(feedback(trace_id="trace:feedback:wrong"), candidate_id="candidate:beta")],
+            [
+                replace(
+                    feedback(trace_id="trace:feedback:wrong"),
+                    candidate_id="candidate:beta",
+                )
+            ],
             policy(feedback_enabled=True),
             candidate_set=candidates(),
             target=TARGET,
@@ -257,7 +282,12 @@ def test_feedback_must_match_declared_topology_subject_candidate_binding() -> No
     with pytest.raises(GovernanceError, match="not declared in topology"):
         reinforce_pheromone_trails_with_records(
             [],
-            [replace(feedback(trace_id="trace:feedback:missing"), subject_id="route:missing")],
+            [
+                replace(
+                    feedback(trace_id="trace:feedback:missing"),
+                    subject_id="route:missing",
+                )
+            ],
             policy(feedback_enabled=True),
             candidate_set=candidates(),
             target=TARGET,
@@ -271,21 +301,32 @@ def test_deposit_priority_is_permutation_invariant_and_batch_is_atomic() -> None
         per_round_deposit_cap=3.0,
         kind_profiles={
             "positive": PheromoneKindProfile(weight=1.0, priority=1),
-            "alarm": PheromoneKindProfile(weight=1.0, priority=10, can_suppress_positive=True),
+            "alarm": PheromoneKindProfile(
+                weight=1.0, priority=10, can_suppress_positive=True
+            ),
         },
     )
     positive = trail(trace_id="trace:positive", strength=3.0, kind="positive")
     alarm = trail(trace_id="trace:alarm", strength=2.0, kind="alarm")
-    forward = deposit_pheromone_trails([positive, alarm], active_policy, candidate_set=candidates(), target=TARGET)
-    reverse = deposit_pheromone_trails([alarm, positive], active_policy, candidate_set=candidates(), target=TARGET)
+    forward = deposit_pheromone_trails(
+        [positive, alarm], active_policy, candidate_set=candidates(), target=TARGET
+    )
+    reverse = deposit_pheromone_trails(
+        [alarm, positive], active_policy, candidate_set=candidates(), target=TARGET
+    )
 
-    assert {item.trace_event_id: item.strength for item in forward.trails} == {
-        item.trace_event_id: item.strength for item in reverse.trails
-    } == {"trace:positive": 1.0, "trace:alarm": 2.0}
+    assert (
+        {item.trace_event_id: item.strength for item in forward.trails}
+        == {item.trace_event_id: item.strength for item in reverse.trails}
+        == {"trace:positive": 1.0, "trace:alarm": 2.0}
+    )
     initial_budget = forward.budget_state.for_policy(active_policy)
     with pytest.raises(GovernanceError):
         deposit_pheromone_trails(
-            [positive, replace(alarm, trace_event_id="trace:bad", strength=float("nan"))],
+            [
+                positive,
+                replace(alarm, trace_event_id="trace:bad", strength=float("nan")),
+            ],
             active_policy,
             candidate_set=candidates(),
             target=TARGET,
@@ -307,20 +348,28 @@ def test_zero_elapsed_evaporation_is_a_true_noop_without_lifecycle_record() -> N
 
 
 def test_one_budget_threads_deposit_diffusion_feedback_and_replay() -> None:
-    active_policy = policy(per_source_cap=3.0, per_round_deposit_cap=5.0, feedback_enabled=True)
+    active_policy = policy(
+        per_source_cap=3.0, per_round_deposit_cap=5.0, feedback_enabled=True
+    )
     raw = trail(
         trace_id="trace:route",
         strength=2.0,
         subject_type="route",
         subject_id="route:a",
     )
-    deposited = deposit_pheromone_trails([raw], active_policy, candidate_set=candidates(), target=TARGET)
+    deposited = deposit_pheromone_trails(
+        [raw], active_policy, candidate_set=candidates(), target=TARGET
+    )
     topology = PheromoneNeighborhood(
         subjects=[
             PheromoneSubject("route", "route:a", "candidate:alpha", TARGET),
             PheromoneSubject("candidate", "candidate:alpha", "candidate:alpha", TARGET),
         ],
-        edges=[PheromoneEdge("route", "route:a", "candidate", "candidate:alpha", attenuation=1.0)],
+        edges=[
+            PheromoneEdge(
+                "route", "route:a", "candidate", "candidate:alpha", attenuation=1.0
+            )
+        ],
     )
     diffused = diffuse_pheromone_trails_with_records(
         list(deposited.trails),
@@ -443,9 +492,7 @@ def test_diffusion_replay_receipt_rejects_causal_payload_substitution(
     else:
         replay_topology = replace(
             topology,
-            edges=(
-                replace(topology.edges[0], attenuation=0.75),
-            ),
+            edges=(replace(topology.edges[0], attenuation=0.75),),
         )
 
     with pytest.raises(GovernanceError, match="diffusion replay payload"):
@@ -475,7 +522,9 @@ def test_diffusion_replay_receipts_reject_unknown_ids_and_non_tuple_payloads() -
         ],
         edges=[],
     )
-    diffusion_policy = PheromoneDiffusionPolicy(enabled=True, max_hops=1, attenuation=0.5)
+    diffusion_policy = PheromoneDiffusionPolicy(
+        enabled=True, max_hops=1, attenuation=0.5
+    )
 
     with pytest.raises(GovernanceError, match="must be processed event ids"):
         diffuse_pheromone_trails_with_records(
@@ -512,9 +561,7 @@ def test_opaque_root_trace_id_containing_diffuse_text_still_diffuses() -> None:
             PheromoneSubject("candidate", "candidate:alpha", "candidate:alpha", TARGET),
             PheromoneSubject("route", "route:a", "candidate:alpha", TARGET),
         ],
-        edges=[
-            PheromoneEdge("candidate", "candidate:alpha", "route", "route:a")
-        ],
+        edges=[PheromoneEdge("candidate", "candidate:alpha", "route", "route:a")],
     )
     result = diffuse_pheromone_trails_with_records(
         [root],
@@ -608,9 +655,7 @@ def test_one_stale_feedback_issues_unique_mutation_ids_for_multiple_kinds() -> N
 
     assert {item.kind for item in result.trails} == {"stale"}
     assert len({item.trace_event_id for item in result.trails}) == 2
-    assert all(
-        stale.trace_event_id in item.lineage_event_ids for item in result.trails
-    )
+    assert all(stale.trace_event_id in item.lineage_event_ids for item in result.trails)
     assert {record.source_trace_event_id for record in result.records} == {
         "trace:route:positive",
         "trace:route:cautionary",
@@ -660,7 +705,14 @@ def test_caller_trail_lineage_cannot_forge_feedback_replay_authority() -> None:
 
 @pytest.mark.parametrize(
     "field_name",
-    ["source_id", "subject_id", "candidate_id", "target", "provenance", "trace_event_id"],
+    [
+        "source_id",
+        "subject_id",
+        "candidate_id",
+        "target",
+        "provenance",
+        "trace_event_id",
+    ],
 )
 def test_feedback_rejects_whitespace_required_identity(field_name: str) -> None:
     with pytest.raises(GovernanceError, match="pheromone feedback"):
@@ -684,7 +736,9 @@ def test_feedback_rejects_whitespace_processed_replay_id() -> None:
 
 
 def test_kind_suppression_and_per_kind_competition_are_executable() -> None:
-    positive = trail(trace_id="trace:positive", source_id="source:positive", strength=5.0)
+    positive = trail(
+        trace_id="trace:positive", source_id="source:positive", strength=5.0
+    )
     caution = trail(
         trace_id="trace:caution",
         source_id="source:caution",
@@ -696,7 +750,11 @@ def test_kind_suppression_and_per_kind_competition_are_executable() -> None:
         trails=[positive, caution],
         policy=policy(
             cautionary_override_threshold=2.0,
-            kind_profiles={"cautionary": PheromoneKindProfile(weight=1.0, can_suppress_positive=False)},
+            kind_profiles={
+                "cautionary": PheromoneKindProfile(
+                    weight=1.0, can_suppress_positive=False
+                )
+            },
         ),
     )
     suppression = score_pheromone_trails(
@@ -704,14 +762,22 @@ def test_kind_suppression_and_per_kind_competition_are_executable() -> None:
         trails=[positive, caution],
         policy=policy(
             cautionary_override_threshold=2.0,
-            kind_profiles={"cautionary": PheromoneKindProfile(weight=1.0, can_suppress_positive=True)},
+            kind_profiles={
+                "cautionary": PheromoneKindProfile(
+                    weight=1.0, can_suppress_positive=True
+                )
+            },
         ),
     )
     competitive = score_pheromone_trails_result(
         candidate_set=candidates(),
         trails=[positive],
         policy=policy(
-            kind_profiles={"positive": PheromoneKindProfile(weight=1.0, response_model="competitive")}
+            kind_profiles={
+                "positive": PheromoneKindProfile(
+                    weight=1.0, response_model="competitive"
+                )
+            }
         ),
     )
 
@@ -721,8 +787,12 @@ def test_kind_suppression_and_per_kind_competition_are_executable() -> None:
     assert competitive.normalization.response_model == "competitive:positive"
     assert sum(competitive.scores.values()) == pytest.approx(0.0)
     for candidate_id, score in competitive.scores.items():
-        assert sum(competitive.kind_breakdown[candidate_id].values()) == pytest.approx(score)
-        assert sum(competitive.subject_breakdown[candidate_id].values()) == pytest.approx(score)
+        assert sum(competitive.kind_breakdown[candidate_id].values()) == pytest.approx(
+            score
+        )
+        assert sum(
+            competitive.subject_breakdown[candidate_id].values()
+        ) == pytest.approx(score)
 
 
 def test_source_capped_competitive_trail_cannot_trigger_normalization() -> None:
@@ -757,7 +827,9 @@ def test_source_capped_competitive_trail_cannot_trigger_normalization() -> None:
     assert result.scores["candidate:beta"] == 0.0
 
 
-def test_exploration_is_explicit_bounded_and_stale_routes_only_reopen_as_observations() -> None:
+def test_exploration_is_explicit_bounded_and_stale_routes_only_reopen_as_observations() -> (
+    None
+):
     novelty = trail(kind="novelty", strength=4.0, updated_at_step=0)
     stale_route = trail(
         trace_id="trace:stale",
@@ -793,15 +865,23 @@ def test_exploration_is_explicit_bounded_and_stale_routes_only_reopen_as_observa
 
     assert disabled_scores["candidate:alpha"] == 0
     assert disabled_scores["candidate:beta"] == 0
-    assert enabled_scores["candidate:alpha"] == 1.0  # novelty 4 * .25 * default .5 + floor .5
+    assert (
+        enabled_scores["candidate:alpha"] == 1.0
+    )  # novelty 4 * .25 * default .5 + floor .5
     assert enabled_scores["candidate:beta"] == 0.5
     assert enabled_scores["candidate:fallback"] == 0
-    assert any(item.reopen_eligible and item.subject_id == "route:a" for item in observations)
+    assert any(
+        item.reopen_eligible and item.subject_id == "route:a" for item in observations
+    )
 
 
 def test_response_and_runtime_exploration_floors_have_distinct_semantics() -> None:
     active_candidates = CandidateSet(
-        [candidate for candidate in candidates().candidates if candidate.target == TARGET]
+        [
+            candidate
+            for candidate in candidates().candidates
+            if candidate.target == TARGET
+        ]
     )
     response_only = score_pheromone_trails(
         candidate_set=active_candidates,
@@ -842,9 +922,13 @@ def test_response_and_runtime_exploration_floors_have_distinct_semantics() -> No
         "candidate:fallback": 0.0,
     }
     assert combined.scores["candidate:alpha"] == pytest.approx(0.6)
-    assert combined.score_breakdown["candidate:alpha"]["pheromone_response_floor"] == 0.4
+    assert (
+        combined.score_breakdown["candidate:alpha"]["pheromone_response_floor"] == 0.4
+    )
     assert combined.score_breakdown["candidate:alpha"]["pheromone_novelty"] == 0.2
-    assert combined.kind_breakdown["candidate:alpha"]["response_exploration_floor"] == 0.4
+    assert (
+        combined.kind_breakdown["candidate:alpha"]["response_exploration_floor"] == 0.4
+    )
 
 
 @pytest.mark.parametrize("invalid", [float("nan"), float("inf"), True])
@@ -863,7 +947,9 @@ def test_runtime_numeric_inputs_must_be_finite_non_boolean(invalid: object) -> N
         )
 
 
-def test_layer_actions_snapshots_emergency_and_conflict_resolution_are_deterministic() -> None:
+def test_layer_actions_snapshots_emergency_and_conflict_resolution_are_deterministic() -> (
+    None
+):
     snapshots = [
         LayerPerformanceSnapshot(
             "reactive",
@@ -895,8 +981,15 @@ def test_layer_actions_snapshots_emergency_and_conflict_resolution_are_determini
         policy=layer_policy(min_layer_provenance=2),
         fallback_candidate_id="candidate:fallback",
         proposals=[
-            proposal("learned", "candidate:alpha", confidence=0.9, trace_id="trace:learned"),
-            proposal("evolutionary", "candidate:beta", confidence=0.85, trace_id="trace:evolutionary"),
+            proposal(
+                "learned", "candidate:alpha", confidence=0.9, trace_id="trace:learned"
+            ),
+            proposal(
+                "evolutionary",
+                "candidate:beta",
+                confidence=0.85,
+                trace_id="trace:evolutionary",
+            ),
             proposal(
                 "metacognitive",
                 "candidate:alpha",
@@ -911,7 +1004,9 @@ def test_layer_actions_snapshots_emergency_and_conflict_resolution_are_determini
     assert conflicted.resolution == "metacognitive_conflict_resolution"
 
     alarm = replace(
-        proposal("reactive", "candidate:alpha", action="alarm", confidence=0.9, support=0.0),
+        proposal(
+            "reactive", "candidate:alpha", action="alarm", confidence=0.9, support=0.0
+        ),
         proposed_pheromone_kind="alarm",
         proposed_strength=1.0,
     )
@@ -920,14 +1015,19 @@ def test_layer_actions_snapshots_emergency_and_conflict_resolution_are_determini
         target=TARGET,
         policy=layer_policy(min_layer_provenance=2),
         fallback_candidate_id="candidate:fallback",
-        proposals=[alarm, proposal("learned", "candidate:alpha", trace_id="trace:learned:emergency")],
+        proposals=[
+            alarm,
+            proposal("learned", "candidate:alpha", trace_id="trace:learned:emergency"),
+        ],
         snapshots=snapshots,
     )
     assert "reactive_emergency_exploitation_conflict" in emergency_state.conflicts
     assert emergency_state.fallback_used is True
 
 
-def test_trace_coverage_confirmation_is_metacognitive_observable_and_resolves_only_matching_gap() -> None:
+def test_trace_coverage_confirmation_is_metacognitive_observable_and_resolves_only_matching_gap() -> (
+    None
+):
     active_policy = layer_policy(min_layer_provenance=1)
     learned = proposal("learned", "candidate:alpha", trace_id="trace:learned:coverage")
     degraded = [
@@ -968,7 +1068,10 @@ def test_trace_coverage_confirmation_is_metacognitive_observable_and_resolves_on
     assert without_confirmation.fallback_used is True
     assert "insufficient_trace_coverage" not in confirmed.conflicts
     assert confirmed.trace_coverage_confirmations == {"candidate:alpha": 0.8}
-    assert confirmed.action_effects[confirmation.trace_event_id] == "trace_coverage_confirmed"
+    assert (
+        confirmed.action_effects[confirmation.trace_event_id]
+        == "trace_coverage_confirmed"
+    )
     assert confirmed.score_breakdown["candidate:alpha"]["layer_metacognitive"] == 0
     assert confirmed.selected_candidate == "candidate:alpha"
     with pytest.raises(GovernanceError, match="metacognitive layer"):
@@ -991,7 +1094,11 @@ def test_trace_coverage_confirmation_is_metacognitive_observable_and_resolves_on
         ("request_scouting", "learned", "scouting_required"),
         ("fallback_pressure", "reactive", "fallback_required"),
         ("confirm_trace_coverage", "metacognitive", "trace_coverage_confirmed"),
-        ("resolve_conflict", "metacognitive", "metacognitive_conflict_resolution_proposed"),
+        (
+            "resolve_conflict",
+            "metacognitive",
+            "metacognitive_conflict_resolution_proposed",
+        ),
         ("propose_pheromone", "evolutionary", "bounded_pheromone_deposit_proposed"),
     ],
 )
@@ -1008,7 +1115,9 @@ def test_every_builtin_layer_action_has_declared_deterministic_semantics(
     assert layer_action_effect(item, layer_policy()) == effect
 
 
-def test_positive_pheromone_proposal_materializes_as_bounded_memory_not_layer_authority() -> None:
+def test_positive_pheromone_proposal_materializes_as_bounded_memory_not_layer_authority() -> (
+    None
+):
     active_policy = layer_policy()
     proposed = replace(
         proposal(
@@ -1043,7 +1152,10 @@ def test_positive_pheromone_proposal_materializes_as_bounded_memory_not_layer_au
     assert trails[0].strength == pytest.approx(1.6)
     assert trails[0].source_id == proposed.source_id
     assert trails[0].trace_event_id == proposed.trace_event_id
-    assert state.action_effects[proposed.trace_event_id] == "bounded_pheromone_deposit_proposed"
+    assert (
+        state.action_effects[proposed.trace_event_id]
+        == "bounded_pheromone_deposit_proposed"
+    )
     assert state.pheromone_proposal_trace_ids == (proposed.trace_event_id,)
     assert state.score_breakdown["candidate:alpha"]["layer_evolutionary"] == 0
     assert state.fallback_used is True
@@ -1063,10 +1175,12 @@ def test_positive_pheromone_proposal_materializes_as_bounded_memory_not_layer_au
             policy=active_policy,
             neighborhood=PheromoneNeighborhood(
                 subjects=[
-                    PheromoneSubject("candidate", "candidate:beta", "candidate:beta", TARGET)
+                    PheromoneSubject(
+                        "candidate", "candidate:beta", "candidate:beta", TARGET
+                    )
                 ]
-                ),
-            )
+            ),
+        )
     bound_elsewhere = replace(
         proposed,
         metadata={"subject_type": "route", "subject_id": "route:shared"},
@@ -1099,7 +1213,9 @@ def test_strategy_bias_is_bounded_traceable_and_uses_its_own_score_category() ->
         confidence=0.8,
         evidence_id="evidence:bias",
     )
-    validate_strategy_bias(bias, active_policy, candidate_set=candidates(), target=TARGET)
+    validate_strategy_bias(
+        bias, active_policy, candidate_set=candidates(), target=TARGET
+    )
     state = evaluate_layer_coordination(
         candidate_set=candidates(),
         target=TARGET,
@@ -1108,13 +1224,22 @@ def test_strategy_bias_is_bounded_traceable_and_uses_its_own_score_category() ->
         proposals=[],
         strategy_biases=[bias],
     )
-    assert state.score_breakdown["candidate:alpha"]["layer_evolutionary"] == pytest.approx(0.4)
+    assert state.score_breakdown["candidate:alpha"][
+        "layer_evolutionary"
+    ] == pytest.approx(0.4)
     assert state.selected_candidate == "candidate:alpha"
     with pytest.raises(GovernanceError):
-        validate_strategy_bias(replace(bias, support=1.1), active_policy, candidate_set=candidates(), target=TARGET)
+        validate_strategy_bias(
+            replace(bias, support=1.1),
+            active_policy,
+            candidate_set=candidates(),
+            target=TARGET,
+        )
 
 
-def test_layer_coordination_policy_recursively_freezes_validated_weight_bounds() -> None:
+def test_layer_coordination_policy_recursively_freezes_validated_weight_bounds() -> (
+    None
+):
     caller_bounds = {
         layer: [0.0, 2.0]
         for layer in ("reactive", "learned", "evolutionary", "metacognitive")
@@ -1135,7 +1260,9 @@ def test_layer_coordination_policy_recursively_freezes_validated_weight_bounds()
     assert allocate_layer_weights(active_policy) == before
 
 
-def test_policy_adjustment_overlay_is_allowlisted_immutable_run_scoped_and_replay_safe() -> None:
+def test_policy_adjustment_overlay_is_allowlisted_immutable_run_scoped_and_replay_safe() -> (
+    None
+):
     collective = CollectiveDecisionPolicy(
         mode="hybrid",
         pheromone_evaporation_rate=0.2,
@@ -1279,7 +1406,9 @@ def test_direct_policy_adjustment_bounds_cannot_escape_owned_policy_bounds(
         apply_policy_adjustment_overlay(unsafe, issued)
 
 
-def test_frozen_governance_outputs_are_safe_to_deepcopy_and_not_caller_mutable() -> None:
+def test_frozen_governance_outputs_are_safe_to_deepcopy_and_not_caller_mutable() -> (
+    None
+):
     score = score_pheromone_trails_result(
         candidate_set=candidates(),
         trails=[trail()],

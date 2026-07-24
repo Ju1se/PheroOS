@@ -34,9 +34,10 @@ def _validate_action_certificate_semantics(
     payload: Mapping[str, Any],
 ) -> list[str]:
     action = payload.get("action")
-    if action in {CommitAction.PUBLISH.value, CommitAction.EXECUTE.value} and not payload.get(
-        "certificate_ref"
-    ):
+    if action in {
+        CommitAction.PUBLISH.value,
+        CommitAction.EXECUTE.value,
+    } and not payload.get("certificate_ref"):
         return [
             "$.payload.certificate_ref: publish/execute requires certificate binding"
         ]
@@ -61,42 +62,82 @@ def _validate_progress_semantics(payload: Mapping[str, Any]) -> list[str]:
 def _validate_outcome_semantics(payload: Mapping[str, Any]) -> list[str]:
     errors: list[str] = []
     kind = payload.get("kind")
-    assurance = str(payload.get("assurance"))
     authority_scope = payload.get("authority_scope")
-    committed = payload.get("authoritative_commit")
-    epistemic = payload.get("epistemically_committed")
+    _validate_outcome_delivery(payload, errors=errors)
+    if kind == "evidence_commit":
+        _validate_evidence_commit_outcome(payload, errors=errors)
+    else:
+        _validate_noncommit_outcome(payload, errors=errors)
+    _validate_outcome_authority_scope(
+        kind=kind,
+        authority_scope=authority_scope,
+        errors=errors,
+    )
+    errors.extend(_validate_assessment_lineage_semantics(payload))
+    errors.extend(_validate_sealed_heartbeat_semantics(payload))
+    return errors
+
+
+def _validate_outcome_delivery(
+    payload: Mapping[str, Any],
+    *,
+    errors: list[str],
+) -> None:
     if payload.get("terminal") is not True:
         errors.append("$.payload.terminal: outcome must be terminal")
     if payload.get("delivery_eligible") is not True:
         errors.append("$.payload.delivery_eligible: outcome must be deliverable")
-    if kind == "evidence_commit":
-        if assurance == "advisory":
-            errors.append("$.payload.assurance: advisory cannot evidence-commit")
-        expected_scope = COMMIT_AUTHORITY_SCOPE_BY_ASSURANCE.get(assurance)
-        if authority_scope != expected_scope:
-            errors.append("$.payload.authority_scope: assurance scope mismatch")
-        if committed is not True or epistemic is not True:
-            errors.append("$.payload: evidence commit lacks commit authority")
-        if not payload.get("candidate_id") or not payload.get("assessment_ref"):
-            errors.append("$.payload: evidence commit lacks candidate or assessment")
-        if not payload.get("certificate_ref"):
-            errors.append("$.payload.certificate_ref: evidence commit requires proof")
-        if not payload.get("sealed_window") or not payload.get(
-            "heartbeat_continuous"
-        ):
-            errors.append("$.payload: evidence commit requires continuous seal authority")
-    else:
-        if committed is not False or epistemic is not False:
-            errors.append("$.payload: non-commit outcome claims commit authority")
-        if payload.get("execution_eligible") is not False:
-            errors.append("$.payload.execution_eligible: non-commit cannot execute")
+
+
+def _validate_evidence_commit_outcome(
+    payload: Mapping[str, Any],
+    *,
+    errors: list[str],
+) -> None:
+    assurance = str(payload.get("assurance"))
+    if assurance == "advisory":
+        errors.append("$.payload.assurance: advisory cannot evidence-commit")
+    expected_scope = COMMIT_AUTHORITY_SCOPE_BY_ASSURANCE.get(assurance)
+    if payload.get("authority_scope") != expected_scope:
+        errors.append("$.payload.authority_scope: assurance scope mismatch")
+    if (
+        payload.get("authoritative_commit") is not True
+        or payload.get("epistemically_committed") is not True
+    ):
+        errors.append("$.payload: evidence commit lacks commit authority")
+    if not payload.get("candidate_id") or not payload.get("assessment_ref"):
+        errors.append("$.payload: evidence commit lacks candidate or assessment")
+    if not payload.get("certificate_ref"):
+        errors.append("$.payload.certificate_ref: evidence commit requires proof")
+    if not payload.get("sealed_window") or not payload.get("heartbeat_continuous"):
+        errors.append("$.payload: evidence commit requires continuous seal authority")
+
+
+def _validate_noncommit_outcome(
+    payload: Mapping[str, Any],
+    *,
+    errors: list[str],
+) -> None:
+    if (
+        payload.get("authoritative_commit") is not False
+        or payload.get("epistemically_committed") is not False
+    ):
+        errors.append("$.payload: non-commit outcome claims commit authority")
+    if payload.get("execution_eligible") is not False:
+        errors.append("$.payload.execution_eligible: non-commit cannot execute")
+
+
+def _validate_outcome_authority_scope(
+    *,
+    kind: Any,
+    authority_scope: Any,
+    errors: list[str],
+) -> None:
     if kind == "blocked" and authority_scope != "denial":
         errors.append("$.payload.authority_scope: blocked outcome requires denial")
     elif kind != "evidence_commit" and authority_scope != "none":
         errors.append("$.payload.authority_scope: non-commit outcome requires none")
-    errors.extend(_validate_assessment_lineage_semantics(payload))
-    errors.extend(_validate_sealed_heartbeat_semantics(payload))
-    return errors
+
 
 def principal_attestation_payload_schema() -> dict[str, Any]:
     return strict_object_schema(
@@ -112,6 +153,7 @@ def principal_attestation_payload_schema() -> dict[str, Any]:
             "trace_event_id": canonical_text_schema(),
         }
     )
+
 
 def principal_verification_payload_schema() -> dict[str, Any]:
     return strict_object_schema(
@@ -131,6 +173,7 @@ def principal_verification_payload_schema() -> dict[str, Any]:
             "verifier_id": canonical_text_schema(),
         }
     )
+
 
 def stop_verification_payload_schema() -> dict[str, Any]:
     return strict_object_schema(
@@ -153,6 +196,7 @@ def stop_verification_payload_schema() -> dict[str, Any]:
         }
     )
 
+
 def action_permission_payload_schema() -> dict[str, Any]:
     return strict_object_schema(
         {
@@ -172,6 +216,7 @@ def action_permission_payload_schema() -> dict[str, Any]:
             "trace_event_id": canonical_text_schema(),
         }
     )
+
 
 def decision_progress_payload_schema() -> dict[str, Any]:
     return strict_object_schema(
@@ -223,6 +268,7 @@ def decision_progress_payload_schema() -> dict[str, Any]:
         }
     )
 
+
 def decision_outcome_payload_schema() -> dict[str, Any]:
     return strict_object_schema(
         {
@@ -232,7 +278,13 @@ def decision_outcome_payload_schema() -> dict[str, Any]:
             "assessment_ref": optional_fingerprint_schema(),
             "authoritative_commit": {"type": "boolean"},
             "authority_scope": {
-                "enum": ["none", "governance_local", "certified", "distributed", "denial"]
+                "enum": [
+                    "none",
+                    "governance_local",
+                    "certified",
+                    "distributed",
+                    "denial",
+                ]
             },
             "candidate_id": optional_text_schema(),
             "candidate_challenge_root": optional_fingerprint_schema(),
@@ -284,6 +336,7 @@ def decision_outcome_payload_schema() -> dict[str, Any]:
             "window_state_ref": fingerprint_schema(),
         }
     )
+
 
 def candidate_claim_binding_schema() -> dict[str, Any]:
     return strict_object_schema(

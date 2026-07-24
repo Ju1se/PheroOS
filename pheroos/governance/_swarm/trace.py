@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from dataclasses import replace
 from pheroos.governance.candidate import CandidateSet
 from pheroos.governance.errors import GovernanceError
@@ -36,8 +36,18 @@ from pheroos.trace import pheromone_clip_payload_fingerprint
 from typing import Any
 import json
 from pheroos.governance._swarm.records import CollectiveDecisionState
-from pheroos.governance._swarm.replay import _adjustment_replay_fingerprint, _canonical_replay_value, _feedback_replay_fingerprint, _trail_replay_fingerprint
-from pheroos.governance._swarm.signals import InhibitionSignal, RecruitmentSignal, ScoutReport
+from pheroos.governance._swarm.replay import (
+    _adjustment_replay_fingerprint,
+    _canonical_replay_value,
+    _feedback_replay_fingerprint,
+    _trail_replay_fingerprint,
+)
+from pheroos.governance._swarm.signals import (
+    InhibitionSignal,
+    RecruitmentSignal,
+    ScoutReport,
+)
+
 
 def _trace_event(
     event_type: str,
@@ -82,7 +92,12 @@ def _input_trace_events(
         )
     for report in sorted(
         scout_reports,
-        key=lambda item: (item.candidate_id, item.scout_id, item.evidence_id, item.trace_event_id),
+        key=lambda item: (
+            item.candidate_id,
+            item.scout_id,
+            item.evidence_id,
+            item.trace_event_id,
+        ),
     ):
         events.append(
             _trace_event(
@@ -98,15 +113,21 @@ def _input_trace_events(
                     "support": report.support,
                     "source_trace_event_id": report.trace_event_id,
                     "verification_trace_event_id": (
-                        report.verification.trace_event_id if report.verification is not None else ""
+                        report.verification.trace_event_id
+                        if report.verification is not None
+                        else ""
                     ),
                 },
             )
         )
-    for event_type, signals in (
+    signal_groups: tuple[
+        tuple[str, Sequence[RecruitmentSignal | InhibitionSignal]],
+        ...,
+    ] = (
         ("recruit", recruitment_signals),
         ("inhibit", inhibition_signals),
-    ):
+    )
+    for event_type, signals in signal_groups:
         for signal in sorted(
             signals,
             key=lambda item: (item.candidate_id, item.source_id, item.trace_event_id),
@@ -124,7 +145,9 @@ def _input_trace_events(
                         "provenance": signal.provenance,
                         "source_trace_event_id": signal.trace_event_id,
                         "verification_trace_event_id": (
-                            signal.verification.trace_event_id if signal.verification is not None else ""
+                            signal.verification.trace_event_id
+                            if signal.verification is not None
+                            else ""
                         ),
                     },
                 )
@@ -139,8 +162,10 @@ def _clip_causal_lineage(record: PheromoneLifecycleRecord) -> dict[str, Any]:
         )
     try:
         envelope = json.loads(record._causal_payload_json)
-    except (TypeError, ValueError) as exc:  # pragma: no cover - governance creates it
-        raise GovernanceError("pheromone clip causal payload is not canonical JSON") from exc
+    except (TypeError, ValueError) as exc:
+        raise GovernanceError(
+            "pheromone clip causal payload is not canonical JSON"
+        ) from exc
     if (
         not isinstance(envelope, dict)
         or envelope.get("version") != PHEROMONE_CLIP_PAYLOAD_VERSION
@@ -234,7 +259,12 @@ def _pheromone_lifecycle_trace_events(
 
     for record in sorted(
         evaporation_records,
-        key=lambda item: (item.trace_event_id, item.subject_type, item.subject_id, item.kind),
+        key=lambda item: (
+            item.trace_event_id,
+            item.subject_type,
+            item.subject_id,
+            item.kind,
+        ),
     ):
         if record.action == "expire":
             events.append(
@@ -373,7 +403,10 @@ def _pheromone_lifecycle_trace_events(
                         "type": pheromone_subject_type(source),
                         "id": pheromone_subject_id(source),
                     },
-                    "target_subject": {"type": record.subject_type, "id": record.subject_id},
+                    "target_subject": {
+                        "type": record.subject_type,
+                        "id": record.subject_id,
+                    },
                     "hop": record.hop,
                     "attenuation": record.attenuation,
                     "policy_attenuation": record.policy_attenuation,
@@ -564,7 +597,7 @@ def _hybrid_step_trace_events(
         trace_event_id: str,
         current_receipt: tuple[Any, ...],
         processed_receipts: Mapping[str, tuple[Any, ...]],
-    ) -> dict[str, str]:
+    ) -> dict[str, object]:
         processed_receipt = processed_receipts.get(trace_event_id)
         if processed_receipt is None or processed_receipt != current_receipt:
             raise GovernanceError(
@@ -581,18 +614,18 @@ def _hybrid_step_trace_events(
         }
 
     accepted_adjustments = set(adjustment_batch.accepted_trace_event_ids)
-    for proposal in sorted(
+    for adjustment in sorted(
         adjustment_proposals,
         key=lambda item: (item.layer_id, item.source_id, item.trace_event_id),
     ):
-        if proposal.trace_event_id not in adjustment_batch.processed_trace_event_ids:
+        if adjustment.trace_event_id not in adjustment_batch.processed_trace_event_ids:
             continue
-        replayed = proposal.trace_event_id not in accepted_adjustments
+        replayed = adjustment.trace_event_id not in accepted_adjustments
         replay_lineage = (
             replay_binding(
                 "adjustment",
-                proposal.trace_event_id,
-                _adjustment_replay_fingerprint(proposal),
+                adjustment.trace_event_id,
+                _adjustment_replay_fingerprint(adjustment),
                 adjustment_replay_receipts,
             )
             if replayed
@@ -609,16 +642,16 @@ def _hybrid_step_trace_events(
                     else "run-scoped policy adjustment accepted within declared bounds"
                 ),
                 lineage={
-                    "proposed_values": dict(proposal.adjustments),
+                    "proposed_values": dict(adjustment.adjustments),
                     "declared_bounds": {
                         key: thaw_protocol_value(policy.policy_adjustment_bounds[key])
-                        for key in proposal.adjustments
+                        for key in adjustment.adjustments
                     },
                     "result": "replay_ignored" if replayed else "accepted",
-                    "source_id": proposal.source_id,
-                    "layer_id": proposal.layer_id,
-                    "provenance": proposal.provenance,
-                    "source_trace_event_id": proposal.trace_event_id,
+                    "source_id": adjustment.source_id,
+                    "layer_id": adjustment.layer_id,
+                    "provenance": adjustment.provenance,
+                    "source_trace_event_id": adjustment.trace_event_id,
                     "replayed": replayed,
                     **replay_lineage,
                 },
@@ -647,7 +680,9 @@ def _hybrid_step_trace_events(
                     "layer_id": proposal.layer_id,
                     "source_id": proposal.source_id,
                     "action": proposal.action,
-                    "effect": layer_state.action_effects.get(proposal.trace_event_id, "metadata_only"),
+                    "effect": layer_state.action_effects.get(
+                        proposal.trace_event_id, "metadata_only"
+                    ),
                     "candidate_id": proposal.candidate_id,
                     "confidence": proposal.confidence,
                     "support": proposal.support,
@@ -657,7 +692,9 @@ def _hybrid_step_trace_events(
                     "proposed_pheromone_kind": proposal.proposed_pheromone_kind,
                     "proposed_strength": proposal.proposed_strength,
                     "subject_type": proposal.metadata.get("subject_type", "candidate"),
-                    "subject_id": proposal.metadata.get("subject_id", proposal.candidate_id),
+                    "subject_id": proposal.metadata.get(
+                        "subject_id", proposal.candidate_id
+                    ),
                     "source_trace_event_id": proposal.trace_event_id,
                 },
             )
@@ -767,7 +804,7 @@ def _hybrid_step_trace_events(
         )
     feedback_by_id = {item.trace_event_id: item for item in feedback}
     for trace_event_id in reinforcement_result.replayed_feedback_ids:
-        item = feedback_by_id[trace_event_id]
+        feedback_item = feedback_by_id[trace_event_id]
         events.append(
             _trace_event(
                 "pheromone_observe",
@@ -776,12 +813,12 @@ def _hybrid_step_trace_events(
                 reason="previously processed feedback replay was ignored",
                 lineage={
                     "lifecycle": "feedback",
-                    "source_trace_event_id": item.trace_event_id,
+                    "source_trace_event_id": feedback_item.trace_event_id,
                     "result": "replay_ignored",
                     **replay_binding(
                         "feedback",
                         trace_event_id,
-                        _feedback_replay_fingerprint(item),
+                        _feedback_replay_fingerprint(feedback_item),
                         feedback_replay_receipts,
                     ),
                 },
@@ -800,7 +837,11 @@ def _hybrid_step_trace_events(
         if record.new_strength != record.old_strength or record.action == "expire"
     }
     active_candidate_set = CandidateSet(
-        [candidate for candidate in candidate_set.candidates if candidate.target == target]
+        tuple(
+            candidate
+            for candidate in candidate_set.candidates
+            if candidate.target == target
+        )
     )
     pheromone_score = score_pheromone_trails_result(
         candidate_set=active_candidate_set,
@@ -890,7 +931,9 @@ def _hybrid_step_trace_events(
             )
         )
     exploration_candidate_ids = [
-        candidate.id for candidate in active_candidate_set.candidates if not candidate.safe_fallback
+        candidate.id
+        for candidate in active_candidate_set.candidates
+        if not candidate.safe_fallback
     ]
     if (
         pheromone_policy.exploration_enabled
@@ -928,8 +971,12 @@ def _hybrid_step_trace_events(
             "recent_fallback_rate": (
                 snapshot.recent_fallback_rate if snapshot is not None else 0.0
             ),
-            "mean_confidence": snapshot.mean_confidence if snapshot is not None else 0.0,
-            "evidence_coverage": snapshot.evidence_coverage if snapshot is not None else 0.0,
+            "mean_confidence": snapshot.mean_confidence
+            if snapshot is not None
+            else 0.0,
+            "evidence_coverage": snapshot.evidence_coverage
+            if snapshot is not None
+            else 0.0,
             "trace_coverage": snapshot.trace_coverage if snapshot is not None else 0.0,
         }
     # Keep the draft coverage view for readers while recording the complete
@@ -1058,8 +1105,24 @@ def _hybrid_step_trace_events(
     return events
 
 
-for _compat_function in (_trace_event, _input_trace_events, _clip_causal_lineage, _pheromone_lifecycle_trace_events, _replay_receipt_digest, _replay_receipt_trace_payload, _hybrid_step_trace_events,):
-    _compat_function.__module__ = 'pheroos.governance.collective'
+for _compat_function in (
+    _trace_event,
+    _input_trace_events,
+    _clip_causal_lineage,
+    _pheromone_lifecycle_trace_events,
+    _replay_receipt_digest,
+    _replay_receipt_trace_payload,
+    _hybrid_step_trace_events,
+):
+    _compat_function.__module__ = "pheroos.governance.collective"
 del _compat_function
 
-__all__ = ('_clip_causal_lineage', '_hybrid_step_trace_events', '_input_trace_events', '_pheromone_lifecycle_trace_events', '_replay_receipt_digest', '_replay_receipt_trace_payload', '_trace_event')
+__all__ = (
+    "_clip_causal_lineage",
+    "_hybrid_step_trace_events",
+    "_input_trace_events",
+    "_pheromone_lifecycle_trace_events",
+    "_replay_receipt_digest",
+    "_replay_receipt_trace_payload",
+    "_trace_event",
+)

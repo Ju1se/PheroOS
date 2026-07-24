@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from dataclasses import replace
+from typing import cast
 
 from pheroos.conformance.report import CheckResult
 from pheroos.drivers import DriverProbeSnapshot, DriverResult
@@ -43,14 +44,18 @@ def check(manifest: CapabilityManifest) -> CheckResult:
 
 def manifest_plan_problems(manifest: CapabilityManifest) -> list[str]:
     plan = OSKernel().plan(
-        InputEnvelope(request="conformance kernel contract", tenant_id="conformance", metadata={"request_id": "kernel"}),
+        InputEnvelope(
+            request="conformance kernel contract",
+            tenant_id="conformance",
+            metadata={"request_id": "kernel"},
+        ),
         [manifest],
         driver_probe_snapshots=[
             DriverProbeSnapshot(
                 driver_id=driver.id,
                 available=True,
                 version=driver.version,
-                capabilities=driver.capabilities,
+                capabilities=tuple(driver.capabilities),
             )
             for driver in manifest.drivers
         ],
@@ -93,13 +98,19 @@ def manifest_context_problems(plan: OSPlan) -> list[str]:
 
 def driver_permission_fallback_problems() -> list[str]:
     plan = OSKernel().plan(
-        InputEnvelope(request="driver fallback", tenant_id="conformance", metadata={"request_id": "fallback"}),
+        InputEnvelope(
+            request="driver fallback",
+            tenant_id="conformance",
+            metadata={"request_id": "fallback"},
+        ),
         [capability_with_unpermissioned_driver()],
     )
     problems: list[str] = []
     if plan.driver_exposures:
         problems.append("driver_permission_fallback:exposed")
-    if "driver_permissions_missing" not in {diagnostic.code for diagnostic in plan.diagnostics}:
+    if "driver_permissions_missing" not in {
+        diagnostic.code for diagnostic in plan.diagnostics
+    }:
         problems.append("driver_permission_fallback:missing_diagnostic")
     return problems
 
@@ -108,49 +119,61 @@ def materialization_boundary_problems() -> list[str]:
     ready_plan = OSPlan(
         tenant_id="conformance",
         request_id="ready",
-        driver_exposures=[
+        driver_exposures=(
             DriverExposure(
                 driver_id="driver:blocked",
                 capability_id="capability:test",
-                capabilities=["evidence:read"],
+                capabilities=("evidence:read",),
             ),
             DriverExposure(
                 driver_id="driver:allowed",
                 capability_id="capability:test",
-                permissions=["driver:invoke"],
-                capabilities=["evidence:read"],
+                permissions=("driver:invoke",),
+                capabilities=("evidence:read",),
             ),
-        ],
-        tool_exposures=[
+        ),
+        tool_exposures=(
             ToolExposure(tool_id="tool:blocked", capability_id="capability:test"),
-            ToolExposure(tool_id="tool:allowed", capability_id="capability:test", permissions=["tool:use"]),
-        ],
+            ToolExposure(
+                tool_id="tool:allowed",
+                capability_id="capability:test",
+                permissions=("tool:use",),
+            ),
+        ),
     )
     ready_context = RuntimeMaterializer().materialize(ready_plan)
     not_ready_context = RuntimeMaterializer().materialize(
         OSPlan(
             tenant_id="conformance",
             request_id="not-ready",
-            driver_exposures=[
+            driver_exposures=(
                 DriverExposure(
                     driver_id="driver:allowed",
                     capability_id="capability:test",
-                    permissions=["driver:invoke"],
-                    capabilities=["evidence:read"],
+                    permissions=("driver:invoke",),
+                    capabilities=("evidence:read",),
                 ),
-            ],
-            tool_exposures=[
-                ToolExposure(tool_id="tool:allowed", capability_id="capability:test", permissions=["tool:use"]),
-            ],
+            ),
+            tool_exposures=(
+                ToolExposure(
+                    tool_id="tool:allowed",
+                    capability_id="capability:test",
+                    permissions=("tool:use",),
+                ),
+            ),
             runtime_ready=False,
             degraded=True,
         )
     )
 
     problems: list[str] = []
-    if [exposure.driver_id for exposure in ready_context.driver_exposures] != ["driver:allowed"]:
+    if [exposure.driver_id for exposure in ready_context.driver_exposures] != [
+        "driver:allowed"
+    ]:
         problems.append("materializer:driver_permission_gate")
-    if [exposure.tool_id for exposure in ready_context.tool_exposures] != ["tool:allowed"]:
+    if [exposure.tool_id for exposure in ready_context.tool_exposures] != [
+        "tool:allowed"
+    ]:
         problems.append("materializer:tool_permission_gate")
     if not_ready_context.driver_exposures or not_ready_context.tool_exposures:
         problems.append("materializer:not_ready_exposed")
@@ -170,15 +193,15 @@ def authority_snapshot_problems() -> list[str]:
         DriverExposure(
             driver_id="driver:allowed",
             capability_id="capability:test",
-            permissions=permissions,
-            capabilities=capabilities,
+            permissions=cast(tuple[str, ...], permissions),
+            capabilities=cast(tuple[str, ...], capabilities),
         )
     ]
     plan = OSPlan(
         tenant_id="conformance",
         request_id="snapshot",
-        permission_grants=grants,
-        driver_exposures=exposures,
+        permission_grants=cast(tuple[PermissionGrant, ...], grants),
+        driver_exposures=cast(tuple[DriverExposure, ...], exposures),
     )
     permissions.append("driver:admin")
     capabilities.append("evidence:write")
@@ -192,8 +215,8 @@ def authority_snapshot_problems() -> list[str]:
         DriverExposure(
             driver_id="driver:forged",
             capability_id="capability:test",
-            permissions=["driver:invoke"],
-            capabilities=["evidence:read"],
+            permissions=("driver:invoke",),
+            capabilities=("evidence:read",),
         )
     )
     context = RuntimeMaterializer().materialize(plan)
@@ -223,14 +246,14 @@ def authority_snapshot_problems() -> list[str]:
             OSPlan(
                 tenant_id="conformance",
                 request_id="blank-permission",
-                driver_exposures=[
+                driver_exposures=(
                     DriverExposure(
                         driver_id="driver:allowed",
                         capability_id="capability:test",
-                        permissions=["   "],
-                        capabilities=["evidence:read"],
-                    )
-                ],
+                        permissions=("   ",),
+                        capabilities=("evidence:read",),
+                    ),
+                ),
             )
         )
     ):
@@ -244,46 +267,56 @@ def syscall_boundary_problems() -> list[str]:
         tenant_id="conformance",
         run_id="run:syscall",
         request_id="syscall",
-        driver_exposures=[
+        driver_exposures=(
             DriverExposure(
                 driver_id="driver:allowed",
                 capability_id="capability:test",
-                permissions=["driver:invoke"],
-                capabilities=["evidence:read"],
+                permissions=("driver:invoke",),
+                capabilities=("evidence:read",),
             ),
-        ],
-        tool_exposures=[
-            ToolExposure(tool_id="tool:allowed", capability_id="capability:test", permissions=["tool:use"]),
-        ],
+        ),
+        tool_exposures=(
+            ToolExposure(
+                tool_id="tool:allowed",
+                capability_id="capability:test",
+                permissions=("tool:use",),
+            ),
+        ),
     )
     unpermissioned_context = RuntimeContext(
         tenant_id="conformance",
         run_id="run:syscall",
         request_id="syscall",
-        driver_exposures=[
+        driver_exposures=(
             DriverExposure(
                 driver_id="driver:blocked",
                 capability_id="capability:test",
-                capabilities=["evidence:read"],
-            )
-        ],
-        tool_exposures=[ToolExposure(tool_id="tool:blocked", capability_id="capability:test")],
+                capabilities=("evidence:read",),
+            ),
+        ),
+        tool_exposures=(
+            ToolExposure(tool_id="tool:blocked", capability_id="capability:test"),
+        ),
     )
     not_ready_context = RuntimeContext(
         tenant_id="conformance",
         run_id="run:syscall",
         request_id="syscall",
-        driver_exposures=[
+        driver_exposures=(
             DriverExposure(
                 driver_id="driver:allowed",
                 capability_id="capability:test",
-                permissions=["driver:invoke"],
-                capabilities=["evidence:read"],
+                permissions=("driver:invoke",),
+                capabilities=("evidence:read",),
             ),
-        ],
-        tool_exposures=[
-            ToolExposure(tool_id="tool:allowed", capability_id="capability:test", permissions=["tool:use"]),
-        ],
+        ),
+        tool_exposures=(
+            ToolExposure(
+                tool_id="tool:allowed",
+                capability_id="capability:test",
+                permissions=("tool:use",),
+            ),
+        ),
         ready=False,
     )
     foreign_context = RuntimeContext(
@@ -419,8 +452,12 @@ def syscall_boundary_problems() -> list[str]:
             valid_request,
             replace(valid_result, payload={"evidence": "conflicting"}),
         ),
-        "syscall:unpermissioned_tool": lambda: syscalls.expose_tool(unpermissioned_context, "tool:blocked"),
-        "syscall:not_ready_tool": lambda: syscalls.expose_tool(not_ready_context, "tool:allowed"),
+        "syscall:unpermissioned_tool": lambda: syscalls.expose_tool(
+            unpermissioned_context, "tool:blocked"
+        ),
+        "syscall:not_ready_tool": lambda: syscalls.expose_tool(
+            not_ready_context, "tool:allowed"
+        ),
     }
     problems.extend(
         name
@@ -488,8 +525,16 @@ def capability_with_unpermissioned_driver() -> CapabilityManifest:
             protocol_version="pheroos.protocol.v1",
             id="kernel.contract",
             targets=[TargetSpec(id="decision:kernel")],
-            candidates=[CandidateSpec(id="candidate:fallback", target="decision:kernel", safe_fallback=True)],
-            quorum_policy=QuorumPolicy(target="decision:kernel", fallback_candidate="candidate:fallback"),
+            candidates=[
+                CandidateSpec(
+                    id="candidate:fallback",
+                    target="decision:kernel",
+                    safe_fallback=True,
+                )
+            ],
+            quorum_policy=QuorumPolicy(
+                target="decision:kernel", fallback_candidate="candidate:fallback"
+            ),
             output_policy=OutputPolicy(),
             trace_policy=TracePolicy(),
         ),

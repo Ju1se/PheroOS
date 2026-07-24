@@ -3,21 +3,50 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "additionalProperties": false,
   "properties": {
-    "id": {"minLength": 1, "type": "string"},
+    "id": {
+      "minLength": 1,
+      "type": "string"
+    },
     "inputs": {
       "properties": {
-        "operation": {"minLength": 1, "type": "string"}
+        "operation": {
+          "minLength": 1,
+          "type": "string"
+        }
       },
-      "required": ["operation"],
+      "required": [
+        "operation"
+      ],
       "type": "object"
     },
-    "manifest": {"type": ["object", "null"]},
-    "matrix_case": {"minimum": 1, "type": "integer"},
-    "prior_authoritative_state": {"type": "object"},
-    "profile": {"minLength": 1, "type": "string"},
-    "request_version": {"const": "pheroos-commit-tck-request-v2"},
-    "tck_version": {"minLength": 1, "type": "string"},
-    "title": {"minLength": 1, "type": "string"}
+    "manifest": {
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "matrix_case": {
+      "minimum": 1,
+      "type": "integer"
+    },
+    "prior_authoritative_state": {
+      "type": "object"
+    },
+    "profile": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "request_version": {
+      "const": "pheroos-commit-tck-request-v2"
+    },
+    "tck_version": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "title": {
+      "minLength": 1,
+      "type": "string"
+    }
   },
   "required": [
     "id",

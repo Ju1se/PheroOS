@@ -10,7 +10,9 @@ from pheroos.governance.layer_coordination import LayerPerformanceSnapshot
 from pheroos.governance.layer_coordination import LayerProposal
 from pheroos.governance.layer_coordination import StrategyBias
 from pheroos.governance.layer_coordination import evaluate_layer_coordination
-from pheroos.governance.layer_coordination import layer_coordination_policy_from_collective
+from pheroos.governance.layer_coordination import (
+    layer_coordination_policy_from_collective,
+)
 from pheroos.governance.layer_coordination import materialize_layer_pheromone_proposals
 from pheroos.governance._pheromone.diffusion import (
     diffuse_pheromone_trails_with_records,
@@ -34,7 +36,9 @@ from pheroos.governance._pheromone.lifecycle import (
 from pheroos.governance._pheromone.records import PheromoneNeighborhood, PheromoneTrail
 from pheroos.governance._pheromone.scoring import observe_pheromone_exploration
 from pheroos.governance.pheromone_feedback import PheromoneFeedback
-from pheroos.governance.pheromone_feedback import reinforce_pheromone_trails_with_records
+from pheroos.governance.pheromone_feedback import (
+    reinforce_pheromone_trails_with_records,
+)
 from pheroos.governance.policy_adjustment import PolicyAdjustmentProposal
 from pheroos.governance.policy_adjustment import apply_policy_adjustment_overlay
 from pheroos.governance.policy_adjustment import validate_policy_adjustment_proposals
@@ -44,11 +48,35 @@ from pheroos.governance.runtime_policy import resolve_collective_fallback_id
 from pheroos.governance.runtime_policy import validate_collective_runtime_policy
 from pheroos.protocol.models import CollectiveDecisionPolicy
 from typing import Any
-from pheroos.governance._swarm.records import CollectiveDecisionState, CollectiveDecisionStep, HybridCollectiveStep, HybridReplayState
-from pheroos.governance._swarm.replay import _adjustment_replay_fingerprint, _extend_replay_receipts, _feedback_replay_fingerprint, _issue_hybrid_collective_step, _trail_replay_fingerprint, _validate_complete_hybrid_trace_identity, _validate_replay_receipts, hybrid_replay_state_is_authoritative
-from pheroos.governance._swarm.scoring import merge_candidate_breakdown, score_candidates, validate_score_breakdown
-from pheroos.governance._swarm.signals import InhibitionSignal, RecruitmentSignal, ScoutReport
+from pheroos.governance._swarm.records import (
+    CollectiveDecisionState,
+    CollectiveDecisionStep,
+    HybridCollectiveStep,
+    HybridReplayState,
+)
+from pheroos.governance._swarm.replay import (
+    _adjustment_replay_fingerprint,
+    _extend_replay_receipts,
+    _feedback_replay_fingerprint,
+    _hybrid_replay_state_bindings_match,
+    _issue_hybrid_collective_step,
+    _trail_replay_fingerprint,
+    _validate_complete_hybrid_trace_identity,
+    _validate_replay_receipts,
+    hybrid_replay_state_is_authoritative,
+)
+from pheroos.governance._swarm.scoring import (
+    merge_candidate_breakdown,
+    score_candidates,
+    validate_score_breakdown,
+)
+from pheroos.governance._swarm.signals import (
+    InhibitionSignal,
+    RecruitmentSignal,
+    ScoutReport,
+)
 from pheroos.governance._swarm.trace import _hybrid_step_trace_events
+
 
 def merge_governed_layer_coordination(
     state: CollectiveDecisionState,
@@ -71,7 +99,9 @@ def merge_governed_layer_coordination(
                 raise GovernanceError(
                     f"layer coordination scored an undeclared active candidate: {candidate_id}"
                 )
-            merge_candidate_breakdown(score_breakdown, candidate_id, candidate_breakdown)
+            merge_candidate_breakdown(
+                score_breakdown, candidate_id, candidate_breakdown
+            )
     scores = {
         candidate_id: sum(candidate_breakdown.values())
         for candidate_id, candidate_breakdown in score_breakdown.items()
@@ -156,7 +186,9 @@ def evaluate_collective_decision_step(
         state=state,
         fallback_candidate_id=fallback_candidate_id,
     )
-    return CollectiveDecisionStep(decision=decision, state=state, pheromone_trails=active_trails)
+    return CollectiveDecisionStep(
+        decision=decision, state=state, pheromone_trails=active_trails
+    )
 
 
 def evaluate_hybrid_collective_step(
@@ -184,6 +216,117 @@ def evaluate_hybrid_collective_step(
     fallback_candidate_id: str | None = None,
     attention_only: bool = False,
 ) -> HybridCollectiveStep:
+    """Evaluate one complete Hybrid step through the legacy Draft surface."""
+
+    return _evaluate_hybrid_collective_step(
+        protocol_id=protocol_id,
+        candidate_set=candidate_set,
+        policy=policy,
+        target=target,
+        current_step=current_step,
+        scout_reports=scout_reports,
+        recruitment_signals=recruitment_signals,
+        inhibition_signals=inhibition_signals,
+        existing_trails=existing_trails,
+        deposits=deposits,
+        topology=topology,
+        feedback=feedback,
+        layer_proposals=layer_proposals,
+        performance_snapshots=performance_snapshots,
+        strategy_biases=strategy_biases,
+        adjustment_proposals=adjustment_proposals,
+        processed_pheromone_event_ids=processed_pheromone_event_ids,
+        processed_feedback_ids=processed_feedback_ids,
+        processed_adjustment_ids=processed_adjustment_ids,
+        replay_state=replay_state,
+        fallback_candidate_id=fallback_candidate_id,
+        attention_only=attention_only,
+        require_legacy_replay_authority=True,
+        issue_legacy_result=True,
+    )
+
+
+def _evaluate_hybrid_collective_step_v2(
+    *,
+    protocol_id: str,
+    candidate_set: CandidateSet,
+    policy: CollectiveDecisionPolicy,
+    target: str,
+    current_step: int,
+    scout_reports: list[ScoutReport],
+    recruitment_signals: list[RecruitmentSignal] | None = None,
+    inhibition_signals: list[InhibitionSignal] | None = None,
+    existing_trails: list[PheromoneTrail] | None = None,
+    deposits: list[PheromoneTrail] | None = None,
+    topology: PheromoneNeighborhood | None = None,
+    feedback: list[PheromoneFeedback] | None = None,
+    layer_proposals: list[LayerProposal] | None = None,
+    performance_snapshots: list[LayerPerformanceSnapshot] | None = None,
+    strategy_biases: list[StrategyBias] | None = None,
+    adjustment_proposals: list[PolicyAdjustmentProposal] | None = None,
+    replay_state: HybridReplayState | None = None,
+    fallback_candidate_id: str | None = None,
+    attention_only: bool = False,
+) -> HybridCollectiveStep:
+    """Run the pure Hybrid engine after a v2 owner verified replay currentness.
+
+    This is not an authority entry point. It accepts only the normalized replay
+    projection reconstructed by Hybrid Replay v2 and deliberately neither reads
+    nor issues the legacy process-local replay/step tokens.
+    """
+
+    return _evaluate_hybrid_collective_step(
+        protocol_id=protocol_id,
+        candidate_set=candidate_set,
+        policy=policy,
+        target=target,
+        current_step=current_step,
+        scout_reports=scout_reports,
+        recruitment_signals=recruitment_signals,
+        inhibition_signals=inhibition_signals,
+        existing_trails=existing_trails,
+        deposits=deposits,
+        topology=topology,
+        feedback=feedback,
+        layer_proposals=layer_proposals,
+        performance_snapshots=performance_snapshots,
+        strategy_biases=strategy_biases,
+        adjustment_proposals=adjustment_proposals,
+        replay_state=replay_state,
+        fallback_candidate_id=fallback_candidate_id,
+        attention_only=attention_only,
+        require_legacy_replay_authority=False,
+        issue_legacy_result=False,
+    )
+
+
+def _evaluate_hybrid_collective_step(
+    *,
+    protocol_id: str,
+    candidate_set: CandidateSet,
+    policy: CollectiveDecisionPolicy,
+    target: str,
+    current_step: int,
+    scout_reports: list[ScoutReport],
+    recruitment_signals: list[RecruitmentSignal] | None = None,
+    inhibition_signals: list[InhibitionSignal] | None = None,
+    existing_trails: list[PheromoneTrail] | None = None,
+    deposits: list[PheromoneTrail] | None = None,
+    topology: PheromoneNeighborhood | None = None,
+    feedback: list[PheromoneFeedback] | None = None,
+    layer_proposals: list[LayerProposal] | None = None,
+    performance_snapshots: list[LayerPerformanceSnapshot] | None = None,
+    strategy_biases: list[StrategyBias] | None = None,
+    adjustment_proposals: list[PolicyAdjustmentProposal] | None = None,
+    processed_pheromone_event_ids: frozenset[str] = frozenset(),
+    processed_feedback_ids: frozenset[str] = frozenset(),
+    processed_adjustment_ids: frozenset[str] = frozenset(),
+    replay_state: HybridReplayState | None = None,
+    fallback_candidate_id: str | None = None,
+    attention_only: bool = False,
+    require_legacy_replay_authority: bool,
+    issue_legacy_result: bool,
+) -> HybridCollectiveStep:
     """Evaluate one complete, deterministic Hybrid Pheromone governance step.
 
     All inputs are validated before a result is returned, all lifecycle
@@ -210,10 +353,19 @@ def evaluate_hybrid_collective_step(
     feedback_replay_receipts: Mapping[str, tuple[Any, ...]] = {}
     adjustment_replay_receipts: Mapping[str, tuple[Any, ...]] = {}
     if replay_state is not None:
-        if not hybrid_replay_state_is_authoritative(replay_state):
-            raise GovernanceError("hybrid replay state is not governance-issued")
+        if require_legacy_replay_authority:
+            if not hybrid_replay_state_is_authoritative(replay_state):
+                raise GovernanceError("hybrid replay state is not governance-issued")
+        elif not _hybrid_replay_state_bindings_match(
+            replay_state,
+            protocol_id=protocol_id,
+            target=target,
+        ):
+            raise GovernanceError("Hybrid Replay v2 state projection is malformed")
         if replay_state.protocol_id != protocol_id or replay_state.target != target:
-            raise GovernanceError("hybrid replay state does not match the active protocol and target")
+            raise GovernanceError(
+                "hybrid replay state does not match the active protocol and target"
+            )
         if existing_trails:
             raise GovernanceError(
                 "existing trails cannot override governance-issued replay memory"
@@ -232,8 +384,14 @@ def evaluate_hybrid_collective_step(
         raise GovernanceError("hybrid collective step requires mode='hybrid'")
     if not is_nonblank_string(target):
         raise GovernanceError("hybrid collective step requires an active target")
-    if isinstance(current_step, bool) or not isinstance(current_step, int) or current_step < 0:
-        raise GovernanceError("hybrid collective current_step must be a non-negative integer")
+    if (
+        isinstance(current_step, bool)
+        or not isinstance(current_step, int)
+        or current_step < 0
+    ):
+        raise GovernanceError(
+            "hybrid collective current_step must be a non-negative integer"
+        )
     if not (
         policy.pheromone_enabled
         and policy.pheromone_diffusion_enabled
@@ -244,9 +402,13 @@ def evaluate_hybrid_collective_step(
         and policy.pheromone_require_provenance
         and policy.pheromone_require_trace
     ):
-        raise GovernanceError("hybrid collective step requires the complete declared Hybrid path")
+        raise GovernanceError(
+            "hybrid collective step requires the complete declared Hybrid path"
+        )
     if topology is None:
-        raise GovernanceError("hybrid collective step requires declared pheromone topology")
+        raise GovernanceError(
+            "hybrid collective step requires declared pheromone topology"
+        )
 
     fallback_id = resolve_collective_fallback_id(
         candidate_set=candidate_set,
@@ -256,10 +418,18 @@ def evaluate_hybrid_collective_step(
     )
     fallback = candidate_set.require_declared_for_target(fallback_id, target)
     if not fallback.safe_fallback:
-        raise GovernanceError(f"hybrid fallback candidate is not marked safe: {fallback.id}")
-    active_candidates = [candidate for candidate in candidate_set.candidates if candidate.target == target]
+        raise GovernanceError(
+            f"hybrid fallback candidate is not marked safe: {fallback.id}"
+        )
+    active_candidates = [
+        candidate
+        for candidate in candidate_set.candidates
+        if candidate.target == target
+    ]
     if not active_candidates:
-        raise GovernanceError("hybrid collective step has no candidates for the active target")
+        raise GovernanceError(
+            "hybrid collective step has no candidates for the active target"
+        )
 
     # Run-scoped adaptation is validated as one atomic batch and applied to an
     # immutable replacement policy; the manifest-owned object is never mutated.
@@ -359,9 +529,13 @@ def evaluate_hybrid_collective_step(
             target=target,
         )
         if not pheromone_bound_candidate_id(trail):
-            raise GovernanceError("hybrid pheromone trail must bind a declared candidate")
+            raise GovernanceError(
+                "hybrid pheromone trail must bind a declared candidate"
+            )
         if trail.trace_event_id in seen_trail_ids:
-            raise GovernanceError(f"duplicate active pheromone trace_event_id: {trail.trace_event_id}")
+            raise GovernanceError(
+                f"duplicate active pheromone trace_event_id: {trail.trace_event_id}"
+            )
         seen_trail_ids.add(trail.trace_event_id)
 
     evaporation_result = evaporate_trails_with_records(
@@ -427,7 +601,7 @@ def evaluate_hybrid_collective_step(
     )
 
     observations = observe_pheromone_exploration(
-        candidate_set=CandidateSet(active_candidates),
+        candidate_set=CandidateSet(tuple(active_candidates)),
         trails=list(active_trails),
         policy=pheromone_policy,
         current_step=current_step,
@@ -514,7 +688,7 @@ def evaluate_hybrid_collective_step(
         include_legacy_decision=not attention_only,
     )
 
-    return _issue_hybrid_collective_step(HybridCollectiveStep(
+    result = HybridCollectiveStep(
         decision=decision,
         state=state,
         active_trails=active_trails,
@@ -537,9 +711,7 @@ def evaluate_hybrid_collective_step(
             deposit_inputs,
             _trail_replay_fingerprint,
         ),
-        diffusion_replay_receipts=dict(
-            diffusion_result._processed_event_receipts
-        ),
+        diffusion_replay_receipts=dict(diffusion_result._processed_event_receipts),
         feedback_replay_receipts=_extend_replay_receipts(
             feedback_replay_receipts,
             feedback_inputs,
@@ -552,7 +724,14 @@ def evaluate_hybrid_collective_step(
         ),
         budget_state=budget,
         trace_events=tuple(events),
-    ), protocol_id=protocol_id, target=target)
+    )
+    if issue_legacy_result:
+        return _issue_hybrid_collective_step(
+            result,
+            protocol_id=protocol_id,
+            target=target,
+        )
+    return result
 
 
 def _decide_collective_state(
@@ -570,10 +749,14 @@ def _decide_collective_state(
         if candidate.target == target
     }
     if set(state.scores) != active_ids or set(state.independent_scouts) != active_ids:
-        raise GovernanceError("collective decision state must cover exactly the active target candidates")
+        raise GovernanceError(
+            "collective decision state must cover exactly the active target candidates"
+        )
     for candidate_id, scouts in state.independent_scouts.items():
         if any(not isinstance(scout_id, str) or not scout_id for scout_id in scouts):
-            raise GovernanceError(f"collective state contains an invalid scout identity: {candidate_id}")
+            raise GovernanceError(
+                f"collective state contains an invalid scout identity: {candidate_id}"
+            )
     candidate_id, reason = select_legacy_blended_decision(
         candidate_set=candidate_set,
         policy=policy,
@@ -594,8 +777,20 @@ def _decide_collective_state(
     )
 
 
-for _compat_function in (merge_governed_layer_coordination, evaluate_collective_decision, evaluate_collective_decision_step, evaluate_hybrid_collective_step, _decide_collective_state,):
-    _compat_function.__module__ = 'pheroos.governance.collective'
+for _compat_function in (
+    merge_governed_layer_coordination,
+    evaluate_collective_decision,
+    evaluate_collective_decision_step,
+    evaluate_hybrid_collective_step,
+    _decide_collective_state,
+):
+    _compat_function.__module__ = "pheroos.governance.collective"
 del _compat_function
 
-__all__ = ('_decide_collective_state', 'evaluate_collective_decision', 'evaluate_collective_decision_step', 'evaluate_hybrid_collective_step', 'merge_governed_layer_coordination')
+__all__ = (
+    "_decide_collective_state",
+    "evaluate_collective_decision",
+    "evaluate_collective_decision_step",
+    "evaluate_hybrid_collective_step",
+    "merge_governed_layer_coordination",
+)

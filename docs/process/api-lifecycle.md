@@ -34,6 +34,9 @@ The ABI artifact surface is:
 - the packaged public Python lifecycle registry under
   `pheroos/conformance/abi/public-python-api-lifecycle-v1.json`
 - checked-in JSON schemas under `schemas/`
+- the closed `pheroos.conformance.schema_catalog` ownership registry that
+  binds every checked schema to its factory, reader/validator, CLI names,
+  frozen state, package-data decision, profiles, and TCKs
 - full capability manifest schema under `schemas/capability.schema.json`
 - strict Commit Wire schema under `schemas/commit.schema.json`
 - implementation-neutral Commit TCK v1/v2 and v2 request/response schemas
@@ -66,6 +69,80 @@ ABI surface so an external runtime or independent verifier is not forced to
 depend on private helpers. Symbols prefixed with `_` remain implementation
 details; removing or renaming an exported symbol requires the normal Draft ABI
 migration and snapshot update.
+
+WP-03 adds 23 public Draft Governance names under the canonical
+`pheroos.governance.authority_session_v2` owner and two public Draft
+Conformance names for its exact-version matrix. Portable grants, verifications,
+and requests have strict canonical wire shapes; capability and session types
+are intentionally non-portable opaque handles with no public constructor. The
+shape and lifecycle inventories cover all 25 additions. Their availability is
+not profile activation: the complete scoped-authority selectors, verifier TCK,
+Output v2, and source-v4 gates were still inactive at that milestone. WP-05
+subsequently deprecates only the legacy authority slices for which a complete
+public StateStore-backed owner and reusable v2 Conformance matrix now exist.
+Other trusted-host v1 issuers remain Draft until the same per-symbol gate is
+met. No v1 implementation is physically removed by lifecycle metadata.
+
+### WP-05 durable-authority deprecation boundary
+
+WP-05 records an exact 86-name Governance cohort as Deprecated. The cohort is
+not selected by a name wildcard. It is the reviewed set of process-local state,
+sentinel-issued records, issuers/transitions, and currentness/authority checks
+covered by these public v2 matrices:
+
+- `run_governance_hybrid_replay_conformance_v2`
+- `run_governance_commit_replay_conformance_v2`
+- `run_governance_commit_decision_conformance_v2`
+- `run_governance_risk_conformance_v2`
+- `run_governance_support_conformance_v2`
+- `run_governance_commit_certificate_conformance_v2`
+- `run_governance_distributed_commit_conformance_v2`
+
+The exact migration anchors are:
+
+| Legacy authority slice | Exact public v2 replacement |
+| --- | --- |
+| `HybridCollectiveStep`; `hybrid_collective_step_is_authoritative` | `VerifiedHybridSourceStepV2` issued only by `evaluate_hybrid_collective_step_v2` |
+| `HybridReplayState`; `hybrid_replay_state_is_authoritative` | `VerifiedHybridReplayStateV2`; `hybrid_replay_state_is_current_v2` |
+| `evaluate_hybrid_collective_step`; `replay_state_from_hybrid_step` | `evaluate_hybrid_collective_step_v2`; `advance_hybrid_replay_state_v2` |
+| `CommitReplayState`; its initialize/record/currentness/authority entrypoints | `VerifiedCommitReplayStateV2`; `prepare_commit_replay_advance_v2`; `advance_commit_replay_state_v2`; `commit_replay_state_is_current_v2` |
+| v1 window, seal, progress, and outcome authority records/checks | `VerifiedCommitDecisionStateV2`; `commit_decision_state_is_current_v2`; `require_current_commit_decision_state_v2` |
+| v1 window initialize/advance/reset/restart and liveness issuance | `prepare_commit_decision_initialize_v2`; `prepare_commit_decision_successor_v2`; `advance_commit_decision_v2` |
+| `CommitLivenessInput`; `reduce_commit_liveness` | `VerifiedCommitDecisionSourceV2`; `reduce_commit_decision_v2` |
+| `CommitFinalityVerification`; its authority check | neutral opaque `VerifiedCommitFinalityInputV2` |
+| v1 Risk chain, assessment, and threshold authority records/issuers/checks | `VerifiedRiskStateV2`; `prepare_risk_state_advance_v2`; `advance_risk_state_v2`; `risk_state_is_current_v2` |
+| v1 eligible Membership snapshot/epoch authority and checks | `VerifiedMembershipStateV2`; `commit_membership_epoch_v2`; `membership_state_is_current_v2` |
+| v1 Support lease/revocation/replay authority, issue/revoke/switch, and checks | `VerifiedSupportStateV2`; the four `prepare_support_*_v2` entrypoints; `advance_support_state_v2`; `support_state_is_current_v2` |
+| v1 local-receipt issuance/currentness and local finality | the sealed `VerifiedCommitDecisionStateV2` journey through `prepare_commit_decision_successor_v2` and `advance_commit_decision_v2` |
+| v1 evidence-certificate issuance and current certified finality | `prepare_commit_certificate_v2`; `advance_commit_certificate_v2`; `verified_commit_certificate_finality_input_v2` |
+| v1 outcome-certificate issuance/currentness | terminal `VerifiedCommitDecisionStateV2` through `advance_commit_decision_v2` |
+| v1 Distributed state/issuers/transitions/currentness/finality | `VerifiedDistributedStateV2`; the four `prepare_distributed_*_v2` lane entrypoints; `advance_distributed_commit_v2`; `distributed_state_is_current_v2`; `verified_distributed_commit_finality_input_v2` |
+
+A preparation function is not authority by itself. Where the lifecycle points
+to `prepare_*_v2`, migration still requires the exact authority session,
+atomic `advance_*_v2` Store commit, verified receipt/inclusion, and rehydrated
+current owner described by that v2 ABI. There is no v1-to-v2 authority
+conversion helper and no fallback to the old issuer when v2 denies or races.
+
+The following surfaces deliberately remain Draft rather than Deprecated:
+
+- v1 payload, `from_payload`, fingerprint, signing-root, and body-root helpers;
+- `EvidenceCommitCertificate`, `OutcomeCertificate`, `LocalCommitReceipt`, and
+  their historical inspection codecs;
+- `verify_evidence_commit_certificate` and `verify_outcome_certificate` when
+  used to inspect retained portable proof;
+- portable Distributed proposal, witness, certificate, finality-decision, and
+  epoch-certificate records/codecs; and
+- independent portable Distributed verification functions such as
+  `verify_distributed_commit_certificate`,
+  `verify_distributed_commit_proposal`,
+  `verify_epoch_transition_certificate`, and
+  `verify_portable_witness_verification`.
+
+Those functions validate or describe data. They cannot issue, refresh, make
+current, or authorize a Store-backed v2 state. Retaining them is necessary for
+historical proof inspection and must not be described as retaining v1 runtime
+authority.
 
 ## Internal Surfaces
 
@@ -112,12 +189,64 @@ package that owns them.
 Current project status:
 
 - Manifest schemas: Draft, conformance-backed.
-- Public package exports: Draft, test-backed.
+- Public package exports: Draft or Deprecated, test-backed; no Stable entries
+  are claimed by WP-05.
 - CLI commands: Draft.
 - Provider-free examples: Draft.
 - Conformance checks and profile versions: Draft.
 - Optimal Commit Wire and TCK artifacts: Draft, conformance-backed.
 - Full runtime infrastructure: out of scope.
+
+### Draft Stable promotion candidate
+
+`pheroos/conformance/abi/stable-python-api-v1.json` is the reviewed WP-07A
+promotion candidate. It is a type-closed projection of the six public facades,
+not a Stable lifecycle claim. Its lifecycle remains exactly
+`draft / promotion_candidate / formal_stable=false` until the separately
+governed WP-07B release gate succeeds.
+
+The package-facade boundary, aggregate write journey, external adapter rules,
+and verification commands are collected in the
+[Stable Core consumer contract](../protocol/stable-core-consumer.md).
+
+External consumers can inspect and check this projection with:
+
+```bash
+pheroos abi show --stable-only
+pheroos abi diff --stable-only
+```
+
+The candidate diff is a promotion-readiness drift gate. When given a complete
+public ABI inventory, it compares only candidate closure bindings and their
+declared constant dependencies; changes to unrelated Expert Draft exports are
+ignored. Candidate drift can fail the command while `stable_breaking` remains
+false. Only a later formally Stable, same-major artifact may report a Stable
+breaking change.
+
+The executable strict-type consumer lives at
+`tests/typing/stable_consumer.py`. Wheel and sdist tests install each artifact
+separately, run that same file from an isolated external working directory,
+and require both `pheroos/py.typed` and the candidate JSON to be packaged. The
+same consumer executes the Governance-owned aggregate write journey and proves
+committed output, duplicate-free exact retry, same-root restart recovery,
+currentness denial after a successor, revoked/expired grant denial, and blocked
+publish denial.
+
+The candidate includes the portable signal proposal-root helper because the
+aggregate journey requires an exact signal/proposal binding. It includes
+portable grant revocation because lifecycle denial is part of that executable
+journey. Neither root exposes an opaque capability or session. This evidence
+does not change `draft / promotion_candidate / formal_stable=false`.
+
+WP-01 reserves scoped authority v2 as a new semantic/profile family rather
+than mutating the current Draft surface. The exact IDs and state model are in
+the [authority decision](../protocol/authority-v2-decision.md). A v1 issuer is
+marked Deprecated only after its session-bound replacement exists, is
+exported, has lifecycle metadata, and passes the v2 negative/conformance
+matrix; WP-05 closes that gate for the 86-name cohort above and no broader
+set. The
+[migration contract](../protocol/authority-v2-migration.md) fixes `0.3.0` as
+the earliest possible removal, not a promised removal date.
 
 ## Change Rules
 
@@ -171,10 +300,22 @@ non-public migration gates are recorded in
 | `run_conformance(..., root=...)` parameter only | `run_source_conformance(core_root)` for source proof | `0.3.0` |
 | `pheroos.governance.trace` module alias | `pheroos.trace` | `0.3.0` |
 | three Governance commit-codec wrappers | the same names under `pheroos.protocol` | `0.3.0` |
+| 6 Hybrid process-local step/replay authority surfaces | Hybrid Replay v2 owner/evaluator/currentness/advance | `0.3.0` |
+| 27 Commit replay/window/seal/liveness/finality authority surfaces | Commit Replay v2 and Commit Decision v2 owners | `0.3.0` |
+| 11 Risk/threshold authority surfaces | Risk v2 owner | `0.3.0` |
+| 17 Membership/Support/replay authority surfaces | Membership and Support v2 owners | `0.3.0` |
+| 8 local-receipt/certificate/current-finality authority surfaces | Commit Decision and Commit Certificate v2 owners | `0.3.0` |
+| 17 Distributed issuer/transition/current-finality authority surfaces | four-lane Distributed Commit v2 owner | `0.3.0` |
 
 `run_conformance` itself is not deprecated. It remains the manifest
 conformance entrypoint; only its ignored `root` compatibility parameter is
 scheduled for removal.
+
+The WP-05 counts above describe lifecycle entries, not files deleted. Their v1
+implementations remain available for the declared Draft compatibility window,
+and portable historical readers may remain beyond it. Actual removal is owned
+by the non-skippable physical-removal Goal and requires release/consumer
+evidence at or after the earliest removal version.
 
 ## Versioning
 

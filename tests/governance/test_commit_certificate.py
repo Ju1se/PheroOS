@@ -357,9 +357,7 @@ def test_local_receipt_rejects_stale_authority_head_after_assessment() -> None:
                 namespace=ReplayNamespace.WITNESS,
                 record_id=f"witness:{scenario.run_id}:new-head",
                 nonce=f"nonce:witness:{scenario.run_id}:new-head",
-                payload_fingerprint=_fingerprint(
-                    f"witness:{scenario.run_id}:new-head"
-                ),
+                payload_fingerprint=_fingerprint(f"witness:{scenario.run_id}:new-head"),
                 target=scenario.context.target,
                 candidate_id=scenario.leader_id,
                 epoch=scenario.context.epoch,
@@ -375,7 +373,9 @@ def test_local_receipt_rejects_stale_authority_head_after_assessment() -> None:
 def test_portable_evidence_certificate_rebuilds_without_process_sentinel(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    scenario, receipt, certificate, trusted, output_ref, metadata = _evidence_certificate(monkeypatch)
+    scenario, receipt, certificate, trusted, output_ref, metadata = (
+        _evidence_certificate(monkeypatch)
+    )
     payload = evidence_commit_certificate_payload(certificate)
     ref = evidence_commit_certificate_fingerprint(certificate)
 
@@ -401,13 +401,16 @@ def test_portable_evidence_certificate_rebuilds_without_process_sentinel(
             key: _fingerprint("forged-body") for key in trusted
         },
     )
-    assert issue_evidence_commit_certificate(
-        receipt,
-        commit_policy=scenario.policy,
-        issuer_attestation_refs=certificate.issuer_attestation_refs,
-        trusted_issuer_attestations=trusted,
-        **metadata,
-    ) is certificate
+    assert (
+        issue_evidence_commit_certificate(
+            receipt,
+            commit_policy=scenario.policy,
+            issuer_attestation_refs=certificate.issuer_attestation_refs,
+            trusted_issuer_attestations=trusted,
+            **metadata,
+        )
+        is certificate
+    )
 
     conflicting_metadata = {
         **metadata,

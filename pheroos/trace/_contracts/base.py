@@ -33,8 +33,7 @@ class TraceEventContract:
         if not isinstance(self.event_type, str) or not self.event_type:
             raise ValueError("trace event contract type must be non-empty text")
         if not isinstance(self.required_fields, frozenset) or any(
-            not isinstance(field, str) or not field
-            for field in self.required_fields
+            not isinstance(field, str) or not field for field in self.required_fields
         ):
             raise TypeError("trace event contract fields must be a frozenset of text")
         if not callable(self.validator):

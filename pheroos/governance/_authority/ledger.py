@@ -4,7 +4,7 @@ from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 from threading import RLock
 from types import MappingProxyType
-from typing import Any
+from typing import Any, cast
 
 from pheroos.governance.authority_domain import (
     AUTHORITY_LEDGER_VERSION,
@@ -19,7 +19,6 @@ from pheroos.governance.authority_domain import (
     _require_identity,
 )
 from pheroos.governance.errors import GovernanceError
-
 
 _CHECKPOINT_SCHEMA = "pheroos-governance-checkpoint-v1"
 _SNAPSHOT_SCHEMA = "pheroos-governance-store-snapshot-v1"
@@ -156,8 +155,6 @@ class InMemoryGovernanceStateStore:
         if not isinstance(body, Mapping):
             raise GovernanceError("governance identity claim body must be a mapping")
         frozen = _freeze_json(body, path=f"identity_claims.{identity_id}")
-        if not isinstance(frozen, Mapping):  # pragma: no cover - guarded above
-            raise GovernanceError("governance identity claim body must be a mapping")
         body_root = _fingerprint(
             _CLAIM_SCHEMA,
             {
@@ -339,76 +336,28 @@ class InMemoryGovernanceStateStore:
         return store
 
     def rehydrate(self, payload: Mapping[str, Any]) -> tuple[GovernanceHead, ...]:
-        if not isinstance(payload, Mapping):
-            raise GovernanceError("governance checkpoint must be a mapping")
-        expected_fields = {
-            "version",
-            "scope_ref",
-            "batches",
-            "identity_claims",
-            "heads",
-            "checkpoint_root",
-        }
-        if set(payload) != expected_fields:
-            raise GovernanceError("governance checkpoint fields are invalid")
-        if payload["version"] != AUTHORITY_LEDGER_VERSION:
-            raise GovernanceError("governance checkpoint version is unsupported")
-        domain = AuthorityDomain(payload["scope_ref"])
-        body = {
-            key: _portable_json(payload[key])
-            for key in expected_fields - {"checkpoint_root"}
-        }
-        expected_root = _fingerprint(_CHECKPOINT_SCHEMA, body)
-        if payload["checkpoint_root"] != expected_root:
-            raise GovernanceError("governance checkpoint root does not match its payload")
-        batch_payloads = payload["batches"]
-        if not isinstance(batch_payloads, list):
-            raise GovernanceError("governance checkpoint batches must be an array")
-        batches: list[GovernanceCommitBatch] = []
-        for item in batch_payloads:
-            if not isinstance(item, Mapping):
-                raise GovernanceError("governance checkpoint batch must be an object")
-            batch = GovernanceCommitBatch.from_dict(item)
-            if batch.transition.domain.scope_ref != domain.scope_ref:
-                raise GovernanceError("governance checkpoint batch crosses authority scope")
-            batches.append(batch)
-        batches.sort(
-            key=lambda item: (
-                item.transition.stream,
-                item.transition.expected_revision,
-                item.transition.transition_id,
-            )
-        )
+        domain = _checkpoint_domain(payload)
+        batches = _checkpoint_batches(payload["batches"], domain=domain)
         temporary = InMemoryGovernanceStateStore()
         for batch in batches:
             temporary.atomic_commit(batch)
-        claims = payload["identity_claims"]
-        if not isinstance(claims, Mapping):
-            raise GovernanceError("governance checkpoint claims must be an object")
-        for identity_id, claim_body in sorted(claims.items()):
-            if not isinstance(claim_body, Mapping):
-                raise GovernanceError("governance checkpoint claim body must be an object")
-            temporary.claim_identity(domain.scope_ref, identity_id, claim_body)
-
-        declared_heads_payload = payload["heads"]
-        if not isinstance(declared_heads_payload, list):
-            raise GovernanceError("governance checkpoint heads must be an array")
-        declared_heads = tuple(
-            GovernanceHead.from_dict(item)
-            if isinstance(item, Mapping)
-            else _raise_invalid_checkpoint_head()
-            for item in declared_heads_payload
+        _rehydrate_checkpoint_claims(
+            temporary,
+            payload["identity_claims"],
+            scope_ref=domain.scope_ref,
         )
+        declared_heads = _checkpoint_heads(payload["heads"])
         temporary_state = temporary.__domains.get(
             domain.scope_ref,
             _empty_domain_state(),
         )
         actual_heads = tuple(
-            temporary_state.heads[stream]
-            for stream in sorted(temporary_state.heads)
+            temporary_state.heads[stream] for stream in sorted(temporary_state.heads)
         )
         if declared_heads != actual_heads:
-            raise GovernanceError("governance checkpoint heads do not match replayed state")
+            raise GovernanceError(
+                "governance checkpoint heads do not match replayed state"
+            )
         regenerated = temporary.checkpoint(domain.scope_ref)
         if _portable_json(regenerated) != _portable_json(payload):
             raise GovernanceError("governance checkpoint is not replay-canonical")
@@ -432,53 +381,15 @@ class InMemoryGovernanceStateStore:
         return store
 
     def rehydrate_snapshot(self, payload: Mapping[str, Any]) -> None:
-        if not isinstance(payload, Mapping):
-            raise GovernanceError("governance store snapshot must be a mapping")
-        expected_fields = {"version", "domains", "tombstones", "snapshot_root"}
-        if set(payload) != expected_fields:
-            raise GovernanceError("governance store snapshot fields are invalid")
-        if payload["version"] != AUTHORITY_LEDGER_VERSION:
-            raise GovernanceError("governance store snapshot version is unsupported")
-        body = {
-            key: _portable_json(payload[key])
-            for key in expected_fields - {"snapshot_root"}
-        }
-        if payload["snapshot_root"] != _fingerprint(_SNAPSHOT_SCHEMA, body):
-            raise GovernanceError("governance store snapshot root does not match its payload")
-        domains = payload["domains"]
-        tombstones = payload["tombstones"]
-        if not isinstance(domains, list) or not isinstance(tombstones, list):
-            raise GovernanceError("governance store snapshot collections must be arrays")
+        domains, tombstones = _snapshot_collections(payload)
         temporary = InMemoryGovernanceStateStore()
-        for checkpoint in domains:
-            if not isinstance(checkpoint, Mapping):
-                raise GovernanceError("governance store domain checkpoint must be an object")
-            temporary.rehydrate(checkpoint)
-        for item in tombstones:
-            if not isinstance(item, Mapping) or set(item) != {
-                "scope_ref",
-                "final_root",
-                "tombstone_root",
-            }:
-                raise GovernanceError("governance domain tombstone fields are invalid")
-            scope_ref = AuthorityDomain(item["scope_ref"]).scope_ref
-            final_root = _require_digest(
-                item["final_root"],
-                "governance tombstone final root",
+        _rehydrate_snapshot_domains(temporary, domains)
+        temporary.__tombstones.update(
+            _snapshot_tombstones(
+                tombstones,
+                active_scopes=frozenset(temporary.__domains),
             )
-            expected_tombstone = _fingerprint(
-                _TOMBSTONE_SCHEMA,
-                {"scope_ref": scope_ref, "final_root": final_root},
-            )
-            if item["tombstone_root"] != expected_tombstone:
-                raise GovernanceError("governance domain tombstone root is invalid")
-            if scope_ref in temporary.__domains or scope_ref in temporary.__tombstones:
-                raise GovernanceError("governance store snapshot scope is duplicated")
-            temporary.__tombstones[scope_ref] = _Tombstone(
-                scope_ref=scope_ref,
-                final_root=final_root,
-                tombstone_root=expected_tombstone,
-            )
+        )
         if _portable_json(temporary.snapshot()) != _portable_json(payload):
             raise GovernanceError("governance store snapshot is not replay-canonical")
         with self.__lock:
@@ -531,7 +442,7 @@ class InMemoryGovernanceStateStore:
             }
 
     def fingerprint(self) -> str:
-        return self.snapshot()["snapshot_root"]
+        return cast(str, self.snapshot()["snapshot_root"])
 
     @property
     def active_domain_count(self) -> int:
@@ -566,6 +477,151 @@ class InMemoryGovernanceStateStore:
     def _inject(self, stage: str, batch: GovernanceCommitBatch) -> None:
         if self.__failure_injector is not None:
             self.__failure_injector(stage, batch)
+
+
+def _checkpoint_domain(payload: Mapping[str, Any]) -> AuthorityDomain:
+    if not isinstance(payload, Mapping):
+        raise GovernanceError("governance checkpoint must be a mapping")
+    expected_fields = {
+        "version",
+        "scope_ref",
+        "batches",
+        "identity_claims",
+        "heads",
+        "checkpoint_root",
+    }
+    if set(payload) != expected_fields:
+        raise GovernanceError("governance checkpoint fields are invalid")
+    if payload["version"] != AUTHORITY_LEDGER_VERSION:
+        raise GovernanceError("governance checkpoint version is unsupported")
+    domain = AuthorityDomain(payload["scope_ref"])
+    body = {
+        key: _portable_json(payload[key])
+        for key in expected_fields - {"checkpoint_root"}
+    }
+    if payload["checkpoint_root"] != _fingerprint(_CHECKPOINT_SCHEMA, body):
+        raise GovernanceError("governance checkpoint root does not match its payload")
+    return domain
+
+
+def _checkpoint_batches(
+    payload: object,
+    *,
+    domain: AuthorityDomain,
+) -> list[GovernanceCommitBatch]:
+    if not isinstance(payload, list):
+        raise GovernanceError("governance checkpoint batches must be an array")
+    batches: list[GovernanceCommitBatch] = []
+    for item in payload:
+        if not isinstance(item, Mapping):
+            raise GovernanceError("governance checkpoint batch must be an object")
+        batch = GovernanceCommitBatch.from_dict(item)
+        if batch.transition.domain.scope_ref != domain.scope_ref:
+            raise GovernanceError("governance checkpoint batch crosses authority scope")
+        batches.append(batch)
+    batches.sort(
+        key=lambda item: (
+            item.transition.stream,
+            item.transition.expected_revision,
+            item.transition.transition_id,
+        )
+    )
+    return batches
+
+
+def _rehydrate_checkpoint_claims(
+    temporary: InMemoryGovernanceStateStore,
+    payload: object,
+    *,
+    scope_ref: str,
+) -> None:
+    if not isinstance(payload, Mapping):
+        raise GovernanceError("governance checkpoint claims must be an object")
+    for identity_id, claim_body in sorted(payload.items()):
+        if not isinstance(claim_body, Mapping):
+            raise GovernanceError("governance checkpoint claim body must be an object")
+        temporary.claim_identity(scope_ref, identity_id, claim_body)
+
+
+def _checkpoint_heads(payload: object) -> tuple[GovernanceHead, ...]:
+    if not isinstance(payload, list):
+        raise GovernanceError("governance checkpoint heads must be an array")
+    return tuple(
+        GovernanceHead.from_dict(item)
+        if isinstance(item, Mapping)
+        else _raise_invalid_checkpoint_head()
+        for item in payload
+    )
+
+
+def _snapshot_collections(
+    payload: Mapping[str, Any],
+) -> tuple[list[object], list[object]]:
+    if not isinstance(payload, Mapping):
+        raise GovernanceError("governance store snapshot must be a mapping")
+    expected_fields = {"version", "domains", "tombstones", "snapshot_root"}
+    if set(payload) != expected_fields:
+        raise GovernanceError("governance store snapshot fields are invalid")
+    if payload["version"] != AUTHORITY_LEDGER_VERSION:
+        raise GovernanceError("governance store snapshot version is unsupported")
+    body = {
+        key: _portable_json(payload[key]) for key in expected_fields - {"snapshot_root"}
+    }
+    if payload["snapshot_root"] != _fingerprint(_SNAPSHOT_SCHEMA, body):
+        raise GovernanceError(
+            "governance store snapshot root does not match its payload"
+        )
+    domains = payload["domains"]
+    tombstones = payload["tombstones"]
+    if not isinstance(domains, list) or not isinstance(tombstones, list):
+        raise GovernanceError("governance store snapshot collections must be arrays")
+    return domains, tombstones
+
+
+def _rehydrate_snapshot_domains(
+    temporary: InMemoryGovernanceStateStore,
+    domains: list[object],
+) -> None:
+    for checkpoint in domains:
+        if not isinstance(checkpoint, Mapping):
+            raise GovernanceError(
+                "governance store domain checkpoint must be an object"
+            )
+        temporary.rehydrate(checkpoint)
+
+
+def _snapshot_tombstones(
+    tombstones: list[object],
+    *,
+    active_scopes: frozenset[str],
+) -> dict[str, _Tombstone]:
+    restored: dict[str, _Tombstone] = {}
+    for item in tombstones:
+        if not isinstance(item, Mapping) or set(item) != {
+            "scope_ref",
+            "final_root",
+            "tombstone_root",
+        }:
+            raise GovernanceError("governance domain tombstone fields are invalid")
+        scope_ref = AuthorityDomain(item["scope_ref"]).scope_ref
+        final_root = _require_digest(
+            item["final_root"],
+            "governance tombstone final root",
+        )
+        expected_tombstone = _fingerprint(
+            _TOMBSTONE_SCHEMA,
+            {"scope_ref": scope_ref, "final_root": final_root},
+        )
+        if item["tombstone_root"] != expected_tombstone:
+            raise GovernanceError("governance domain tombstone root is invalid")
+        if scope_ref in active_scopes or scope_ref in restored:
+            raise GovernanceError("governance store snapshot scope is duplicated")
+        restored[scope_ref] = _Tombstone(
+            scope_ref=scope_ref,
+            final_root=final_root,
+            tombstone_root=expected_tombstone,
+        )
+    return restored
 
 
 def _empty_domain_state() -> _DomainState:
@@ -606,9 +662,7 @@ def _copy_receipt(receipt: GovernanceCommitReceipt) -> GovernanceCommitReceipt:
 
 def _detached_mapping(value: Mapping[str, Any], *, path: str) -> Mapping[str, Any]:
     detached = _freeze_json(_portable_json(value), path=path)
-    if not isinstance(detached, Mapping):  # pragma: no cover - caller invariant
-        raise GovernanceError(f"{path} must be a mapping")
-    return detached
+    return cast(Mapping[str, Any], detached)
 
 
 def _checkpoint_payload(scope_ref: str, state: _DomainState) -> dict[str, Any]:

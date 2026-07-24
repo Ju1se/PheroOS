@@ -27,6 +27,14 @@ from pheroos.protocol.schema import (
     protocol_schema,
     protocol_schema_v2,
 )
+from pheroos.protocol.authority_schema_v2 import (
+    CAPABILITY_SCHEMA_V3,
+    CAPABILITY_SCHEMA_V3_ID,
+    PROTOCOL_SCHEMA_V3,
+    PROTOCOL_SCHEMA_V3_ID,
+    capability_schema_v3,
+    protocol_schema_v3,
+)
 from pheroos.protocol.schema_validation import validate_json_schema
 
 
@@ -37,6 +45,14 @@ LEGACY_SCHEMA_SHA256 = {
     ),
     "protocol.schema.json": (
         "1abc0b228c72fc05f8ec6272d327d9c06ca3e3a7e37ea2487ccfeff60c86cdb6"
+    ),
+}
+FROZEN_STRICT_V2_SCHEMA_SHA256 = {
+    "capability-v2.schema.json": (
+        "b613b848978c32339ec47487c4c45f99f67a81b85d8f98565bf41ed908df8eb4"
+    ),
+    "protocol-v2.schema.json": (
+        "8f4aeb48d99827b381cb3138c9651d88eb0a2f0ce1c0de4aac8f1aaf5eebe877"
     ),
 }
 
@@ -71,10 +87,32 @@ def test_strict_v2_protocol_schema_documents_are_versioned_and_checked_in() -> N
         "protocol-v2.schema.json": protocol_schema_v2(),
     }
     for filename, schema in generated.items():
-        assert (ROOT / "schemas" / filename).read_bytes() == _render(schema)
+        artifact = (ROOT / "schemas" / filename).read_bytes()
+        assert artifact == _render(schema)
+        assert sha256(artifact).hexdigest() == FROZEN_STRICT_V2_SCHEMA_SHA256[filename]
 
     assert capability_schema_v2()["$id"] == CAPABILITY_SCHEMA_V2_ID
     assert protocol_schema_v2()["$id"] == PROTOCOL_SCHEMA_V2_ID
+
+
+def test_scoped_v3_schema_documents_are_distinct_and_checked_in() -> None:
+    generated = {
+        "capability-v3.schema.json": capability_schema_v3(),
+        "protocol-v3.schema.json": protocol_schema_v3(),
+    }
+    for filename, schema in generated.items():
+        assert (ROOT / "schemas" / filename).read_bytes() == _render(schema)
+
+    protocol = protocol_schema_v3()
+    capability = capability_schema_v3()
+    assert protocol["$id"] == PROTOCOL_SCHEMA_V3_ID
+    assert capability["$id"] == CAPABILITY_SCHEMA_V3_ID
+    assert protocol["properties"]["protocol_version"] == {
+        "const": "pheroos.protocol.v2"
+    }
+    assert capability["properties"]["protocol"]["$id"] == (PROTOCOL_SCHEMA_V3_ID)
+    assert CAPABILITY_SCHEMA_V3 != CAPABILITY_SCHEMA_V2
+    assert PROTOCOL_SCHEMA_V3 != PROTOCOL_SCHEMA_V2
 
 
 def test_legacy_schema_remains_inspectable_but_authority_reader_fails_closed() -> None:
@@ -165,8 +203,7 @@ def test_schema_readers_reject_blank_and_cross_surface_versions() -> None:
             schema_version=PROTOCOL_SCHEMA_V2,
         )
     assert (
-        capability_cross_surface.value.code
-        == "capability_schema_version_unsupported"
+        capability_cross_surface.value.code == "capability_schema_version_unsupported"
     )
     assert capability_cross_surface.value.path == "$.schema_version"
 

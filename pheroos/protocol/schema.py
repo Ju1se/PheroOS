@@ -16,8 +16,6 @@ from pheroos.protocol.commit_models import (
     SUPPORTED_TERMINAL_OUTCOMES,
     WEIGHT_SCALE,
 )
-from pheroos.protocol.models import SUPPORTED_PROTOCOL_VERSIONS
-
 
 EXTENSION_KEY_PATTERN = r"^(x-|ext\.).+"
 PROTOCOL_SCHEMA_V1_ID = "https://pheroos.dev/schemas/protocol.schema.json"
@@ -28,12 +26,21 @@ PROTOCOL_SCHEMA_V1 = "pheroos-protocol-schema-v1"
 PROTOCOL_SCHEMA_V2 = "pheroos-protocol-schema-v2"
 CAPABILITY_SCHEMA_V1 = "pheroos-capability-schema-v1"
 CAPABILITY_SCHEMA_V2 = "pheroos-capability-schema-v2"
-SUPPORTED_PHEROMONE_KINDS = ("positive", "negative", "cautionary", "alarm", "novelty", "stale")
+SUPPORTED_PHEROMONE_KINDS = (
+    "positive",
+    "negative",
+    "cautionary",
+    "alarm",
+    "novelty",
+    "stale",
+)
 SUPPORTED_LAYER_IDS = ("reactive", "learned", "evolutionary", "metacognitive")
 ADJUSTABLE_LAYER_IDS = ("learned", "evolutionary", "metacognitive")
 
 
-def object_schema(properties: dict[str, Any], *, required: list[str] | None = None) -> dict[str, Any]:
+def object_schema(
+    properties: dict[str, Any], *, required: list[str] | None = None
+) -> dict[str, Any]:
     return {
         "type": "object",
         "required": required or [],
@@ -98,7 +105,9 @@ def pheromone_kind_profile_schema() -> dict[str, Any]:
             "weight": {"type": "number", "minimum": 0},
             "evaporation_rate": {"type": "number", "minimum": 0, "maximum": 1},
             "ttl_steps": {"type": "integer", "minimum": 0},
-            "response_model": {"enum": ["linear", "saturating", "threshold", "competitive"]},
+            "response_model": {
+                "enum": ["linear", "saturating", "threshold", "competitive"]
+            },
             "priority": {"type": "integer", "minimum": 0},
             "can_suppress_positive": {"type": "boolean"},
             "scored_subject_types": {"type": "array", "items": {"type": "string"}},
@@ -151,7 +160,9 @@ def policy_adjustment_bounds_schema() -> dict[str, Any]:
         "type": "object",
         "patternProperties": {
             exact_value_pattern(unit_range_fields): numeric_bounds_schema(maximum=1),
-            exact_value_pattern(bounded_weight_fields): numeric_bounds_schema(maximum=10),
+            exact_value_pattern(bounded_weight_fields): numeric_bounds_schema(
+                maximum=10
+            ),
             r"^pheromone_response_model$": response_model_adjustment_bound_schema(),
         },
         "additionalProperties": False,
@@ -170,7 +181,9 @@ def canonical_text_schema() -> dict[str, Any]:
     }
 
 
-def authority_integer_schema(*, minimum: int = 0, maximum: int = MAX_AUTHORITY_INTEGER) -> dict[str, Any]:
+def authority_integer_schema(
+    *, minimum: int = 0, maximum: int = MAX_AUTHORITY_INTEGER
+) -> dict[str, Any]:
     return {
         "type": "integer",
         "minimum": minimum,
@@ -212,7 +225,9 @@ def evidence_qualification_policy_schema() -> dict[str, Any]:
             "counter_weight_ppm": authority_integer_schema(minimum=1),
             "minimum_positive_evidence": authority_integer_schema(minimum=1),
             "maximum_counterevidence": authority_integer_schema(),
-            "maximum_counterevidence_ratio_ppm": authority_integer_schema(maximum=WEIGHT_SCALE),
+            "maximum_counterevidence_ratio_ppm": authority_integer_schema(
+                maximum=WEIGHT_SCALE
+            ),
             "domain_contribution_floor": authority_integer_schema(minimum=1),
             "minimum_source_diversity": authority_integer_schema(minimum=1),
             "required_challenge_categories": canonical_text_set_schema(minimum_items=1),
@@ -245,7 +260,9 @@ def support_lease_policy_schema() -> dict[str, Any]:
     return object_schema(
         {
             "minimum_support_clusters": authority_integer_schema(minimum=1),
-            "support_ratio_ppm": authority_integer_schema(minimum=1, maximum=WEIGHT_SCALE),
+            "support_ratio_ppm": authority_integer_schema(
+                minimum=1, maximum=WEIGHT_SCALE
+            ),
             "lease_ttl_steps": authority_integer_schema(minimum=1),
             "membership_mode": {"const": "verified_snapshot_v1"},
             "switch_mode": {"const": "revoke_then_issue_v1"},
@@ -272,9 +289,13 @@ def risk_band_policy_schema() -> dict[str, Any]:
         {
             "minimum_positive_evidence": authority_integer_schema(minimum=1),
             "maximum_counterevidence": authority_integer_schema(),
-            "maximum_counterevidence_ratio_ppm": authority_integer_schema(maximum=WEIGHT_SCALE),
+            "maximum_counterevidence_ratio_ppm": authority_integer_schema(
+                maximum=WEIGHT_SCALE
+            ),
             "minimum_support_clusters": authority_integer_schema(minimum=1),
-            "minimum_support_ratio_ppm": authority_integer_schema(minimum=1, maximum=WEIGHT_SCALE),
+            "minimum_support_ratio_ppm": authority_integer_schema(
+                minimum=1, maximum=WEIGHT_SCALE
+            ),
             "minimum_source_diversity": authority_integer_schema(minimum=1),
             "minimum_margin": authority_integer_schema(minimum=1),
             "stability_steps": authority_integer_schema(minimum=1),
@@ -524,14 +545,23 @@ def protocol_schema() -> dict[str, Any]:
                     "recruitment_enabled": {"type": "boolean"},
                     "inhibition_enabled": {"type": "boolean"},
                     "pheromone_enabled": {"type": "boolean"},
-                    "pheromone_evaporation_rate": {"type": "number", "minimum": 0, "maximum": 1},
-                    "pheromone_decay_model": {"enum": ["linear", "exponential", "step"]},
+                    "pheromone_evaporation_rate": {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 1,
+                    },
+                    "pheromone_decay_model": {
+                        "enum": ["linear", "exponential", "step"]
+                    },
                     "pheromone_min_strength": {"type": "number", "minimum": 0},
                     "pheromone_max_strength": {"type": "number", "minimum": 0},
                     "pheromone_positive_weight": {"type": "number", "minimum": 0},
                     "pheromone_negative_weight": {"type": "number", "minimum": 0},
                     "pheromone_cautionary_weight": {"type": "number", "minimum": 0},
-                    "pheromone_cautionary_override_threshold": {"type": "number", "minimum": 0},
+                    "pheromone_cautionary_override_threshold": {
+                        "type": "number",
+                        "minimum": 0,
+                    },
                     "pheromone_novelty_weight": {"type": "number", "minimum": 0},
                     "pheromone_per_source_cap": {"type": "number", "minimum": 0},
                     "pheromone_per_round_deposit_cap": {"type": "number", "minimum": 0},
@@ -544,25 +574,47 @@ def protocol_schema() -> dict[str, Any]:
                         "minItems": 1,
                     },
                     "pheromone_kind_profiles": pheromone_kind_profiles_schema(),
-                    "pheromone_response_model": {"enum": ["linear", "saturating", "threshold", "competitive"]},
+                    "pheromone_response_model": {
+                        "enum": ["linear", "saturating", "threshold", "competitive"]
+                    },
                     "pheromone_activation_threshold": {"type": "number", "minimum": 0},
                     "pheromone_saturation_threshold": {"type": "number", "minimum": 0},
                     "pheromone_competition_mode": {"enum": ["none", "normalize"]},
-                    "pheromone_exploration_floor": {"type": "number", "minimum": 0, "maximum": 1},
+                    "pheromone_exploration_floor": {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 1,
+                    },
                     "pheromone_diffusion_enabled": {"type": "boolean"},
                     "pheromone_diffusion_max_hops": {"type": "integer", "minimum": 0},
-                    "pheromone_diffusion_attenuation": {"type": "number", "minimum": 0, "maximum": 1},
+                    "pheromone_diffusion_attenuation": {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 1,
+                    },
                     "pheromone_feedback_enabled": {"type": "boolean"},
                     "exploration_enabled": {"type": "boolean"},
                     "exploration_floor": {"type": "number", "minimum": 0, "maximum": 1},
-                    "novelty_decay_rate": {"type": "number", "minimum": 0, "maximum": 1},
+                    "novelty_decay_rate": {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 1,
+                    },
                     "stale_route_reopen_threshold": {"type": "number", "minimum": 0},
                     "layer_coordination_enabled": {"type": "boolean"},
                     "layer_weight_bounds": layer_bounds_map_schema(),
                     "layer_default_weights": layer_number_map_schema(maximum=10),
                     "layer_confidence_thresholds": layer_number_map_schema(maximum=1),
-                    "layer_conflict_threshold": {"type": "number", "minimum": 0, "maximum": 1},
-                    "layer_emergency_override_threshold": {"type": "number", "minimum": 0, "maximum": 1},
+                    "layer_conflict_threshold": {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 1,
+                    },
+                    "layer_emergency_override_threshold": {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 1,
+                    },
                     "layer_min_provenance": {"type": "integer", "minimum": 1},
                     "layer_fallback_on_unresolved_conflict": {"type": "boolean"},
                     "policy_adjustment_bounds": policy_adjustment_bounds_schema(),
@@ -576,10 +628,16 @@ def protocol_schema() -> dict[str, Any]:
                 "items": object_schema(
                     {
                         "id": {"type": "string"},
-                        "trigger_targets": {"type": "array", "items": {"type": "string"}},
+                        "trigger_targets": {
+                            "type": "array",
+                            "items": {"type": "string"},
+                        },
                         "allowed_roles": {"type": "array", "items": {"type": "string"}},
                         "allowed_tags": {"type": "array", "items": {"type": "string"}},
-                        "required_tools": {"type": "array", "items": {"type": "string"}},
+                        "required_tools": {
+                            "type": "array",
+                            "items": {"type": "string"},
+                        },
                         "failure_candidate": {"type": "string"},
                         "extensions": extensions_schema(),
                     },
@@ -599,7 +657,10 @@ def protocol_schema() -> dict[str, Any]:
                     "requires_committed_candidate": {"type": "boolean", "const": True},
                     "requires_evidence_contract": {"type": "boolean", "const": True},
                     "requires_stop_resolution": {"type": "boolean", "const": True},
-                    "requires_publication_permission": {"type": "boolean", "const": True},
+                    "requires_publication_permission": {
+                        "type": "boolean",
+                        "const": True,
+                    },
                     "extensions": extensions_schema(),
                 }
             ),
@@ -611,7 +672,15 @@ def protocol_schema() -> dict[str, Any]:
             ),
             "extensions": extensions_schema(),
         },
-        required=["protocol_version", "id", "targets", "candidates", "quorum_policy", "output_policy", "trace_policy"],
+        required=[
+            "protocol_version",
+            "id",
+            "targets",
+            "candidates",
+            "quorum_policy",
+            "output_policy",
+            "trace_policy",
+        ],
     ) | {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
         "$id": PROTOCOL_SCHEMA_V1_ID,
@@ -646,7 +715,9 @@ def protocol_schema_v2() -> dict[str, Any]:
     schema["$id"] = PROTOCOL_SCHEMA_V2_ID
     schema["properties"]["protocol_version"] = {
         "type": "string",
-        "enum": sorted(SUPPORTED_PROTOCOL_VERSIONS),
+        # This published schema-document version is permanently scoped to the
+        # legacy semantic profile.  Scoped authority uses protocol schema v3.
+        "enum": ["pheroos.protocol.v1"],
     }
     return schema
 

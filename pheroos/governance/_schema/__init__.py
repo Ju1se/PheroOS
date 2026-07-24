@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 from types import MappingProxyType
-from typing import Any
+from typing import Any, cast
 
 from pheroos.governance._schema.certificate import CERTIFICATE_CONTRACTS
 from pheroos.governance._schema.commit import COMMIT_CONTRACTS
@@ -129,18 +129,34 @@ def validate_commit_wire_document(record: object) -> list[str]:
     errors = validate_json_schema(record, commit_schema_document())
     if errors:
         return errors
-    if not isinstance(record, Mapping):  # pragma: no cover - schema above
-        return ["$: expected commit wire object"]
+    components = _validated_commit_wire_components(cast(Mapping[str, Any], record))
+    if isinstance(components, list):
+        return components
+    payload, schema_name, profile, _version = components
+    contract = COMMIT_WIRE_CONTRACTS_BY_SCHEMA[str(schema_name)]
+    semantic: list[str] = []
+    _validate_commit_wire_binding(
+        contract,
+        payload=payload,
+        profile=profile,
+        errors=semantic,
+    )
+    _validate_commit_wire_sets(payload, errors=semantic)
+    semantic.extend(contract.validator(payload, str(profile)))
+    return semantic
+
+
+def _validated_commit_wire_components(
+    record: Mapping[str, Any],
+) -> tuple[Mapping[str, Any], object, object, object] | list[str]:
     metadata_errors = _validate_noncritical_envelope_extensions(record)
     if metadata_errors:
         return metadata_errors
 
-    payload = record.get("payload")
+    payload = cast(Mapping[str, Any], record.get("payload"))
     schema_name = record.get("schema")
     profile = record.get("profile")
     version = record.get("version")
-    if not isinstance(payload, Mapping):  # pragma: no cover - schema above
-        return ["$.payload: expected object"]
     try:
         canonical_commit_payload(
             payload,
@@ -150,25 +166,38 @@ def validate_commit_wire_document(record: object) -> list[str]:
         )
     except CommitWireError as exc:
         return [f"$: {exc}"]
+    return payload, schema_name, profile, version
 
-    contract = COMMIT_WIRE_CONTRACTS_BY_SCHEMA[str(schema_name)]
-    semantic: list[str] = []
+
+def _validate_commit_wire_binding(
+    contract: CommitWireContract,
+    *,
+    payload: Mapping[str, Any],
+    profile: object,
+    errors: list[str],
+) -> None:
     if contract.binding is not CommitWireBinding.UNBOUND:
         if payload.get("profile") != profile:
-            semantic.append("$.payload.profile: envelope profile mismatch")
+            errors.append("$.payload.profile: envelope profile mismatch")
         if contract.binding is CommitWireBinding.PROFILE_AND_ASSURANCE:
             assurance = payload.get("assurance")
             allowed_profiles = COMMIT_PROFILES_BY_ASSURANCE.get(str(assurance))
             if allowed_profiles is None or profile not in allowed_profiles:
-                semantic.append("$.payload.assurance: profile/assurance mismatch")
+                errors.append("$.payload.assurance: profile/assurance mismatch")
 
+
+def _validate_commit_wire_sets(
+    payload: Mapping[str, Any],
+    *,
+    errors: list[str],
+) -> None:
     for field_name in _CANONICAL_TEXT_SET_FIELDS:
         values = payload.get(field_name)
         if isinstance(values, list):
             _validate_canonical_set(
                 values,
                 path=f"$.payload.{field_name}",
-                errors=semantic,
+                errors=errors,
             )
 
     for field_name in _LEXICAL_FINGERPRINT_SET_FIELDS:
@@ -177,11 +206,8 @@ def validate_commit_wire_document(record: object) -> list[str]:
             _validate_lexical_set(
                 values,
                 path=f"$.payload.{field_name}",
-                errors=semantic,
+                errors=errors,
             )
-
-    semantic.extend(contract.validator(payload, str(profile)))
-    return semantic
 
 
 __all__: tuple[str, ...] = ()

@@ -47,8 +47,9 @@ def test_trace_store_is_minimal_provider_neutral_public_abi() -> None:
         "event": trace.TraceEvent,
         "return": trace.TraceRecord,
     }
-    assert typing.get_type_hints(trace.TraceStore.records.fget)["return"] == (
-        tuple[trace.TraceRecord, ...]
+    assert (
+        typing.get_type_hints(trace.TraceStore.records.fget)["return"]
+        == (tuple[trace.TraceRecord, ...])
     )
 
 

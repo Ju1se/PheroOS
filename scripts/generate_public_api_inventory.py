@@ -44,9 +44,7 @@ def main() -> int:
     args = parser.parse_args()
 
     rendered = render_public_api_inventory(build_public_api_inventory())
-    lifecycle_rendered = render_public_api_lifecycle(
-        build_public_api_lifecycle(ROOT)
-    )
+    lifecycle_rendered = render_public_api_lifecycle(build_public_api_lifecycle(ROOT))
     if args.write:
         ARTIFACT.parent.mkdir(parents=True, exist_ok=True)
         ARTIFACT.write_bytes(rendered.encode("utf-8"))

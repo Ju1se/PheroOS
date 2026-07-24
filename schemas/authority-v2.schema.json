@@ -1,0 +1,1987 @@
+{
+  "$defs": {
+    "actionPermission": {
+      "additionalProperties": false,
+      "properties": {
+        "action_ref": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "candidate_ref": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "canonical_version": {
+          "const": "pheroos-authority-canonical-v2"
+        },
+        "decision_root": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "disposition": {
+          "enum": [
+            "authorized",
+            "denied"
+          ]
+        },
+        "domain_root": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "effect": {
+          "enum": [
+            "publish",
+            "execute"
+          ]
+        },
+        "evidence_root": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "expires_at_epoch": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer",
+          "x-pheroos-exact-integer": true
+        },
+        "grant_binding_ref": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "grant_ref": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "grant_root": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "issued_epoch": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer",
+          "x-pheroos-exact-integer": true
+        },
+        "manifest_root": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "output_payload_root": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "output_policy_root": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "permission_root": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "permission_stream_ref": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "permission_transition_id": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "request_ref": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "request_root": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "run_ref": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "schema": {
+          "const": "pheroos-governance-action-permission-v2"
+        },
+        "scope_ref": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "stop_root": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "target_ref": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "terminal_status": {
+          "enum": [
+            "evidence_commit",
+            "safe_fallback",
+            "blocked",
+            "invalid",
+            "finality_unavailable"
+          ]
+        }
+      },
+      "required": [
+        "schema",
+        "canonical_version",
+        "domain_root",
+        "scope_ref",
+        "run_ref",
+        "request_ref",
+        "request_root",
+        "permission_transition_id",
+        "permission_stream_ref",
+        "manifest_root",
+        "output_policy_root",
+        "evidence_root",
+        "stop_root",
+        "decision_root",
+        "target_ref",
+        "candidate_ref",
+        "action_ref",
+        "effect",
+        "terminal_status",
+        "output_payload_root",
+        "disposition",
+        "issued_epoch",
+        "expires_at_epoch",
+        "grant_ref",
+        "grant_root",
+        "grant_binding_ref",
+        "permission_root"
+      ],
+      "type": "object"
+    },
+    "authorityDomain": {
+      "additionalProperties": false,
+      "properties": {
+        "canonical_version": {
+          "const": "pheroos-authority-canonical-v2"
+        },
+        "domain_root": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "ledger_version": {
+          "const": "pheroos-governance-authority-ledger-v2"
+        },
+        "policy_version": {
+          "const": "pheroos-scoped-authority-policy-v2"
+        },
+        "profile": {
+          "enum": [
+            "pheroos-scoped-authority-local-v2",
+            "pheroos-scoped-authority-authenticated-v2"
+          ]
+        },
+        "read_set_version": {
+          "const": "pheroos-governance-authority-read-set-v2"
+        },
+        "schema": {
+          "const": "pheroos-governance-authority-domain-v2"
+        },
+        "scope_ref": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "state_store_version": {
+          "const": "pheroos-governance-state-store-v2"
+        },
+        "trace_batch_version": {
+          "const": "pheroos-governance-trace-batch-v2"
+        },
+        "wire_version": {
+          "const": "pheroos-authority-wire-v2"
+        }
+      },
+      "required": [
+        "schema",
+        "policy_version",
+        "profile",
+        "wire_version",
+        "canonical_version",
+        "ledger_version",
+        "state_store_version",
+        "trace_batch_version",
+        "read_set_version",
+        "scope_ref",
+        "domain_root"
+      ],
+      "type": "object"
+    },
+    "authorityReadSet": {
+      "additionalProperties": false,
+      "properties": {
+        "canonical_version": {
+          "const": "pheroos-authority-canonical-v2"
+        },
+        "entries": {
+          "items": {
+            "$ref": "#/$defs/readPrecondition"
+          },
+          "maxItems": 128,
+          "minItems": 1,
+          "type": "array",
+          "uniqueItems": true
+        },
+        "schema": {
+          "const": "pheroos-governance-authority-read-set-v2"
+        }
+      },
+      "required": [
+        "schema",
+        "canonical_version",
+        "entries"
+      ],
+      "type": "object"
+    },
+    "baselineOutputRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "action_ref": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "canonical_version": {
+          "const": "pheroos-authority-canonical-v2"
+        },
+        "decision_stream_ref": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "domain_root": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "evidence_stream_ref": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "manifest": {
+          "$ref": "https://pheroos.dev/schemas/protocol-v3.schema.json"
+        },
+        "manifest_stream_ref": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "observed_epoch": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer",
+          "x-pheroos-exact-integer": true
+        },
+        "output_payload": {
+          "additionalProperties": {
+            "$ref": "#/$defs/canonicalJson"
+          },
+          "type": "object"
+        },
+        "output_payload_root": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "output_stream_ref": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "output_transition_id": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "permission_stream_ref": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "proposed_candidate_ref": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "minLength": 1,
+              "type": "string"
+            }
+          ]
+        },
+        "request_ref": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "request_root": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "run_ref": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "schema": {
+          "const": "pheroos-governance-baseline-output-request-v2"
+        },
+        "scope_ref": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "stop_resolutions": {
+          "items": {
+            "$ref": "#/$defs/stopResolution"
+          },
+          "type": "array",
+          "uniqueItems": true
+        },
+        "stop_stream_ref": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "target_ref": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "verified_signals": {
+          "items": {
+            "$ref": "#/$defs/verifiedSignalProposal"
+          },
+          "type": "array",
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "schema",
+        "canonical_version",
+        "domain_root",
+        "scope_ref",
+        "run_ref",
+        "request_ref",
+        "output_transition_id",
+        "manifest",
+        "target_ref",
+        "action_ref",
+        "proposed_candidate_ref",
+        "verified_signals",
+        "stop_resolutions",
+        "output_payload",
+        "observed_epoch",
+        "manifest_stream_ref",
+        "evidence_stream_ref",
+        "stop_stream_ref",
+        "decision_stream_ref",
+        "permission_stream_ref",
+        "output_stream_ref",
+        "output_payload_root",
+        "request_root"
+      ],
+      "type": "object"
+    },
+    "baselineOutputResult": {
+      "additionalProperties": false,
+      "properties": {
+        "action_disposition": {
+          "enum": [
+            "authorized",
+            "denied"
+          ]
+        },
+        "authorization": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/actionPermission"
+            }
+          ]
+        },
+        "candidate_ref": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "minLength": 1,
+              "type": "string"
+            }
+          ]
+        },
+        "canonical_version": {
+          "const": "pheroos-authority-canonical-v2"
+        },
+        "commit_attempt": {
+          "$ref": "#/$defs/commitAttempt"
+        },
+        "delivery_disposition": {
+          "enum": [
+            "deliverable",
+            "retry_required"
+          ]
+        },
+        "domain_root": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "output_payload_root": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "output_transition_id": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "permission_root": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "request_ref": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "request_root": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "result_root": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "run_ref": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "schema": {
+          "const": "pheroos-governance-baseline-output-result-v2"
+        },
+        "scope_ref": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "terminal_status": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "enum": [
+                "evidence_commit",
+                "safe_fallback",
+                "blocked",
+                "invalid",
+                "finality_unavailable"
+              ]
+            }
+          ]
+        }
+      },
+      "required": [
+        "schema",
+        "canonical_version",
+        "domain_root",
+        "scope_ref",
+        "run_ref",
+        "request_ref",
+        "request_root",
+        "output_transition_id",
+        "output_payload_root",
+        "terminal_status",
+        "candidate_ref",
+        "delivery_disposition",
+        "action_disposition",
+        "permission_root",
+        "authorization",
+        "commit_attempt",
+        "result_root"
+      ],
+      "type": "object"
+    },
+    "canonicalJson": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "boolean"
+        },
+        {
+          "maximum": 9007199254740991,
+          "minimum": -9007199254740991,
+          "type": "integer",
+          "x-pheroos-exact-integer": true
+        },
+        {
+          "type": "string"
+        },
+        {
+          "items": {
+            "$ref": "#/$defs/canonicalJson"
+          },
+          "type": "array"
+        },
+        {
+          "additionalProperties": {
+            "$ref": "#/$defs/canonicalJson"
+          },
+          "type": "object"
+        }
+      ]
+    },
+    "commitAttempt": {
+      "additionalProperties": false,
+      "properties": {
+        "attempt_root": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "canonical_version": {
+          "const": "pheroos-authority-canonical-v2"
+        },
+        "committed_transition": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/committedTransition"
+            }
+          ]
+        },
+        "disposition": {
+          "enum": [
+            "committed",
+            "denied",
+            "retry_required",
+            "finality_unavailable",
+            "invalid"
+          ]
+        },
+        "domain_root": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "failure": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/governanceFailure"
+            }
+          ]
+        },
+        "position_observation": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/commitPositionObservation"
+            }
+          ]
+        },
+        "schema": {
+          "const": "pheroos-governance-commit-attempt-v2"
+        },
+        "scope_ref": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "stream_ref": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "transition_id": {
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "schema",
+        "canonical_version",
+        "domain_root",
+        "scope_ref",
+        "stream_ref",
+        "transition_id",
+        "disposition",
+        "failure",
+        "committed_transition",
+        "position_observation",
+        "attempt_root"
+      ],
+      "type": "object"
+    },
+    "commitBatch": {
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "transition"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "seal": {
+                "type": "null"
+              },
+              "seal_root": {
+                "type": "null"
+              },
+              "transition": {
+                "$ref": "#/$defs/preparedTransition"
+              },
+              "transition_root": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "seal"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "seal": {
+                "$ref": "#/$defs/domainSeal"
+              },
+              "seal_root": {
+                "pattern": "^sha256:[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "transition": {
+                "type": "null"
+              },
+              "transition_root": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ],
+      "properties": {
+        "batch_root": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "canonical_version": {
+          "const": "pheroos-authority-canonical-v2"
+        },
+        "domain": {
+          "$ref": "#/$defs/authorityDomain"
+        },
+        "domain_root": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "transition",
+            "seal"
+          ]
+        },
+        "ledger_version": {
+          "const": "pheroos-governance-authority-ledger-v2"
+        },
+        "read_set": {
+          "$ref": "#/$defs/authorityReadSet"
+        },
+        "read_set_root": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "schema": {
+          "const": "pheroos-governance-commit-batch-v2"
+        },
+        "scope_ref": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "seal": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/domainSeal"
+            }
+          ]
+        },
+        "seal_root": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "pattern": "^sha256:[0-9a-f]{64}$",
+              "type": "string"
+            }
+          ]
+        },
+        "stream_ref": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "trace_batch": {
+          "$ref": "#/$defs/traceBatch"
+        },
+        "trace_root": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "transition": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/preparedTransition"
+            }
+          ]
+        },
+        "transition_id": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "transition_root": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "pattern": "^sha256:[0-9a-f]{64}$",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "required": [
+        "schema",
+        "canonical_version",
+        "ledger_version",
+        "domain",
+        "domain_root",
+        "scope_ref",
+        "stream_ref",
+        "transition_id",
+        "kind",
+        "read_set",
+        "read_set_root",
+        "transition",
+        "transition_root",
+        "seal",
+        "seal_root",
+        "trace_batch",
+        "trace_root",
+        "batch_root"
+      ],
+      "type": "object"
+    },
+    "commitInclusionProof": {
+      "additionalProperties": false,
+      "properties": {
+        "batch_root": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "canonical_version": {
+          "const": "pheroos-authority-canonical-v2"
+        },
+        "domain_root": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "head_root": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "inclusion_root": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "ledger_version": {
+          "const": "pheroos-governance-authority-ledger-v2"
+        },
+        "receipt_root": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "revision": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer",
+          "x-pheroos-exact-integer": true
+        },
+        "schema": {
+          "const": "pheroos-governance-commit-inclusion-proof-v2"
+        },
+        "scope_ref": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "stream_ref": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "transition_id": {
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "schema",
+        "canonical_version",
+        "ledger_version",
+        "domain_root",
+        "scope_ref",
+        "stream_ref",
+        "transition_id",
+        "revision",
+        "batch_root",
+        "receipt_root",
+        "head_root",
+        "inclusion_root"
+      ],
+      "type": "object"
+    },
+    "commitPositionObservation": {
+      "additionalProperties": false,
+      "properties": {
+        "canonical_version": {
+          "const": "pheroos-authority-canonical-v2"
+        },
+        "domain_root": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "ledger_version": {
+          "const": "pheroos-governance-authority-ledger-v2"
+        },
+        "observation_root": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "observed_head_root": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "observed_revision": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer",
+          "x-pheroos-exact-integer": true
+        },
+        "position": {
+          "enum": [
+            "current",
+            "superseded",
+            "sealed"
+          ]
+        },
+        "receipt_root": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "schema": {
+          "const": "pheroos-governance-commit-position-observation-v2"
+        },
+        "scope_ref": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "seal_root": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "pattern": "^sha256:[0-9a-f]{64}$",
+              "type": "string"
+            }
+          ]
+        },
+        "stream_ref": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "transition_id": {
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "schema",
+        "canonical_version",
+        "ledger_version",
+        "domain_root",
+        "scope_ref",
+        "stream_ref",
+        "transition_id",
+        "receipt_root",
+        "observed_revision",
+        "observed_head_root",
+        "position",
+        "seal_root",
+        "observation_root"
+      ],
+      "type": "object"
+    },
+    "commitReceipt": {
+      "additionalProperties": false,
+      "properties": {
+        "batch_root": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "canonical_version": {
+          "const": "pheroos-authority-canonical-v2"
+        },
+        "domain_root": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "head_root": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "ledger_version": {
+          "const": "pheroos-governance-authority-ledger-v2"
+        },
+        "parent_root": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "read_set_root": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "receipt_root": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "revision": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer",
+          "x-pheroos-exact-integer": true
+        },
+        "schema": {
+          "const": "pheroos-governance-commit-receipt-v2"
+        },
+        "scope_ref": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "state_root": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "stream_ref": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "trace_root": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "transition_id": {
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "schema",
+        "canonical_version",
+        "ledger_version",
+        "domain_root",
+        "scope_ref",
+        "stream_ref",
+        "transition_id",
+        "revision",
+        "parent_root",
+        "head_root",
+        "state_root",
+        "read_set_root",
+        "trace_root",
+        "batch_root",
+        "receipt_root"
+      ],
+      "type": "object"
+    },
+    "commitView": {
+      "additionalProperties": false,
+      "properties": {
+        "canonical_version": {
+          "const": "pheroos-authority-canonical-v2"
+        },
+        "committed_transition": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/committedTransition"
+            }
+          ]
+        },
+        "disposition": {
+          "enum": [
+            "committed",
+            "denied",
+            "retry_required",
+            "finality_unavailable",
+            "invalid"
+          ]
+        },
+        "domain_root": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "expected_receipt_root": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "pattern": "^sha256:[0-9a-f]{64}$",
+              "type": "string"
+            }
+          ]
+        },
+        "failure": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/governanceFailure"
+            }
+          ]
+        },
+        "observed_head_root": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "pattern": "^sha256:[0-9a-f]{64}$",
+              "type": "string"
+            }
+          ]
+        },
+        "observed_revision": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "maximum": 9007199254740991,
+              "minimum": 0,
+              "type": "integer",
+              "x-pheroos-exact-integer": true
+            }
+          ]
+        },
+        "position_observation": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/commitPositionObservation"
+            }
+          ]
+        },
+        "schema": {
+          "const": "pheroos-governance-commit-view-v2"
+        },
+        "scope_ref": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "stream_ref": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "transition_id": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "view_root": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "schema",
+        "canonical_version",
+        "domain_root",
+        "scope_ref",
+        "stream_ref",
+        "transition_id",
+        "expected_receipt_root",
+        "disposition",
+        "failure",
+        "committed_transition",
+        "position_observation",
+        "observed_revision",
+        "observed_head_root",
+        "view_root"
+      ],
+      "type": "object"
+    },
+    "committedTransition": {
+      "additionalProperties": false,
+      "properties": {
+        "batch": {
+          "$ref": "#/$defs/commitBatch"
+        },
+        "canonical_version": {
+          "const": "pheroos-authority-canonical-v2"
+        },
+        "committed_transition_root": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "inclusion_proof": {
+          "$ref": "#/$defs/commitInclusionProof"
+        },
+        "ledger_version": {
+          "const": "pheroos-governance-authority-ledger-v2"
+        },
+        "receipt": {
+          "$ref": "#/$defs/commitReceipt"
+        },
+        "schema": {
+          "const": "pheroos-governance-committed-transition-v2"
+        }
+      },
+      "required": [
+        "schema",
+        "canonical_version",
+        "ledger_version",
+        "batch",
+        "receipt",
+        "inclusion_proof",
+        "committed_transition_root"
+      ],
+      "type": "object"
+    },
+    "domainRetirementRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "canonical_version": {
+          "const": "pheroos-authority-canonical-v2"
+        },
+        "domain_root": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "observed_epoch": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer",
+          "x-pheroos-exact-integer": true
+        },
+        "reason_ref": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "request_ref": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "request_root": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "run_ref": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "schema": {
+          "const": "pheroos-governance-domain-retirement-request-v2"
+        },
+        "scope_ref": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "stream_refs": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "maxItems": 127,
+          "type": "array",
+          "uniqueItems": true
+        },
+        "transition_id": {
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "schema",
+        "canonical_version",
+        "domain_root",
+        "scope_ref",
+        "run_ref",
+        "request_ref",
+        "transition_id",
+        "stream_refs",
+        "reason_ref",
+        "observed_epoch",
+        "request_root"
+      ],
+      "type": "object"
+    },
+    "domainSeal": {
+      "additionalProperties": false,
+      "properties": {
+        "canonical_version": {
+          "const": "pheroos-authority-canonical-v2"
+        },
+        "domain_root": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "expected_revision": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer",
+          "x-pheroos-exact-integer": true
+        },
+        "expected_root": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "final_heads": {
+          "items": {
+            "$ref": "#/$defs/finalHead"
+          },
+          "maxItems": 127,
+          "type": "array",
+          "uniqueItems": true
+        },
+        "final_heads_root": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "ledger_version": {
+          "const": "pheroos-governance-authority-ledger-v2"
+        },
+        "schema": {
+          "const": "pheroos-governance-domain-seal-v2"
+        },
+        "scope_ref": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "seal_root": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "transition_id": {
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "schema",
+        "canonical_version",
+        "ledger_version",
+        "domain_root",
+        "scope_ref",
+        "transition_id",
+        "expected_revision",
+        "expected_root",
+        "final_heads",
+        "final_heads_root",
+        "seal_root"
+      ],
+      "type": "object"
+    },
+    "finalHead": {
+      "additionalProperties": false,
+      "properties": {
+        "head_root": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "revision": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer",
+          "x-pheroos-exact-integer": true
+        },
+        "stream_ref": {
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "stream_ref",
+        "revision",
+        "head_root"
+      ],
+      "type": "object"
+    },
+    "governanceFailure": {
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "enum": [
+            "authority_profile_unsupported",
+            "authority_session_required",
+            "authority_session_store_mismatch",
+            "authority_scope_mismatch",
+            "authority_operation_denied",
+            "authority_binding_mismatch",
+            "authority_grant_unverified",
+            "authority_grant_expired",
+            "authority_grant_revoked",
+            "governance_read_set_invalid",
+            "governance_read_set_stale",
+            "governance_transition_conflict",
+            "governance_domain_sealed",
+            "governance_finality_unavailable",
+            "governance_committed_transition_invalid",
+            "governance_action_not_authorized",
+            "governance_trace_lineage_invalid"
+          ]
+        },
+        "failure_root": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "path": {
+          "type": "string"
+        },
+        "schema": {
+          "const": "pheroos-governance-failure-v2"
+        },
+        "stage": {
+          "enum": [
+            "validation",
+            "reconciliation",
+            "precondition",
+            "trace",
+            "commit",
+            "finality",
+            "load",
+            "seal"
+          ]
+        }
+      },
+      "required": [
+        "schema",
+        "code",
+        "path",
+        "stage",
+        "failure_root"
+      ],
+      "type": "object"
+    },
+    "governanceHead": {
+      "additionalProperties": false,
+      "properties": {
+        "batch_root": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "canonical_version": {
+          "const": "pheroos-authority-canonical-v2"
+        },
+        "domain_root": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "head_root": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "ledger_version": {
+          "const": "pheroos-governance-authority-ledger-v2"
+        },
+        "parent_root": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "revision": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer",
+          "x-pheroos-exact-integer": true
+        },
+        "schema": {
+          "const": "pheroos-governance-authority-head-v2"
+        },
+        "scope_ref": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "state_root": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "stream_ref": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "transition_id": {
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "schema",
+        "canonical_version",
+        "ledger_version",
+        "domain_root",
+        "scope_ref",
+        "stream_ref",
+        "revision",
+        "parent_root",
+        "state_root",
+        "transition_id",
+        "batch_root",
+        "head_root"
+      ],
+      "type": "object"
+    },
+    "issuerGrant": {
+      "additionalProperties": false,
+      "properties": {
+        "action_refs": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "type": "array",
+          "uniqueItems": true
+        },
+        "canonical_version": {
+          "const": "pheroos-authority-canonical-v2"
+        },
+        "domain_root": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "expires_at_epoch": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer",
+          "x-pheroos-exact-integer": true
+        },
+        "grant_binding_ref": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "grant_ref": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "grant_root": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "issued_epoch": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer",
+          "x-pheroos-exact-integer": true
+        },
+        "issuer_ref": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "not_before_epoch": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer",
+          "x-pheroos-exact-integer": true
+        },
+        "operations": {
+          "items": {
+            "enum": [
+              "verify_signal",
+              "evaluate_quorum",
+              "qualify_evidence",
+              "resolve_stop",
+              "advance_replay",
+              "issue_action_permission",
+              "authorize_output",
+              "retire_domain"
+            ]
+          },
+          "minItems": 1,
+          "type": "array",
+          "uniqueItems": true
+        },
+        "revocation_generation": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer",
+          "x-pheroos-exact-integer": true
+        },
+        "schema": {
+          "const": "pheroos-governance-issuer-grant-v2"
+        },
+        "scope_ref": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "target_refs": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "type": "array",
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "schema",
+        "canonical_version",
+        "domain_root",
+        "scope_ref",
+        "issuer_ref",
+        "grant_ref",
+        "grant_binding_ref",
+        "operations",
+        "target_refs",
+        "action_refs",
+        "issued_epoch",
+        "not_before_epoch",
+        "expires_at_epoch",
+        "revocation_generation",
+        "grant_root"
+      ],
+      "type": "object"
+    },
+    "issuerGrantVerification": {
+      "additionalProperties": false,
+      "properties": {
+        "accepted": {
+          "type": "boolean"
+        },
+        "canonical_version": {
+          "const": "pheroos-authority-canonical-v2"
+        },
+        "grant_binding_ref": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "grant_root": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "schema": {
+          "const": "pheroos-issuer-grant-verification-v2"
+        },
+        "verification_root": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "verified_epoch": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer",
+          "x-pheroos-exact-integer": true
+        },
+        "verifier_ref": {
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "schema",
+        "canonical_version",
+        "grant_root",
+        "grant_binding_ref",
+        "verifier_ref",
+        "accepted",
+        "verified_epoch",
+        "verification_root"
+      ],
+      "type": "object"
+    },
+    "preparedTransition": {
+      "additionalProperties": false,
+      "properties": {
+        "canonical_version": {
+          "const": "pheroos-authority-canonical-v2"
+        },
+        "domain_root": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "expected_revision": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer",
+          "x-pheroos-exact-integer": true
+        },
+        "expected_root": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "ledger_version": {
+          "const": "pheroos-governance-authority-ledger-v2"
+        },
+        "read_set_root": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "schema": {
+          "const": "pheroos-governance-prepared-transition-v2"
+        },
+        "scope_ref": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "state_records": {
+          "additionalProperties": {
+            "$ref": "#/$defs/canonicalJson"
+          },
+          "type": "object"
+        },
+        "state_root": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "stream_ref": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "transition_id": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "transition_root": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "schema",
+        "canonical_version",
+        "ledger_version",
+        "domain_root",
+        "scope_ref",
+        "stream_ref",
+        "transition_id",
+        "expected_revision",
+        "expected_root",
+        "read_set_root",
+        "state_records",
+        "state_root",
+        "transition_root"
+      ],
+      "type": "object"
+    },
+    "readPrecondition": {
+      "additionalProperties": false,
+      "properties": {
+        "expected_revision": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer",
+          "x-pheroos-exact-integer": true
+        },
+        "expected_root": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "stream_ref": {
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "stream_ref",
+        "expected_revision",
+        "expected_root"
+      ],
+      "type": "object"
+    },
+    "stopResolution": {
+      "additionalProperties": false,
+      "properties": {
+        "action_ref": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "blocked": {
+          "type": "boolean"
+        },
+        "provenance_ref": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "reason_ref": {
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "action_ref",
+        "blocked",
+        "provenance_ref",
+        "reason_ref"
+      ],
+      "type": "object"
+    },
+    "traceBatch": {
+      "additionalProperties": false,
+      "properties": {
+        "canonical_version": {
+          "const": "pheroos-authority-canonical-v2"
+        },
+        "domain_root": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "events": {
+          "items": {
+            "$ref": "https://pheroos.dev/schemas/trace.schema.json"
+          },
+          "maxItems": 128,
+          "minItems": 1,
+          "type": "array"
+        },
+        "schema": {
+          "const": "pheroos-governance-trace-batch-v2"
+        },
+        "scope_ref": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "stream_ref": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "trace_root": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "transition_id": {
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "schema",
+        "canonical_version",
+        "domain_root",
+        "scope_ref",
+        "stream_ref",
+        "transition_id",
+        "events",
+        "trace_root"
+      ],
+      "type": "object"
+    },
+    "verifiedSignalProposal": {
+      "additionalProperties": false,
+      "properties": {
+        "candidate_ref": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "evidence_root": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "provenance_ref": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "signal_ref": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "signal_root": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "signal_transition_id": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "source_ref": {
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "candidate_ref",
+        "evidence_root",
+        "provenance_ref",
+        "signal_ref",
+        "signal_root",
+        "signal_transition_id",
+        "source_ref"
+      ],
+      "type": "object"
+    },
+    "verifiedSignalRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "canonical_version": {
+          "const": "pheroos-authority-canonical-v2"
+        },
+        "domain_root": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "evidence_root": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "observed_epoch": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer",
+          "x-pheroos-exact-integer": true
+        },
+        "request_ref": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "request_root": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "run_ref": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "schema": {
+          "const": "pheroos-governance-verified-signal-request-v2"
+        },
+        "scope_ref": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "signal_ref": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "signal_root": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "verified",
+            "rejected"
+          ]
+        },
+        "stream_ref": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "target_ref": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "transition_id": {
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "schema",
+        "canonical_version",
+        "domain_root",
+        "scope_ref",
+        "run_ref",
+        "request_ref",
+        "transition_id",
+        "signal_ref",
+        "target_ref",
+        "signal_root",
+        "evidence_root",
+        "status",
+        "observed_epoch",
+        "stream_ref",
+        "request_root"
+      ],
+      "type": "object"
+    }
+  },
+  "$id": "https://pheroos.dev/schemas/authority-v2.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/authorityReadSet"
+    },
+    {
+      "$ref": "#/$defs/authorityDomain"
+    },
+    {
+      "$ref": "#/$defs/governanceHead"
+    },
+    {
+      "$ref": "#/$defs/preparedTransition"
+    },
+    {
+      "$ref": "#/$defs/traceBatch"
+    },
+    {
+      "$ref": "#/$defs/domainSeal"
+    },
+    {
+      "$ref": "#/$defs/commitBatch"
+    },
+    {
+      "$ref": "#/$defs/commitReceipt"
+    },
+    {
+      "$ref": "#/$defs/commitInclusionProof"
+    },
+    {
+      "$ref": "#/$defs/committedTransition"
+    },
+    {
+      "$ref": "#/$defs/commitPositionObservation"
+    },
+    {
+      "$ref": "#/$defs/governanceFailure"
+    },
+    {
+      "$ref": "#/$defs/commitAttempt"
+    },
+    {
+      "$ref": "#/$defs/commitView"
+    },
+    {
+      "$ref": "#/$defs/issuerGrant"
+    },
+    {
+      "$ref": "#/$defs/issuerGrantVerification"
+    },
+    {
+      "$ref": "#/$defs/verifiedSignalRequest"
+    },
+    {
+      "$ref": "#/$defs/domainRetirementRequest"
+    },
+    {
+      "$ref": "#/$defs/baselineOutputRequest"
+    },
+    {
+      "$ref": "#/$defs/actionPermission"
+    },
+    {
+      "$ref": "#/$defs/baselineOutputResult"
+    }
+  ],
+  "title": "PheroOS Draft portable scoped-authority v2 record"
+}

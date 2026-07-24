@@ -35,7 +35,9 @@ class SignalVerification:
     authority: AuthorityLevel
     provenance: str
     trace_event_id: str
-    _issuance: object | None = field(default=None, init=False, repr=False, compare=False)
+    _issuance: object | None = field(
+        default=None, init=False, repr=False, compare=False
+    )
 
 
 def verify_signal_input(
@@ -58,11 +60,7 @@ def verify_signal_input(
         "provenance": provenance,
         "trace_event_id": trace_event_id,
     }
-    missing = [
-        name
-        for name, value in values.items()
-        if not is_nonblank_string(value)
-    ]
+    missing = [name for name, value in values.items() if not is_nonblank_string(value)]
     if missing:
         raise GovernanceError(f"signal verification is missing {missing[0]}")
     verification = SignalVerification(
@@ -131,9 +129,10 @@ def signal_verification_matches(
     source_id: str,
     subject_id: str,
 ) -> bool:
+    if verification is None or not _signal_verification_is_authoritative(verification):
+        return False
     return bool(
-        _signal_verification_is_authoritative(verification)
-        and verification.target == target
+        verification.target == target
         and verification.source_id == source_id
         and verification.subject_id == subject_id
     )

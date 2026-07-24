@@ -1,6 +1,6 @@
-from __future__ import annotations
-
 """Deterministic Commit TCK execution harness."""
+
+from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
 from copy import deepcopy
@@ -39,48 +39,62 @@ def run_commit_tck(
     else:
         implementation = adapter
     selected = tuple(vectors) if vectors is not None else load_commit_tck_vectors()
-    results: list[CommitTckResult] = []
-    for vector in selected:
-        actual = _evaluate_adapter(implementation, vector)
-        failures: list[str] = []
-        if actual != vector.expected:
-            failures.append("base")
-        repeated = _evaluate_adapter(implementation, vector)
-        if repeated != actual:
-            failures.append("repeat")
-        for mutation in vector.mutations:
-            mutated = variant_vector(vector, mutation, permutation=False)
-            observed = _evaluate_adapter(implementation, mutated)
-            if observed != mutation["expected"]:
-                failures.append(f"mutation:{mutation['id']}")
-            repeated_mutation = _evaluate_adapter(implementation, mutated)
-            if repeated_mutation != observed:
-                failures.append(f"mutation-repeat:{mutation['id']}")
-        for permutation in vector.permutations:
-            permuted = variant_vector(vector, permutation, permutation=True)
-            observed = _evaluate_adapter(implementation, permuted)
-            if observed != permutation["expected"]:
-                failures.append(f"permutation:{permutation['id']}")
-            repeated_permutation = _evaluate_adapter(implementation, permuted)
-            if repeated_permutation != observed:
-                failures.append(f"permutation-repeat:{permutation['id']}")
-        ok = not failures
-        results.append(
-            CommitTckResult(
-                vector_id=vector.id,
-                matrix_case=vector.matrix_case,
-                ok=ok,
-                expected=deepcopy(vector.expected),
-                actual=deepcopy(actual),
-                detail=(
-                    ""
-                    if ok
-                    else "exact TCK result mismatch: " + ", ".join(failures)
-                ),
-                variant_failures=tuple(failures),
-            )
-        )
+    results = [_run_vector(implementation, vector) for vector in selected]
     return CommitTckReport(COMMIT_TCK_VERSION, tuple(results))
+
+
+def _run_vector(
+    implementation: CommitTckAdapter,
+    vector: CommitTckVector,
+) -> CommitTckResult:
+    actual = _evaluate_adapter(implementation, vector)
+    failures: list[str] = []
+    if actual != vector.expected:
+        failures.append("base")
+    if _evaluate_adapter(implementation, vector) != actual:
+        failures.append("repeat")
+    _record_variant_failures(
+        implementation,
+        vector,
+        vector.mutations,
+        permutation=False,
+        failures=failures,
+    )
+    _record_variant_failures(
+        implementation,
+        vector,
+        vector.permutations,
+        permutation=True,
+        failures=failures,
+    )
+    ok = not failures
+    return CommitTckResult(
+        vector_id=vector.id,
+        matrix_case=vector.matrix_case,
+        ok=ok,
+        expected=deepcopy(vector.expected),
+        actual=deepcopy(actual),
+        detail="" if ok else "exact TCK result mismatch: " + ", ".join(failures),
+        variant_failures=tuple(failures),
+    )
+
+
+def _record_variant_failures(
+    implementation: CommitTckAdapter,
+    vector: CommitTckVector,
+    variants: Sequence[Mapping[str, Any]],
+    *,
+    permutation: bool,
+    failures: list[str],
+) -> None:
+    kind = "permutation" if permutation else "mutation"
+    for variant in variants:
+        varied = variant_vector(vector, variant, permutation=permutation)
+        observed = _evaluate_adapter(implementation, varied)
+        if observed != variant["expected"]:
+            failures.append(f"{kind}:{variant['id']}")
+        if _evaluate_adapter(implementation, varied) != observed:
+            failures.append(f"{kind}-repeat:{variant['id']}")
 
 
 def _evaluate_adapter(

@@ -1,9 +1,10 @@
-from __future__ import annotations
-
 """Shared, authority-neutral certificate invariants."""
 
+from __future__ import annotations
+
 from collections.abc import Mapping, Sequence
-from typing import Any
+from dataclasses import fields
+from typing import TYPE_CHECKING, Any, Protocol, cast
 
 from pheroos.governance._commit_validation import (
     require_commit_fingerprint,
@@ -15,16 +16,15 @@ from pheroos.governance._commit_validation import (
 from pheroos.governance._commit.certificate_contracts import (
     CERTIFICATE_HASH_ALGORITHM,
 )
-from pheroos.governance._commit.local_receipt import LocalCommitReceipt
-from pheroos.governance.authority import AuthorityLevel, can_verify
-from pheroos.governance.commit_numeric import commit_payload_fingerprint
-from pheroos.governance.commit_state import (
-    AuthorityScope,
+from pheroos.governance._commit.common import AuthorityScope
+from pheroos.governance._commit_state.records import (
     CommitFinalityStatus,
     CommitFinalityVerification,
     DecisionOutcomeKind,
     _issue_commit_finality_verification,
 )
+from pheroos.governance.authority import AuthorityLevel, can_verify
+from pheroos.governance.commit_numeric import commit_payload_fingerprint
 from pheroos.governance.errors import GovernanceError
 from pheroos.protocol.commit_models import (
     COMMIT_CANONICAL_VERSION,
@@ -33,6 +33,115 @@ from pheroos.protocol.commit_models import (
     CommitAssurance,
 )
 from pheroos.protocol.commit_wire import commit_policy_fingerprint
+
+
+if TYPE_CHECKING:
+
+    class _FinalityCertificate(Protocol):
+        """Read-only structural leaves consumed by the neutral finality issuer."""
+
+        @property
+        def profile(self) -> str: ...
+
+        @property
+        def assurance(self) -> CommitAssurance: ...
+
+        @property
+        def manifest_root(self) -> str: ...
+
+        @property
+        def commit_policy_root(self) -> str: ...
+
+        @property
+        def protocol_id(self) -> str: ...
+
+        @property
+        def run_id(self) -> str: ...
+
+        @property
+        def target(self) -> str: ...
+
+        @property
+        def epoch(self) -> int: ...
+
+        @property
+        def candidate_id(self) -> str: ...
+
+        @property
+        def context_root(self) -> str: ...
+
+        @property
+        def assessment_root(self) -> str: ...
+
+        @property
+        def window_state_root(self) -> str: ...
+
+        @property
+        def window_root(self) -> str: ...
+
+        @property
+        def risk_assessment_root(self) -> str: ...
+
+        @property
+        def risk_chain_state_root(self) -> str: ...
+
+        @property
+        def risk_policy_root(self) -> str: ...
+
+        @property
+        def membership_root(self) -> str: ...
+
+        @property
+        def membership_snapshot_root(self) -> str: ...
+
+        @property
+        def membership_epoch_state_root(self) -> str: ...
+
+        @property
+        def threshold_root(self) -> str: ...
+
+        @property
+        def replay_state_root(self) -> str: ...
+
+        @property
+        def replay_root(self) -> str: ...
+
+        @property
+        def support_replay_state_root(self) -> str: ...
+
+        @property
+        def support_replay_root(self) -> str: ...
+
+        @property
+        def evidence_root(self) -> str: ...
+
+        @property
+        def challenge_root(self) -> str: ...
+
+        @property
+        def lease_root(self) -> str: ...
+
+        @property
+        def candidate_evidence_root(self) -> str: ...
+
+        @property
+        def candidate_challenge_root(self) -> str: ...
+
+        @property
+        def candidate_lease_root(self) -> str: ...
+
+        @property
+        def stop_resolution_root(self) -> str: ...
+
+        @property
+        def permission_root(self) -> str: ...
+
+        @property
+        def issued_at_step(self) -> int: ...
+else:
+
+    class _FinalityCertificate(Protocol):
+        pass
 
 
 def output_payload_fingerprint(
@@ -52,8 +161,9 @@ def output_payload_fingerprint(
         profile=normalized_profile,
     )
 
+
 def _issue_typed_finality_verification(
-    certificate: LocalCommitReceipt | object,
+    certificate: _FinalityCertificate,
     *,
     certificate_kind: str,
     certificate_ref: str,
@@ -64,12 +174,12 @@ def _issue_typed_finality_verification(
     trace_event_id: str,
 ) -> CommitFinalityVerification:
     if type(authority) is not AuthorityLevel or not can_verify(authority):
-        raise GovernanceError("commit finality verification requires governance authority")
+        raise GovernanceError(
+            "commit finality verification requires governance authority"
+        )
     current = require_commit_step(current_step, "commit finality verified_at_step")
     if current < certificate.issued_at_step:
-        raise GovernanceError(
-            "central commit finality certificate is from the future"
-        )
+        raise GovernanceError("central commit finality certificate is from the future")
     return _issue_commit_finality_verification(
         status=CommitFinalityStatus.VERIFIED,
         certificate_kind=certificate_kind,
@@ -125,6 +235,7 @@ def _issue_typed_finality_verification(
         ),
     )
 
+
 def _validate_policy_binding(
     policy: CollectiveCommitPolicy,
     *,
@@ -147,6 +258,7 @@ def _validate_policy_binding(
     ):
         raise GovernanceError("certificate policy uses unsupported wire semantics")
 
+
 def _require_same_scope(left: object, right: object, field_name: str) -> None:
     for name in (
         "profile",
@@ -161,6 +273,7 @@ def _require_same_scope(left: object, right: object, field_name: str) -> None:
         if getattr(left, name) != getattr(right, name):
             raise GovernanceError(f"{field_name} {name} mismatch")
 
+
 def _certificate_body_root(
     body: Mapping[str, object],
     *,
@@ -168,6 +281,7 @@ def _certificate_body_root(
     profile: str,
 ) -> str:
     return commit_payload_fingerprint(body, schema=schema, profile=profile)
+
 
 def _certificate_envelope_root(
     body_root: str,
@@ -192,6 +306,7 @@ def _certificate_envelope_root(
         profile=profile,
     )
 
+
 def _require_attestation_bindings(
     issuer_attestation_refs: Sequence[str],
     trusted_issuer_attestations: Mapping[str, str] | None,
@@ -212,6 +327,7 @@ def _require_attestation_bindings(
             f"{field_name} issuer attestations do not bind the certificate body"
         )
     return refs
+
 
 def _attestations_match(
     issuer_attestation_refs: Sequence[str],
@@ -238,12 +354,14 @@ def _attestations_match(
     except (KeyError, GovernanceError, TypeError):
         return False
 
+
 def _dataclass_public_payload(value: object) -> dict[str, object]:
     return {
-        name: getattr(value, name)
-        for name, record in value.__dataclass_fields__.items()  # type: ignore[attr-defined]
+        record.name: getattr(value, record.name)
+        for record in fields(cast(Any, value))
         if record.init
     }
+
 
 def _strict_payload_values(
     payload: Mapping[str, object],
@@ -253,11 +371,7 @@ def _strict_payload_values(
 ) -> dict[str, object]:
     if not isinstance(payload, Mapping):
         raise GovernanceError(f"{field_name} must be a mapping")
-    expected = {
-        name
-        for name, record in record_type.__dataclass_fields__.items()
-        if record.init
-    }
+    expected = {record.name for record in fields(cast(Any, record_type)) if record.init}
     observed = set(payload)
     if observed != expected:
         missing = sorted(expected - observed)
@@ -269,6 +383,7 @@ def _strict_payload_values(
         raise GovernanceError(f"{field_name} keys must be strings")
     return dict(payload)
 
+
 def _require_sequence(value: object, field_name: str) -> Sequence[object]:
     if not isinstance(value, Sequence) or isinstance(
         value,
@@ -277,31 +392,43 @@ def _require_sequence(value: object, field_name: str) -> Sequence[object]:
         raise GovernanceError(f"{field_name} must be a sequence")
     return value
 
+
 def _coerce_assurance(value: object) -> CommitAssurance:
     try:
-        return value if type(value) is CommitAssurance else CommitAssurance(value)
+        return (
+            value
+            if type(value) is CommitAssurance
+            else CommitAssurance(cast(str, value))
+        )
     except (TypeError, ValueError) as exc:
         raise GovernanceError("certificate assurance is invalid") from exc
 
+
 def _coerce_authority_scope(value: object) -> AuthorityScope:
     try:
-        return value if type(value) is AuthorityScope else AuthorityScope(value)
+        return (
+            value if type(value) is AuthorityScope else AuthorityScope(cast(str, value))
+        )
     except (TypeError, ValueError) as exc:
         raise GovernanceError("certificate authority scope is invalid") from exc
+
 
 def _coerce_outcome_kind(value: object) -> DecisionOutcomeKind:
     try:
         return (
             value
             if type(value) is DecisionOutcomeKind
-            else DecisionOutcomeKind(value)
+            else DecisionOutcomeKind(cast(str, value))
         )
     except (TypeError, ValueError) as exc:
         raise GovernanceError("outcome certificate kind is invalid") from exc
 
+
 def _coerce_authority(value: object) -> AuthorityLevel:
     try:
-        return value if type(value) is AuthorityLevel else AuthorityLevel(value)
+        return (
+            value if type(value) is AuthorityLevel else AuthorityLevel(cast(int, value))
+        )
     except (TypeError, ValueError) as exc:
         raise GovernanceError("certificate authority is invalid") from exc
 

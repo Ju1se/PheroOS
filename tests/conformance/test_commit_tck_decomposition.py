@@ -14,6 +14,10 @@ from pheroos.conformance._commit_tck import reference_adapter, runner
 ROOT = Path(__file__).resolve().parents[2]
 PRIVATE_PACKAGE = ROOT / "pheroos" / "conformance" / "_commit_tck"
 PRIVATE_PREFIX = "pheroos.conformance._commit_tck."
+REFERENCE_ADAPTER_HANDLERS = ROOT / "pheroos" / "conformance" / "_commit_tck_reference"
+REFERENCE_FIXTURE_HANDLERS = (
+    ROOT / "pheroos" / "conformance" / "_commit_reference_fixture"
+)
 
 
 def _private_import_graph() -> dict[str, set[str]]:
@@ -169,3 +173,27 @@ def test_commit_tck_facade_is_thin_and_contains_no_reference_semantics() -> None
     assert definitions <= {"__getattr__", "__dir__"}
     assert "pheroos.governance" not in source
     assert "_MATRIX_PROBES" not in source
+
+
+def test_commit_reference_facades_and_handlers_stay_bounded_and_independent() -> None:
+    adapter = ROOT / "pheroos" / "conformance" / "_commit_tck" / "reference_adapter.py"
+    fixture = ROOT / "pheroos" / "conformance" / "_commit_reference.py"
+    handler_paths = tuple(REFERENCE_ADAPTER_HANDLERS.glob("*.py")) + tuple(
+        REFERENCE_FIXTURE_HANDLERS.glob("*.py")
+    )
+    forbidden_subject_imports = (
+        "pheroos.conformance.commit_tck_v2 import",
+        "pheroos.conformance.commit_tck_v2_spec_adapter",
+        "PheroosPublicCommitTckV2Adapter",
+        "IndependentCommitSpecModelAdapter",
+    )
+
+    assert len(adapter.read_text(encoding="utf-8").splitlines()) <= 500
+    assert len(fixture.read_text(encoding="utf-8").splitlines()) <= 800
+    assert handler_paths
+    for path in handler_paths:
+        source = path.read_text(encoding="utf-8")
+        assert len(source.splitlines()) <= 500, path
+        assert not any(fragment in source for fragment in forbidden_subject_imports), (
+            path
+        )

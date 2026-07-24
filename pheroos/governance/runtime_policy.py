@@ -25,13 +25,17 @@ def validate_collective_runtime_policy(policy: CollectiveDecisionPolicy) -> None
     """Fail closed for a policy object constructed directly by a runtime."""
 
     if not isinstance(policy, CollectiveDecisionPolicy):
-        raise GovernanceError("collective policy must use the canonical protocol declaration")
+        raise GovernanceError(
+            "collective policy must use the canonical protocol declaration"
+        )
     if policy.mode not in SUPPORTED_COLLECTIVE_MODES:
         raise GovernanceError(f"collective policy mode is unsupported: {policy.mode}")
     for field_name in ("min_independent_scouts", "quorum_threshold"):
         value = getattr(policy, field_name)
         if isinstance(value, bool) or not isinstance(value, int) or value <= 0:
-            raise GovernanceError(f"collective policy {field_name} must be a positive integer")
+            raise GovernanceError(
+                f"collective policy {field_name} must be a positive integer"
+            )
     for field_name in (
         "recruitment_enabled",
         "inhibition_enabled",
@@ -49,7 +53,9 @@ def validate_collective_runtime_policy(policy: CollectiveDecisionPolicy) -> None
 
     validate_pheromone_policy(pheromone_policy_from_collective(policy))
     validate_pheromone_diffusion_policy(diffusion_policy_from_collective(policy))
-    validate_layer_coordination_policy(layer_coordination_policy_from_collective(policy))
+    validate_layer_coordination_policy(
+        layer_coordination_policy_from_collective(policy)
+    )
     validate_policy_adjustment_bounds(policy)
 
     if has_hybrid_pheromone_features(policy) and policy.mode != "hybrid":
@@ -64,7 +70,9 @@ def validate_collective_runtime_policy(policy: CollectiveDecisionPolicy) -> None
         and policy.pheromone_require_provenance
         and policy.pheromone_require_trace
     ):
-        raise GovernanceError("collective policy mode='hybrid' requires the complete Hybrid path")
+        raise GovernanceError(
+            "collective policy mode='hybrid' requires the complete Hybrid path"
+        )
     if policy.mode == "hybrid" and any(
         value <= 0
         for value in (
@@ -112,8 +120,13 @@ def resolve_collective_fallback_id(
     if not isinstance(candidate_set, CandidateSet):
         raise GovernanceError("collective fallback resolution requires a candidate set")
     if policy.fallback_candidate:
-        if fallback_candidate_id is not None and fallback_candidate_id != policy.fallback_candidate:
-            raise GovernanceError("runtime fallback cannot override the declared collective fallback")
+        if (
+            fallback_candidate_id is not None
+            and fallback_candidate_id != policy.fallback_candidate
+        ):
+            raise GovernanceError(
+                "runtime fallback cannot override the declared collective fallback"
+            )
         return policy.fallback_candidate
     safe_candidates = sorted(
         candidate.id
@@ -124,6 +137,11 @@ def resolve_collective_fallback_id(
         raise GovernanceError(
             "collective policy without an explicit fallback requires exactly one safe fallback"
         )
-    if fallback_candidate_id is not None and fallback_candidate_id != safe_candidates[0]:
-        raise GovernanceError("runtime fallback does not match the unique declared safe fallback")
+    if (
+        fallback_candidate_id is not None
+        and fallback_candidate_id != safe_candidates[0]
+    ):
+        raise GovernanceError(
+            "runtime fallback does not match the unique declared safe fallback"
+        )
     return safe_candidates[0]

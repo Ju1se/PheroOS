@@ -31,7 +31,9 @@ class CandidateSet:
             if not isinstance(candidate.safe_fallback, bool):
                 raise GovernanceError("candidate safe_fallback must be boolean")
             if candidate.id in identifiers:
-                raise GovernanceError(f"duplicate candidate declaration: {candidate.id}")
+                raise GovernanceError(
+                    f"duplicate candidate declaration: {candidate.id}"
+                )
             identifiers.add(candidate.id)
         object.__setattr__(self, "candidates", snapshot)
 
@@ -41,7 +43,9 @@ class CandidateSet:
         for candidate in self.candidates:
             if candidate.id == candidate_id:
                 return candidate
-        raise GovernanceError(f"candidate is not declared by the active protocol: {candidate_id}")
+        raise GovernanceError(
+            f"candidate is not declared by the active protocol: {candidate_id}"
+        )
 
     def require_declared_for_target(self, candidate_id: str, target: str) -> Candidate:
         if not is_nonblank_string(target):

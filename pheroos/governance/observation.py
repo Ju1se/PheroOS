@@ -158,7 +158,6 @@ class CounterevidenceDisposition:
             _canonical_fingerprints(
                 self.rebuttal_observation_fingerprints,
                 "counterevidence disposition rebuttal observation fingerprints",
-                allow_empty=True,
             ),
         )
         object.__setattr__(
@@ -349,9 +348,7 @@ def verify_observation_attestation(
         )
 
     attestation_fingerprint = observation_attestation_fingerprint(attestation)
-    principal_fingerprint = principal_verification_fingerprint(
-        principal_verification
-    )
+    principal_fingerprint = principal_verification_fingerprint(principal_verification)
     effective_expiry = min(
         attestation.expires_at_step,
         principal_verification.expires_at_step,
@@ -671,10 +668,8 @@ def issue_counterevidence_disposition(
             )
         if (
             rebuttal.principal_id == counter_observation.principal_id
-            or rebuttal.principal_cluster_id
-            == counter_observation.principal_cluster_id
-            or
-            rebuttal.independence_group == counter_observation.independence_group
+            or rebuttal.principal_cluster_id == counter_observation.principal_cluster_id
+            or rebuttal.independence_group == counter_observation.independence_group
             or rebuttal.source_domain == counter_observation.source_domain
         ):
             raise GovernanceError(
@@ -822,14 +817,12 @@ def counterevidence_disposition_matches(
             and disposition.profile == counter_observation.profile
             and disposition.assurance is counter_observation.assurance
             and disposition.manifest_root == counter_observation.manifest_root
-            and disposition.commit_policy_root
-            == counter_observation.commit_policy_root
+            and disposition.commit_policy_root == counter_observation.commit_policy_root
             and disposition.protocol_id == counter_observation.protocol_id
             and disposition.run_id == counter_observation.run_id
             and disposition.target == counter_observation.target
             and disposition.candidate_id == counter_observation.candidate_id
-            and disposition.claim_fingerprint
-            == counter_observation.claim_fingerprint
+            and disposition.claim_fingerprint == counter_observation.claim_fingerprint
             and disposition.epoch == counter_observation.epoch
             and disposition.counter_observation_fingerprint
             == verified_observation_fingerprint(counter_observation)
@@ -894,7 +887,9 @@ def _validate_observation_attestation(attestation: ObservationAttestation) -> No
         "observation attestation expires_at_step",
     )
     if expires <= observed:
-        raise GovernanceError("observation attestation expiry must be after observation")
+        raise GovernanceError(
+            "observation attestation expiry must be after observation"
+        )
 
 
 def _validate_verified_observation_shape(observation: VerifiedObservation) -> None:
@@ -1012,7 +1007,6 @@ def _validate_counterevidence_disposition_shape(
     rebuttals = _canonical_fingerprints(
         disposition.rebuttal_observation_fingerprints,
         "counterevidence disposition rebuttal observation fingerprints",
-        allow_empty=True,
     )
     if rebuttals != disposition.rebuttal_observation_fingerprints:
         raise GovernanceError(
@@ -1051,7 +1045,9 @@ def _validate_counterevidence_disposition_shape(
         "counterevidence disposition expires_at_step",
     )
     if expires <= issued:
-        raise GovernanceError("counterevidence disposition expiry must be after issuance")
+        raise GovernanceError(
+            "counterevidence disposition expiry must be after issuance"
+        )
     if type(disposition.authority) is not AuthorityLevel or not can_verify(
         disposition.authority
     ):
@@ -1222,16 +1218,12 @@ def _require_profile_assurance(profile: str, assurance: CommitAssurance) -> None
 def _canonical_fingerprints(
     values: Sequence[str],
     field_name: str,
-    *,
-    allow_empty: bool,
 ) -> tuple[str, ...]:
     if isinstance(values, (str, bytes, bytearray)):
         raise GovernanceError(f"{field_name} must be a sequence")
     fingerprints = tuple(
         require_commit_fingerprint(value, field_name) for value in values
     )
-    if not fingerprints and not allow_empty:
-        raise GovernanceError(f"{field_name} must not be empty")
     if len(set(fingerprints)) != len(fingerprints):
         raise GovernanceError(f"{field_name} contains a duplicate")
     return tuple(sorted(fingerprints))

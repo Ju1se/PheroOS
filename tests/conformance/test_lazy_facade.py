@@ -24,8 +24,8 @@ from pheroos.conformance.public_api_inventory import load_public_api_inventory
 
 
 ROOT = Path(__file__).resolve().parents[2]
-LEGACY_PUBLIC_API_ORDER_SHA256 = (
-    "1c44a26c233eca371ec560381807fc81adb6157452e79a9a9b5cd671316e24ae"
+EXPECTED_PUBLIC_API_ORDER_SHA256 = (
+    "7e79c25d406312ea47cb56da01af516fc268e622237a5c036c33002839961f18"
 )
 LEGACY_COMPATIBILITY_MODULES = {
     "checks": "pheroos.conformance.checks",
@@ -39,7 +39,9 @@ LEGACY_COMPATIBILITY_MODULES = {
 }
 
 
-def _run_child(source: str, *, isolated: bool = False, cwd: Path = ROOT) -> dict[str, object]:
+def _run_child(
+    source: str, *, isolated: bool = False, cwd: Path = ROOT
+) -> dict[str, object]:
     command = [sys.executable]
     if isolated:
         command.append("-I")
@@ -66,10 +68,10 @@ def test_lazy_facade_matches_the_canonical_static_inventory() -> None:
 
     assert dict(PUBLIC_API) == expected
     assert tuple(conformance.__all__) == tuple(PUBLIC_API)
-    assert len(conformance.__all__) == len(set(conformance.__all__)) == 33
+    assert len(conformance.__all__) == len(set(conformance.__all__)) == 118
     observed_order_hash = sha256("\n".join(conformance.__all__).encode()).hexdigest()
-    assert PUBLIC_API_ORDER_SHA256 == LEGACY_PUBLIC_API_ORDER_SHA256
-    assert observed_order_hash == LEGACY_PUBLIC_API_ORDER_SHA256
+    assert PUBLIC_API_ORDER_SHA256 == EXPECTED_PUBLIC_API_ORDER_SHA256
+    assert observed_order_hash == EXPECTED_PUBLIC_API_ORDER_SHA256
     assert dict(COMPATIBILITY_MODULES) == LEGACY_COMPATIBILITY_MODULES
 
 
@@ -126,6 +128,41 @@ print(json.dumps({
         "pheroos.conformance._public_api",
     ]
     assert set(result["public_dir"]) == set(PUBLIC_API) | set(COMPATIBILITY_MODULES)
+
+
+def test_checks_namespace_loads_one_v2_contract_without_legacy_sibling_effects() -> (
+    None
+):
+    result = _run_child(
+        """
+import json
+import sys
+
+import pheroos.conformance.checks as checks
+
+before = sorted(
+    name
+    for name in sys.modules
+    if name.startswith("pheroos.conformance.checks.")
+)
+selected = checks.support_v2_contract
+print(json.dumps({
+    "before": before,
+    "cached": checks.__dict__["support_v2_contract"] is selected,
+    "legacy_registry_loaded": (
+        "pheroos.governance._legacy.authority_registry" in sys.modules
+    ),
+    "selected": selected.__name__,
+}))
+"""
+    )
+
+    assert result == {
+        "before": [],
+        "cached": True,
+        "legacy_registry_loaded": False,
+        "selected": "pheroos.conformance.checks.support_v2_contract",
+    }
 
 
 def test_first_lazy_access_is_thread_safe_and_imports_once() -> None:
@@ -195,9 +232,10 @@ def test_from_import_star_import_and_every_binding_preserve_identity() -> None:
         "from pheroos.conformance import CommitTckVector as imported_vector",
         from_namespace,
     )
-    assert from_namespace["imported_vector"] is import_module(
-        "pheroos.conformance.commit_tck"
-    ).CommitTckVector
+    assert (
+        from_namespace["imported_vector"]
+        is import_module("pheroos.conformance.commit_tck").CommitTckVector
+    )
 
     star_namespace: dict[str, object] = {}
     exec("from pheroos.conformance import *", star_namespace)
@@ -483,7 +521,7 @@ print(json.dumps({
     )
 
     assert result == {
-        "count": 33,
+        "count": 118,
         "identity": True,
         "module": "pheroos.conformance.commit_tck",
     }

@@ -65,7 +65,9 @@ def test_source_conformance_uses_separate_versioned_profile() -> None:
     }
 
 
-def test_source_conformance_fails_missing_surfaces_instead_of_empty_scan(tmp_path: Path) -> None:
+def test_source_conformance_fails_missing_surfaces_instead_of_empty_scan(
+    tmp_path: Path,
+) -> None:
     report = run_source_conformance(tmp_path)
     checks = {check.name: check for check in report.checks}
 
@@ -75,7 +77,9 @@ def test_source_conformance_fails_missing_surfaces_instead_of_empty_scan(tmp_pat
     assert checks["package_import_boundary"].ok is False
 
 
-def test_source_conformance_rejects_empty_named_surface_directories(tmp_path: Path) -> None:
+def test_source_conformance_rejects_empty_named_surface_directories(
+    tmp_path: Path,
+) -> None:
     for relative in (
         "pheroos/protocol",
         "pheroos/kernel",
@@ -95,10 +99,18 @@ def test_source_conformance_rejects_empty_named_surface_directories(tmp_path: Pa
     assert "pheroos/protocol" in checks["source_surface"].detail
 
 
-def test_fallback_only_hybrid_manifest_returns_full_structured_report(tmp_path: Path) -> None:
-    payload = json.loads((ROOT / "examples/hybrid-pheromone-protocol/capability.json").read_text(encoding="utf-8"))
+def test_fallback_only_hybrid_manifest_returns_full_structured_report(
+    tmp_path: Path,
+) -> None:
+    payload = json.loads(
+        (ROOT / "examples/hybrid-pheromone-protocol/capability.json").read_text(
+            encoding="utf-8"
+        )
+    )
     payload["protocol"]["candidates"] = [
-        candidate for candidate in payload["protocol"]["candidates"] if candidate.get("safe_fallback")
+        candidate
+        for candidate in payload["protocol"]["candidates"]
+        if candidate.get("safe_fallback")
     ]
     manifest_path = tmp_path / "capability.json"
     manifest_path.write_text(json.dumps(payload), encoding="utf-8")
@@ -124,8 +136,14 @@ def test_fallback_only_hybrid_manifest_returns_full_structured_report(tmp_path: 
     assert "Traceback" not in json.dumps(report.to_dict())
 
 
-def test_multi_target_hybrid_conformance_ignores_foreign_candidate_ordering(tmp_path: Path) -> None:
-    payload = json.loads((ROOT / "examples/hybrid-pheromone-protocol/capability.json").read_text(encoding="utf-8"))
+def test_multi_target_hybrid_conformance_ignores_foreign_candidate_ordering(
+    tmp_path: Path,
+) -> None:
+    payload = json.loads(
+        (ROOT / "examples/hybrid-pheromone-protocol/capability.json").read_text(
+            encoding="utf-8"
+        )
+    )
     payload["protocol"]["targets"].insert(0, {"id": "decision:foreign"})
     payload["protocol"]["candidates"].insert(
         0,
@@ -140,14 +158,22 @@ def test_multi_target_hybrid_conformance_ignores_foreign_candidate_ordering(tmp_
     assert report.profile == "pheroos-hybrid-swarm-v1"
 
 
-def test_hybrid_conformance_exercises_each_declared_response_model(tmp_path: Path) -> None:
-    source = json.loads((ROOT / "examples/hybrid-pheromone-protocol/capability.json").read_text(encoding="utf-8"))
+def test_hybrid_conformance_exercises_each_declared_response_model(
+    tmp_path: Path,
+) -> None:
+    source = json.loads(
+        (ROOT / "examples/hybrid-pheromone-protocol/capability.json").read_text(
+            encoding="utf-8"
+        )
+    )
 
     for model in ("linear", "saturating", "threshold", "competitive"):
         payload = json.loads(json.dumps(source))
         policy = payload["protocol"]["collective_decision_policy"]
         policy["pheromone_response_model"] = model
-        policy["pheromone_competition_mode"] = "normalize" if model == "competitive" else "none"
+        policy["pheromone_competition_mode"] = (
+            "normalize" if model == "competitive" else "none"
+        )
         for profile in policy["pheromone_kind_profiles"].values():
             profile["response_model"] = model
         manifest_path = tmp_path / model / "capability.json"
@@ -157,4 +183,6 @@ def test_hybrid_conformance_exercises_each_declared_response_model(tmp_path: Pat
         report = run_conformance(manifest_path)
 
         assert report.ok is True, report.to_dict()
-        assert {check.name: check for check in report.checks}["pheromone_response_model"].ok is True
+        assert {check.name: check for check in report.checks}[
+            "pheromone_response_model"
+        ].ok is True

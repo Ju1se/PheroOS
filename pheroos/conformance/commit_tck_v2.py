@@ -1,15 +1,15 @@
-from __future__ import annotations
-
 """Declarative Commit TCK v2 harness and PheroOS public-ABI adapter."""
 
+from __future__ import annotations
+
+import json
+import subprocess
 from collections.abc import Mapping, Sequence
 from copy import deepcopy
 from dataclasses import dataclass
 from hashlib import sha256
 from importlib import resources
-import json
 from pathlib import Path
-import subprocess
 from typing import Any, Protocol
 
 from pheroos.conformance.commit_tck_v2_protocol import (
@@ -24,10 +24,10 @@ from pheroos.conformance.commit_tck_v2_protocol import (
     loads_commit_tck_json,
     validate_commit_tck_actual,
 )
-from pheroos.governance import (
-    multiply_scaled,
-    scaled_ratio,
-    select_terminal_outcome_kind,
+from pheroos.conformance.profile import profile_for_manifest
+from pheroos.governance.commit_numeric import multiply_scaled, scaled_ratio
+from pheroos.governance.commit_semantics import select_terminal_outcome_kind
+from pheroos.governance.historical_certificate import (
     verify_evidence_commit_certificate,
 )
 from pheroos.protocol import (
@@ -36,9 +36,6 @@ from pheroos.protocol import (
 )
 from pheroos.protocol.manifest import capability_manifest_from_dict
 from pheroos.trace import TraceEvent, commit_trace_event_id
-
-from pheroos.conformance.profile import profile_for_manifest
-
 
 COMMIT_TCK_V2_ARTIFACT = resources.files("pheroos.conformance").joinpath(
     "tck",
@@ -119,8 +116,10 @@ class CommitTckV2Report:
 
     @property
     def ok(self) -> bool:
-        return bool(self.results) and not self.protocol_error and all(
-            item.ok for item in self.results
+        return (
+            bool(self.results)
+            and not self.protocol_error
+            and all(item.ok for item in self.results)
         )
 
 
@@ -187,6 +186,25 @@ def load_commit_tck_v2_cases(
 ) -> tuple[CommitTckV2Case, ...]:
     artifact = Path(path) if path is not None else COMMIT_TCK_V2_ARTIFACT
     raw = loads_commit_tck_json(artifact.read_text(encoding="utf-8"))
+    templates, raw_cases = _validated_commit_tck_artifact(raw)
+    cases: list[CommitTckV2Case] = []
+    ids: set[str] = set()
+    matrix_cases: set[int] = set()
+    for raw_case in raw_cases:
+        cases.append(
+            _commit_tck_case_from_raw(
+                raw_case,
+                templates=templates,
+                ids=ids,
+                matrix_cases=matrix_cases,
+            )
+        )
+    return tuple(cases)
+
+
+def _validated_commit_tck_artifact(
+    raw: Any,
+) -> tuple[dict[str, dict[str, Any]], list[Any]]:
     root = _exact_object(raw, _ARTIFACT_FIELDS, "Commit TCK v2 artifact")
     if root["tck_version"] != COMMIT_TCK_V2_VERSION:
         raise CommitTckV2ProtocolError("Commit TCK v2 artifact version is unsupported")
@@ -198,91 +216,96 @@ def load_commit_tck_v2_cases(
             "Commit TCK v2 manifest_templates must be a non-empty object"
         )
     if any(
-        not isinstance(key, str)
-        or not key
-        or not isinstance(value, dict)
+        not isinstance(key, str) or not key or not isinstance(value, dict)
         for key, value in templates.items()
     ):
         raise CommitTckV2ProtocolError("Commit TCK v2 manifest template is invalid")
     raw_cases = root["cases"]
     if not isinstance(raw_cases, list) or not raw_cases:
         raise CommitTckV2ProtocolError("Commit TCK v2 cases must be a non-empty array")
+    return templates, raw_cases
 
-    cases: list[CommitTckV2Case] = []
-    ids: set[str] = set()
-    matrix_cases: set[int] = set()
-    for raw_case in raw_cases:
-        item = _exact_object(raw_case, _CASE_FIELDS, "Commit TCK v2 case")
-        identifier = _text(item["id"], "Commit TCK v2 case id")
-        matrix_case = _exact_integer(item["matrix_case"], "matrix_case")
-        if matrix_case <= 0:
-            raise CommitTckV2ProtocolError(
-                "Commit TCK v2 matrix_case must be positive"
-            )
-        if identifier in ids or matrix_case in matrix_cases:
-            raise CommitTckV2ProtocolError(
-                "Commit TCK v2 case ids and matrix cases must be unique"
-            )
-        ids.add(identifier)
-        matrix_cases.add(matrix_case)
-        template_id = item["manifest_template"]
-        if template_id is None:
-            manifest = None
-        else:
-            template_name = _text(
-                template_id,
-                "Commit TCK v2 manifest template id",
-            )
-            try:
-                manifest = deepcopy(templates[template_name])
-            except KeyError as exc:
-                raise CommitTckV2ProtocolError(
-                    f"Commit TCK v2 manifest template is missing: {template_name}"
-                ) from exc
-        patches = item["manifest_patches"]
-        if not isinstance(patches, list):
-            raise CommitTckV2ProtocolError(
-                "Commit TCK v2 manifest_patches must be an array"
-            )
-        if manifest is None and patches:
-            raise CommitTckV2ProtocolError(
-                "Commit TCK v2 manifest patches require a template"
-            )
-        for raw_patch in patches:
-            patch = _exact_object(
-                raw_patch,
-                _PATCH_FIELDS,
-                "Commit TCK v2 manifest patch",
-            )
-            path_value = patch["path"]
-            if not isinstance(path_value, list) or not path_value:
-                raise CommitTckV2ProtocolError(
-                    "Commit TCK v2 manifest patch path must be non-empty"
-                )
-            _replace_json_path(
-                manifest,
-                path_value,
-                deepcopy(patch["replacement"]),
-            )
-        request = CommitTckRequest(
-            id=identifier,
-            tck_version=COMMIT_TCK_V2_VERSION,
-            matrix_case=matrix_case,
-            title=_text(item["title"], "Commit TCK v2 case title"),
-            manifest=manifest,
-            profile=_text(item["profile"], "Commit TCK v2 case profile"),
-            prior_authoritative_state=deepcopy(
-                _object(
-                    item["prior_authoritative_state"],
-                    "Commit TCK v2 prior state",
-                )
-            ),
-            inputs=deepcopy(_object(item["inputs"], "Commit TCK v2 inputs")),
+
+def _commit_tck_case_from_raw(
+    raw_case: Any,
+    *,
+    templates: Mapping[str, dict[str, Any]],
+    ids: set[str],
+    matrix_cases: set[int],
+) -> CommitTckV2Case:
+    item = _exact_object(raw_case, _CASE_FIELDS, "Commit TCK v2 case")
+    identifier = _text(item["id"], "Commit TCK v2 case id")
+    matrix_case = _exact_integer(item["matrix_case"], "matrix_case")
+    if matrix_case <= 0:
+        raise CommitTckV2ProtocolError("Commit TCK v2 matrix_case must be positive")
+    if identifier in ids or matrix_case in matrix_cases:
+        raise CommitTckV2ProtocolError(
+            "Commit TCK v2 case ids and matrix cases must be unique"
         )
-        expected = deepcopy(item["expected"])
-        validate_commit_tck_actual(expected)
-        cases.append(CommitTckV2Case(request=request, expected=expected))
-    return tuple(cases)
+    ids.add(identifier)
+    matrix_cases.add(matrix_case)
+    manifest = _case_manifest(item, templates=templates)
+    request = CommitTckRequest(
+        id=identifier,
+        tck_version=COMMIT_TCK_V2_VERSION,
+        matrix_case=matrix_case,
+        title=_text(item["title"], "Commit TCK v2 case title"),
+        manifest=manifest,
+        profile=_text(item["profile"], "Commit TCK v2 case profile"),
+        prior_authoritative_state=deepcopy(
+            _object(item["prior_authoritative_state"], "Commit TCK v2 prior state")
+        ),
+        inputs=deepcopy(_object(item["inputs"], "Commit TCK v2 inputs")),
+    )
+    expected = deepcopy(item["expected"])
+    validate_commit_tck_actual(expected)
+    return CommitTckV2Case(request=request, expected=expected)
+
+
+def _case_manifest(
+    item: Mapping[str, Any],
+    *,
+    templates: Mapping[str, dict[str, Any]],
+) -> dict[str, Any] | None:
+    template_id = item["manifest_template"]
+    if template_id is None:
+        manifest = None
+    else:
+        template_name = _text(template_id, "Commit TCK v2 manifest template id")
+        try:
+            manifest = deepcopy(templates[template_name])
+        except KeyError as exc:
+            raise CommitTckV2ProtocolError(
+                f"Commit TCK v2 manifest template is missing: {template_name}"
+            ) from exc
+    _apply_case_manifest_patches(manifest, item["manifest_patches"])
+    return manifest
+
+
+def _apply_case_manifest_patches(
+    manifest: dict[str, Any] | None,
+    patches: Any,
+) -> None:
+    if not isinstance(patches, list):
+        raise CommitTckV2ProtocolError(
+            "Commit TCK v2 manifest_patches must be an array"
+        )
+    if manifest is None and patches:
+        raise CommitTckV2ProtocolError(
+            "Commit TCK v2 manifest patches require a template"
+        )
+    for raw_patch in patches:
+        patch = _exact_object(
+            raw_patch,
+            _PATCH_FIELDS,
+            "Commit TCK v2 manifest patch",
+        )
+        path_value = patch["path"]
+        if not isinstance(path_value, list) or not path_value:
+            raise CommitTckV2ProtocolError(
+                "Commit TCK v2 manifest patch path must be non-empty"
+            )
+        _replace_json_path(manifest, path_value, deepcopy(patch["replacement"]))
 
 
 def run_commit_tck_v2(
@@ -348,22 +371,70 @@ def run_commit_tck_v2_jsonl(
     session_id: str = "commit-tck-v2-session",
 ) -> CommitTckV2Report:
     selected = tuple(cases) if cases is not None else load_commit_tck_v2_cases()
+    input_problem = _jsonl_input_problem(
+        command, session_id=session_id, timeout=timeout
+    )
+    if input_problem is not None:
+        return _protocol_failure_report(selected, input_problem)
+    operations = sorted({case.request.inputs["operation"] for case in selected})
+    wire_input = _jsonl_transcript(
+        selected,
+        operations=operations,
+        session_id=session_id,
+    )
+    completed = _run_jsonl_adapter(
+        command, cwd=cwd, timeout=timeout, wire_input=wire_input
+    )
+    if isinstance(completed, str):
+        return _protocol_failure_report(selected, completed)
+    process_problem = _jsonl_process_problem(completed)
+    if process_problem is not None:
+        return _protocol_failure_report(selected, process_problem)
+    try:
+        implementation_id, actuals = _parse_jsonl_session(
+            completed.stdout,
+            selected=selected,
+            operations=operations,
+            session_id=session_id,
+        )
+    except Exception as exc:
+        return _protocol_failure_report(
+            selected,
+            f"JSONL adapter protocol error: {type(exc).__name__}: {exc}",
+        )
+    return _jsonl_report(selected, implementation_id=implementation_id, actuals=actuals)
+
+
+def _jsonl_input_problem(
+    command: Sequence[str],
+    *,
+    session_id: object,
+    timeout: object,
+) -> str | None:
     if not command or any(not isinstance(item, str) or not item for item in command):
-        return _protocol_failure_report(selected, "JSONL adapter command is invalid")
+        return "JSONL adapter command is invalid"
     if (
         not isinstance(session_id, str)
         or not session_id
         or session_id != session_id.strip()
     ):
-        return _protocol_failure_report(selected, "JSONL adapter session id is invalid")
+        return "JSONL adapter session id is invalid"
     if (
         isinstance(timeout, bool)
         or not isinstance(timeout, (int, float))
         or timeout <= 0
     ):
-        return _protocol_failure_report(selected, "JSONL adapter timeout is invalid")
-    operations = sorted({case.request.inputs["operation"] for case in selected})
-    transcript = [
+        return "JSONL adapter timeout is invalid"
+    return None
+
+
+def _jsonl_transcript(
+    selected: Sequence[CommitTckV2Case],
+    *,
+    operations: Sequence[str],
+    session_id: str,
+) -> str:
+    transcript: list[dict[str, Any]] = [
         {
             "message_type": "handshake",
             "adapter_protocol": COMMIT_TCK_JSONL_PROTOCOL_VERSION,
@@ -383,9 +454,18 @@ def run_commit_tck_v2_jsonl(
         for case in selected
     )
     transcript.append({"message_type": "close", "session_id": session_id})
-    wire_input = "".join(_json_line(item) for item in transcript)
+    return "".join(_json_line(item) for item in transcript)
+
+
+def _run_jsonl_adapter(
+    command: Sequence[str],
+    *,
+    cwd: str | Path | None,
+    timeout: float,
+    wire_input: str,
+) -> subprocess.CompletedProcess[str] | str:
     try:
-        completed = subprocess.run(
+        return subprocess.run(
             list(command),
             cwd=Path(cwd) if cwd is not None else None,
             input=wire_input,
@@ -395,80 +475,100 @@ def run_commit_tck_v2_jsonl(
             timeout=timeout,
         )
     except subprocess.TimeoutExpired:
-        return _protocol_failure_report(selected, "JSONL adapter timed out")
+        return "JSONL adapter timed out"
     except UnicodeError as exc:
-        return _protocol_failure_report(
-            selected,
-            f"JSONL adapter output is not valid UTF-8: {type(exc).__name__}: {exc}",
-        )
+        return f"JSONL adapter output is not valid UTF-8: {type(exc).__name__}: {exc}"
     except OSError as exc:
-        return _protocol_failure_report(
-            selected,
-            f"JSONL adapter could not start: {type(exc).__name__}: {exc}",
-        )
+        return f"JSONL adapter could not start: {type(exc).__name__}: {exc}"
+
+
+def _jsonl_process_problem(completed: subprocess.CompletedProcess[str]) -> str | None:
     if completed.returncode != 0:
         detail = completed.stderr.strip()
         suffix = f": {detail}" if detail else ""
-        return _protocol_failure_report(
-            selected,
-            f"JSONL adapter exited with {completed.returncode}{suffix}",
-        )
+        return f"JSONL adapter exited with {completed.returncode}{suffix}"
     if len(completed.stdout.encode("utf-8")) > 4 * 1024 * 1024:
-        return _protocol_failure_report(selected, "JSONL adapter output is too large")
-    try:
-        messages = [
-            loads_commit_tck_json(line)
-            for line in completed.stdout.splitlines()
-            if line.strip()
-        ]
-        if len(messages) != len(selected) + 2:
-            raise CommitTckV2ProtocolError(
-                "JSONL adapter returned the wrong number of messages"
-            )
-        acknowledgement = _validate_handshake_ack(
-            messages[0],
-            session_id=session_id,
-            operations=operations,
-        )
-        implementation_id = acknowledgement["implementation_id"]
-        actuals: list[dict[str, Any]] = []
-        for case, raw_message in zip(selected, messages[1:-1], strict=True):
-            envelope = _exact_object(
-                raw_message,
-                frozenset({"message_type", "session_id", "response"}),
-                "Commit TCK v2 result envelope",
-            )
-            if envelope["message_type"] != "result":
-                raise CommitTckV2ProtocolError(
-                    "JSONL adapter result message type is invalid"
-                )
-            if envelope["session_id"] != session_id:
-                raise CommitTckV2ProtocolError("JSONL adapter session id mismatch")
-            response = CommitTckResponse.from_dict(envelope["response"])
-            if response.request_id != case.request.id:
-                raise CommitTckV2ProtocolError(
-                    "JSONL adapter responses are missing or out of order"
-                )
-            if response.implementation_id != implementation_id:
-                raise CommitTckV2ProtocolError(
-                    "JSONL adapter implementation id changed during the session"
-                )
-            actuals.append(deepcopy(response.actual))
-        closed = _exact_object(
-            messages[-1],
-            frozenset({"message_type", "session_id"}),
-            "Commit TCK v2 closed envelope",
-        )
-        if closed != {"message_type": "closed", "session_id": session_id}:
-            raise CommitTckV2ProtocolError(
-                "JSONL adapter did not close the negotiated session"
-            )
-    except Exception as exc:
-        return _protocol_failure_report(
-            selected,
-            f"JSONL adapter protocol error: {type(exc).__name__}: {exc}",
-        )
+        return "JSONL adapter output is too large"
+    return None
 
+
+def _parse_jsonl_session(
+    stdout: str,
+    *,
+    selected: Sequence[CommitTckV2Case],
+    operations: Sequence[str],
+    session_id: str,
+) -> tuple[str, list[dict[str, Any]]]:
+    messages = [
+        loads_commit_tck_json(line) for line in stdout.splitlines() if line.strip()
+    ]
+    if len(messages) != len(selected) + 2:
+        raise CommitTckV2ProtocolError(
+            "JSONL adapter returned the wrong number of messages"
+        )
+    acknowledgement = _validate_handshake_ack(
+        messages[0],
+        session_id=session_id,
+        operations=operations,
+    )
+    implementation_id = acknowledgement["implementation_id"]
+    actuals = _jsonl_actuals(
+        selected,
+        messages[1:-1],
+        implementation_id=implementation_id,
+        session_id=session_id,
+    )
+    closed = _exact_object(
+        messages[-1],
+        frozenset({"message_type", "session_id"}),
+        "Commit TCK v2 closed envelope",
+    )
+    if closed != {"message_type": "closed", "session_id": session_id}:
+        raise CommitTckV2ProtocolError(
+            "JSONL adapter did not close the negotiated session"
+        )
+    return implementation_id, actuals
+
+
+def _jsonl_actuals(
+    selected: Sequence[CommitTckV2Case],
+    messages: Sequence[Any],
+    *,
+    implementation_id: str,
+    session_id: str,
+) -> list[dict[str, Any]]:
+    actuals: list[dict[str, Any]] = []
+    for case, raw_message in zip(selected, messages, strict=True):
+        envelope = _exact_object(
+            raw_message,
+            frozenset({"message_type", "session_id", "response"}),
+            "Commit TCK v2 result envelope",
+        )
+        if envelope["message_type"] != "result":
+            raise CommitTckV2ProtocolError(
+                "JSONL adapter result message type is invalid"
+            )
+        if envelope["session_id"] != session_id:
+            raise CommitTckV2ProtocolError("JSONL adapter session id mismatch")
+        response = CommitTckResponse.from_dict(envelope["response"])
+        if response.request_id != case.request.id:
+            raise CommitTckV2ProtocolError(
+                "JSONL adapter responses are missing or out of order"
+            )
+        if response.implementation_id != implementation_id:
+            raise CommitTckV2ProtocolError(
+                "JSONL adapter implementation id changed during the session"
+            )
+        actuals.append(deepcopy(response.actual))
+    return actuals
+
+
+def _jsonl_report(
+    selected: Sequence[CommitTckV2Case],
+    *,
+    implementation_id: str,
+    actuals: Sequence[dict[str, Any]],
+) -> CommitTckV2Report:
     results = tuple(
         CommitTckV2Result(
             request_id=case.request.id,
@@ -477,9 +577,7 @@ def run_commit_tck_v2_jsonl(
             ok=actual == case.expected,
             expected=deepcopy(case.expected),
             actual=actual,
-            detail=(
-                "" if actual == case.expected else "exact TCK v2 result mismatch"
-            ),
+            detail=("" if actual == case.expected else "exact TCK v2 result mismatch"),
         )
         for case, actual in zip(selected, actuals, strict=True)
     )
@@ -549,9 +647,7 @@ def commit_tck_v2_schema() -> dict[str, Any]:
             "inputs": {
                 "type": "object",
                 "required": ["operation"],
-                "properties": {
-                    "operation": {"type": "string", "minLength": 1}
-                },
+                "properties": {"operation": {"type": "string", "minLength": 1}},
             },
             "expected": actual,
         },
@@ -579,9 +675,7 @@ def _pheroos_manifest_deadline_outcome(
     request: CommitTckRequest,
 ) -> dict[str, Any]:
     if request.manifest is None:
-        raise CommitTckV2ProtocolError(
-            "manifest_deadline_outcome requires a manifest"
-        )
+        raise CommitTckV2ProtocolError("manifest_deadline_outcome requires a manifest")
     manifest = capability_manifest_from_dict(request.manifest)
     errors = [
         item.code
@@ -633,8 +727,7 @@ def _pheroos_manifest_threshold_assessment(
     manifest, errors = _pheroos_manifest_and_errors(request)
     if errors:
         raise CommitTckV2ProtocolError(
-            "manifest_threshold_assessment manifest is invalid: "
-            + ",".join(errors)
+            "manifest_threshold_assessment manifest is invalid: " + ",".join(errors)
         )
     policy = manifest.protocol.collective_commit_policy
     if policy is None:
@@ -700,8 +793,7 @@ def _pheroos_manifest_assurance_requirements(
     manifest, errors = _pheroos_manifest_and_errors(request)
     if errors:
         raise CommitTckV2ProtocolError(
-            "manifest_assurance_requirements manifest is invalid: "
-            + ",".join(errors)
+            "manifest_assurance_requirements manifest is invalid: " + ",".join(errors)
         )
     policy = manifest.protocol.collective_commit_policy
     if policy is None:
@@ -729,9 +821,7 @@ def _pheroos_manifest_assurance_requirements(
             "assurance": assurance,
             "profile": profile_for_manifest(manifest).version,
             "certificate_mode": certificate.mode,
-            "issuer_attestation_required": (
-                certificate.issuer_attestation_required
-            ),
+            "issuer_attestation_required": (certificate.issuer_attestation_required),
             "independent_verification_required": (
                 certificate.independent_verification_required
             ),
@@ -799,9 +889,7 @@ def _pheroos_manifest_distributed_quorum(
     membership_sufficient = n >= required_membership
     intersection_safe = intersection_margin > 0
     quorum_reached = observed_witnesses >= quorum
-    domain_diverse = (
-        observed_domains >= distributed.minimum_failure_domain_diversity
-    )
+    domain_diverse = observed_domains >= distributed.minimum_failure_domain_diversity
     policy_valid = not errors
     return empty_commit_tck_actual(
         metrics={
@@ -1083,7 +1171,7 @@ def _pheroos_manifest_and_errors(
 
 
 def _threshold_observations(inputs: Mapping[str, Any]) -> dict[str, Any]:
-    observed = {
+    observed: dict[str, Any] = {
         name: _nonnegative_integer(inputs.get(name), name)
         for name in (
             "positive_evidence",
@@ -1137,9 +1225,7 @@ def _scalar_leaf_paths(
     elif value is None or type(value) in {bool, int, str}:
         paths.append(prefix)
     else:
-        raise CommitTckV2ProtocolError(
-            "authority payload contains a non-JSON scalar"
-        )
+        raise CommitTckV2ProtocolError("authority payload contains a non-JSON scalar")
     return tuple(paths)
 
 
@@ -1164,7 +1250,7 @@ def _mutate_json_leaf(payload: object, path: Sequence[object]) -> None:
             replacement = current[:-1] + tail
         else:
             replacement = current + ":tck-mutated"
-    else:  # pragma: no cover - paths come from _scalar_leaf_paths
+    else:
         raise CommitTckV2ProtocolError("authority mutation selected a container")
     if isinstance(parent, dict) and isinstance(key, str):
         parent[key] = replacement
@@ -1259,11 +1345,7 @@ def _replace_json_path(root: object, path: Sequence[object], replacement: Any) -
     if isinstance(current, dict) and isinstance(key, str) and key in current:
         current[key] = replacement
         return
-    if (
-        isinstance(current, list)
-        and type(key) is int
-        and 0 <= key < len(current)
-    ):
+    if isinstance(current, list) and type(key) is int and 0 <= key < len(current):
         current[key] = replacement
         return
     raise CommitTckV2ProtocolError("Commit TCK v2 manifest patch path is missing")
@@ -1272,11 +1354,7 @@ def _replace_json_path(root: object, path: Sequence[object], replacement: Any) -
 def _read_json_child(parent: object, key: object) -> Any:
     if isinstance(parent, dict) and isinstance(key, str) and key in parent:
         return parent[key]
-    if (
-        isinstance(parent, list)
-        and type(key) is int
-        and 0 <= key < len(parent)
-    ):
+    if isinstance(parent, list) and type(key) is int and 0 <= key < len(parent):
         return parent[key]
     raise CommitTckV2ProtocolError("Commit TCK v2 manifest patch path is missing")
 
@@ -1338,13 +1416,16 @@ def _unique_text_array(value: object, label: str) -> list[str]:
 
 
 def _json_line(payload: Mapping[str, Any]) -> str:
-    return json.dumps(
-        dict(payload),
-        allow_nan=False,
-        ensure_ascii=False,
-        separators=(",", ":"),
-        sort_keys=True,
-    ) + "\n"
+    return (
+        json.dumps(
+            dict(payload),
+            allow_nan=False,
+            ensure_ascii=False,
+            separators=(",", ":"),
+            sort_keys=True,
+        )
+        + "\n"
+    )
 
 
 __all__ = [

@@ -105,7 +105,9 @@ class DriverInvocationReceipt:
             isinstance(value, str) and _DIGEST_PATTERN.fullmatch(value)
             for value in (self.request_digest, self.result_digest)
         ):
-            raise ValueError("driver invocation receipt digests must be canonical sha256")
+            raise ValueError(
+                "driver invocation receipt digests must be canonical sha256"
+            )
 
 
 class DriverInvocationLedger:
@@ -134,7 +136,9 @@ class DriverInvocationLedger:
             _DIGEST_PATTERN.fullmatch(request_digest)
             and _DIGEST_PATTERN.fullmatch(result_digest)
         ):
-            raise DriverError("driver invocation receipt digests must be canonical sha256")
+            raise DriverError(
+                "driver invocation receipt digests must be canonical sha256"
+            )
         key = (scope_ref, driver_id, idempotency_key)
         receipt = DriverInvocationReceipt(
             scope_ref=scope_ref,

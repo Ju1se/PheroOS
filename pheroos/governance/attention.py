@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from math import isfinite
-from typing import Any
+from typing import Any, cast
 
 from pheroos.governance._swarm.replay import (
     _replay_state_from_verified_hybrid_step,
@@ -30,9 +30,7 @@ ATTENTION_AUTHORITY_SCOPE = "none"
 ATTENTION_CHANNEL = "attention_only"
 _ATTENTION_BREAKDOWN_ISSUANCE = object()
 _EXPLORATION_DIRECTIVE_ISSUANCE = object()
-_NEGATIVE_ATTENTION_KINDS = frozenset(
-    {"negative", "cautionary", "alarm", "stale"}
-)
+_NEGATIVE_ATTENTION_KINDS = frozenset({"negative", "cautionary", "alarm", "stale"})
 
 
 @dataclass(frozen=True)
@@ -319,13 +317,16 @@ def derive_attention_breakdown(step: HybridCollectiveStep) -> AttentionBreakdown
             ),
         )
     )
+    # Authority verification above and replay materialization both validate the
+    # exact four-part issuance shape before this projection reads its bindings.
+    issuance = cast(tuple[object, str, str, object], step._issuance)
     draft = AttentionBreakdown(
         profile=HYBRID_ATTENTION_PROFILE,
         channel=ATTENTION_CHANNEL,
         authority_scope=ATTENTION_AUTHORITY_SCOPE,
         commit_authority=False,
-        protocol_id=step._issuance[1],
-        target=step._issuance[2],
+        protocol_id=issuance[1],
+        target=issuance[2],
         current_step=current_step,
         candidate_priorities=tuple(priorities),
         subject_priorities=subject_priorities,
@@ -367,8 +368,7 @@ def derive_exploration_directive(
         item for item in attention.subject_priorities if item.subject_type == "tool"
     )
     missing_scouts = any(
-        item.independent_scout_count == 0
-        for item in attention.candidate_priorities
+        item.independent_scout_count == 0 for item in attention.candidate_priorities
     )
     verification_roles = {"evidence_verifier", "trace_verifier"}
     if missing_scouts:
@@ -387,11 +387,7 @@ def derive_exploration_directive(
     if caution_ids or alarm_ids:
         challenge_roles.add("counterevidence_search")
     budget_state = attention.source_step.budget_state
-    remaining = (
-        float(budget_state.round_remaining)
-        if budget_state is not None
-        else 0.0
-    )
+    remaining = float(budget_state.round_remaining) if budget_state is not None else 0.0
     exploration_budget = max(
         0.0,
         remaining,
@@ -468,13 +464,9 @@ def attention_breakdown_is_authoritative(attention: object) -> bool:
             attention.replay_state,
             verified_replay_root=replay_root,
         )
-        if any(
-            getattr(attention, name) != value for name, value in roots.items()
-        ):
+        if any(getattr(attention, name) != value for name, value in roots.items()):
             return False
-        if attention.current_step != _hybrid_step_current_step(
-            attention.source_step
-        ):
+        if attention.current_step != _hybrid_step_current_step(attention.source_step):
             return False
         if attention.attention_root != pheromone_clip_payload_fingerprint(
             _attention_breakdown_payload(attention, include_root=False)
@@ -495,9 +487,7 @@ def exploration_directive_payload(
 
 
 def exploration_directive_fingerprint(directive: ExplorationDirective) -> str:
-    return pheromone_clip_payload_fingerprint(
-        exploration_directive_payload(directive)
-    )
+    return pheromone_clip_payload_fingerprint(exploration_directive_payload(directive))
 
 
 def exploration_directive_is_authoritative(
@@ -539,26 +529,14 @@ def _replace_attention_root(
     value: AttentionBreakdown,
     root: str,
 ) -> AttentionBreakdown:
-    return AttentionBreakdown(
-        **{
-            name: (root if name == "attention_root" else getattr(value, name))
-            for name, definition in value.__dataclass_fields__.items()
-            if definition.init
-        }
-    )
+    return replace(value, attention_root=root)
 
 
 def _replace_directive_root(
     value: ExplorationDirective,
     root: str,
 ) -> ExplorationDirective:
-    return ExplorationDirective(
-        **{
-            name: (root if name == "directive_root" else getattr(value, name))
-            for name, definition in value.__dataclass_fields__.items()
-            if definition.init
-        }
-    )
+    return replace(value, directive_root=root)
 
 
 def _attention_breakdown_payload(
@@ -575,8 +553,7 @@ def _attention_breakdown_payload(
         "target": attention.target,
         "current_step": attention.current_step,
         "candidate_priorities": [
-            _candidate_priority_payload(item)
-            for item in attention.candidate_priorities
+            _candidate_priority_payload(item) for item in attention.candidate_priorities
         ],
         "subject_priorities": [
             _subject_priority_payload(item) for item in attention.subject_priorities
@@ -616,9 +593,7 @@ def _exploration_directive_payload(
             _subject_priority_payload(item) for item in directive.tool_priorities
         ],
         "exploration_budget": directive.exploration_budget,
-        "requested_verification_roles": list(
-            directive.requested_verification_roles
-        ),
+        "requested_verification_roles": list(directive.requested_verification_roles),
         "requested_challenge_roles": list(directive.requested_challenge_roles),
         "reopen_eligibility": [
             _reopen_payload(item) for item in directive.reopen_eligibility
@@ -636,7 +611,9 @@ def _candidate_priority_payload(item: AttentionCandidatePriority) -> dict[str, A
         "candidate_id": item.candidate_id,
         "rank": item.rank,
         "attention_value": item.attention_value,
-        "contribution_breakdown": [list(value) for value in item.contribution_breakdown],
+        "contribution_breakdown": [
+            list(value) for value in item.contribution_breakdown
+        ],
         "independent_scout_count": item.independent_scout_count,
         "pheromone_source_diversity": item.pheromone_source_diversity,
         "recruitment_pressure": item.recruitment_pressure,
@@ -681,17 +658,11 @@ def _hybrid_attention_roots(
             "domain": "pheroos-hybrid-attention-memory-v1",
             "state": _canonical_authority_value(step.state),
             "active_trails": _canonical_authority_value(step.active_trails),
-            "layer_coordination": _canonical_authority_value(
-                step.layer_coordination
-            ),
-            "adjustment_overlay": _canonical_authority_value(
-                step.adjustment_overlay
-            ),
+            "layer_coordination": _canonical_authority_value(step.layer_coordination),
+            "adjustment_overlay": _canonical_authority_value(step.adjustment_overlay),
             "effective_policy": _canonical_authority_value(step.effective_policy),
             "deposit_records": _canonical_authority_value(step.deposit_records),
-            "evaporation_records": _canonical_authority_value(
-                step.evaporation_records
-            ),
+            "evaporation_records": _canonical_authority_value(step.evaporation_records),
             "diffusion_records": _canonical_authority_value(step.diffusion_records),
             "reinforcement_records": _canonical_authority_value(
                 step.reinforcement_records
@@ -756,8 +727,7 @@ def _hybrid_step_current_step(step: HybridCollectiveStep) -> int:
             "attention-only Hybrid step requires one pheromone_score trace event"
         )
     value = score_events[0].lineage.get("current_step")
-    _require_nonnegative_integer(value, "attention Hybrid current_step")
-    return int(value)
+    return _require_nonnegative_integer(value, "attention Hybrid current_step")
 
 
 def _require_attention_only_step(step: object) -> HybridCollectiveStep:
@@ -785,9 +755,7 @@ def _candidate_trail_pressures(
     for trail in step.active_trails:
         candidate_id = pheromone_bound_candidate_id(trail)
         pressures = result.setdefault(candidate_id, {})
-        pressures[trail.kind] = pressures.get(trail.kind, 0.0) + float(
-            trail.strength
-        )
+        pressures[trail.kind] = pressures.get(trail.kind, 0.0) + float(trail.strength)
     return result
 
 
@@ -858,7 +826,10 @@ def _validate_attention_breakdown_shape(attention: AttentionBreakdown) -> None:
         _require_sha256(getattr(attention, name), f"attention {name}")
     if not attention.candidate_priorities:
         raise GovernanceError("attention requires candidate priorities")
-    if any(type(item) is not AttentionCandidatePriority for item in attention.candidate_priorities):
+    if any(
+        type(item) is not AttentionCandidatePriority
+        for item in attention.candidate_priorities
+    ):
         raise GovernanceError("attention candidate priorities are not canonical")
     expected_ranks = tuple(range(1, len(attention.candidate_priorities) + 1))
     if tuple(item.rank for item in attention.candidate_priorities) != expected_ranks:
@@ -867,9 +838,15 @@ def _validate_attention_breakdown_shape(attention: AttentionBreakdown) -> None:
         attention.candidate_priorities
     ):
         raise GovernanceError("attention candidate priorities contain duplicates")
-    if any(type(item) is not AttentionSubjectPriority for item in attention.subject_priorities):
+    if any(
+        type(item) is not AttentionSubjectPriority
+        for item in attention.subject_priorities
+    ):
         raise GovernanceError("attention subject priorities are not canonical")
-    if any(type(item) is not AttentionReopenEligibility for item in attention.reopen_eligibility):
+    if any(
+        type(item) is not AttentionReopenEligibility
+        for item in attention.reopen_eligibility
+    ):
         raise GovernanceError("attention reopen records are not canonical")
     if type(attention.source_step) is not HybridCollectiveStep:
         raise GovernanceError("attention source step is not canonical")
@@ -907,13 +884,19 @@ def _validate_exploration_directive_shape(
         raise GovernanceError("exploration directive candidate order is empty")
     if len(set(directive.candidate_order)) != len(directive.candidate_order):
         raise GovernanceError("exploration directive candidate order has duplicates")
-    if any(type(item) is not AttentionSubjectPriority for item in (*directive.route_priorities, *directive.tool_priorities)):
+    if any(
+        type(item) is not AttentionSubjectPriority
+        for item in (*directive.route_priorities, *directive.tool_priorities)
+    ):
         raise GovernanceError("exploration directive priorities are not canonical")
     if any(item.subject_type != "route" for item in directive.route_priorities):
         raise GovernanceError("route priorities contain another subject type")
     if any(item.subject_type != "tool" for item in directive.tool_priorities):
         raise GovernanceError("tool priorities contain another subject type")
-    if any(type(item) is not AttentionReopenEligibility for item in directive.reopen_eligibility):
+    if any(
+        type(item) is not AttentionReopenEligibility
+        for item in directive.reopen_eligibility
+    ):
         raise GovernanceError("exploration directive reopen records are not canonical")
 
 

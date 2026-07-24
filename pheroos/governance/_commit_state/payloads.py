@@ -1,7 +1,16 @@
 from __future__ import annotations
 
+from pheroos.governance._commit_state._record_views import (
+    CommitLivenessInputView,
+    CommitWindowStateView,
+    DecisionOutcomeView,
+    DecisionProgressView,
+)
 
-def build_commit_window_state_payload(state: object) -> dict[str, object]:
+
+def build_commit_window_state_payload(
+    state: CommitWindowStateView,
+) -> dict[str, object]:
     return {
         "absolute_deadline_step": state.absolute_deadline_step,
         "absolute_run_deadline_step": state.absolute_run_deadline_step,
@@ -59,7 +68,7 @@ def build_commit_window_state_payload(state: object) -> dict[str, object]:
 
 
 def build_commit_liveness_input_payload(
-    value: object,
+    value: CommitLivenessInputView,
 ) -> dict[str, object]:
     return {
         "assessment_reason_codes": value.assessment_reason_codes,
@@ -120,7 +129,9 @@ def build_commit_liveness_input_payload(
     }
 
 
-def build_decision_progress_payload(progress: object) -> dict[str, object]:
+def build_decision_progress_payload(
+    progress: DecisionProgressView,
+) -> dict[str, object]:
     return {
         "assurance": progress.assurance,
         "absolute_deadline_step": progress.absolute_deadline_step,
@@ -174,7 +185,9 @@ def build_decision_progress_payload(progress: object) -> dict[str, object]:
     }
 
 
-def build_decision_outcome_payload(outcome: object) -> dict[str, object]:
+def build_decision_outcome_payload(
+    outcome: DecisionOutcomeView,
+) -> dict[str, object]:
     return {
         "assurance": outcome.assurance,
         "absolute_deadline_step": outcome.absolute_deadline_step,
