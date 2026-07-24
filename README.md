@@ -2,350 +2,403 @@
 
 Language: **English** | [简体中文](README.zh-CN.md)
 
-PheroOS is the protocol-core package for governed, swarm-native multi-agent runtimes.
+[![tests](https://github.com/Ju1se/PheroOS/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/Ju1se/PheroOS/actions/workflows/tests.yml)
 
-Agents are not authority. Protocol is authority.
+PheroOS is the provider-free protocol-core package for governed, swarm-native
+multi-agent runtimes.
 
-This repository defines ABI contracts, validation, governance semantics, driver boundaries, trace lineage, and conformance checks. It does not implement an application runtime.
+> Agents are not authority. Protocol is authority.
 
-## Status
+PheroOS defines how an external runtime declares capabilities, scopes work,
+verifies agent inputs, reaches a governed decision, records causal lineage, and
+proves compatibility. It does not run agent loops, call models or tools, host an
+API, or provide a database.
 
-PheroOS is a draft ABI.
+## Project Status
 
-Public interfaces are conformance-backed, but not yet stable. Compatibility changes should be additive where possible and should keep baseline protocols working without swarm-specific requirements.
+| Property | Current state |
+| --- | --- |
+| Package | `pheroos 0.1.0` |
+| ABI stability | Implemented, conformance-backed **Draft ABI** |
+| Python | `>=3.12`; CI covers CPython 3.12, 3.13, and 3.14 |
+| Runtime dependencies | None |
+| Published distribution | None; the documented user path is a source checkout, while CI and the offline non-publishing RC rehearsal build and verify wheel/sdist artifacts |
+| License | MIT |
 
-Checked-in schema artifacts include the full capability manifest shape and the
-protocol, kernel, driver, trace, Commit Wire, and Commit TCK ABI surfaces.
+Draft means that public shapes may still evolve through documented migration;
+it does not mean that the reference paths are placeholders. Baseline,
+Hybrid Pheromone, Optimal Commit, durable-authority contracts and their atomic
+reference path, Trace, and Conformance are implemented and exercised by
+deterministic tests. Until the first stable ABI release, consumers should pin
+an exact commit and the schema/profile versions they implement.
+The checked Stable Core candidate remains
+`draft / promotion_candidate / formal_stable=false`; no public lifecycle entry
+has been formally promoted to Stable.
 
-Bee-swarm, ant-colony, and Hybrid collective signals require a
-governance-issued `SignalVerification`. Hybrid pheromone manifests use the
-`pheroos-hybrid-swarm-v1` conformance profile; their complete reference path
-also requires all numeric inputs to be finite, and
-output requires a target-scoped stop resolution in addition to commit,
-evidence provenance, and publication permission; any blocked resolution for
-that target denies output.
+## Quick Start
 
-The optional Optimal Commit Draft ABI adds evidence/counterevidence,
-challenge, support-lease, risk, stability, bounded-liveness, portable
-certificate, and Byzantine distributed-finality contracts. It keeps Hybrid
-pheromone and layer behavior in an attention-only channel: changing attention
-alone cannot change a commit or certificate.
+Clone and install from source:
 
-## Schema Document Versions
-
-The four core schema surfaces have an immutable legacy v1 alias and a separate
-strict v2 document:
-
-| Surface | Frozen v1 `$id` and CLI alias | Strict v2 artifact and selector |
-| --- | --- | --- |
-| Capability | `https://pheroos.dev/schemas/capability.schema.json`; `capability`/`capability-v1` | `schemas/capability-v2.schema.json`; `pheroos-capability-schema-v2` |
-| Protocol | `https://pheroos.dev/schemas/protocol.schema.json`; `protocol`/`protocol-v1` | `schemas/protocol-v2.schema.json`; `pheroos-protocol-schema-v2` |
-| Driver | `https://pheroos.dev/schemas/driver.schema.json`; `driver`/`driver-v1` | `schemas/driver-v2.schema.json`; `descriptor_version=pheroos-driver-descriptor-v2` |
-| Kernel | `https://pheroos.dev/schemas/kernel.schema.json`; `kernel`/`kernel-v1` | `schemas/kernel-v2.schema.json`; `plan_version=pheroos-kernel-plan-v2` |
-
-The old unversioned `$id` values and CLI aliases are permanently pinned to v1;
-they never select v2 by shape or package version. Capability and Protocol v2
-are schema-document versions and their payloads still declare
-`protocol_version=pheroos.protocol.v1`. Driver's `descriptor_version` is
-independent of the external provider version in `DriverDescriptor.version`,
-and Kernel uses its own `plan_version` discriminator.
-
-Typed v1-to-v2 migration is explicit and non-lossy. Driver migration uses
-`upgrade_driver_descriptor_v1` and rejects non-migratable input with a typed
-error. Kernel's `os_plan_v1_from_dict` returns a non-authoritative
-`LegacyOSPlan`; `upgrade_os_plan_v1` requires caller-supplied scope, readiness,
-probe, capability, and provider-version facts instead of inventing defaults.
-
-## Documentation
-
-- [SPEC.md](SPEC.md) - protocol-core specification.
-- [CONTRIBUTING.md](CONTRIBUTING.md) - contribution process and patch requirements.
-- [SECURITY.md](SECURITY.md) - vulnerability reporting and protocol security scope.
-- [docs/process/index.md](docs/process/index.md) - source-tree process entry point.
-- [docs/protocol/runtime-integration.md](docs/protocol/runtime-integration.md) - how external runtimes compose with PheroOS.
-- [docs/protocol/hybrid-pheromone-abi.md](docs/protocol/hybrid-pheromone-abi.md) - normative Hybrid Pheromone ABI.
-- [docs/protocol/hybrid-pheromone-v1-migration.md](docs/protocol/hybrid-pheromone-v1-migration.md) - draft Hybrid v1 migration notes.
-- [docs/protocol/optimal-commit-abi.md](docs/protocol/optimal-commit-abi.md) - complete Optimal Commit Draft ABI semantics.
-- [docs/protocol/optimal-commit-v1-migration.md](docs/protocol/optimal-commit-v1-migration.md) - opt-in runtime and manifest migration.
-- [docs/protocol/runtime-adapter-guide.md](docs/protocol/runtime-adapter-guide.md) - mapping `DriverSpec` to external adapters.
-- [docs/protocol/extension-points.md](docs/protocol/extension-points.md) - extension boundaries.
-- [docs/process/api-lifecycle.md](docs/process/api-lifecycle.md) - public API and ABI lifecycle.
-- [docs/process/schema-v1-v2-migration.md](docs/process/schema-v1-v2-migration.md) - frozen v1 schema aliases and explicit v2 migration.
-- [docs/conformance/conformance-suite.md](docs/conformance/conformance-suite.md) - compatibility checks.
-- [docs/process/release-checklist.md](docs/process/release-checklist.md) - release gates.
-- [CHANGELOG.md](CHANGELOG.md) - draft ABI changes and migration notes.
-- [AGENTS.md](AGENTS.md) - repository rules for coding agents.
-
-## Tree Layout
-
-```text
-pheroos/
-  protocol/       Manifest objects, schema helpers, validation.
-  kernel/         Capability planning, permissions, runtime context contracts.
-  governance/     Authority, evidence, quorum, collective decision, output checks.
-  drivers/        Provider-neutral driver ABI and lifecycle objects.
-  trace/          Canonical trace events and append-only test store.
-  conformance/    Deterministic compatibility checks.
-  cli/            Thin wrapper around core packages.
-
-examples/
-  toy-protocol/    Minimal governed protocol.
-  e2e-protocol/    Provider-free governed vertical slice.
-  swarm-protocol/  Swarm-native collective decision example.
-  hybrid-pheromone-protocol/  Full Hybrid Pheromone ABI example.
-  adaptive-pheromone-replay/  Trace-like adaptive input replay example.
-  hybrid-commit-protocol/     Hybrid attention plus evidence-governed commit examples.
-  commit-certificate-replay/  Portable certificate reconstruction and mutation rejection.
-  distributed-commit-protocol/  Byzantine quorum, provisional, conflict, and deadline examples.
-
-schemas/           Exported ABI schema artifacts.
-docs/              Protocol and process documentation.
-tests/             Provider-free deterministic tests.
+```bash
+git clone https://github.com/Ju1se/PheroOS.git
+cd PheroOS
+python3.12 -m venv .venv
+. .venv/bin/activate
+python -m pip install -e .
 ```
 
-## Core Surfaces
-
-`pheroos.protocol` owns declarations and validation.
-
-`pheroos.kernel` owns planning boundaries. It does not call tools, models, providers, or secrets.
-
-`pheroos.governance` owns authority and decision semantics. Agents may propose; governance verifies.
-
-`pheroos.drivers` owns generic capability contracts. Real provider adapters belong outside protocol-core.
-
-`pheroos.trace` owns provider-neutral lineage. It is not a database, queue, event bus, or runtime monitor.
-
-`pheroos.conformance` proves ABI compatibility.
-
-These package facades are the cohesive external entry points. Their
-implementations are split into one-way private engines for commit state,
-support, certificates, distributed finality, Hybrid evaluation, swarm, and
-pheromone lifecycle. Private module paths are not ABI; the facades preserve
-canonical object identity and delegate to one implementation owner without a
-dynamic service registry. Governance and Conformance use static, thread-safe
-lazy facades, and the Commit TCK artifact path does not load the optional
-reference adapter or Governance engine. All facade exports and compatibility
-modules remain covered by the checked API lifecycle artifact.
-
-Built-in Commit Wire and Trace dispatch comes from immutable static contract
-registries shared by schema generation and validation. Namespaced extensions
-remain open as non-authoritative metadata; they cannot install new authority
-handlers at runtime.
-
-## Management CLI
-
-The thin, local CLI exposes versioned JSON for protocol management without
-starting an API server:
+Validate the minimal protocol and run its selected conformance profile:
 
 ```bash
 pheroos version
+pheroos validate examples/toy-protocol/capability.json
+pheroos conformance examples/toy-protocol
+```
+
+CLI responses are versioned JSON. A conforming report contains `"ok": true`
+and the exact profile and checks applied to the subject.
+
+The top-level examples are source-checkout fixtures and are not included in the
+wheel. Installed CLI, schema, ABI, and TCK commands work from any directory.
+
+For development:
+
+```bash
+python -m pip install -e ".[dev]"
+python -m pytest -q
+pheroos source-conformance .
+```
+
+## Protocol Model
+
+PheroOS separates runtime execution from protocol authority.
+
+The runtime path is:
+
+```text
+capability manifest
+-> strict Protocol validation
+-> RuntimeScope and Kernel plan
+-> external Driver binding and scoped invocation
+-> governance-verified facts, reports, and signals
+-> governed decision or explicit terminal outcome, including safe fallback
+-> canonical Trace plus output authorization
+```
+
+The compatibility path is independent:
+
+```text
+manifest / adapter / installed artifact
+-> versioned Conformance profile or TCK
+-> deterministic PASS or FAIL report
+```
+
+The external runtime remains the orchestrator. It owns agents, model and tool
+calls, scheduling, networking, credentials, durable infrastructure, and
+delivery. PheroOS owns the contracts and deterministic reference semantics at
+the trust boundaries.
+
+## Architecture and Boundaries
+
+| Public surface | Owns | Explicit boundary |
+| --- | --- | --- |
+| `pheroos.protocol` | Manifests, candidates, policies, schemas, loading, validation | Pure contract code; no Kernel, runtime, provider, or Conformance dependency |
+| `pheroos.kernel` | Scope-aware plans, permissions, readiness, connections, exposure contracts | Decides availability; does not call tools/providers or make domain conclusions |
+| `pheroos.drivers` | Provider-neutral descriptor and `declare -> validate -> register -> probe -> bind -> expose -> invoke -> trace` lifecycle | Real adapters and provider SDKs stay external |
+| `pheroos.governance` | Verification, evidence, quorum, swarm decisions, risk, commit, certificates, finality, output gates | Agents and adaptive layers may propose; only Governance acting under the declared Protocol issues runtime decision authority |
+| `pheroos.trace` | Canonical `TraceEvent`, scoped envelopes, validation, append-only store contract | Not a database, queue, event bus, or monitor daemon |
+| `pheroos.conformance` | Manifest profiles, source checks, external-adapter matrices, Commit TCK | Deterministic, provider-free, and network-free |
+| `pheroos.cli` | Thin versioned-JSON management commands | Local wrapper only; not an HTTP API or service |
+
+The import graph stays one-way: Protocol, Drivers, and Trace are foundational;
+Kernel depends only on Protocol and Drivers; Governance remains independent of
+Kernel runtime machinery; Conformance composes the core surfaces; CLI delegates
+to their public facades. Private engines are not a second ABI.
+
+## Governance Invariants
+
+- Agents, scouts, learned layers, evolutionary layers, and metacognitive layers
+  can propose records. They cannot issue authority.
+- A caller-controlled `verified` flag is not verification. Scout, recruitment,
+  inhibition, and quorum inputs count only with a matching governance-issued
+  `SignalVerification`.
+- Governance commits only a candidate declared for the active target. Failed
+  consensus selects the target's declared safe fallback.
+- Pheromone is bounded collective memory and attention. It is not evidence,
+  truth, permission, quorum, a certificate, or output authority.
+- Unknown critical versions, non-finite numbers, cross-scope records, malformed
+  authority facts, and stale state heads fail closed.
+- Governed Baseline Output v2 and collective output paths require four
+  independent gates: an authoritative commitment to a declared candidate,
+  provenance-bearing evidence, at least one `StopResolution` for the active
+  target with no matching resolution blocked, and current publication
+  permission.
+- Optimal Commit makes every governance-issued terminal outcome deliverable.
+  Publication and execution remain separate current-action decisions and never
+  follow from delivery alone.
+
+## Opt-In Decision Paths
+
+Optional protocols do not change baseline manifests that do not declare them.
+
+| Path | Manifest selection | Governed behavior | Conformance profile | Example |
+| --- | --- | --- | --- | --- |
+| Baseline | No swarm or Commit declaration | Verified quorum, declared candidate, safe fallback | `pheroos-core-v1` | [`toy-protocol`](examples/toy-protocol/), [`e2e-protocol`](examples/e2e-protocol/) |
+| Basic swarm | `mode=bee_swarm` or `mode=ant_colony` | Verified scouts, recruitment/inhibition, bounded pheromone memory | `pheroos-swarm-v1` | [`swarm-protocol`](examples/swarm-protocol/) |
+| Hybrid Pheromone v1 | `mode=hybrid` in a v1 manifest | Diffusion, feedback, nonlinear response, L1-L4 proposals, and bounded adjustment | `pheroos-hybrid-swarm-v1` | [`hybrid-pheromone-protocol`](examples/hybrid-pheromone-protocol/) |
+| Scoped Hybrid Replay v2 | Capability/Protocol v3 documents selecting `pheroos.protocol.v2` | Store-backed durable replay and scoped authority | Exact v2 Store, session, replay, and runtime-integration Conformance | [`hybrid-replay-protocol`](examples/hybrid-replay-protocol/) |
+| Optimal Commit | `collective_commit_policy` | Evidence-governed truth, stability, liveness, certificates, optional distributed finality | Assurance-specific Commit profile | [`hybrid-commit-protocol`](examples/hybrid-commit-protocol/), [`distributed-commit-protocol`](examples/distributed-commit-protocol/) |
+
+Optimal Commit selects `pheroos-commit-integrity-v1`,
+`pheroos-hybrid-commit-v1`, `pheroos-certified-commit-v1`, or
+`pheroos-distributed-commit-v1` according to its assurance and declared Hybrid
+attention semantics.
+
+### Hybrid Pheromone: attention and collective memory
+
+The primary Draft path is Store-backed Hybrid Replay v2:
+
+```text
+evaluate_hybrid_collective_step_v2(...)
+-> build_hybrid_replay_advance_request_v2(...)
+-> open_hybrid_replay_authority_session_v2(...)
+-> advance_hybrid_replay_state_v2(...)
+-> rehydrate_hybrid_replay_state_v2(...) after restart
+```
+
+The evaluator validates the complete batch before applying bounded adjustment,
+deposit, evaporation, diffusion, feedback reinforcement, nonlinear response,
+L1-L4 coordination, scoring, the independent-scout gate, and
+commit-or-fallback. Its non-portable source proof is bound to the exact
+authority context. Only an atomic StateStore commit creates durable replay
+authority; a portable snapshot, digest, checkpoint, or same-shaped object does
+not. Rehydration proves committed inclusion and position, and only the current
+head may parent another advance. See
+[`hybrid-replay-protocol`](examples/hybrid-replay-protocol/) for deterministic
+restart and fresh-subprocess continuation.
+
+`evaluate_hybrid_collective_step(...)`, `HybridReplayState`, and
+`replay_state_from_hybrid_step(...)` remain Deprecated Draft compatibility
+surfaces. They model the earlier process-local path and are not the durable v2
+authority or restart path.
+
+### Optimal Commit: truth and authority
+
+Optimal Commit keeps two channels separate:
+
+| Channel | Inputs | May influence | Cannot do |
+| --- | --- | --- | --- |
+| Exploration/attention | Scouts, pheromone, recruitment, inhibition, layer proposals | Search priority, candidate attention, external evidence collection | Create evidence, change commit truth, issue a certificate |
+| Truth/authority | Verified principal, risk, membership, evidence, counterevidence, challenge, lease, stop, permission, replay, and prior-window records | Commit metrics, terminal outcome, certificate and action gates | Call providers or bypass the declared policy |
+
+The manifest selects an assurance level:
+
+| Assurance | Required result |
+| --- | --- |
+| `advisory` | Advisory or declared fallback; no epistemic commit |
+| `evidence_bound` | Stable evidence decision plus a current local receipt |
+| `certified` | Evidence-bound proof plus an independently verifiable portable certificate |
+| `distributed` | Portable proof plus static-epoch Byzantine quorum finality |
+
+`evaluate_hybrid_commit_step(request=...)` is the total finalization boundary.
+Assurance never silently downgrades, identifier order never breaks a tie, and
+the absolute deadline cannot be extended. At the deadline the result is an
+explicit commit or non-commit terminal outcome. This guarantee requires the
+external runtime to continue evaluation with monotonically increasing logical
+steps; protocol-core neither schedules calls nor advances a clock. Distributed
+assurance validates `n >= 3f + 1`, `2q - n > f`, exact witness/value roots,
+replay, equivocation, and conflict freeze; networking and witness collection
+remain external.
+
+## Runtime Integration
+
+Every external runtime request should create
+`RuntimeScope(tenant_id, run_id, request_id)`. Its
+tenant/run-derived `scope_ref` binds Kernel plans, Driver invocation/result
+receipts, Governance authority domains, and scoped Trace. Matching data from a
+different scope is not a retry and cannot reuse authority.
+
+Durable v2 authority is an external adapter boundary:
+
+- `GovernanceStateStoreV2` provides explicit heads, compare-and-swap, immutable
+  prepared transitions, atomic state-plus-authority-Trace batches, receipts,
+  rehydration, retirement, and tombstones.
+- The v2 durable sequence is `prepare/validate an exact portable request (and a
+  context-bound source proof where that ABI defines one) -> bind/open a
+  request-scoped authority session -> atomic_commit_v2(state +
+  authority-critical Trace) -> validate the typed committed result and receipt
+  -> rehydrate and recheck inclusion/currentness before reuse`. A proposal
+  cannot expose durable output authority before the exact state and Trace batch
+  is committed and verified.
+- `ScopedTraceStoreV2` is the separate provider-neutral append-only lineage
+  contract for the selected tenant/run scope.
+- Bundled in-memory stores are deterministic reference adapters, not production
+  databases. External stores can run
+  `run_governance_state_store_conformance_v2(...)` and
+  `run_scoped_trace_store_conformance_v2(...)` before integration. The
+  unversioned `GovernanceStateStore` remains the v1 trusted-host Draft
+  compatibility path; generic `TraceStore` remains an independent
+  reconstructible projection. Neither is an alias or silent upgrade to v2.
+
+Driver declarations may use an opaque `config_ref`; provider kind, version, and
+capability metadata may be declared, but credentials and concrete connection
+configuration must stay outside manifests. An API key alone is insufficient to
+run a multi-agent system: the external runtime must also provide the model/tool
+adapters, orchestration, conformant stores, cancellation/retry/recovery, and
+output delivery. PheroOS does not read the key.
+
+See the [runtime integration contract](docs/protocol/runtime-integration.md)
+and [runtime adapter guide](docs/protocol/runtime-adapter-guide.md).
+
+## ABI Versioning and Compatibility
+
+The original unversioned schema IDs and CLI aliases are frozen v1 compatibility
+roots. New semantics use separate documents and exact selectors:
+
+| Surface | Frozen v1 `$id` / alias | Versioned compatibility document | Current exact opt-in |
+| --- | --- | --- | --- |
+| Capability | `https://pheroos.dev/schemas/capability.schema.json`; `capability`, `capability-v1` | `schemas/capability-v2.schema.json`; `pheroos-capability-schema-v2`; payload `pheroos.protocol.v1` | `schemas/capability-v3.schema.json`; `pheroos-capability-schema-v3`; payload `pheroos.protocol.v2` |
+| Protocol | `https://pheroos.dev/schemas/protocol.schema.json`; `protocol`, `protocol-v1` | `schemas/protocol-v2.schema.json`; `pheroos-protocol-schema-v2`; payload `pheroos.protocol.v1` | `schemas/protocol-v3.schema.json`; `pheroos-protocol-schema-v3`; payload `pheroos.protocol.v2` |
+| Driver | `https://pheroos.dev/schemas/driver.schema.json`; `driver`, `driver-v1` | `schemas/driver-v2.schema.json` | `descriptor_version=pheroos-driver-descriptor-v2` |
+| Kernel | `https://pheroos.dev/schemas/kernel.schema.json`; `kernel`, `kernel-v1` | `schemas/kernel-v2.schema.json` | `plan_version=pheroos-kernel-plan-v2` |
+| Runtime scope | None | None | `schemas/runtime-scope-v1.schema.json`; `pheroos-runtime-scope-v1` |
+| Scoped authority | None | None | `schemas/authority-v2.schema.json`; `pheroos-authority-schema-v2`; `schemas/scoped-authority-tck-v2.schema.json`; `pheroos-scoped-authority-tck-v2` |
+
+Schema-document versions and protocol payload versions are independent.
+Capability/Protocol v3 is the exact Draft opt-in for scoped authority v2.
+Driver `descriptor_version` is independent of the external provider version in
+`DriverDescriptor.version`, and Kernel independently selects plans with
+`plan_version`.
+
+Readers select versions explicitly; object shape or package version never
+silently promotes v1 to v2. Migration cannot invent readiness, scope,
+capability, provider-version, or authority facts. The public Python shape and
+lifecycle are checked in as
+[`public-python-api-v1.json`](pheroos/conformance/abi/public-python-api-v1.json)
+and
+[`public-python-api-lifecycle-v1.json`](pheroos/conformance/abi/public-python-api-lifecycle-v1.json).
+
+`pheroos validate`, `pheroos conformance`, and `pheroos profile show` select
+legacy v1 manifest profiles. Capability/Protocol v3 artifacts use exact wire
+validation and the dedicated v2 Store/session/runtime Conformance surfaces; a
+legacy command never infers v2 from object shape.
+
+Namespaced `x-*`, `ext.*`, and manifest `extensions` values remain open as
+non-authoritative metadata. Adding a record that can affect commit truth or
+authority requires a versioned ABI, validation, Trace lineage, Conformance, and
+migration notes.
+
+See the [schema migration rules](docs/process/schema-v1-v2-migration.md),
+[API lifecycle](docs/process/api-lifecycle.md), and
+[extension boundaries](docs/protocol/extension-points.md).
+
+## CLI Reference
+
+The local CLI never starts a service:
+
+```bash
+pheroos version
+pheroos validate examples/toy-protocol/capability.json
+pheroos conformance examples/toy-protocol
+pheroos source-conformance .
 pheroos profile show examples/hybrid-commit-protocol/capability.json
 pheroos schema list
 pheroos schema show commit
-pheroos schema export capability-v2
-pheroos schema export protocol-v2
-pheroos schema export driver-v2
-pheroos schema export kernel-v2
-pheroos wire validate commit record.json
-pheroos wire validate driver-v2 descriptor.json
-pheroos wire validate kernel-v2 plan.json
+pheroos schema export commit > commit.schema.json
+pheroos wire validate commit path/to/commit-record.json
+pheroos wire validate capability-v3 examples/hybrid-replay-protocol/capability.json
+pheroos tck run --version v1
 pheroos tck run --version v2
 pheroos abi show
 pheroos abi diff
 ```
 
-Schema drift is checked with
-`python scripts/generate_schema_artifacts.py --check`. The `--write` mode
-regenerates only v2 artifacts and never rewrites the frozen v1 files.
+Unknown critical versions and malformed wire records return a versioned,
+fail-closed JSON result and a non-zero exit status.
 
-Unknown critical versions and malformed wire records fail closed. HTTP APIs,
-authentication, rate limiting, remote routing, and service discovery belong to
-an external runtime or gateway, not protocol-core.
+## Examples
 
-## Runtime Integration
+All examples are deterministic, provider-free, network-free, and
+domain-neutral.
 
-External runtimes may fork or depend on this repository and build their own agent loops, model calls, tool calls, databases, memory stores, scheduling, queues, servers, and secret management around the ABI.
+| Example | What it proves |
+| --- | --- |
+| [`toy-protocol`](examples/toy-protocol/) | Minimal manifest, declared candidates, quorum and fallback |
+| [`e2e-protocol`](examples/e2e-protocol/) | Minimal Protocol -> Kernel -> Driver -> Governance -> Trace slice |
+| [`swarm-protocol`](examples/swarm-protocol/) | Basic verified swarm signals and bounded pheromone memory |
+| [`hybrid-pheromone-protocol`](examples/hybrid-pheromone-protocol/) | Complete Hybrid collective step and four output gates |
+| [`hybrid-replay-protocol`](examples/hybrid-replay-protocol/) | Scoped Hybrid Replay v2, restart, and fresh-process continuation |
+| [`adaptive-pheromone-replay`](examples/adaptive-pheromone-replay/) | External adaptive proposals and governance-issued replay state |
+| [`scoped-output-protocol`](examples/scoped-output-protocol/) | Baseline Output v2 activation, current grants, and atomic output commit |
+| [`runtime-integration-protocol`](examples/runtime-integration-protocol/) | Exact-version Driver, authority, Trace, recovery, and delivery transcript |
+| [`risk-v2-protocol`](examples/risk-v2-protocol/) | Store-backed risk authority and restart-safe currentness |
+| [`support-v2-protocol`](examples/support-v2-protocol/) | Principal, membership, and support authority v2 |
+| [`hybrid-commit-protocol`](examples/hybrid-commit-protocol/) | Attention/truth separation, stability, liveness and no downgrade |
+| [`commit-evidence-v2-protocol`](examples/commit-evidence-v2-protocol/) | Durable evidence truth and counterevidence binding |
+| [`commit-decision-v2-protocol`](examples/commit-decision-v2-protocol/) | Durable terminal decision with exact evidence lineage |
+| [`commit-certificate-v2-protocol`](examples/commit-certificate-v2-protocol/) | Portable certificate verification, authority-leaf binding, and tamper rejection |
+| [`commit-certificate-replay`](examples/commit-certificate-replay/) | Portable certificate reconstruction and mutation/replay rejection |
+| [`distributed-commit-protocol`](examples/distributed-commit-protocol/) | Byzantine quorum, provisional state, conflict freeze and deadline |
+| [`distributed-commit-v2-protocol`](examples/distributed-commit-v2-protocol/) | Durable distributed witness/finality authority |
+| [`commit-finality-v2-protocol`](examples/commit-finality-v2-protocol/) | Decision-to-certificate-to-distributed finality composition |
 
-Each request constructs `RuntimeScope(tenant_id, run_id, request_id)` and
-carries its tenant/run-derived `scope_ref` through Kernel, Driver, Governance,
-and scoped Trace records. Durable authority is supplied through an external
-`GovernanceStateStore` adapter: state and Trace commit atomically,
-compare-and-swap heads reject forks, and only a verified store receipt can
-finalize durable output authority. The included in-memory store is a reference
-adapter, not a database.
+## Conformance and Release Integrity
 
-Append-only lineage uses the separate provider-neutral `TraceStore` Protocol.
-External StateStore and TraceStore implementations can run the public
-`run_governance_state_store_conformance(...)` and
-`run_trace_store_conformance(...)` matrices before integration.
+The frozen Commit TCK v1 contains 38 legacy adversarial vectors. TCK v2 uses 23
+expected-free declarative cases: adapters receive inputs while the harness owns
+expected results. The public reference adapter and an independent
+standard-library spec model must agree; malformed, echo/constant, out-of-order,
+state-leaking, and timeout adapters fail the harness.
 
-The expected composition is:
+Useful verification commands:
 
-```text
-manifest
--> validation
--> kernel plan
--> external adapter binding
--> evidence, scout reports, and signals
--> governance decision
--> trace lineage
--> output authorization
--> conformance
+```bash
+python -m pytest -q
+pheroos source-conformance .
+python scripts/generate_schema_artifacts.py --check
+python scripts/generate_commit_tck.py --check
+python scripts/generate_public_api_inventory.py --check
+python scripts/generate_governance_public_api.py --check
 ```
 
-Provider configuration should stay outside manifests. Use opaque external references such as `config_ref`; do not put API keys, passwords, tokens, credentials, or secrets in protocol files.
-
-## Swarm Semantics
-
-Swarm-native behavior is protocol behavior, not a swarm framework.
-
-Bee-swarm concepts map to scout reports, recruitment signals, inhibition signals, quorum, consensus, and safe fallback.
-
-Ant-colony concepts map to pheromone trails, evaporation, positive or negative feedback, bounded source contribution, and traceable collective memory.
-
-Pheromone is not evidence, truth, permission, quorum, or output authority.
-
-All swarm modes require verified scouts and enabled collective signals before
-they count or score. Hybrid runtimes additionally submit trails,
-topology, feedback, layer proposals, performance snapshots, strategy biases,
-and bounded policy-adjustment proposals to
-`evaluate_hybrid_collective_step(...)`. The pure reference step performs the
-declared deposit, evaporation, diffusion, reinforcement, coordination,
-scoring, scout-gate, and commit-or-fallback path and returns the canonical
-`trace_events` produced by that path.
-
-`LayerCoordinationState` is a governance output, not an authoritative Hybrid
-input. External runtimes must submit `LayerProposal` records and related
-proposal inputs so governance can recompute coordination. The manifest ABI has
-one canonical `PheromoneKindProfile`, exported by `pheroos.protocol`; the
-`pheroos.governance` name is the same compatibility type.
-
-## Out Of Scope
-
-This repository must not become:
-
-- an agent framework
-- a model-provider gateway
-- a FastAPI or product server
-- a dashboard
-- a LangGraph runtime
-- a LiteLLM/OpenAI/Ollama/vLLM wrapper
-- a database, queue, worker pool, or daemon
-- a plugin marketplace
-- a domain workflow package
-
-## Compatibility
-
-Baseline governed protocols remain valid without swarm behavior.
-
-Swarm-specific conformance applies only when a manifest declares a swarm collective mode.
-
-Hybrid declarations select `pheroos-hybrid-swarm-v1`, which includes the core,
-swarm, and Hybrid required checks. Baseline quorum and basic swarm protocols do
-not acquire Hybrid-only required fields or checks.
-
-Optimal Commit is also opt-in. Only a manifest with
-`collective_commit_policy` selects a Commit profile; baseline, swarm, and
-Hybrid v1 manifests keep their existing profile and result/trace behavior.
-
-## Release Integrity
-
-CI checks Python 3.12 through 3.14 and exercises both the wheel and sdist from
-an external working directory. The exact distributions that pass those checks
-are the only inputs to deterministic CycloneDX/SPDX SBOM generation and
-trusted-main provenance attestations. Pull requests retain read-only
-permissions. Build provenance records artifact origin; it does not create
-protocol evidence or governance authority. See the
+CI tests CPython 3.12 through 3.14, validates the import DAG and public ABI,
+exercises wheel and sdist installations from an external working directory,
+and enforces reference performance budgets. Release gates bind the complete
+workflow execution context, use a hash-closed Ubuntu x86_64 CPython 3.12-3.14
+toolchain, snapshot the candidate from raw Git tree/blob objects, and derive
+CycloneDX/SPDX identity from the exact wheel/sdist metadata and filenames.
+Provenance proves artifact origin; it does not create protocol evidence or
+governance authority. Proposed branch/tag rulesets and immutable-release
+settings are checked-in inert policy, not active remote protection. This is a
+build and attestation pipeline, not evidence of a GitHub Release or package
+publication. See the
+[Conformance Suite](docs/conformance/conformance-suite.md) and
 [release checklist](docs/process/release-checklist.md).
 
-## Hybrid Pheromone Draft ABI
+## Documentation
 
-The complete Hybrid reference path is implemented as a deterministic,
-provider-free protocol-core slice: governed signal verification, bounded
-deposit/evaporation/diffusion/reinforcement, L1–L4 coordination, run-scoped
-policy adjustment, declared-candidate consensus or safe fallback, four output
-gates, and causal trace/conformance replay. Pheromone remains collective memory
-rather than evidence or authority.
+- Core specification: [SPEC.md](SPEC.md)
+- Hybrid Pheromone: [ABI reference](docs/protocol/hybrid-pheromone-abi.md),
+  [durable Replay v2](docs/protocol/hybrid-replay-v2.md), and
+  [v1 migration](docs/protocol/hybrid-pheromone-v1-migration.md)
+- Optimal Commit: [ABI reference](docs/protocol/optimal-commit-abi.md) and
+  [v1 migration](docs/protocol/optimal-commit-v1-migration.md)
+- Project process: [development index](docs/process/index.md),
+  [CONTRIBUTING.md](CONTRIBUTING.md), and [CHANGELOG.md](CHANGELOG.md)
+- Security: [SECURITY.md](SECURITY.md)
 
-External runtimes continue a Hybrid run only with the governance-issued
-`HybridReplayState` returned by `replay_state_from_hybrid_step(...)`. Replay
-receipts bind deposit, diffusion, feedback, and adjustment payloads; trace
-conformance rejects substituted payloads, cross-lifecycle identity collisions,
-and replay claims without the matching issued prior state. See the
-[ABI reference](docs/protocol/hybrid-pheromone-abi.md) and
-[migration note](docs/protocol/hybrid-pheromone-v1-migration.md).
+## Non-Goals
 
-Run the provider-free references with:
-
-```bash
-.venv/bin/python -m pheroos.cli.main conformance examples/hybrid-pheromone-protocol
-.venv/bin/python examples/hybrid-pheromone-protocol/run.py
-.venv/bin/python examples/adaptive-pheromone-replay/replay.py
-```
-
-## Optimal Commit Draft ABI
-
-Optimal Commit separates exploration pressure from truth authority. Verified
-principal, risk, membership, observation, counterevidence, challenge, support
-lease, stop, permission, replay, and prior-window heads determine exact
-fixed-point commit metrics. A unique leader must satisfy every declared gate
-for a continuous stability window; identifier order never breaks a tie.
-
-The manifest chooses `advisory`, `evidence_bound`, `certified`, or
-`distributed` assurance. Missing proof cannot silently produce a lower-level
-commit. The absolute deadline cannot be extended by new attention, evidence,
-leader changes, resets, or finality delay.
-
-This liveness guarantee requires the external runtime to advance monotonic
-logical steps and continue evaluation. It guarantees a terminal response, not
-a forced evidence commit: `safe_fallback`, `advisory`, `blocked`, `invalid`,
-`finality_unavailable`, and `safety_violation` remain explicit non-commit
-outcomes.
-
-`evaluate_hybrid_commit_step(request=...)` returns an authoritative progress or
-terminal outcome when the governance envelope is usable, plus the exact
-window/replay heads, required certificate/finality records, terminal output
-decisions when applicable, canonical trace, diagnostics, and a root binding
-every authority leaf.
-Malformed authority facts fail closed. A missing, malformed, or mismatched
-attention channel is quarantined as non-authoritative diagnostic metadata; it
-cannot veto an otherwise valid commit path. Every issued terminal outcome is
-deliverable; publication and execution remain separate, current action gates.
-
-Distributed assurance verifies `n >= 3f + 1` and `2q - n > f`, exact witness
-proposal digests, semantic commit-value roots, membership/epoch scope,
-replay/equivocation, and conflict freeze. Equivalent proof-envelope retries do
-not freeze an epoch; distinct candidate, claim, output, or authority roots do.
-The core defines records and deterministic governance only; networking, witness
-collection, scheduling, providers, and storage stay external.
-
-The frozen TCK v1 contains 38 legacy adversarial vectors. TCK v2 adds 23
-expected-free declarative request cases: adapters receive only inputs, while
-the harness owns expected outcomes. The public reference adapter and an
-independent standard-library spec model must agree; echo/constant, malformed,
-out-of-order, state-leaking, and timeout adapters fail the harness. Active
-Commit conformance has no skip or N/A path. Run it with:
-
-```bash
-.venv/bin/python -c \
-  'from pheroos.conformance import run_commit_tck; assert run_commit_tck().ok'
-.venv/bin/python -m pheroos.cli.main tck run --version v2
-.venv/bin/python -m pheroos.cli.main conformance examples/hybrid-commit-protocol
-.venv/bin/python -m pheroos.cli.main conformance examples/distributed-commit-protocol
-.venv/bin/python examples/hybrid-commit-protocol/run.py
-.venv/bin/python examples/commit-certificate-replay/replay.py
-.venv/bin/python examples/distributed-commit-protocol/run.py
-```
-
-Manifest extensions are metadata unless a protocol invariant adopts them. Extension metadata does not create evidence, permission, quorum, commit authority, or output authority.
+Protocol-core is not an agent framework, model-provider gateway, FastAPI or
+product server, dashboard, LangGraph runtime, provider SDK wrapper, database,
+queue, worker pool, daemon, plugin marketplace, or domain workflow package.
+External runtimes may implement those concerns around the ABI.
 
 ## Development
 
-Keep changes small, deterministic, provider-free, network-free, and domain-neutral.
-
-Prefer dataclasses, pure functions, explicit validation, small schemas, provider-free examples, direct tests, and conformance checks.
-
-Do not weaken package boundaries to make a test pass.
+Keep changes small, deterministic, domain-neutral, provider-free, and directly
+covered by tests, examples, Trace, or Conformance. Do not weaken package
+boundaries to make a test pass.
 
 ## License
 

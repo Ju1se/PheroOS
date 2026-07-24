@@ -133,12 +133,13 @@ authority.
 
 ### 2.2 Scoped v2 is an exact opt-in
 
-This is the exact local-profile manifest shape reserved by WP-01. The
+This is the exact implemented Draft local-profile manifest shape. The
 `authority_policy` object is closed: every listed field is required and no
-additional critical field is accepted. The v3 manifest schemas and their
-profile-selecting readers do not exist yet, so this example is a normative
-implementation target, not a currently valid CLI input. This does not refer to
-the implemented Draft `GovernanceStateReaderV2` StateStore contract.
+additional critical field is accepted. The checked v3 manifest schemas and
+their profile-selecting readers are active. This payload is valid only through
+the exact Capability/Protocol v3 selection; readers still must not infer the
+profile from shape. Selecting the authenticated profile additionally requires
+the host-provided verifier described below.
 
 ```json
 {
