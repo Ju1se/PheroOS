@@ -1,0 +1,616 @@
+{
+  "baselines": {
+    "repository": {
+      "covered_branches": 21219,
+      "covered_lines": 67378,
+      "measurement_base_commit": "f6d60114dd476d4fa81705721abd8b9f5043b573",
+      "measurement_source_sha256": "sha256:5780a81db76ba9e2549d895bfd41b56b9ba54dfe35fa103e99e72c2f4042f127",
+      "total_branches": 22280,
+      "total_lines": 68598
+    },
+    "stable_authority": {
+      "covered_branches": 18821,
+      "covered_lines": 59141,
+      "measurement_base_commit": "f6d60114dd476d4fa81705721abd8b9f5043b573",
+      "measurement_source_sha256": "sha256:5780a81db76ba9e2549d895bfd41b56b9ba54dfe35fa103e99e72c2f4042f127",
+      "total_branches": 19558,
+      "total_lines": 59943
+    }
+  },
+  "critical_branches": [
+    {
+      "line": 1023,
+      "name": "authority-operation-binding",
+      "path": "pheroos/governance/_authority_session_v2/contracts.py",
+      "source": {
+        "ast_kind": "If",
+        "end_line": 1023,
+        "original": "    if operation not in grant.operations:\n",
+        "sha256": "sha256:ff439da48063c0a1033cf9c8021366b64f9bc0f2ebbb960a5c0ed34a82cb7f99",
+        "start_line": 1023
+      }
+    },
+    {
+      "line": 105,
+      "name": "deadline-terminal-boundary",
+      "path": "pheroos/governance/_commit_decision_v2/common.py",
+      "source": {
+        "ast_kind": "If",
+        "end_line": 105,
+        "original": "    if current == MAX_AUTHORITY_REVISION_V2:\n",
+        "sha256": "sha256:699f69988aeb494c9c7400b7cfd3aacb5051b0ef646f61ff6b2656c9bb281f53",
+        "start_line": 105
+      }
+    },
+    {
+      "line": 225,
+      "name": "governance-ledger-cas",
+      "path": "pheroos/governance/_authority/ledger.py",
+      "source": {
+        "ast_kind": "If",
+        "end_line": 228,
+        "original": "            if (\n                current_head.revision != transition.expected_revision\n                or current_head.parent_root != transition.expected_parent_root\n                or current_head.state_root != transition.expected_state_root\n",
+        "sha256": "sha256:177a4fb3c43f91445418034609f0f3d88812d386f9497c886957361021f8b6ba",
+        "start_line": 225
+      }
+    },
+    {
+      "line": 442,
+      "name": "output-action-policy-branch",
+      "path": "pheroos/governance/output.py",
+      "source": {
+        "ast_kind": "If",
+        "end_line": 442,
+        "original": "        if action is CommitAction.PUBLISH:\n",
+        "sha256": "sha256:fd6ada8a043c7c2411414bdc668f40ef7aad18f3855e37eec8289d9240a4b56b",
+        "start_line": 442
+      }
+    },
+    {
+      "line": 425,
+      "name": "replay-envelope-conflict",
+      "path": "pheroos/trace/scoped_store_v2.py",
+      "source": {
+        "ast_kind": "If",
+        "end_line": 427,
+        "original": "                if (\n                    len(distinct) != 1\n                    or matches[0].event.envelope_root != envelope.envelope_root\n",
+        "sha256": "sha256:fb938be4a47f0351f373ef1d9b15987c7237ab13f7ca769b37682b7440cf2ad5",
+        "start_line": 425
+      }
+    },
+    {
+      "line": 67,
+      "name": "trace-required-lineage",
+      "path": "pheroos/trace/_validation_core.py",
+      "source": {
+        "ast_kind": "If",
+        "end_line": 67,
+        "original": "    if missing:\n",
+        "sha256": "sha256:3361e20dee7f544b0d4a89d8c67aa2b0f1778da1b8136b2138a13ed06db09d6c",
+        "start_line": 67
+      }
+    },
+    {
+      "line": 162,
+      "name": "certificate-body-binding",
+      "path": "pheroos/governance/_commit_certificate_v2/portable_envelope.py",
+      "source": {
+        "ast_kind": "If",
+        "end_line": 164,
+        "original": "        if expected_body_root and body.body_root != _require_root(\n            expected_body_root, \"expected commit certificate body_root\"\n        ):\n",
+        "sha256": "sha256:166d0630345e5979031a4507148237533463794b6019ec22b6e406123d13dd4f",
+        "start_line": 162
+      }
+    },
+    {
+      "line": 201,
+      "name": "numeric-range-finite-gate",
+      "path": "pheroos/protocol/_validation_primitives.py",
+      "source": {
+        "ast_kind": "If",
+        "end_line": 201,
+        "original": "    if not finite_number(value):\n",
+        "sha256": "sha256:fc25d1004eb91506fc382482b13c09163baddff431805c01a3b7775b289bbdb5",
+        "start_line": 201
+      }
+    }
+  ],
+  "manifest_version": "pheroos-coverage-scope-v1",
+  "measurement": {
+    "branch": true,
+    "combine_command": "CoverageData.update(map_path=repo_relative) @shard-data",
+    "command": "python -m coverage run --rcfile=@generated --branch --source=pheroos -m pytest -q @shard",
+    "process_coverage": {
+      "parallel": true,
+      "patch": [
+        "subprocess"
+      ],
+      "relative_files": true
+    },
+    "pytest_python_files": [
+      "test_*.py"
+    ],
+    "shards": [
+      {
+        "name": "foundation",
+        "pytest_targets": [
+          "tests/drivers/test_driver_descriptor.py",
+          "tests/drivers/test_driver_invocation.py",
+          "tests/drivers/test_driver_invocation_v2.py",
+          "tests/drivers/test_driver_invoke.py",
+          "tests/drivers/test_driver_lifecycle.py",
+          "tests/drivers/test_driver_schema_versions.py",
+          "tests/kernel/test_driver_syscalls.py",
+          "tests/kernel/test_kernel_import_boundary.py",
+          "tests/kernel/test_kernel_schema_versions.py",
+          "tests/kernel/test_os_plan.py",
+          "tests/kernel/test_resolution_totality.py",
+          "tests/kernel/test_runtime_context.py",
+          "tests/kernel/test_runtime_scope.py",
+          "tests/kernel/test_scoped_capability_planning.py",
+          "tests/kernel/test_validation_public_boundaries.py",
+          "tests/protocol/test_authority_manifest_v2.py",
+          "tests/protocol/test_authority_v2_contract.py",
+          "tests/protocol/test_candidate_declaration.py",
+          "tests/protocol/test_capability_validation_dispatch.py",
+          "tests/protocol/test_collective_policy.py",
+          "tests/protocol/test_commit_policy.py",
+          "tests/protocol/test_commit_policy_models.py",
+          "tests/protocol/test_commit_wire_portability.py",
+          "tests/protocol/test_manifest_validation.py",
+          "tests/protocol/test_protocol_changed_totality.py",
+          "tests/protocol/test_quorum_policy.py",
+          "tests/protocol/test_schema_versioning.py",
+          "tests/protocol/test_validation_decomposition.py"
+        ]
+      },
+      {
+        "name": "governance-1",
+        "pytest_targets": [
+          "tests/governance/test_authority_store_v2_reference.py",
+          "tests/governance/test_authority_store_v2_structure.py",
+          "tests/governance/test_baseline_output_v2_recovery.py",
+          "tests/governance/test_baseline_output_v2_semantics.py",
+          "tests/governance/test_commit_authority.py",
+          "tests/governance/test_commit_certificate_v2_contracts.py",
+          "tests/governance/test_commit_certificate_v2_document_contract.py",
+          "tests/governance/test_commit_certificate_v2_public_semantics.py",
+          "tests/governance/test_commit_decision_v2_public_api.py",
+          "tests/governance/test_commit_engine.py",
+          "tests/governance/test_commit_finality_v2_public_api.py",
+          "tests/governance/test_commit_output_actions.py",
+          "tests/governance/test_commit_replay_v2_contracts.py",
+          "tests/governance/test_commit_schema.py",
+          "tests/governance/test_commit_wp_cd_schema.py",
+          "tests/governance/test_hybrid_commit_total_evaluation.py",
+          "tests/governance/test_hybrid_replay_v2_evaluator.py",
+          "tests/governance/test_hybrid_replay_v2_projection.py",
+          "tests/governance/test_hybrid_replay_v2_projection_semantic_gaps.py",
+          "tests/governance/test_hybrid_replay_v2_totality.py",
+          "tests/governance/test_legacy_authority_inventory.py",
+          "tests/governance/test_legacy_semantic_gap_adversarial.py",
+          "tests/governance/test_pheromone_legacy_canonicalization.py",
+          "tests/governance/test_risk_v2_owner.py",
+          "tests/governance/test_risk_v2_public_api.py",
+          "tests/governance/test_scoped_authority_primitive_ownership.py",
+          "tests/governance/test_schema_static_contracts.py",
+          "tests/governance/test_small_authority_residuals.py",
+          "tests/governance/test_support_v2_document_contract.py",
+          "tests/governance/test_support_v2_operations.py"
+        ]
+      },
+      {
+        "name": "governance-2",
+        "pytest_targets": [
+          "tests/governance/test_atomic_hybrid_commit.py",
+          "tests/governance/test_authority_store_v2_v1_differential.py",
+          "tests/governance/test_authority_session_v2_adversarial.py",
+          "tests/governance/test_authority_v2_document_contract.py",
+          "tests/governance/test_collective_decision.py",
+          "tests/governance/test_commit_decision_v2_operations.py",
+          "tests/governance/test_commit_evidence_v2_evaluation.py",
+          "tests/governance/test_commit_evidence_v2_contract_adversarial.py",
+          "tests/governance/test_commit_evidence_v2_operations.py",
+          "tests/governance/test_commit_gate_v2_public_api.py",
+          "tests/governance/test_commit_replay_v2_operations.py",
+          "tests/governance/test_commit_replay_v2_public_api.py",
+          "tests/governance/test_commit_state_changed_totality.py",
+          "tests/governance/test_commit_risk.py",
+          "tests/governance/test_distributed_commit_v2_external_conflict.py",
+          "tests/governance/test_governance_residual_totality.py",
+          "tests/governance/test_hybrid_authority.py",
+          "tests/governance/test_hybrid_replay_v2_contracts.py",
+          "tests/governance/test_hybrid_replay_v2_store_hardening.py",
+          "tests/governance/test_lazy_facade.py",
+          "tests/governance/test_legacy_authority_isolation.py",
+          "tests/governance/test_legacy_governance_primitives_adversarial.py",
+          "tests/governance/test_membership_v2_contracts_source.py",
+          "tests/governance/test_quorum_commit.py",
+          "tests/governance/test_signal_verification.py",
+          "tests/governance/test_support_lease.py",
+          "tests/governance/test_swarm_domain_structure.py",
+          "tests/governance/test_trace_event.py"
+        ]
+      },
+      {
+        "name": "governance-3",
+        "pytest_targets": [
+          "tests/conformance/test_checker_regression_alarms.py",
+          "tests/conformance/test_hybrid_trace_changed_totality.py",
+          "tests/conformance/test_policy_check_totality.py",
+          "tests/conformance/test_protocol_declaration_totality.py",
+          "tests/conformance/test_schema_catalog_adversarial_totality.py",
+          "tests/conformance/test_v2_checker_totality.py",
+          "tests/governance/test_authority_session_v2_document_contract.py",
+          "tests/governance/test_authority_store_v2_contracts.py",
+          "tests/governance/test_baseline_output_v2_adversarial.py",
+          "tests/governance/test_baseline_output_v2_changed_totality.py",
+          "tests/governance/test_baseline_output_v2_operations.py",
+          "tests/governance/test_commit_authority_changed_totality.py",
+          "tests/governance/test_commit_decision_v2_contracts.py",
+          "tests/governance/test_commit_decision_v2_totality.py",
+          "tests/governance/test_commit_state_legacy_totality.py",
+          "tests/governance/test_commit_state_v2_public_semantics.py",
+          "tests/governance/test_commit_foundation.py",
+          "tests/governance/test_commit_full_schema.py",
+          "tests/governance/test_commit_replay_bindings.py",
+          "tests/governance/test_commit_replay_v2_document_contract.py",
+          "tests/governance/test_commit_window.py",
+          "tests/governance/test_distributed_commit.py",
+          "tests/governance/test_distributed_commit_totality.py",
+          "tests/governance/test_distributed_commit_v2_hardening.py",
+          "tests/governance/test_distributed_commit_v2_operations.py",
+          "tests/governance/test_distributed_commit_v2_public_api.py",
+          "tests/governance/test_distributed_v2_residual_totality.py",
+          "tests/governance/test_distributed_v2_totality.py",
+          "tests/governance/test_hybrid_commit_separation.py",
+          "tests/governance/test_hybrid_replay_v2_numeric.py",
+          "tests/governance/test_hybrid_replay_v2_operations_semantic_gaps.py",
+          "tests/governance/test_hybrid_replay_v2_public_api.py",
+          "tests/governance/test_layer_coordination_totality.py",
+          "tests/governance/test_legacy_hybrid_certificate_totality.py",
+          "tests/governance/test_lifecycle_module_decomposition.py",
+          "tests/governance/test_output_contract.py",
+          "tests/governance/test_output_totality.py",
+          "tests/governance/test_pheromone_feedback_totality.py",
+          "tests/governance/test_policy_adjustment_totality.py",
+          "tests/governance/test_recovery_policy.py",
+          "tests/governance/test_risk_commit_decomposition.py",
+          "tests/governance/test_runtime_policy_totality.py",
+          "tests/governance/test_static_engine_compatibility.py",
+          "tests/governance/test_support_v2_public_api.py",
+          "tests/governance/test_support_v2_public_semantics.py",
+          "tests/governance/test_wp05_public_activation.py",
+          "tests/trace/test_authority_contract_totality.py"
+        ]
+      },
+      {
+        "name": "governance-4",
+        "pytest_targets": [
+          "tests/governance/test_authority_ledger.py",
+          "tests/governance/test_authority_schema_v2.py",
+          "tests/governance/test_authority_schema_totality.py",
+          "tests/governance/test_authority_session_v2_contracts.py",
+          "tests/governance/test_authority_session_v2_cross_facade_adversarial.py",
+          "tests/governance/test_authority_session_v2_operations.py",
+          "tests/governance/test_authority_session_v2_public_api.py",
+          "tests/governance/test_baseline_output_v2_contracts.py",
+          "tests/governance/test_baseline_output_v2_missing_transition.py",
+          "tests/governance/test_baseline_output_v2_document_contract.py",
+          "tests/governance/test_baseline_output_journey_v2.py",
+          "tests/governance/test_certificate_hybrid_decomposition.py",
+          "tests/governance/test_commit_certificate.py",
+          "tests/governance/test_commit_certificate_v2_operations.py",
+          "tests/governance/test_commit_certificate_v2_public_api.py",
+          "tests/governance/test_commit_evidence_v2_public_semantics.py",
+          "tests/governance/test_commit_gate_v2_operations.py",
+          "tests/governance/test_commit_liveness.py",
+          "tests/governance/test_distributed_commit_v2_structure.py",
+          "tests/governance/test_hybrid_pheromone_hardening.py",
+          "tests/governance/test_hybrid_replay_v2_operations.py",
+          "tests/governance/test_hybrid_replay_v2_resource_bounds.py",
+          "tests/governance/test_memory_risk_schema_totality.py",
+          "tests/governance/test_membership_v2_operations.py",
+          "tests/governance/test_observation_binding.py",
+          "tests/governance/test_pheromone_module_boundaries.py",
+          "tests/governance/test_private_import_graph.py",
+          "tests/governance/test_stop_signal.py",
+          "tests/governance/test_support_v2_contracts_evaluation.py",
+          "tests/governance/test_wp00_legacy_characterization.py"
+        ]
+      },
+      {
+        "name": "trace-1",
+        "pytest_targets": [
+          "tests/trace/test_authority_session_v2_trace_contract.py",
+          "tests/trace/test_commit_certificate_v2_trace_contract.py",
+          "tests/trace/test_commit_replay_v2_trace_contract.py",
+          "tests/trace/test_distributed_commit_v2_trace_contract.py",
+          "tests/trace/test_hybrid_replay_v2_trace_contract.py",
+          "tests/trace/test_scoped_trace.py",
+          "tests/trace/test_static_contracts.py",
+          "tests/trace/test_support_v2_trace_contract.py",
+          "tests/trace/test_trace_store.py"
+        ]
+      },
+      {
+        "name": "trace-2",
+        "pytest_targets": [
+          "tests/trace/test_baseline_output_v2_trace_contract.py",
+          "tests/trace/test_commit_decision_v2_trace_contract.py",
+          "tests/trace/test_commit_evidence_v2_trace_contract.py",
+          "tests/trace/test_commit_gate_v2_trace_contract.py",
+          "tests/trace/test_commit_trace_contract.py",
+          "tests/trace/test_membership_v2_trace_contract.py",
+          "tests/trace/test_risk_v2_trace_contract.py",
+          "tests/trace/test_scoped_trace_store_v2.py",
+          "tests/trace/test_trace_changed_totality_v2.py",
+          "tests/trace/test_pheromone_clip_contract_adversarial.py",
+          "tests/trace/test_trace_authority_gap_adversarial.py",
+          "tests/trace/test_trace_store_protocol.py"
+        ]
+      },
+      {
+        "name": "conformance-1",
+        "pytest_targets": [
+          "tests/conformance/test_authority_ledger_contract.py",
+          "tests/conformance/test_authority_session_v2_contract.py",
+          "tests/conformance/test_authority_session_v2_adversarial_contract.py",
+          "tests/conformance/test_baseline_output_v2_recovery_contract.py",
+          "tests/conformance/test_commit_decision_v2_contract.py",
+          "tests/conformance/test_commit_decision_v2_adversarial_contract.py",
+          "tests/conformance/test_commit_finality_v2_contract.py",
+          "tests/conformance/test_commit_replay_v2_contract.py",
+          "tests/conformance/test_commit_tck.py",
+          "tests/conformance/test_distributed_commit_v2_contract.py",
+          "tests/conformance/test_e2e_protocol_conformance.py",
+          "tests/conformance/test_hybrid_replay_v2_contract.py",
+          "tests/conformance/test_lazy_facade.py",
+          "tests/conformance/test_misc_changed_totality.py",
+          "tests/conformance/test_package_import_graph.py",
+          "tests/conformance/test_pheromone_exploration_manifest_driven.py",
+          "tests/conformance/test_report_v2.py",
+          "tests/conformance/test_replay_checker_changed_totality.py",
+          "tests/conformance/test_schema_catalog.py",
+          "tests/conformance/test_scoped_trace_checker_totality.py",
+          "tests/conformance/test_scoped_trace_store_v2_contract.py",
+          "tests/conformance/test_stable_api_candidate.py",
+          "tests/conformance/test_support_v2_contract.py",
+          "tests/conformance/test_swarm_protocol_conformance.py",
+          "tests/conformance/test_trace_store_contract.py"
+        ]
+      },
+      {
+        "name": "conformance-2",
+        "pytest_targets": [
+          "tests/conformance/test_authority_store_v2_contract.py",
+          "tests/conformance/test_authority_store_v2_adversarial_contract.py",
+          "tests/conformance/test_baseline_output_v2_contract.py",
+          "tests/conformance/test_baseline_output_v2_adversarial_contract.py",
+          "tests/conformance/test_commit_certificate_v2_contract.py",
+          "tests/conformance/test_commit_evidence_v2_contract.py",
+          "tests/conformance/test_commit_gate_v2_contract.py",
+          "tests/conformance/test_commit_integrity_conformance.py",
+          "tests/conformance/test_commit_tck_decomposition.py",
+          "tests/conformance/test_commit_tck_v2.py",
+          "tests/conformance/test_commit_tck_v2_legacy_isolation.py",
+          "tests/conformance/test_core_checker_changed_totality.py",
+          "tests/conformance/test_domain_neutrality.py",
+          "tests/conformance/test_driver_invocation_v2_contract.py",
+          "tests/conformance/test_driver_invocation_v2_adversarial.py",
+          "tests/conformance/test_layer_action_and_kind_interactions.py",
+          "tests/conformance/test_manifest_driven_fixture_edges.py",
+          "tests/conformance/test_pheromone_kind_profile_manifest_driven.py",
+          "tests/conformance/test_protocol_version_fail_closed.py",
+          "tests/conformance/test_public_abi_boundary.py",
+          "tests/conformance/test_public_api_lifecycle.py",
+          "tests/conformance/test_risk_v2_contract.py",
+          "tests/conformance/test_runner_hardening.py",
+          "tests/conformance/test_schema_validation_parity.py",
+          "tests/conformance/test_scoped_authority_tck_v2_artifact.py",
+          "tests/conformance/test_toy_protocol_conformance.py",
+          "tests/conformance/test_v2_contract_public_activation.py"
+        ]
+      },
+      {
+        "name": "conformance-runtime",
+        "pytest_targets": [
+          "tests/conformance/test_runtime_compatibility_independent.py",
+          "tests/conformance/test_runtime_compatibility_manifest.py",
+          "tests/conformance/test_runtime_integration_v1_contract.py",
+          "tests/conformance/test_runtime_integration_v1_adversarial_contract.py",
+          "tests/conformance/test_runtime_scope_contract.py"
+        ]
+      },
+      {
+        "name": "ecosystem",
+        "pytest_targets": [
+          "tests/cli/test_conformance_hardening.py",
+          "tests/cli/test_management_commands.py",
+          "tests/cli/test_schema_catalog_commands.py",
+          "tests/cli/test_schema_export.py",
+          "tests/cli/test_schema_version_surfaces.py",
+          "tests/e2e/test_vertical_slice.py",
+          "tests/examples/test_commit_certificate_v2_protocol.py",
+          "tests/examples/test_commit_decision_v2_protocol.py",
+          "tests/examples/test_commit_evidence_v2_protocol.py",
+          "tests/examples/test_commit_examples.py",
+          "tests/examples/test_commit_finality_v2_protocol.py",
+          "tests/examples/test_distributed_commit_v2_protocol.py",
+          "tests/examples/test_hybrid_replay_protocol.py",
+          "tests/examples/test_risk_v2_protocol.py",
+          "tests/examples/test_runtime_integration_protocol.py",
+          "tests/examples/test_scoped_output_protocol.py",
+          "tests/examples/test_support_v2_protocol.py",
+          "tests/swarm/test_adaptive_pheromone_replay_example.py",
+          "tests/swarm/test_hybrid_pheromone_vertical_slice.py",
+          "tests/swarm/test_swarm_vertical_slice.py",
+          "tests/test_digest.py",
+          "tests/test_documentation_links.py",
+          "tests/test_project_metadata.py",
+          "tests/test_public_api_contract.py",
+          "tests/test_public_api_inventory.py"
+        ]
+      },
+      {
+        "name": "policy",
+        "pytest_targets": [
+          "tests/ci/test_authority_mutation_gate.py",
+          "tests/ci/test_authority_mutation_probes.py",
+          "tests/ci/test_complexity_scope.py",
+          "tests/ci/test_coverage_gate.py",
+          "tests/ci/test_distribution_reproducibility.py",
+          "tests/ci/test_engineering_baseline.py",
+          "tests/ci/test_quality_gate.py",
+          "tests/ci/test_release_candidate.py",
+          "tests/ci/test_repository_policy.py",
+          "tests/ci/test_stable_typing_gate.py",
+          "tests/ci/test_supply_chain.py",
+          "tests/packaging/test_stable_candidate_distributions.py",
+          "tests/performance/test_reference_performance_contract.py",
+          "tests/typing/test_stable_consumer.py"
+        ]
+      }
+    ],
+    "source": [
+      "pheroos"
+    ]
+  },
+  "scope": {
+    "denominator": {
+      "include": [
+        "pheroos/*.py",
+        "pheroos/**/*.py"
+      ],
+      "included": true
+    },
+    "file_exclusions": [
+      {
+        "category": "generated_facade",
+        "generator": "scripts/generate_governance_public_api.py",
+        "path": "pheroos/governance/_public_api.py",
+        "sha256": "sha256:3f15b34f378b94a347c4dae1edc4baa44a15c6308a2195c32bda0ab32e5cef1c"
+      }
+    ],
+    "groups": [
+      {
+        "included": true,
+        "name": "stable_owner",
+        "patterns": [
+          "pheroos/conformance/checks/authority_store_v2_contract.py",
+          "pheroos/conformance/checks/baseline_output_v2_contract.py",
+          "pheroos/conformance/report.py",
+          "pheroos/conformance/runner.py",
+          "pheroos/drivers/base.py",
+          "pheroos/drivers/invocation_store_v2.py",
+          "pheroos/drivers/invocation_v2.py",
+          "pheroos/drivers/lifecycle.py",
+          "pheroos/governance/authority_session_v2.py",
+          "pheroos/governance/authority_store_v2.py",
+          "pheroos/governance/baseline_output_v2.py",
+          "pheroos/kernel/capability_resolution.py",
+          "pheroos/kernel/connection.py",
+          "pheroos/kernel/input_envelope.py",
+          "pheroos/kernel/materializer.py",
+          "pheroos/kernel/os_plan.py",
+          "pheroos/kernel/permission.py",
+          "pheroos/kernel/plan_document.py",
+          "pheroos/kernel/run_scope.py",
+          "pheroos/kernel/runtime_context.py",
+          "pheroos/protocol/authority_manifest_v2.py",
+          "pheroos/protocol/authority_schema_v2.py",
+          "pheroos/protocol/authority_v2.py",
+          "pheroos/protocol/commit_models.py",
+          "pheroos/protocol/models.py",
+          "pheroos/protocol/schema_document.py",
+          "pheroos/protocol/validation.py",
+          "pheroos/trace/__init__.py",
+          "pheroos/trace/scoped.py",
+          "pheroos/trace/scoped_store_v2.py"
+        ]
+      },
+      {
+        "included": true,
+        "name": "authority_validator",
+        "patterns": [
+          "pheroos/conformance/checks/*.py",
+          "pheroos/conformance/checks/**/*.py",
+          "pheroos/governance/*.py",
+          "pheroos/governance/**/*.py",
+          "pheroos/kernel/_validation.py",
+          "pheroos/protocol/_validation*.py",
+          "pheroos/protocol/authority*.py",
+          "pheroos/protocol/commit_*.py",
+          "pheroos/protocol/validation.py",
+          "pheroos/trace/*.py",
+          "pheroos/trace/**/*.py"
+        ]
+      },
+      {
+        "included": false,
+        "name": "generated_facade",
+        "patterns": [
+          "pheroos/governance/_public_api.py"
+        ]
+      },
+      {
+        "included": true,
+        "name": "schema_declaration",
+        "patterns": [
+          "pheroos/**/*schema*.py",
+          "pheroos/**/schema.py"
+        ]
+      },
+      {
+        "included": true,
+        "name": "tck_fixture",
+        "patterns": [
+          "pheroos/conformance/_commit_tck/*.py",
+          "pheroos/conformance/_commit_tck/**/*.py",
+          "pheroos/conformance/_commit_tck_reference/*.py",
+          "pheroos/conformance/_commit_tck_reference/**/*.py",
+          "pheroos/conformance/commit_tck*.py"
+        ]
+      },
+      {
+        "included": true,
+        "name": "compatibility_facade",
+        "patterns": [
+          "pheroos/__init__.py",
+          "pheroos/conformance/__init__.py",
+          "pheroos/conformance/_public_api.py",
+          "pheroos/drivers/__init__.py",
+          "pheroos/governance/__init__.py",
+          "pheroos/governance/_legacy/*.py",
+          "pheroos/governance/_legacy/**/*.py",
+          "pheroos/kernel/__init__.py",
+          "pheroos/protocol/__init__.py",
+          "pheroos/trace/__init__.py"
+        ]
+      }
+    ],
+    "line_exclusions": [
+      {
+        "ast_policy": "top_level_unshadowed_typing_type_checking",
+        "id": "type_checking",
+        "regex": "^if TYPE_CHECKING:"
+      }
+    ]
+  },
+  "thresholds": {
+    "authority_changed_branches_percent": 95,
+    "authority_changed_lines_percent": 100,
+    "final_repository_branch_percent": 85,
+    "final_repository_line_percent": 90,
+    "final_stable_authority_branch_percent": 95,
+    "final_stable_authority_line_percent": 97,
+    "ordinary_changed_lines_percent": 95
+  },
+  "tooling": {
+    "branch_coverage": true,
+    "ci_only": true,
+    "name": "coverage",
+    "runtime_dependencies_empty": true,
+    "version": "7.15.2"
+  }
+}

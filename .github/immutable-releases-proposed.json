@@ -1,0 +1,29 @@
+{
+  "activation": {
+    "accept": "application/vnd.github+json",
+    "api_version": "2026-03-10",
+    "api_version_header": "X-GitHub-Api-Version",
+    "authenticated_repository_permission": "Administration: write",
+    "method": "PUT",
+    "path": "/repos/{owner}/{repo}/immutable-releases",
+    "request_body": "absent",
+    "success_status": 204
+  },
+  "authorization": "wp-13-explicit-remote-authorization-required",
+  "desired_state": {
+    "enabled": true
+  },
+  "schema": "pheroos-github-immutable-releases-proposal-v1",
+  "verification": {
+    "accept": "application/vnd.github+json",
+    "api_version": "2026-03-10",
+    "api_version_header": "X-GitHub-Api-Version",
+    "authenticated_repository_permission": "Administration: read",
+    "method": "GET",
+    "path": "/repos/{owner}/{repo}/immutable-releases",
+    "required_response_subset": {
+      "enabled": true
+    },
+    "success_status": 200
+  }
+}

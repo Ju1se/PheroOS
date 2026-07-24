@@ -1,0 +1,279 @@
+{
+  "known_limitations": [
+    {
+      "behavior": "Draft v1 public issuers can create locally recognized sentinel records from a caller-supplied AuthorityLevel in a trusted process",
+      "guarantee": "trusted_host_compatibility_only",
+      "id": "WP00-CHAR-001",
+      "replacement_wp": "WP-03",
+      "status": "characterized_draft",
+      "test": "tests/governance/test_wp00_legacy_characterization.py::test_v1_public_issuer_is_trusted_host_compatibility_only"
+    },
+    {
+      "behavior": "Draft baseline output accepts a caller-provided publication boolean",
+      "guarantee": "legacy_v1_only",
+      "id": "WP00-CHAR-002",
+      "replacement_wp": "WP-04",
+      "status": "characterized_draft",
+      "test": "tests/governance/test_wp00_legacy_characterization.py::test_v1_baseline_output_accepts_caller_publication_boolean"
+    },
+    {
+      "behavior": "Draft v1 finalize reports a committed receipt as mismatched after a legal successor advances the current head",
+      "guarantee": "known_v1_finality_limitation",
+      "id": "WP00-CHAR-003",
+      "replacement_wp": "WP-02",
+      "status": "characterized_draft",
+      "test": "tests/governance/test_wp00_legacy_characterization.py::test_v1_finalize_mismatches_after_legal_successor"
+    }
+  ],
+  "observation": {
+    "dependencies": {
+      "forbidden_core_import_count": 0,
+      "runtime_count": 0,
+      "runtime_names": []
+    },
+    "performance": {
+      "budget_ratios": {
+        "diffusion_double_size_ratio": 3.0
+      },
+      "budget_seconds": {
+        "authority_retire_10000": 2.5,
+        "commit_tck_v1_warm": 3.2,
+        "commit_tck_v2": 15.0,
+        "governance_cold_import_median": 0.12,
+        "manifest_load_validate_median": 0.02,
+        "trace_append_10000": 2.5
+      },
+      "reference_baseline_sha256": "63983e767ed5a38c66e090ad424c9e66d9d5d3b5faac3e8601b4725befc1da67",
+      "version": "pheroos-reference-performance-v1"
+    },
+    "project": {
+      "lifecycle_version": "0.1.0",
+      "package_version": "0.1.0",
+      "requires_python": ">=3.12",
+      "runtime_version": "0.1.0"
+    },
+    "public_api": {
+      "compatibility_surface_count": 59,
+      "diagnostic_code_count": 228,
+      "diagnostic_registry_sha256": "sha256:c2a03e2c5f981d23f114fc6c1b8e70073d6478ba5f02286730dd9a47f5a4477a",
+      "error_type_count": 6,
+      "export_count": 1408,
+      "inventory_sha256": "f363fc7fd5395fc7d0d1b1fd10009a9a97a3d4f2c8bc814d0b533fe4909264e6",
+      "lifecycle_sha256": "ee10f1ecfaed030c7f8f154e52cfb302e1662c3e46abc6ee247415812849d670",
+      "package_export_counts": {
+        "pheroos.conformance": 118,
+        "pheroos.drivers": 54,
+        "pheroos.governance": 1068,
+        "pheroos.kernel": 31,
+        "pheroos.protocol": 99,
+        "pheroos.trace": 38
+      },
+      "stability_counts": {
+        "deprecated": 98,
+        "draft": 1310,
+        "stable": 0
+      }
+    },
+    "quality": {
+      "complexity": {
+        "complexity_sum": 1006,
+        "maximum_observed": 48,
+        "over_20_count": 14,
+        "over_25_count": 7,
+        "over_threshold_count": 56,
+        "scope": [
+          "pheroos",
+          "scripts",
+          "tests"
+        ],
+        "threshold": 10
+      },
+      "coverage": {
+        "branch_percent": null,
+        "line_percent": null,
+        "status": "not_configured"
+      },
+      "mypy": {
+        "by_code": {},
+        "errors": 0,
+        "files_with_errors": 0,
+        "scope": [
+          "pheroos"
+        ]
+      },
+      "ruff": {
+        "by_code": {},
+        "findings_total": 0,
+        "scope": [
+          "pheroos",
+          "scripts",
+          "tests"
+        ]
+      }
+    },
+    "schemas": {
+      "schemas/authority-v2.schema.json": {
+        "id": "https://pheroos.dev/schemas/authority-v2.schema.json",
+        "sha256": "095e19f80e838c2d2febf5190f6590c9d9f0ef15b94f5d2d5d6e16450a8b9e2c"
+      },
+      "schemas/capability-v2.schema.json": {
+        "id": "https://pheroos.dev/schemas/capability-v2.schema.json",
+        "sha256": "b613b848978c32339ec47487c4c45f99f67a81b85d8f98565bf41ed908df8eb4"
+      },
+      "schemas/capability-v3.schema.json": {
+        "id": "https://pheroos.dev/schemas/capability-v3.schema.json",
+        "sha256": "f457bd2354401f2604946e1b672d1b38af9d5488f3bd53108381de96c0cd0387"
+      },
+      "schemas/capability.schema.json": {
+        "id": "https://pheroos.dev/schemas/capability.schema.json",
+        "sha256": "5d3a88ed54d9acf83813713abec493ebb85e245cd6766de9fffa03351cdb62cf"
+      },
+      "schemas/commit-tck-request-v2.schema.json": {
+        "id": "https://pheroos.dev/schemas/commit-tck-request-v2.schema.json",
+        "sha256": "eb408c68283c74abeb891b539586d01c657f3c0c3ca0335c8db40b47f38cfe5d"
+      },
+      "schemas/commit-tck-response-v2.schema.json": {
+        "id": "https://pheroos.dev/schemas/commit-tck-response-v2.schema.json",
+        "sha256": "a83b9d9251203a9f9e71483906bdd116a699c68f0971d177d1cce16063ce8ec6"
+      },
+      "schemas/commit-tck-v2.schema.json": {
+        "id": "https://pheroos.dev/schemas/commit-tck-v2.schema.json",
+        "sha256": "2a7ebd71f3b48c1a2266f20ab7c78f65a9c382d08864a32794e6cbc383a20e7d"
+      },
+      "schemas/commit-tck.schema.json": {
+        "id": "https://pheroos.dev/schemas/commit-tck.schema.json",
+        "sha256": "8ea69e824578120d0cbf4343faef3c5b0b4f2fb35fe6a9803a267bb323114d8d"
+      },
+      "schemas/commit.schema.json": {
+        "id": "https://pheroos.dev/schemas/commit.schema.json",
+        "sha256": "4698ef4614a94fd0f4bf4b63f6d55d7ef0fc8b437f1993ebab2c0eb9a4f6be08"
+      },
+      "schemas/conformance-report-v2.schema.json": {
+        "id": "https://pheroos.dev/schemas/conformance-report-v2.schema.json",
+        "sha256": "009de4b1cc5de0c73874fd2faa823ac9861676b1d3dfa0be154ab67ee0e9f0d9"
+      },
+      "schemas/driver-v2.schema.json": {
+        "id": "https://pheroos.dev/schemas/driver-v2.schema.json",
+        "sha256": "accf9c478d424c6b5b75b536ed1c498691c657027867524cd279f0dc792a76f8"
+      },
+      "schemas/driver.schema.json": {
+        "id": "https://pheroos.dev/schemas/driver.schema.json",
+        "sha256": "44171e85e1076231d9120f67abafcf521748ccbb8932a805df12c43823587fbd"
+      },
+      "schemas/kernel-v2.schema.json": {
+        "id": "https://pheroos.dev/schemas/kernel-v2.schema.json",
+        "sha256": "a8c52037b49a1f71cf7bdd51317b3ebf5e92f079a3d89c53290bcac7e159e446"
+      },
+      "schemas/kernel.schema.json": {
+        "id": "https://pheroos.dev/schemas/kernel.schema.json",
+        "sha256": "da2e2001a61c19d2726bc96ef05392e1acb8618c6bb6a3dfb233bcc0398e0822"
+      },
+      "schemas/protocol-v2.schema.json": {
+        "id": "https://pheroos.dev/schemas/protocol-v2.schema.json",
+        "sha256": "8f4aeb48d99827b381cb3138c9651d88eb0a2f0ce1c0de4aac8f1aaf5eebe877"
+      },
+      "schemas/protocol-v3.schema.json": {
+        "id": "https://pheroos.dev/schemas/protocol-v3.schema.json",
+        "sha256": "f12cf865353ad3edd488e446226ee30cea505a8dbe13c103b9439fce83baceff"
+      },
+      "schemas/protocol.schema.json": {
+        "id": "https://pheroos.dev/schemas/protocol.schema.json",
+        "sha256": "1abc0b228c72fc05f8ec6272d327d9c06ca3e3a7e37ea2487ccfeff60c86cdb6"
+      },
+      "schemas/runtime-scope-v1.schema.json": {
+        "id": "https://pheroos.dev/schemas/runtime-scope-v1.schema.json",
+        "sha256": "7a3a5ba4fa1b1819de53c353f2dbd2227a26017a015a11e5cc40c1a64b609bc5"
+      },
+      "schemas/scoped-authority-tck-v2.schema.json": {
+        "id": "https://pheroos.dev/schemas/scoped-authority-tck-v2.schema.json",
+        "sha256": "8b7169db2d127b5217271363c335cb636c2d0afa37cd739d1b28c3ea84936ccd"
+      },
+      "schemas/scoped-trace-event-v1.schema.json": {
+        "id": "https://pheroos.dev/schemas/scoped-trace-event-v1.schema.json",
+        "sha256": "b05925809d83645734d205e814f2ced0ff8afe242a8526b2ed3aadb93dfccd01"
+      },
+      "schemas/trace.schema.json": {
+        "id": "https://pheroos.dev/schemas/trace.schema.json",
+        "sha256": "ccaf5aa839343426fd449f854b023d5c2d13012bcf702f66242f47304abbc4d0"
+      }
+    },
+    "source": {
+      "conformance_loc": 59029,
+      "core_python_files": 624,
+      "core_python_loc": 220988,
+      "governance_loc": 134002
+    },
+    "tck": {
+      "pheroos/conformance/tck/commit-integrity-v1.json": {
+        "case_count": 38,
+        "semantic_root": "sha256:0e9cd7fd56087d5cc4987d5a7ed056ed6649512c30ee486685e3dbd45e8b7abe",
+        "sha256": "9255ed7e1298841baaaeee8b139a7ba86df457493dd30d6d7312ce600a1d41e3",
+        "version": "pheroos-commit-integrity-tck-v1"
+      },
+      "pheroos/conformance/tck/commit-integrity-v2.json": {
+        "case_count": 23,
+        "semantic_root": "sha256:0cb38415b5429aec17235eff9ea55867afe44d11be8669e80397277c206af00b",
+        "sha256": "0cb38415b5429aec17235eff9ea55867afe44d11be8669e80397277c206af00b",
+        "version": "pheroos-commit-integrity-tck-v2"
+      }
+    },
+    "tests": {
+      "collected": 5931
+    },
+    "toolchain": {
+      "ci_constraints_sha256": "9a2d83e622db4e0d189d03348d8699b329f6fc97dc93af7686d6cf270ce73370",
+      "pins": {
+        "attrs": "25.3.0",
+        "build": "1.3.0",
+        "coverage": "7.15.2",
+        "iniconfig": "2.1.0",
+        "jsonschema": "4.25.1",
+        "jsonschema-specifications": "2025.9.1",
+        "librt": "0.6.2",
+        "mypy": "1.18.2",
+        "mypy-extensions": "1.1.0",
+        "packaging": "25.0",
+        "pathspec": "0.12.1",
+        "pip": "25.2",
+        "pluggy": "1.6.0",
+        "pygments": "2.19.2",
+        "pyproject-hooks": "1.2.0",
+        "pytest": "8.4.2",
+        "referencing": "0.36.2",
+        "rpds-py": "0.27.1",
+        "ruff": "0.13.3",
+        "setuptools": "80.9.0",
+        "typing-extensions": "4.15.0",
+        "wheel": "0.45.1"
+      }
+    }
+  },
+  "policy": {
+    "exact_paths": [
+      "project",
+      "public_api",
+      "schemas",
+      "tck",
+      "performance",
+      "toolchain.ci_constraints_sha256",
+      "quality.coverage"
+    ],
+    "lower_bound_paths": [
+      "tests.collected"
+    ],
+    "upper_bound_paths": [
+      "quality.ruff.findings_total",
+      "quality.mypy.errors",
+      "quality.mypy.files_with_errors",
+      "quality.complexity.over_threshold_count",
+      "quality.complexity.maximum_observed",
+      "quality.complexity.complexity_sum",
+      "quality.complexity.over_20_count",
+      "quality.complexity.over_25_count",
+      "dependencies.runtime_count",
+      "dependencies.forbidden_core_import_count"
+    ]
+  },
+  "reason": "Bind hash-closed CPython 3.12-3.14 CI wheel lock and audited RC hardening",
+  "version": "pheroos-engineering-baseline-v1"
+}

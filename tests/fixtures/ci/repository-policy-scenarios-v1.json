@@ -1,0 +1,105 @@
+{
+  "cases": [
+    {
+      "allowed": false,
+      "id": "delete-denied",
+      "operation": "delete",
+      "status_checks": {},
+      "via_pull_request": false
+    },
+    {
+      "allowed": false,
+      "id": "direct-push-denied",
+      "operation": "push",
+      "status_checks": {},
+      "via_pull_request": false
+    },
+    {
+      "allowed": false,
+      "id": "force-push-denied",
+      "operation": "force_push",
+      "status_checks": {},
+      "via_pull_request": false
+    },
+    {
+      "allowed": false,
+      "id": "gate-cancelled-denied",
+      "operation": "merge",
+      "status_checks": {
+        "quality-gate": {
+          "integration_id": 15368,
+          "result": "cancelled"
+        }
+      },
+      "via_pull_request": true
+    },
+    {
+      "allowed": false,
+      "id": "gate-failure-denied",
+      "operation": "merge",
+      "status_checks": {
+        "quality-gate": {
+          "integration_id": 15368,
+          "result": "failure"
+        }
+      },
+      "via_pull_request": true
+    },
+    {
+      "allowed": false,
+      "id": "gate-missing-denied",
+      "operation": "merge",
+      "status_checks": {},
+      "via_pull_request": true
+    },
+    {
+      "allowed": false,
+      "id": "gate-pending-denied",
+      "operation": "merge",
+      "status_checks": {
+        "quality-gate": {
+          "integration_id": 15368,
+          "result": "pending"
+        }
+      },
+      "via_pull_request": true
+    },
+    {
+      "allowed": false,
+      "id": "gate-skipped-denied",
+      "operation": "merge",
+      "status_checks": {
+        "quality-gate": {
+          "integration_id": 15368,
+          "result": "skipped"
+        }
+      },
+      "via_pull_request": true
+    },
+    {
+      "allowed": false,
+      "id": "gate-wrong-integration-denied",
+      "operation": "merge",
+      "status_checks": {
+        "quality-gate": {
+          "integration_id": 1,
+          "result": "success"
+        }
+      },
+      "via_pull_request": true
+    },
+    {
+      "allowed": true,
+      "id": "pull-request-gate-success",
+      "operation": "merge",
+      "status_checks": {
+        "quality-gate": {
+          "integration_id": 15368,
+          "result": "success"
+        }
+      },
+      "via_pull_request": true
+    }
+  ],
+  "schema": "pheroos-repository-policy-scenarios-v1"
+}

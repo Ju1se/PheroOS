@@ -1,0 +1,690 @@
+{
+  "enforcement": "baseline_locked",
+  "functions": [
+    {
+      "baseline_complexity": 3,
+      "category": "trust_path",
+      "owner": "protocol",
+      "qualified_function": "pheroos.protocol.validation.validate_capability_manifest",
+      "target_complexity": 15
+    },
+    {
+      "baseline_complexity": 104,
+      "category": "trust_path",
+      "owner": "protocol",
+      "qualified_function": "pheroos.protocol.validation._validate_capability_manifest_v1",
+      "target_complexity": 20
+    },
+    {
+      "baseline_complexity": 80,
+      "category": "trust_path",
+      "owner": "trace",
+      "qualified_function": "pheroos.trace._validation_core._validate_declared_event_lineage",
+      "target_complexity": 20
+    },
+    {
+      "baseline_complexity": 40,
+      "category": "trust_path",
+      "owner": "governance",
+      "qualified_function": "pheroos.governance._pheromone.invariants.validate_pheromone_policy",
+      "target_complexity": 20
+    },
+    {
+      "baseline_complexity": 44,
+      "category": "trust_path",
+      "owner": "governance",
+      "qualified_function": "pheroos.governance._commit.evaluation.assess_optimal_commit",
+      "target_complexity": 20
+    },
+    {
+      "baseline_complexity": 30,
+      "category": "trust_path",
+      "owner": "governance",
+      "qualified_function": "pheroos.governance._commit_state.liveness.issue_commit_liveness_input",
+      "target_complexity": 20
+    },
+    {
+      "baseline_complexity": 9,
+      "category": "trust_path",
+      "owner": "governance",
+      "qualified_function": "pheroos.governance._commit_state.liveness.reduce_commit_liveness",
+      "target_complexity": 15
+    },
+    {
+      "baseline_complexity": 17,
+      "category": "trust_path",
+      "owner": "governance",
+      "qualified_function": "pheroos.governance._commit_state.liveness._validate_liveness_input_matches_window",
+      "target_complexity": 20
+    },
+    {
+      "baseline_complexity": 12,
+      "category": "trust_path",
+      "owner": "governance",
+      "qualified_function": "pheroos.governance._commit_state.liveness._validate_liveness_current_authority_heads",
+      "target_complexity": 15
+    },
+    {
+      "baseline_complexity": 14,
+      "category": "trust_path",
+      "owner": "governance",
+      "qualified_function": "pheroos.governance._commit_state.liveness._outcome_from_liveness",
+      "target_complexity": 15
+    },
+    {
+      "baseline_complexity": 11,
+      "category": "trust_path",
+      "owner": "conformance",
+      "qualified_function": "pheroos.conformance.checks.hybrid_trace_contract.check",
+      "target_complexity": 15
+    },
+    {
+      "baseline_complexity": 28,
+      "category": "trust_path",
+      "owner": "conformance",
+      "qualified_function": "pheroos.conformance.checks.hybrid_trace_contract.check_actual_trace",
+      "target_complexity": 20
+    },
+    {
+      "baseline_complexity": 68,
+      "category": "trust_path",
+      "owner": "conformance",
+      "qualified_function": "pheroos.conformance.checks.hybrid_trace_contract.collective_authority_problems",
+      "target_complexity": 20
+    },
+    {
+      "baseline_complexity": 18,
+      "category": "trust_path",
+      "owner": "conformance",
+      "qualified_function": "pheroos.conformance.checks.hybrid_trace_contract.replay_trace_problems",
+      "target_complexity": 20
+    },
+    {
+      "baseline_complexity": 101,
+      "category": "trust_path",
+      "owner": "conformance",
+      "qualified_function": "pheroos.conformance.checks.hybrid_trace_contract.pheromone_lifecycle_policy_problems",
+      "target_complexity": 20
+    },
+    {
+      "baseline_complexity": 11,
+      "category": "trust_path",
+      "owner": "conformance",
+      "qualified_function": "pheroos.conformance.checks.hybrid_trace_contract.pheromone_score_reconstruction_problems",
+      "target_complexity": 15
+    },
+    {
+      "baseline_complexity": 22,
+      "category": "trust_path",
+      "owner": "conformance",
+      "qualified_function": "pheroos.conformance.checks.hybrid_trace_contract.pheromone_derived_trace_problems",
+      "target_complexity": 20
+    },
+    {
+      "baseline_complexity": 15,
+      "category": "trust_path",
+      "owner": "conformance",
+      "qualified_function": "pheroos.conformance.checks.hybrid_trace_contract.policy_adjustment_trace_problems",
+      "target_complexity": 15
+    },
+    {
+      "baseline_complexity": 20,
+      "category": "trust_path",
+      "owner": "conformance",
+      "qualified_function": "pheroos.conformance.checks.hybrid_trace_contract.coordination_replay_problems",
+      "target_complexity": 20
+    },
+    {
+      "baseline_complexity": 20,
+      "category": "trust_path",
+      "owner": "conformance",
+      "qualified_function": "pheroos.conformance.checks.hybrid_trace_contract.layer_pheromone_lineage_problems",
+      "target_complexity": 20
+    },
+    {
+      "baseline_complexity": 18,
+      "category": "trust_path",
+      "owner": "conformance",
+      "qualified_function": "pheroos.conformance.checks.hybrid_trace_contract.event_stage",
+      "target_complexity": 20
+    },
+    {
+      "baseline_complexity": 2,
+      "category": "trust_path",
+      "owner": "conformance_reference_adapter",
+      "qualified_function": "pheroos.conformance._commit_tck.reference_adapter.ReferenceCommitTckAdapter.evaluate",
+      "target_complexity": 15
+    },
+    {
+      "baseline_complexity": 1,
+      "category": "trust_path",
+      "owner": "conformance_reference_adapter",
+      "qualified_function": "pheroos.conformance._commit_tck.reference_adapter.ReferenceCommitTckAdapter._canonical_fingerprint",
+      "target_complexity": 15
+    },
+    {
+      "baseline_complexity": 2,
+      "category": "trust_path",
+      "owner": "conformance_reference_adapter",
+      "qualified_function": "pheroos.conformance._commit_tck.reference_adapter.ReferenceCommitTckAdapter._canonical_set_fingerprint",
+      "target_complexity": 15
+    },
+    {
+      "baseline_complexity": 1,
+      "category": "trust_path",
+      "owner": "conformance_reference_adapter",
+      "qualified_function": "pheroos.conformance._commit_tck.reference_adapter.ReferenceCommitTckAdapter._fixed_point_multiply",
+      "target_complexity": 15
+    },
+    {
+      "baseline_complexity": 1,
+      "category": "trust_path",
+      "owner": "conformance_reference_adapter",
+      "qualified_function": "pheroos.conformance._commit_tck.reference_adapter.ReferenceCommitTckAdapter._fixed_point_ratio",
+      "target_complexity": 15
+    },
+    {
+      "baseline_complexity": 3,
+      "category": "trust_path",
+      "owner": "conformance_reference_adapter",
+      "qualified_function": "pheroos.conformance._commit_tck.reference_adapter.ReferenceCommitTckAdapter._manifest_validation",
+      "target_complexity": 15
+    },
+    {
+      "baseline_complexity": 1,
+      "category": "trust_path",
+      "owner": "conformance_reference_adapter",
+      "qualified_function": "pheroos.conformance._commit_tck.reference_adapter.ReferenceCommitTckAdapter._terminal_priority",
+      "target_complexity": 15
+    },
+    {
+      "baseline_complexity": 6,
+      "category": "trust_path",
+      "owner": "conformance_reference_adapter",
+      "qualified_function": "pheroos.conformance._commit_tck.reference_adapter.ReferenceCommitTckAdapter._trace_replay",
+      "target_complexity": 15
+    },
+    {
+      "baseline_complexity": 2,
+      "category": "trust_path",
+      "owner": "conformance_reference_adapter",
+      "qualified_function": "pheroos.conformance._commit_tck.reference_adapter.ReferenceCommitTckAdapter._matrix_case",
+      "target_complexity": 15
+    },
+    {
+      "baseline_complexity": 1,
+      "category": "trust_path",
+      "owner": "conformance_reference_adapter",
+      "qualified_function": "pheroos.conformance._commit_tck.reference_adapter._probe_case_01",
+      "target_complexity": 15
+    },
+    {
+      "baseline_complexity": 1,
+      "category": "trust_path",
+      "owner": "conformance_reference_adapter",
+      "qualified_function": "pheroos.conformance._commit_tck.reference_adapter._probe_case_02",
+      "target_complexity": 15
+    },
+    {
+      "baseline_complexity": 1,
+      "category": "trust_path",
+      "owner": "conformance_reference_adapter",
+      "qualified_function": "pheroos.conformance._commit_tck.reference_adapter._probe_case_03",
+      "target_complexity": 15
+    },
+    {
+      "baseline_complexity": 2,
+      "category": "trust_path",
+      "owner": "conformance_reference_adapter",
+      "qualified_function": "pheroos.conformance._commit_tck.reference_adapter._probe_case_04",
+      "target_complexity": 15
+    },
+    {
+      "baseline_complexity": 1,
+      "category": "trust_path",
+      "owner": "conformance_reference_adapter",
+      "qualified_function": "pheroos.conformance._commit_tck.reference_adapter._probe_case_05",
+      "target_complexity": 15
+    },
+    {
+      "baseline_complexity": 2,
+      "category": "trust_path",
+      "owner": "conformance_reference_adapter",
+      "qualified_function": "pheroos.conformance._commit_tck.reference_adapter._probe_case_06",
+      "target_complexity": 15
+    },
+    {
+      "baseline_complexity": 2,
+      "category": "trust_path",
+      "owner": "conformance_reference_adapter",
+      "qualified_function": "pheroos.conformance._commit_tck.reference_adapter._probe_case_07",
+      "target_complexity": 15
+    },
+    {
+      "baseline_complexity": 1,
+      "category": "trust_path",
+      "owner": "conformance_reference_adapter",
+      "qualified_function": "pheroos.conformance._commit_tck.reference_adapter._probe_case_08",
+      "target_complexity": 15
+    },
+    {
+      "baseline_complexity": 1,
+      "category": "trust_path",
+      "owner": "conformance_reference_adapter",
+      "qualified_function": "pheroos.conformance._commit_tck.reference_adapter._probe_case_09",
+      "target_complexity": 15
+    },
+    {
+      "baseline_complexity": 2,
+      "category": "trust_path",
+      "owner": "conformance_reference_adapter",
+      "qualified_function": "pheroos.conformance._commit_tck.reference_adapter._probe_case_10",
+      "target_complexity": 15
+    },
+    {
+      "baseline_complexity": 2,
+      "category": "trust_path",
+      "owner": "conformance_reference_adapter",
+      "qualified_function": "pheroos.conformance._commit_tck.reference_adapter._probe_case_11",
+      "target_complexity": 15
+    },
+    {
+      "baseline_complexity": 2,
+      "category": "trust_path",
+      "owner": "conformance_reference_adapter",
+      "qualified_function": "pheroos.conformance._commit_tck.reference_adapter._probe_case_12",
+      "target_complexity": 15
+    },
+    {
+      "baseline_complexity": 1,
+      "category": "trust_path",
+      "owner": "conformance_reference_adapter",
+      "qualified_function": "pheroos.conformance._commit_tck.reference_adapter._probe_case_13",
+      "target_complexity": 15
+    },
+    {
+      "baseline_complexity": 1,
+      "category": "trust_path",
+      "owner": "conformance_reference_adapter",
+      "qualified_function": "pheroos.conformance._commit_tck.reference_adapter._probe_case_14",
+      "target_complexity": 15
+    },
+    {
+      "baseline_complexity": 1,
+      "category": "trust_path",
+      "owner": "conformance_reference_adapter",
+      "qualified_function": "pheroos.conformance._commit_tck.reference_adapter._probe_case_15",
+      "target_complexity": 15
+    },
+    {
+      "baseline_complexity": 1,
+      "category": "trust_path",
+      "owner": "conformance_reference_adapter",
+      "qualified_function": "pheroos.conformance._commit_tck.reference_adapter._probe_case_16",
+      "target_complexity": 15
+    },
+    {
+      "baseline_complexity": 2,
+      "category": "trust_path",
+      "owner": "conformance_reference_adapter",
+      "qualified_function": "pheroos.conformance._commit_tck.reference_adapter._probe_case_17",
+      "target_complexity": 15
+    },
+    {
+      "baseline_complexity": 1,
+      "category": "trust_path",
+      "owner": "conformance_reference_adapter",
+      "qualified_function": "pheroos.conformance._commit_tck.reference_adapter._probe_case_18",
+      "target_complexity": 15
+    },
+    {
+      "baseline_complexity": 1,
+      "category": "trust_path",
+      "owner": "conformance_reference_adapter",
+      "qualified_function": "pheroos.conformance._commit_tck.reference_adapter._probe_case_19",
+      "target_complexity": 15
+    },
+    {
+      "baseline_complexity": 1,
+      "category": "trust_path",
+      "owner": "conformance_reference_adapter",
+      "qualified_function": "pheroos.conformance._commit_tck.reference_adapter._probe_case_20",
+      "target_complexity": 15
+    },
+    {
+      "baseline_complexity": 2,
+      "category": "trust_path",
+      "owner": "conformance_reference_adapter",
+      "qualified_function": "pheroos.conformance._commit_tck.reference_adapter._probe_case_21",
+      "target_complexity": 15
+    },
+    {
+      "baseline_complexity": 2,
+      "category": "trust_path",
+      "owner": "conformance_reference_adapter",
+      "qualified_function": "pheroos.conformance._commit_tck.reference_adapter._probe_case_22",
+      "target_complexity": 15
+    },
+    {
+      "baseline_complexity": 2,
+      "category": "trust_path",
+      "owner": "conformance_reference_adapter",
+      "qualified_function": "pheroos.conformance._commit_tck.reference_adapter._probe_case_23",
+      "target_complexity": 15
+    },
+    {
+      "baseline_complexity": 1,
+      "category": "trust_path",
+      "owner": "conformance_reference_adapter",
+      "qualified_function": "pheroos.conformance._commit_tck.reference_adapter._probe_case_24",
+      "target_complexity": 15
+    },
+    {
+      "baseline_complexity": 6,
+      "category": "trust_path",
+      "owner": "conformance_reference_adapter",
+      "qualified_function": "pheroos.conformance._commit_tck.reference_adapter._probe_case_25",
+      "target_complexity": 15
+    },
+    {
+      "baseline_complexity": 2,
+      "category": "trust_path",
+      "owner": "conformance_reference_adapter",
+      "qualified_function": "pheroos.conformance._commit_tck.reference_adapter._probe_case_26",
+      "target_complexity": 15
+    },
+    {
+      "baseline_complexity": 2,
+      "category": "trust_path",
+      "owner": "conformance_reference_adapter",
+      "qualified_function": "pheroos.conformance._commit_tck.reference_adapter._probe_case_27",
+      "target_complexity": 15
+    },
+    {
+      "baseline_complexity": 1,
+      "category": "trust_path",
+      "owner": "conformance_reference_adapter",
+      "qualified_function": "pheroos.conformance._commit_tck.reference_adapter._probe_case_28",
+      "target_complexity": 15
+    },
+    {
+      "baseline_complexity": 1,
+      "category": "trust_path",
+      "owner": "conformance_reference_adapter",
+      "qualified_function": "pheroos.conformance._commit_tck.reference_adapter._probe_case_29",
+      "target_complexity": 15
+    },
+    {
+      "baseline_complexity": 2,
+      "category": "trust_path",
+      "owner": "conformance_reference_adapter",
+      "qualified_function": "pheroos.conformance._commit_tck.reference_adapter._probe_case_30",
+      "target_complexity": 15
+    },
+    {
+      "baseline_complexity": 1,
+      "category": "trust_path",
+      "owner": "conformance_reference_adapter",
+      "qualified_function": "pheroos.conformance._commit_tck.reference_adapter._probe_case_31",
+      "target_complexity": 15
+    },
+    {
+      "baseline_complexity": 1,
+      "category": "trust_path",
+      "owner": "conformance_reference_adapter",
+      "qualified_function": "pheroos.conformance._commit_tck.reference_adapter._probe_case_32",
+      "target_complexity": 15
+    },
+    {
+      "baseline_complexity": 4,
+      "category": "trust_path",
+      "owner": "conformance_reference_adapter",
+      "qualified_function": "pheroos.conformance._commit_tck.reference_adapter._probe_case_33",
+      "target_complexity": 15
+    },
+    {
+      "baseline_complexity": 4,
+      "category": "trust_path",
+      "owner": "conformance_reference_adapter",
+      "qualified_function": "pheroos.conformance._commit_tck.reference_adapter._probe_case_34",
+      "target_complexity": 15
+    },
+    {
+      "baseline_complexity": 1,
+      "category": "trust_path",
+      "owner": "conformance_reference_adapter",
+      "qualified_function": "pheroos.conformance._commit_tck.reference_adapter._probe_case_35",
+      "target_complexity": 15
+    },
+    {
+      "baseline_complexity": 3,
+      "category": "trust_path",
+      "owner": "conformance_reference_adapter",
+      "qualified_function": "pheroos.conformance._commit_tck.reference_adapter._probe_case_36",
+      "target_complexity": 15
+    },
+    {
+      "baseline_complexity": 1,
+      "category": "trust_path",
+      "owner": "conformance_reference_adapter",
+      "qualified_function": "pheroos.conformance._commit_tck.reference_adapter._probe_case_37",
+      "target_complexity": 15
+    },
+    {
+      "baseline_complexity": 4,
+      "category": "trust_path",
+      "owner": "conformance_reference_adapter",
+      "qualified_function": "pheroos.conformance._commit_tck.reference_adapter._probe_case_38",
+      "target_complexity": 15
+    },
+    {
+      "baseline_complexity": 7,
+      "category": "trust_path",
+      "owner": "conformance_reference_fixture",
+      "qualified_function": "pheroos.conformance._commit_reference.build_reference_scenario",
+      "target_complexity": 15
+    },
+    {
+      "baseline_complexity": 1,
+      "category": "trust_path",
+      "owner": "conformance_reference_fixture",
+      "qualified_function": "pheroos.conformance._commit_reference.issue_reference_principal",
+      "target_complexity": 15
+    },
+    {
+      "baseline_complexity": 1,
+      "category": "trust_path",
+      "owner": "conformance_reference_fixture",
+      "qualified_function": "pheroos.conformance._commit_reference.issue_reference_observation",
+      "target_complexity": 15
+    },
+    {
+      "baseline_complexity": 1,
+      "category": "trust_path",
+      "owner": "conformance_reference_fixture",
+      "qualified_function": "pheroos.conformance._commit_reference.issue_reference_challenge",
+      "target_complexity": 15
+    },
+    {
+      "baseline_complexity": 2,
+      "category": "trust_path",
+      "owner": "conformance_reference_fixture",
+      "qualified_function": "pheroos.conformance._commit_reference.issue_reference_disposition",
+      "target_complexity": 15
+    },
+    {
+      "baseline_complexity": 1,
+      "category": "trust_path",
+      "owner": "conformance_reference_fixture",
+      "qualified_function": "pheroos.conformance._commit_reference.issue_reference_binding",
+      "target_complexity": 15
+    },
+    {
+      "baseline_complexity": 1,
+      "category": "trust_path",
+      "owner": "conformance_reference_fixture",
+      "qualified_function": "pheroos.conformance._commit_reference.issue_reference_lease",
+      "target_complexity": 15
+    },
+    {
+      "baseline_complexity": 1,
+      "category": "trust_path",
+      "owner": "conformance_reference_fixture",
+      "qualified_function": "pheroos.conformance._commit_reference.issue_reference_action_gates",
+      "target_complexity": 15
+    },
+    {
+      "baseline_complexity": 2,
+      "category": "trust_path",
+      "owner": "conformance_reference_fixture",
+      "qualified_function": "pheroos.conformance._commit_reference.assess_reference_scenario",
+      "target_complexity": 15
+    },
+    {
+      "baseline_complexity": 2,
+      "category": "trust_path",
+      "owner": "conformance_reference_fixture",
+      "qualified_function": "pheroos.conformance._commit_reference.initialize_reference_window",
+      "target_complexity": 15
+    },
+    {
+      "baseline_complexity": 1,
+      "category": "trust_path",
+      "owner": "conformance_reference_fixture",
+      "qualified_function": "pheroos.conformance._commit_reference.rotate_reference_context",
+      "target_complexity": 15
+    },
+    {
+      "baseline_complexity": 3,
+      "category": "trust_path",
+      "owner": "conformance_reference_fixture",
+      "qualified_function": "pheroos.conformance._commit_reference.build_reference_stable_commit",
+      "target_complexity": 15
+    },
+    {
+      "baseline_complexity": 1,
+      "category": "trust_path",
+      "owner": "conformance_reference_fixture",
+      "qualified_function": "pheroos.conformance._commit_reference.build_reference_portable_commit",
+      "target_complexity": 15
+    },
+    {
+      "baseline_complexity": 3,
+      "category": "trust_path",
+      "owner": "conformance_reference_fixture",
+      "qualified_function": "pheroos.conformance._commit_reference.build_reference_distributed_commit",
+      "target_complexity": 15
+    },
+    {
+      "baseline_complexity": 1,
+      "category": "trust_path",
+      "owner": "conformance_reference_fixture",
+      "qualified_function": "pheroos.conformance._commit_reference.issue_reference_witness",
+      "target_complexity": 15
+    },
+    {
+      "baseline_complexity": 1,
+      "category": "trust_path",
+      "owner": "conformance_reference_fixture",
+      "qualified_function": "pheroos.conformance._commit_reference.issue_reference_distributed_certificate",
+      "target_complexity": 15
+    },
+    {
+      "baseline_complexity": 3,
+      "category": "trust_path",
+      "owner": "conformance_reference_fixture",
+      "qualified_function": "pheroos.conformance._commit_reference.issue_reference_semantic_conflict_certificate",
+      "target_complexity": 15
+    },
+    {
+      "baseline_complexity": 1,
+      "category": "trust_path",
+      "owner": "conformance_reference_fixture",
+      "qualified_function": "pheroos.conformance._commit_reference.replay_state_with_receipts",
+      "target_complexity": 15
+    }
+  ],
+  "measurement": {
+    "complexity_command": "python -m ruff check <static paths> --select C901 --config lint.mccabe.max-complexity=0 --output-format json",
+    "line_count": "physical UTF-8 source lines",
+    "tool": "ruff 0.13.3"
+  },
+  "modules": [
+    {
+      "baseline_lines": 1148,
+      "category": "trust_path",
+      "owner": "protocol",
+      "path": "pheroos/protocol/validation.py",
+      "target_lines": 800
+    },
+    {
+      "baseline_lines": 1841,
+      "category": "trust_path",
+      "owner": "trace",
+      "path": "pheroos/trace/_validation_core.py",
+      "target_lines": 800
+    },
+    {
+      "baseline_lines": 815,
+      "category": "trust_path",
+      "owner": "governance",
+      "path": "pheroos/governance/_pheromone/invariants.py",
+      "target_lines": 800
+    },
+    {
+      "baseline_lines": 857,
+      "category": "trust_path",
+      "owner": "governance",
+      "path": "pheroos/governance/_commit/evaluation.py",
+      "target_lines": 800
+    },
+    {
+      "baseline_lines": 1307,
+      "category": "trust_path",
+      "owner": "governance",
+      "path": "pheroos/governance/_commit_state/liveness.py",
+      "target_lines": 800
+    },
+    {
+      "baseline_lines": 2551,
+      "category": "trust_path",
+      "owner": "conformance",
+      "path": "pheroos/conformance/checks/hybrid_trace_contract.py",
+      "target_lines": 400
+    },
+    {
+      "baseline_lines": 3926,
+      "category": "trust_path",
+      "owner": "conformance_reference_adapter",
+      "path": "pheroos/conformance/_commit_tck/reference_adapter.py",
+      "target_lines": 500
+    },
+    {
+      "baseline_lines": 1710,
+      "category": "trust_path",
+      "owner": "conformance_reference_fixture",
+      "path": "pheroos/conformance/_commit_reference.py",
+      "target_lines": 800
+    }
+  ],
+  "policy": {
+    "new_or_modified_default_maximum": 15,
+    "repository_over_10_target": 64,
+    "tracked_function_target_maximum": 20,
+    "trust_path_absolute_maximum": 25,
+    "trust_path_category": "trust_path"
+  },
+  "repository_baseline": {
+    "complexity_sum": 3292,
+    "maximum_observed": 104,
+    "over_10_count": 172,
+    "over_20_count": 45,
+    "over_25_count": 27,
+    "scope": [
+      "pheroos",
+      "scripts",
+      "tests"
+    ]
+  },
+  "version": "pheroos-complexity-scope-v1"
+}

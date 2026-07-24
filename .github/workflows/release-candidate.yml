@@ -1,0 +1,42 @@
+name: release-candidate-dry-run
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PIP_DISABLE_PIP_VERSION_CHECK: "1"
+  PYTHONHASHSEED: "0"
+  SOURCE_DATE_EPOCH: "315532800"
+
+jobs:
+  release-candidate-dry-run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout exact candidate commit
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - name: Set up release Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.12"
+      - name: Verify and install the locked build toolchain
+        run: |
+          sha256sum --check requirements/ci-constraints.sha256
+          python -m pip install --require-hashes --only-binary=:all: -r requirements/ci-constraints.txt
+      - name: Build the offline release-candidate staging set
+        run: python scripts/release_candidate.py --staging-dir "$RUNNER_TEMP/pheroos-release-candidate"
+      - name: Verify the exact staged bytes against this clean commit
+        run: python scripts/release_candidate.py --verify-staging "$RUNNER_TEMP/pheroos-release-candidate"
+      - name: Preserve dry-run evidence only
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
+        with:
+          name: pheroos-release-candidate-dry-run
+          path: ${{ runner.temp }}/pheroos-release-candidate/*
+          if-no-files-found: error
+          retention-days: 14
