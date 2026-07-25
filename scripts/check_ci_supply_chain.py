@@ -65,10 +65,13 @@ COVERAGE_MEASUREMENT_SHARDS = (
     "governance-1",
     "governance-2",
     "governance-3",
+    "governance-distributed-totality",
     "governance-4",
     "trace-1",
     "trace-2",
     "conformance-1",
+    "conformance-finality-reference",
+    "conformance-finality-independent",
     "conformance-2",
     "conformance-runtime",
     "ecosystem",
@@ -235,7 +238,7 @@ WORKFLOW_HEADER_DIGEST = (
     "7dcc8bdd0bf04d1d3815717093c2f79f80174975a7a6c935bc3197e6e57e19fc"
 )
 WORKFLOW_JOB_DIGESTS = {
-    "python-tests": "9c229ffa1b370589238ad50b9225bdc907577a2266a707ddcf1f3e24a366a031",
+    "python-tests": "db44ef360b52e4fd9e975d2ff965eac0c6d4fac6816a15fb86efc6bf7a3a0845",
     "lint-and-typing": "5ceada187b115a4737af295db42c7f04afc3a51d967076c6e8d8827fac1d37ae",
     "schema-version-drift": (
         "8156a5c2fe5063ae430c04763fbde4dd4093fa1f79425a6d0940c29f09548710"
@@ -278,7 +281,7 @@ WORKFLOW_JOB_DIGESTS = {
         "d4b75cdbb099b8c41a62ee5f7a7c1c29f92fb27ef2bcff654c004b572b5f615c"
     ),
     "coverage-measure": (
-        "4efc7634807e317cb70bca3800d23280a332dc1b1aee8d5b3bb46cbca3b5dde3"
+        "5c2a0d400d812ab09a4ff064b855b0a8d2138d738147d030b8ccf9d86f31982f"
     ),
     "coverage-gate": "a0faaad9af9f2b6b8f3be9d4262679bd763d3bd720c870eecfc59776580ff748",
     "authority-mutation": (

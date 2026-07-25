@@ -29,17 +29,20 @@ MEASUREMENT_SHARDS = (
     "governance-1",
     "governance-2",
     "governance-3",
+    "governance-distributed-totality",
     "governance-4",
     "trace-1",
     "trace-2",
     "conformance-1",
+    "conformance-finality-reference",
+    "conformance-finality-independent",
     "conformance-2",
     "conformance-runtime",
     "ecosystem",
     "policy",
 )
 LOCKED_SCOPE_SHA256 = (
-    "sha256:bbd0df7265153633414a7ee89e8e977758c55a2974a04eb8a88eec45edbab137"
+    "sha256:12d11285ec24b08eb80bb3752ca792c6e3b574ab6c7262c699eb4f51358a3fca"
 )
 
 
