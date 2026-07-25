@@ -4,9 +4,11 @@ from collections import Counter
 from copy import deepcopy
 from dataclasses import replace
 import json
+import os
 from pathlib import Path
 import subprocess
 import sys
+import venv
 
 import pytest
 
@@ -493,6 +495,40 @@ def test_checked_commit_tck_runs_twice_in_one_process_exactly() -> None:
     assert first.ok is True
     assert second == first
     assert all(item.variant_failures == () for item in first.results)
+
+
+def test_case_38_is_source_only_and_external_cwd_independent(
+    tmp_path: Path,
+) -> None:
+    script = """
+from pheroos.conformance.commit_tck import (
+    ReferenceCommitTckAdapter,
+    load_commit_tck_vectors,
+)
+vector = next(item for item in load_commit_tck_vectors() if item.matrix_case == 38)
+actual = ReferenceCommitTckAdapter().evaluate(vector)
+if actual != vector.expected:
+    raise SystemExit(repr(actual))
+"""
+    environment = os.environ.copy()
+    environment["PYTHONPATH"] = str(ROOT)
+    clean_environment = tmp_path / "clean-environment"
+    venv.EnvBuilder(with_pip=False).create(clean_environment)
+    clean_python = clean_environment / (
+        "Scripts/python.exe" if os.name == "nt" else "bin/python"
+    )
+
+    completed = subprocess.run(
+        [str(clean_python), "-S", "-P", "-c", script],
+        cwd=tmp_path,
+        env=environment,
+        check=False,
+        capture_output=True,
+        text=True,
+        timeout=60,
+    )
+
+    assert completed.returncode == 0, completed.stderr or completed.stdout
 
 
 def test_commit_tck_generator_check_is_reproducible() -> None:

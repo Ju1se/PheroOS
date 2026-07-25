@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import json
 
+from pathlib import Path
+
 import subprocess
 
 import sys
@@ -259,6 +261,14 @@ def _probe_case_38(vector: _CommitTckRequest) -> dict[str, Any]:
     external_error = ""
     script = """
 import json
+from pathlib import Path
+import sys
+import_root = Path(sys.argv[1]).resolve()
+sys.path.insert(0, str(import_root))
+import pheroos
+package_path = Path(pheroos.__file__).resolve()
+if not package_path.is_relative_to(import_root):
+    raise RuntimeError("isolated TCK probe imported outside the declared root")
 from pheroos.conformance.commit_tck import commit_tck_artifact_root, commit_tck_schema, load_commit_tck_vectors
 from pheroos.protocol.commit_wire import commit_payload_fingerprint
 vectors = load_commit_tck_vectors()
@@ -279,10 +289,11 @@ print(json.dumps({
     "vector_count": len(vectors),
 }, sort_keys=True))
 """
+    import_root = Path(__file__).resolve().parents[3]
     try:
         with TemporaryDirectory(prefix="pheroos-tck-cwd-") as directory:
             completed = subprocess.run(
-                [sys.executable, "-I", "-c", script],
+                [sys.executable, "-I", "-c", script, str(import_root)],
                 cwd=directory,
                 check=False,
                 capture_output=True,

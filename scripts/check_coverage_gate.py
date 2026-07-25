@@ -39,7 +39,7 @@ MEASUREMENT_SHARDS = (
     "policy",
 )
 LOCKED_SCOPE_SHA256 = (
-    "sha256:bf4289ee6d5b9357466acba794b0472bc8b9db7e514f6aff2af1f0e563be8472"
+    "sha256:bbd0df7265153633414a7ee89e8e977758c55a2974a04eb8a88eec45edbab137"
 )
 
 
