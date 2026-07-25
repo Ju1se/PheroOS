@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from collections.abc import Sequence
+from collections.abc import Iterable, Sequence
 from dataclasses import dataclass, field
 from enum import StrEnum
 
@@ -178,10 +178,7 @@ def candidate_commit_metrics_payload(
     if type(metrics) is not CandidateCommitMetrics:
         raise GovernanceError("candidate commit metrics must be canonical")
     _validate_candidate_commit_metrics(metrics)
-    return {
-        name: getattr(metrics, name)
-        for name in metrics.__dataclass_fields__
-    }
+    return {name: getattr(metrics, name) for name in metrics.__dataclass_fields__}
 
 
 def candidate_commit_metrics_fingerprint(
@@ -226,9 +223,7 @@ def commit_assessment_payload(assessment: CommitAssessment) -> dict[str, object]
             assessment.membership_epoch_state_fingerprint
         ),
         "membership_root": assessment.membership_root,
-        "membership_snapshot_fingerprint": (
-            assessment.membership_snapshot_fingerprint
-        ),
+        "membership_snapshot_fingerprint": (assessment.membership_snapshot_fingerprint),
         "permission_fingerprint": assessment.permission_fingerprint,
         "profile": assessment.profile,
         "protocol_id": assessment.protocol_id,
@@ -308,10 +303,9 @@ def project_commit_assessment_for_window(
     *,
     current_step: int | None,
 ) -> dict[str, object]:
-    if (
-        type(assessment) is not CommitAssessment
-        or not commit_assessment_is_authoritative(assessment)
-    ):
+    if type(
+        assessment
+    ) is not CommitAssessment or not commit_assessment_is_authoritative(assessment):
         raise GovernanceError(
             "commit window requires an authoritative CommitAssessment"
         )
@@ -355,15 +349,11 @@ def project_commit_assessment_for_window(
         "risk_policy_root": assessment.risk_policy_root,
         "membership_root": assessment.membership_root,
         "membership_snapshot_root": assessment.membership_snapshot_fingerprint,
-        "membership_epoch_state_root": (
-            assessment.membership_epoch_state_fingerprint
-        ),
+        "membership_epoch_state_root": (assessment.membership_epoch_state_fingerprint),
         "threshold_root": assessment.threshold_fingerprint,
         "replay_state_ref": assessment.replay_state_fingerprint,
         "replay_root": assessment.replay_receipt_root,
-        "support_replay_state_root": (
-            assessment.support_replay_state_fingerprint
-        ),
+        "support_replay_state_root": (assessment.support_replay_state_fingerprint),
         "support_replay_root": assessment.support_replay_root,
         "collective_evidence_root": assessment.collective_evidence_root,
         "collective_challenge_root": assessment.collective_challenge_root,
@@ -477,18 +467,24 @@ def _validate_candidate_commit_metrics(metrics: CandidateCommitMetrics) -> None:
     )
     for name in (*gates, "ready_for_stability"):
         require_commit_bool(getattr(metrics, name), f"candidate metrics {name}")
-    if metrics.ready_for_stability is not all(
-        getattr(metrics, name) for name in gates
-    ):
+    if metrics.ready_for_stability is not all(getattr(metrics, name) for name in gates):
         raise GovernanceError("candidate metrics ready gate is inconsistent")
     expected_threshold = max(0, metrics.support_threshold_clusters)
-    if (
-        metrics.support_cluster_satisfied and metrics.support_ratio_satisfied
-    ) is not (metrics.active_support_clusters >= expected_threshold):
+    if (metrics.support_cluster_satisfied and metrics.support_ratio_satisfied) is not (
+        metrics.active_support_clusters >= expected_threshold
+    ):
         raise GovernanceError("candidate metrics support threshold is inconsistent")
 
 
 def _validate_commit_assessment_shape(assessment: CommitAssessment) -> None:
+    _validate_commit_assessment_header(assessment)
+    _validate_commit_assessment_roots(assessment)
+    _validate_commit_assessment_argmax(assessment)
+    leader_metrics = _validate_commit_assessment_leader(assessment)
+    _validate_commit_assessment_status(assessment, leader_metrics)
+
+
+def _validate_commit_assessment_header(assessment: CommitAssessment) -> None:
     if type(assessment.status) is not CommitAssessmentStatus:
         raise GovernanceError("commit assessment status is invalid")
     profile = require_commit_profile(assessment.profile, "commit assessment profile")
@@ -549,15 +545,20 @@ def _validate_commit_assessment_shape(assessment: CommitAssessment) -> None:
         assessment.authority
     ):
         raise GovernanceError("commit assessment authority is invalid")
+
+
+def _validate_commit_assessment_roots(assessment: CommitAssessment) -> None:
     expected_roots = _rebuild_collective_assessment_roots(
         assessment.candidate_metrics,
         profile=assessment.profile,
     )
     if any(
-        getattr(assessment, name) != value
-        for name, value in expected_roots.items()
+        getattr(assessment, name) != value for name, value in expected_roots.items()
     ):
         raise GovernanceError("commit assessment collective roots are inconsistent")
+
+
+def _validate_commit_assessment_argmax(assessment: CommitAssessment) -> None:
     if assessment.candidate_metrics:
         scores = {
             item.candidate_id: item.net_evidence
@@ -586,9 +587,7 @@ def _validate_commit_assessment_shape(assessment: CommitAssessment) -> None:
                 raise GovernanceError(
                     "commit assessment candidate margin is inconsistent"
                 )
-            if metrics.unique_leader is not (
-                metrics.candidate_id == expected_leader
-            ):
+            if metrics.unique_leader is not (metrics.candidate_id == expected_leader):
                 raise GovernanceError(
                     "commit assessment candidate leader gate is inconsistent"
                 )
@@ -599,6 +598,11 @@ def _validate_commit_assessment_shape(assessment: CommitAssessment) -> None:
             raise GovernanceError("commit assessment tie lineage is inconsistent")
     elif assessment.leader_candidate_id or assessment.tied_candidate_ids:
         raise GovernanceError("empty commit assessment cannot identify candidates")
+
+
+def _validate_commit_assessment_leader(
+    assessment: CommitAssessment,
+) -> tuple[CandidateCommitMetrics, ...]:
     leader_metrics = tuple(
         item
         for item in assessment.candidate_metrics
@@ -623,19 +627,25 @@ def _validate_commit_assessment_shape(assessment: CommitAssessment) -> None:
         leader_metrics and leader_metrics[0].ready_for_stability
     ):
         raise GovernanceError("commit assessment leader ready state is inconsistent")
+    return leader_metrics
+
+
+def _validate_commit_assessment_status(
+    assessment: CommitAssessment,
+    leader_metrics: Sequence[CandidateCommitMetrics],
+) -> None:
     if assessment.status is CommitAssessmentStatus.READY and not (
         assessment.unique_leader and assessment.leader_ready_for_stability
     ):
         raise GovernanceError("ready assessment requires one fully gated leader")
     if assessment.status is CommitAssessmentStatus.SAFETY_VIOLATION and not (
-        assessment.equivocation_finding_ids
-        or assessment.replay_conflict_references
+        assessment.equivocation_finding_ids or assessment.replay_conflict_references
     ):
         raise GovernanceError("safety assessment requires a concrete safety finding")
 
 
 def _collective_root(
-    values: object,
+    values: Iterable[tuple[str, str]],
     *,
     schema: str,
     profile: str,

@@ -46,6 +46,20 @@ readiness, and probe snapshots. Reading v1 produces a non-authoritative
 never synthesizes them. See the
 [schema migration](../process/schema-v1-v2-migration.md).
 
+`runtime-scope-v1.schema.json` is the closed portable wire shape. JSON Schema
+validation proves only that shape, version, basic text form, and the 1024-character
+per-component resource bound. It cannot prove that `scope_ref` was derived
+from the submitted `tenant_id` and `run_id`; authoritative input must also pass
+`RuntimeScope.from_dict(...)`, which recomputes and compares that identity.
+The typed portable reader also enforces Unicode NFC and rejects unpaired
+Unicode surrogate code points, which JSON Schema cannot express here.  This
+keeps the derived identity portable across Python and Unicode-scalar-only
+implementations.
+The length bound is a wire-only portability limit with one internal owner used
+by both parser and schema generation. Existing Python construction remains
+backward compatible, but a value outside the portable text rules cannot be
+serialized or transported as Runtime Scope v1 authority.
+
 ## Import Boundary
 
 The kernel may import protocol and driver contracts. It should not import

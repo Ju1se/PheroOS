@@ -51,7 +51,7 @@ def test_risk_private_modules_form_the_declared_static_dag() -> None:
         "chain": {"invariants", "payloads", "records"},
         "invariants": set(),
         "payloads": {"records"},
-        "records": {"invariants"},
+        "records": set(),
         "thresholds": {"chain", "invariants", "payloads", "records"},
     }
 
@@ -65,10 +65,22 @@ def test_commit_private_modules_form_the_declared_static_dag() -> None:
         "context": {"invariants", "records"},
         "evaluation": {
             "assessment",
+            "evaluation_engine",
+            "records",
+        },
+        "evaluation_engine": {
+            "assessment",
             "context",
+            "evaluation_metrics",
             "invariants",
             "records",
             "replay",
+        },
+        "evaluation_metrics": {
+            "assessment",
+            "context",
+            "invariants",
+            "records",
         },
         "invariants": {"records"},
         "local_receipt": {"certificate_contracts", "common"},
@@ -166,9 +178,7 @@ def test_risk_and_commit_algorithms_have_one_source_owner() -> None:
         for node in tree.body:
             if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
                 if node.name in owners:
-                    owners[node.name].append(
-                        str(path.relative_to(GOVERNANCE))
-                    )
+                    owners[node.name].append(str(path.relative_to(GOVERNANCE)))
     assert owners == {name: [owner] for name, owner in expected.items()}
 
 

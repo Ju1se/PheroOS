@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING, Protocol
+
 from pheroos.governance.errors import GovernanceError
 from pheroos.governance.permission import (
     ActionPermission,
@@ -9,14 +11,46 @@ from pheroos.governance.stop_signal import (
     StopResolutionVerification,
     stop_resolution_verification_matches,
 )
-from pheroos.protocol.commit_models import CommitAction
+from pheroos.protocol.commit_models import CommitAction, CommitAssurance
+
+
+if TYPE_CHECKING:
+
+    class _DistributedStateView(Protocol):
+        @property
+        def profile(self) -> str: ...
+
+        @property
+        def assurance(self) -> CommitAssurance: ...
+
+        @property
+        def manifest_root(self) -> str: ...
+
+        @property
+        def commit_policy_root(self) -> str: ...
+
+        @property
+        def protocol_id(self) -> str: ...
+
+        @property
+        def run_id(self) -> str: ...
+
+        @property
+        def target(self) -> str: ...
+
+        @property
+        def epoch(self) -> int: ...
+else:
+
+    class _DistributedStateView(Protocol):
+        pass
 
 
 def _require_action_gate(
     *,
     stop: StopResolutionVerification,
     permission: ActionPermission,
-    state: object,
+    state: _DistributedStateView,
     action: CommitAction,
     decision_ref: str,
     current_step: int,

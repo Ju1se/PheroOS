@@ -322,9 +322,7 @@ def test_active_attention_path_never_invokes_legacy_collective_decider(
         raise AssertionError("legacy _decide_collective_state was invoked")
 
     monkeypatch.setattr(collective_module, "_decide_collective_state", forbidden)
-    attention, directive = evaluate_hybrid_attention_step(
-        **_hybrid_inputs(scenario)
-    )
+    attention, directive = evaluate_hybrid_attention_step(**_hybrid_inputs(scenario))
 
     assert attention_breakdown_is_authoritative(attention)
     assert exploration_directive_is_authoritative(directive, attention=attention)
@@ -337,9 +335,7 @@ def test_active_attention_path_never_invokes_legacy_collective_decider(
 
 def test_attention_reuses_one_authoritative_hybrid_memory_and_replay_lineage() -> None:
     scenario = _scenario()
-    attention, directive = evaluate_hybrid_attention_step(
-        **_hybrid_inputs(scenario)
-    )
+    attention, directive = evaluate_hybrid_attention_step(**_hybrid_inputs(scenario))
     expected_replay = replay_state_from_hybrid_step(attention.source_step)
 
     assert hybrid_collective_step_is_authoritative(attention.source_step)
@@ -405,7 +401,9 @@ def test_attention_replay_derivation_reuses_the_verified_source_step(
     assert replay_root_calls == 2
 
 
-def test_legacy_hybrid_default_result_is_unchanged_and_not_accepted_as_attention() -> None:
+def test_legacy_hybrid_default_result_is_unchanged_and_not_accepted_as_attention() -> (
+    None
+):
     scenario = _scenario()
     inputs = _hybrid_inputs(scenario)
     default_step = evaluate_hybrid_collective_step(**inputs)
@@ -437,9 +435,7 @@ def test_attention_adapter_cannot_be_downgraded_to_legacy_mode() -> None:
 def test_forged_or_tampered_attention_and_assessment_are_rejected() -> None:
     scenario = _scenario()
     assessment = _assess(scenario)
-    attention, directive = evaluate_hybrid_attention_step(
-        **_hybrid_inputs(scenario)
-    )
+    attention, directive = evaluate_hybrid_attention_step(**_hybrid_inputs(scenario))
     forged_attention = replace(
         attention,
         attention_root="sha256:" + "f" * 64,
@@ -453,9 +449,7 @@ def test_forged_or_tampered_attention_and_assessment_are_rejected() -> None:
             commit_assessment=assessment,
         )
 
-    attention, directive = evaluate_hybrid_attention_step(
-        **_hybrid_inputs(scenario)
-    )
+    attention, directive = evaluate_hybrid_attention_step(**_hybrid_inputs(scenario))
     object.__setattr__(assessment, "leader_margin", assessment.leader_margin + 1)
     with pytest.raises(GovernanceError, match="CommitAssessment"):
         bind_hybrid_commit_channels(

@@ -1,0 +1,250 @@
+{
+  "families": [
+    {
+      "description": "Delete an authority level, scope, or operation check.",
+      "id": "authority_level_scope_operation",
+      "priority": "P0"
+    },
+    {
+      "description": "Flip an equality, threshold, quorum, or deadline boundary.",
+      "id": "equality_threshold_quorum_deadline",
+      "priority": "P0"
+    },
+    {
+      "description": "Delete a safe fallback, stop, or output authorization gate.",
+      "id": "safe_fallback_stop_output_gate",
+      "priority": "P0"
+    },
+    {
+      "description": "Delete a compare-and-swap expected head or revision gate.",
+      "id": "cas_expected_head_revision",
+      "priority": "P0"
+    },
+    {
+      "description": "Delete replay duplicate or currentness rejection.",
+      "id": "replay_duplicate_currentness",
+      "priority": "P0"
+    },
+    {
+      "description": "Delete required Trace lineage validation.",
+      "id": "trace_required_lineage",
+      "priority": "P0"
+    },
+    {
+      "description": "Delete certificate or fingerprint binding.",
+      "id": "certificate_fingerprint_binding",
+      "priority": "P0"
+    },
+    {
+      "description": "Allow a non-finite value or boolean-as-integer.",
+      "id": "nonfinite_bool_as_int",
+      "priority": "P0"
+    }
+  ],
+  "manifest_version": "pheroos-authority-mutation-v1",
+  "mutants": [
+    {
+      "authority_graph": "stable_authority",
+      "equivalent_review": null,
+      "family": "authority_level_scope_operation",
+      "id": "p0-authority-operation-check",
+      "priority": "P0",
+      "source": {
+        "end_line": 1023,
+        "original": "    if operation not in grant.operations:\n",
+        "path": "pheroos/governance/_authority_session_v2/contracts.py",
+        "replacement": "    if False and operation not in grant.operations:\n",
+        "sha256": "sha256:ff439da48063c0a1033cf9c8021366b64f9bc0f2ebbb960a5c0ed34a82cb7f99",
+        "start_line": 1023
+      },
+      "tests": [
+        "tests/governance/test_authority_session_v2_contracts.py::test_session_factory_enforces_run_operation_epoch_and_declared_bounds"
+      ],
+      "timeout_seconds": 30
+    },
+    {
+      "authority_graph": "stable_authority",
+      "equivalent_review": null,
+      "family": "equality_threshold_quorum_deadline",
+      "id": "p0-deadline-terminal-boundary",
+      "priority": "P0",
+      "source": {
+        "end_line": 105,
+        "original": "    if current == MAX_AUTHORITY_REVISION_V2:\n",
+        "path": "pheroos/governance/_commit_decision_v2/common.py",
+        "replacement": "    if current > MAX_AUTHORITY_REVISION_V2:\n",
+        "sha256": "sha256:699f69988aeb494c9c7400b7cfd3aacb5051b0ef646f61ff6b2656c9bb281f53",
+        "start_line": 105
+      },
+      "tests": [
+        "tests/governance/test_commit_decision_v2_contracts.py::test_deadline_addition_saturates_and_rejects_nonrepresentable_or_bool_inputs"
+      ],
+      "timeout_seconds": 30
+    },
+    {
+      "authority_graph": "stable_authority",
+      "equivalent_review": null,
+      "family": "safe_fallback_stop_output_gate",
+      "id": "p0-output-stop-resolution-gate",
+      "priority": "P0",
+      "source": {
+        "end_line": 481,
+        "original": "        and stop_resolution_verification_matches(\n            stop_resolution,\n            profile=outcome.profile,\n            assurance=outcome.assurance,\n            manifest_root=outcome.manifest_root,\n            commit_policy_root=outcome.commit_policy_root,\n            protocol_id=outcome.protocol_id,\n            run_id=outcome.run_id,\n            target=outcome.target,\n            action=action,\n            epoch=outcome.epoch,\n            decision_ref=outcome_ref,\n            certificate_ref=certificate_ref,\n            current_step=current,\n            require_unblocked=True,\n        )\n",
+        "path": "pheroos/governance/output.py",
+        "replacement": "        and True\n",
+        "sha256": "sha256:723d8cd7f5f503ca9f0c68fa24b6006dd91f2f322dceb1ada7c579ef2641ebbb",
+        "start_line": 466
+      },
+      "tests": [
+        "tests/governance/test_commit_output_actions.py::test_commit_stop_cannot_substitute_for_publish_or_execute_stop"
+      ],
+      "timeout_seconds": 30
+    },
+    {
+      "authority_graph": "stable_authority",
+      "equivalent_review": null,
+      "family": "cas_expected_head_revision",
+      "id": "p0-governance-ledger-cas",
+      "priority": "P0",
+      "source": {
+        "end_line": 225,
+        "original": "            if (\n",
+        "path": "pheroos/governance/_authority/ledger.py",
+        "replacement": "            if False and (\n",
+        "sha256": "sha256:8ebdcf17744660fe8980f884f115d8a0134c4379193770f12980230aefb8b382",
+        "start_line": 225
+      },
+      "tests": [
+        "tests/governance/test_authority_ledger.py::test_stale_fork_loses_cas_without_a_second_state_or_trace_commit"
+      ],
+      "timeout_seconds": 30
+    },
+    {
+      "authority_graph": "stable_authority",
+      "equivalent_review": null,
+      "family": "replay_duplicate_currentness",
+      "id": "p0-scoped-trace-replay-envelope",
+      "priority": "P0",
+      "source": {
+        "end_line": 427,
+        "original": "                    or matches[0].event.envelope_root != envelope.envelope_root\n",
+        "path": "pheroos/trace/scoped_store_v2.py",
+        "replacement": "                    or False\n",
+        "sha256": "sha256:849f2e4f8b160932aa7269b5fc17007e216033beb6ea16fd73d72d368d6eb195",
+        "start_line": 427
+      },
+      "tests": [
+        "tests/trace/test_scoped_trace_store_v2.py::test_trace_or_transition_identity_conflict_is_rejected"
+      ],
+      "timeout_seconds": 30
+    },
+    {
+      "authority_graph": "stable_authority",
+      "equivalent_review": null,
+      "family": "trace_required_lineage",
+      "id": "p0-trace-required-lineage",
+      "priority": "P0",
+      "source": {
+        "end_line": 67,
+        "original": "    if missing:\n",
+        "path": "pheroos/trace/_validation_core.py",
+        "replacement": "    if False and missing:\n",
+        "sha256": "sha256:3361e20dee7f544b0d4a89d8c67aa2b0f1778da1b8136b2138a13ed06db09d6c",
+        "start_line": 67
+      },
+      "tests": [
+        "tests/trace/test_trace_store.py::test_event_specific_lineage_contract_rejects_each_missing_field"
+      ],
+      "timeout_seconds": 60
+    },
+    {
+      "authority_graph": "stable_authority",
+      "equivalent_review": null,
+      "family": "certificate_fingerprint_binding",
+      "id": "p0-certificate-expected-body-root",
+      "priority": "P0",
+      "source": {
+        "end_line": 164,
+        "original": "        if expected_body_root and body.body_root != _require_root(\n            expected_body_root, \"expected commit certificate body_root\"\n        ):\n",
+        "path": "pheroos/governance/_commit_certificate_v2/portable_envelope.py",
+        "replacement": "        if False:\n",
+        "sha256": "sha256:166d0630345e5979031a4507148237533463794b6019ec22b6e406123d13dd4f",
+        "start_line": 162
+      },
+      "tests": [
+        "tests/ci/test_authority_mutation_probes.py::test_certificate_expected_body_fingerprint_is_an_authority_binding"
+      ],
+      "timeout_seconds": 30
+    },
+    {
+      "authority_graph": "stable_authority",
+      "equivalent_review": null,
+      "family": "nonfinite_bool_as_int",
+      "id": "p0-finite-number-bool",
+      "priority": "P0",
+      "source": {
+        "end_line": 185,
+        "original": "        and not isinstance(value, bool)\n",
+        "path": "pheroos/protocol/_validation_primitives.py",
+        "replacement": "        and True\n",
+        "sha256": "sha256:d11c5492efd1f993dd21908b64a1885350c2bd4620656c8410323779b0bfd86d",
+        "start_line": 185
+      },
+      "tests": [
+        "tests/ci/test_authority_mutation_probes.py::test_authority_numeric_validator_rejects_bool_and_nonfinite_values"
+      ],
+      "timeout_seconds": 30
+    }
+  ],
+  "policy": {
+    "invalid_fails_gate": true,
+    "max_duration_seconds": {
+      "pr": 900,
+      "release": 2700
+    },
+    "missing_result_state": "SURVIVED",
+    "p0_family_kill_percent": 100,
+    "score_formula": "KILLED/(KILLED+SURVIVED)",
+    "stable_authority_score_percent": 95,
+    "states": [
+      "KILLED",
+      "SURVIVED",
+      "EQUIVALENT_REVIEWED",
+      "INVALID"
+    ],
+    "surviving_p0_max": 0,
+    "unmutated_control": "same_temporary_copy_and_import_layout"
+  },
+  "profiles": {
+    "active": [
+      "p0-authority-operation-check",
+      "p0-deadline-terminal-boundary",
+      "p0-output-stop-resolution-gate",
+      "p0-governance-ledger-cas",
+      "p0-scoped-trace-replay-envelope",
+      "p0-trace-required-lineage",
+      "p0-certificate-expected-body-root",
+      "p0-finite-number-bool"
+    ],
+    "pr": [
+      "p0-authority-operation-check",
+      "p0-deadline-terminal-boundary",
+      "p0-output-stop-resolution-gate",
+      "p0-governance-ledger-cas",
+      "p0-scoped-trace-replay-envelope",
+      "p0-trace-required-lineage",
+      "p0-certificate-expected-body-root",
+      "p0-finite-number-bool"
+    ],
+    "release": [
+      "p0-authority-operation-check",
+      "p0-deadline-terminal-boundary",
+      "p0-output-stop-resolution-gate",
+      "p0-governance-ledger-cas",
+      "p0-scoped-trace-replay-envelope",
+      "p0-trace-required-lineage",
+      "p0-certificate-expected-body-root",
+      "p0-finite-number-bool"
+    ]
+  }
+}

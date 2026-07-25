@@ -1,0 +1,17 @@
+# Ownership routing only. The proposed single-maintainer ruleset deliberately
+# does not require code-owner approval; quality-gate remains the merge gate.
+* @Ju1se
+
+# Explicit trust-boundary ownership for review routing and future maintainers.
+/.github/ @Ju1se
+/AGENTS.md @Ju1se
+/SECURITY.md @Ju1se
+/SPEC.md @Ju1se
+/pheroos/protocol/ @Ju1se
+/pheroos/kernel/ @Ju1se
+/pheroos/governance/ @Ju1se
+/pheroos/drivers/ @Ju1se
+/pheroos/trace/ @Ju1se
+/pheroos/conformance/ @Ju1se
+/schemas/ @Ju1se
+/tests/conformance/ @Ju1se

@@ -9,9 +9,40 @@ from pheroos.governance.errors import GovernanceError
 from pheroos.trace import canonical_pheromone_clip_payload
 from typing import Any
 import math
-from pheroos.governance._pheromone.invariants import _trail_clip_payload, pheromone_bound_candidate_id, pheromone_processing_key, pheromone_source_id, pheromone_subject_id, pheromone_subject_type, scoreable_pheromone_candidate_id, subject_key, topology_subject_candidate_id, topology_subject_target, validate_pheromone_diffusion_policy, validate_pheromone_policy, validate_pheromone_subject_binding, validate_pheromone_topology, validate_pheromone_trail
-from pheroos.governance._pheromone.lifecycle import PheromoneBatchResult, PheromoneBudgetState, _reject_duplicate_trail_events, lifecycle_record, pheromone_budget_for_policy
-from pheroos.governance._pheromone.records import PheromoneDiffusionPolicy, PheromoneEdge, PheromoneLifecycleRecord, PheromoneNeighborhood, PheromonePolicy, PheromoneSubject, PheromoneTrail
+from pheroos.governance._pheromone.invariants import (
+    _trail_clip_payload,
+    pheromone_bound_candidate_id,
+    pheromone_processing_key,
+    pheromone_source_id,
+    pheromone_subject_id,
+    pheromone_subject_type,
+    scoreable_pheromone_candidate_id,
+    subject_key,
+    topology_subject_candidate_id,
+    topology_subject_target,
+    validate_pheromone_diffusion_policy,
+    validate_pheromone_policy,
+    validate_pheromone_subject_binding,
+    validate_pheromone_topology,
+    validate_pheromone_trail,
+)
+from pheroos.governance._pheromone.lifecycle import (
+    PheromoneBatchResult,
+    PheromoneBudgetState,
+    _reject_duplicate_trail_events,
+    lifecycle_record,
+    pheromone_budget_for_policy,
+)
+from pheroos.governance._pheromone.records import (
+    PheromoneDiffusionPolicy,
+    PheromoneEdge,
+    PheromoneLifecycleRecord,
+    PheromoneNeighborhood,
+    PheromonePolicy,
+    PheromoneSubject,
+    PheromoneTrail,
+)
+
 
 def _diffusion_clip_causal_payload(
     *,
@@ -114,10 +145,14 @@ def diffuse_pheromone_trails_with_records(
 ) -> PheromoneBatchResult:
     validate_pheromone_policy(policy)
     validate_pheromone_diffusion_policy(diffusion_policy)
-    validate_pheromone_topology(neighborhood, candidate_set=candidate_set, target=target)
+    validate_pheromone_topology(
+        neighborhood, candidate_set=candidate_set, target=target
+    )
     items = list(trails)
     for trail in items:
-        validate_pheromone_trail(trail, policy, candidate_set=candidate_set, target=target)
+        validate_pheromone_trail(
+            trail, policy, candidate_set=candidate_set, target=target
+        )
         validate_pheromone_subject_binding(
             neighborhood,
             subject_type=pheromone_subject_type(trail),
@@ -149,7 +184,10 @@ def diffuse_pheromone_trails_with_records(
             _processed_event_receipts=tuple(sorted(receipts.items())),
         )
 
-    subjects = {subject_key(subject.subject_type, subject.subject_id): subject for subject in neighborhood.subjects}
+    subjects = {
+        subject_key(subject.subject_type, subject.subject_id): subject
+        for subject in neighborhood.subjects
+    }
     edges = outgoing_edges(neighborhood)
     diffused = list(items)
     trail_by_trace_id = {item.trace_event_id: item for item in diffused}
@@ -172,8 +210,14 @@ def diffuse_pheromone_trails_with_records(
             continue
         start_target = topology_subject_target(subjects[start], candidate_set)
         trail_target = trail.target
-        if not trail_target and pheromone_bound_candidate_id(trail) and candidate_set is not None:
-            trail_target = candidate_set.require_declared(pheromone_bound_candidate_id(trail)).target
+        if (
+            not trail_target
+            and pheromone_bound_candidate_id(trail)
+            and candidate_set is not None
+        ):
+            trail_target = candidate_set.require_declared(
+                pheromone_bound_candidate_id(trail)
+            ).target
         if start_target and trail_target and start_target != trail_target:
             raise GovernanceError(
                 f"pheromone trail target {trail_target} does not match topology subject target {start_target}"
@@ -190,14 +234,22 @@ def diffuse_pheromone_trails_with_records(
                     continue
                 visited.add(next_key)
                 next_hops = hops + 1
-                requested_strength = strength * diffusion_policy.attenuation * edge.attenuation
+                requested_strength = (
+                    strength * diffusion_policy.attenuation * edge.attenuation
+                )
                 if not math.isfinite(requested_strength):
-                    raise GovernanceError("diffused pheromone strength must remain finite")
+                    raise GovernanceError(
+                        "diffused pheromone strength must remain finite"
+                    )
                 if requested_strength <= 0:
                     continue
                 subject = subjects[next_key]
-                candidate_id = topology_subject_candidate_id(subject) or trail.candidate_id
-                subject_target = topology_subject_target(subject, candidate_set) or trail_target
+                candidate_id = (
+                    topology_subject_candidate_id(subject) or trail.candidate_id
+                )
+                subject_target = (
+                    topology_subject_target(subject, candidate_set) or trail_target
+                )
                 source_id = pheromone_source_id(trail)
                 derived_trace_id = pheromone_diffusion_trace_event_id(
                     trail.trace_event_id,
@@ -234,7 +286,9 @@ def diffuse_pheromone_trails_with_records(
                     replayed.add(derived_trace_id)
                     continue
                 budget_request = min(requested_strength, float(policy.max_strength))
-                applied_strength, updated_budget = budget.consume(source_id, budget_request)
+                applied_strength, updated_budget = budget.consume(
+                    source_id, budget_request
+                )
                 if applied_strength < policy.min_strength or applied_strength <= 0:
                     rejected = replace(
                         trail,
@@ -278,9 +332,7 @@ def diffuse_pheromone_trails_with_records(
                     diffusion_parent_trace_event_id=parent_trace_event_id,
                     diffusion_hop=next_hops,
                     lineage_event_ids=tuple(
-                        dict.fromkeys(
-                            (*trail.lineage_event_ids, parent_trace_event_id)
-                        )
+                        dict.fromkeys((*trail.lineage_event_ids, parent_trace_event_id))
                     ),
                 )
                 validate_pheromone_trail(
@@ -338,17 +390,35 @@ def pheromone_diffusion_trace_event_id(
     return "diffuse:" + "".join(f"{len(item)}:{item}" for item in components)
 
 
-def outgoing_edges(neighborhood: PheromoneNeighborhood) -> dict[tuple[str, str], list[PheromoneEdge]]:
+def outgoing_edges(
+    neighborhood: PheromoneNeighborhood,
+) -> dict[tuple[str, str], list[PheromoneEdge]]:
     edges: dict[tuple[str, str], list[PheromoneEdge]] = {}
     for edge in neighborhood.edges:
-        edges.setdefault(subject_key(edge.source_subject_type, edge.source_subject_id), []).append(edge)
+        edges.setdefault(
+            subject_key(edge.source_subject_type, edge.source_subject_id), []
+        ).append(edge)
     for items in edges.values():
         items.sort(key=lambda edge: (edge.target_subject_type, edge.target_subject_id))
     return edges
 
 
-for _compat_function in (_diffusion_clip_causal_payload, _diffusion_replay_fingerprint, diffuse_pheromone_trails, diffuse_pheromone_trails_with_records, pheromone_diffusion_trace_event_id, outgoing_edges,):
-    _compat_function.__module__ = 'pheroos.governance.pheromone'
+for _compat_function in (
+    _diffusion_clip_causal_payload,
+    _diffusion_replay_fingerprint,
+    diffuse_pheromone_trails,
+    diffuse_pheromone_trails_with_records,
+    pheromone_diffusion_trace_event_id,
+    outgoing_edges,
+):
+    _compat_function.__module__ = "pheroos.governance.pheromone"
 del _compat_function
 
-__all__ = ('_diffusion_clip_causal_payload', '_diffusion_replay_fingerprint', 'diffuse_pheromone_trails', 'diffuse_pheromone_trails_with_records', 'outgoing_edges', 'pheromone_diffusion_trace_event_id')
+__all__ = (
+    "_diffusion_clip_causal_payload",
+    "_diffusion_replay_fingerprint",
+    "diffuse_pheromone_trails",
+    "diffuse_pheromone_trails_with_records",
+    "outgoing_edges",
+    "pheromone_diffusion_trace_event_id",
+)

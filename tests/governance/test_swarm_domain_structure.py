@@ -12,6 +12,8 @@ GOVERNANCE = ROOT / "pheroos" / "governance"
 DOMAIN_MODULES = {
     "_pheromone": (
         "records",
+        "legacy_normalization",
+        "policy_validation",
         "invariants",
         "lifecycle",
         "scoring",
@@ -29,7 +31,13 @@ DOMAIN_MODULES = {
 
 ALLOWED_INTERNAL_EDGES = {
     "_pheromone.records": set(),
-    "_pheromone.invariants": {"_pheromone.records"},
+    "_pheromone.legacy_normalization": {"_pheromone.records"},
+    "_pheromone.policy_validation": {"_pheromone.records"},
+    "_pheromone.invariants": {
+        "_pheromone.legacy_normalization",
+        "_pheromone.policy_validation",
+        "_pheromone.records",
+    },
     "_pheromone.lifecycle": {"_pheromone.records", "_pheromone.invariants"},
     "_pheromone.scoring": {
         "_pheromone.records",
@@ -61,6 +69,8 @@ ALLOWED_INTERNAL_EDGES = {
 
 REQUIRED_OWNERS = {
     "_pheromone.records": {"PheromoneTrail", "PheromonePolicy"},
+    "_pheromone.legacy_normalization": set(),
+    "_pheromone.policy_validation": set(),
     "_pheromone.invariants": {
         "validate_pheromone_policy",
         "validate_pheromone_trail",
@@ -162,7 +172,9 @@ def test_private_domains_do_not_import_public_facades_or_runtime_registries() ->
                     assert node.module not in forbidden_modules
                     assert node.module != "threading"
                 elif isinstance(node, ast.Import):
-                    assert all(alias.name not in forbidden_modules for alias in node.names)
+                    assert all(
+                        alias.name not in forbidden_modules for alias in node.names
+                    )
                     assert all(alias.name != "threading" for alias in node.names)
                 elif isinstance(node, ast.Call) and isinstance(node.func, ast.Name):
                     assert node.func.id not in {
@@ -193,7 +205,9 @@ def test_every_lifecycle_algorithm_has_one_private_owner_and_thin_facade() -> No
             owned = {
                 node.name
                 for node in tree.body
-                if isinstance(node, (ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef))
+                if isinstance(
+                    node, (ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef)
+                )
             }
             assert REQUIRED_OWNERS[f"{package}.{module}"] <= owned
             for name in owned:
@@ -210,9 +224,7 @@ def test_every_lifecycle_algorithm_has_one_private_owner_and_thin_facade() -> No
 
 
 def test_diffusion_owner_retains_queue_and_trace_index_complexity_guards() -> None:
-    source = (GOVERNANCE / "_pheromone" / "diffusion.py").read_text(
-        encoding="utf-8"
-    )
+    source = (GOVERNANCE / "_pheromone" / "diffusion.py").read_text(encoding="utf-8")
     assert "from collections import deque" in source
     assert "frontier = deque(" in source
     assert "frontier.popleft()" in source

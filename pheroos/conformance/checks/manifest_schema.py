@@ -14,4 +14,6 @@ def check(path: Path) -> CheckResult:
     except Exception as exc:  # noqa: BLE001
         return CheckResult("manifest_schema", False, str(exc))
     errors = [item for item in diagnostics if item.level == "error"]
-    return CheckResult("manifest_schema", not errors, "; ".join(item.code for item in errors))
+    return CheckResult(
+        "manifest_schema", not errors, "; ".join(item.code for item in errors)
+    )

@@ -30,6 +30,23 @@ Swarm-native means that bee-swarm and ant-colony decision mechanisms are encoded
 
 Swarm-native does not mean adding a large swarm framework.
 
+## Current Strategic Direction
+
+The [Hybrid Pheromone ABI](docs/protocol/hybrid-pheromone-abi.md) is an
+implemented Draft swarm profile and a regression boundary. The active
+production-readiness work is tracked by the
+[hardening Goal plan](docs/process/production-readiness-hardening-goal-plan.md).
+
+Preserve the complete declared Hybrid path: subject-aware collective memory,
+pheromone diffusion, feedback reinforcement, nonlinear response, layer
+proposals, metacognitive coordination, trace lineage, and Conformance. Changes
+to that path must use explicit versioned contracts and migration rather than a
+minimal scoring substitute. Baseline protocols remain independent and optional
+swarm profiles remain explicit. Do not place the external hybrid runtime,
+neural networks, evolutionary algorithm runtime, environment simulation, agent
+colony, analytics loop, worker infrastructure, or server machinery inside
+protocol-core.
+
 ## Allowed Core Surfaces
 
 Executable code should exist only when it directly supports:
@@ -42,6 +59,7 @@ Executable code should exist only when it directly supports:
 - Conformance Suite
 - provider-free examples
 - thin CLI wrappers around core packages
+- deterministic ABI/schema/TCK generators and CI/release verification tooling
 - tests for the above
 
 A change that does not strengthen one of these surfaces should usually not be made in this repository.
@@ -88,6 +106,10 @@ Ant-colony mapping:
 - pheromone -> accumulated support signal
 - evaporation -> confidence decay
 - negative pheromone -> inhibition or blocked route
+- alarm pheromone -> emergency caution or fallback pressure
+- pheromone diffusion -> bounded local propagation over declared subjects
+- feedback reinforcement -> outcome-bound strengthening or weakening
+- response saturation -> positive feedback without runaway lock-in
 - exploration/exploitation balance -> non-greedy candidate search
 - convergence -> committed candidate or safe fallback
 
@@ -166,9 +188,18 @@ Preferred concepts:
 - `InhibitionSignal`
 - `PheromoneTrail`
 - `PheromonePolicy`
+- `PheromoneKindProfile`
+- `PheromoneDiffusionPolicy`
+- `PheromoneFeedback`
+- `LayerProposal`
+- `LayerCoordinationPolicy`
+- `PolicyAdjustmentProposal`
 - `CollectiveDecisionState`
 - `evaluate_collective_decision`
 - `evaporate_trails`
+- `diffuse_pheromone_trails`
+- `reinforce_pheromone_trails`
+- `evaluate_layer_coordination`
 
 These names are preferred, not mandatory. Use existing code style and naming if it gives a cleaner result.
 
@@ -176,7 +207,7 @@ These names are preferred, not mandatory. Use existing code style and naming if 
 
 Prefer vertical slices over disconnected primitives.
 
-The minimal useful swarm-native path is:
+The baseline swarm-native path is:
 
 1. Load a capability manifest.
 2. Validate protocol invariants.
@@ -187,13 +218,21 @@ The minimal useful swarm-native path is:
 7. Apply recruitment signals when enabled.
 8. Apply inhibition signals when enabled.
 9. Apply pheromone deposit and evaporation when enabled.
-10. Evaluate collective consensus.
-11. Commit only a declared candidate, or fall back safely.
-12. Authorize output only when the output contract is satisfied.
-13. Emit trace events for the collective decision path.
-14. Pass conformance.
+10. Apply pheromone diffusion, feedback reinforcement, and response shaping when declared.
+11. Evaluate layer proposals and metacognitive coordination when declared.
+12. Enforce policy adjustment bounds when runtime layers propose adaptation.
+13. Evaluate collective consensus.
+14. Commit only a declared candidate, or fall back safely.
+15. Authorize output only when the output contract is satisfied.
+16. Emit trace events for the collective decision path.
+17. Pass conformance.
 
-A feature that does not improve this path should usually be deferred.
+A swarm-specific feature that does not improve this path should usually be deferred.
+
+When a manifest explicitly selects the Hybrid Pheromone ABI, preserve its
+complete declared path: diffusion, feedback reinforcement, nonlinear response,
+layer proposals, metacognitive coordination, policy adjustment bounds, trace
+lineage, Conformance, and provider-free examples.
 
 ## Protocol Rules
 
@@ -231,6 +270,7 @@ Protocol validation should check:
 - agent fact-creation restrictions
 - trace lineage requirements
 - collective decision policy invariants
+- hybrid pheromone policy invariants when declared
 
 ## Kernel Rules
 
@@ -280,6 +320,9 @@ Governance may define:
 - recruitment signals
 - inhibition signals
 - pheromone trails
+- pheromone feedback records
+- layer proposal records
+- metacognitive coordination records
 - trace-relevant decision records
 
 Governance must enforce:
@@ -290,6 +333,9 @@ Governance must enforce:
 - collective consensus commits only declared candidates
 - failed consensus falls back to a declared safe fallback candidate
 - stop or inhibition signals can block or reduce candidate support
+- learned, evolutionary, and metacognitive layers may propose but cannot directly commit
+- pheromone feedback may reinforce memory but cannot create evidence or authority
+- runtime policy adjustments must remain inside declared protocol bounds
 - output authorization requires committed candidate, evidence provenance, stop resolution, and publication permission
 
 Do not build a large generic policy engine unless tests and conformance require it.
@@ -406,6 +452,9 @@ python -m pheroos.cli.main conformance examples/swarm-protocol
 ```
 
 If the shell does not provide `python`, use the repository virtual environment or available interpreter and report that clearly.
+
+Release and production-readiness changes must also follow
+`docs/process/release-checklist.md`.
 
 ## Documentation Rules
 

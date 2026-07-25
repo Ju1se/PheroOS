@@ -75,7 +75,12 @@ class StopResolutionVerification:
 
 
 def resolve_stop_signal(signal: StopSignal) -> StopResolution:
-    return StopResolution(target=signal.target, action=signal.action, blocked=signal.blocking, reason=signal.reason)
+    return StopResolution(
+        target=signal.target,
+        action=signal.action,
+        blocked=signal.blocking,
+        reason=signal.reason,
+    )
 
 
 def verify_stop_resolution(
@@ -109,11 +114,15 @@ def verify_stop_resolution(
     blocked = require_commit_bool(resolution.blocked, "stop resolution blocked")
     reason = require_commit_text(resolution.reason, "stop resolution reason")
     if type(authority) is not AuthorityLevel or not can_verify(authority):
-        raise GovernanceError("stop resolution verification requires governance authority")
+        raise GovernanceError(
+            "stop resolution verification requires governance authority"
+        )
     issued = require_commit_step(issued_at_step, "stop verification issued_at_step")
     expires = require_commit_step(expires_at_step, "stop verification expires_at_step")
     if expires <= issued:
-        raise GovernanceError("stop resolution verification expiry must be after issuance")
+        raise GovernanceError(
+            "stop resolution verification expiry must be after issuance"
+        )
     fingerprint = commit_payload_fingerprint(
         {
             "action": action,

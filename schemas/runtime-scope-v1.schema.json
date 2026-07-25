@@ -1,0 +1,40 @@
+{
+  "$id": "https://pheroos.dev/schemas/runtime-scope-v1.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "request_id": {
+      "maxLength": 1024,
+      "minLength": 1,
+      "pattern": "^(?!\\s)(?![\\s\\S]*\\s$)(?![\\s\\S]*\\u0000)[\\s\\S]+$",
+      "type": "string"
+    },
+    "run_id": {
+      "maxLength": 1024,
+      "minLength": 1,
+      "pattern": "^(?!\\s)(?![\\s\\S]*\\s$)(?![\\s\\S]*\\u0000)[\\s\\S]+$",
+      "type": "string"
+    },
+    "scope_ref": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "scope_version": {
+      "const": "pheroos-runtime-scope-v1"
+    },
+    "tenant_id": {
+      "maxLength": 1024,
+      "minLength": 1,
+      "pattern": "^(?!\\s)(?![\\s\\S]*\\s$)(?![\\s\\S]*\\u0000)[\\s\\S]+$",
+      "type": "string"
+    }
+  },
+  "required": [
+    "scope_version",
+    "tenant_id",
+    "run_id",
+    "request_id",
+    "scope_ref"
+  ],
+  "type": "object"
+}

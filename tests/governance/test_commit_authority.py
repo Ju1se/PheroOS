@@ -101,7 +101,9 @@ def verified_stop() -> StopResolutionVerification:
     )
 
 
-def issued_permission(*, action: CommitAction = CommitAction.COMMIT) -> ActionPermission:
+def issued_permission(
+    *, action: CommitAction = CommitAction.COMMIT
+) -> ActionPermission:
     return issue_action_permission(
         permission_id="permission:1",
         profile="pheroos-commit-integrity-v1",
@@ -541,7 +543,9 @@ def test_blocked_stop_is_authoritative_denial_but_does_not_allow_action() -> Non
     )
 
 
-def test_permission_and_stop_reject_cross_assurance_policy_or_missing_certificate() -> None:
+def test_permission_and_stop_reject_cross_assurance_policy_or_missing_certificate() -> (
+    None
+):
     permission = issued_permission()
     assert not action_permission_matches(
         permission,

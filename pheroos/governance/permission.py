@@ -93,7 +93,9 @@ def issue_action_permission(
     if type(action) is not CommitAction:
         raise GovernanceError("action permission action is invalid")
     if type(authority) is not AuthorityLevel or not can_verify(authority):
-        raise GovernanceError("action permission issuance requires governance authority")
+        raise GovernanceError(
+            "action permission issuance requires governance authority"
+        )
     permission = ActionPermission(
         permission_id=require_commit_text(
             permission_id,

@@ -10,8 +10,25 @@ from pheroos.trace import canonical_pheromone_clip_payload
 from types import MappingProxyType
 from typing import Any
 import math
-from pheroos.governance._pheromone.invariants import _non_negative_number, _non_negative_step, _trail_clip_payload, clip_pheromone_strength, pheromone_bound_candidate_id, pheromone_processing_key, pheromone_source_id, pheromone_subject_id, pheromone_subject_type, validate_pheromone_policy, validate_pheromone_trail
-from pheroos.governance._pheromone.records import PheromoneLifecycleRecord, PheromonePolicy, PheromoneTrail
+from pheroos.governance._pheromone.invariants import (
+    _non_negative_number,
+    _non_negative_step,
+    _trail_clip_payload,
+    clip_pheromone_strength,
+    pheromone_bound_candidate_id,
+    pheromone_processing_key,
+    pheromone_source_id,
+    pheromone_subject_id,
+    pheromone_subject_type,
+    validate_pheromone_policy,
+    validate_pheromone_trail,
+)
+from pheroos.governance._pheromone.records import (
+    PheromoneLifecycleRecord,
+    PheromonePolicy,
+    PheromoneTrail,
+)
+
 
 @dataclass(frozen=True)
 class PheromoneBudgetState:
@@ -21,7 +38,9 @@ class PheromoneBudgetState:
     source_used: dict[str, float] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
-        object.__setattr__(self, "source_used", MappingProxyType(dict(self.source_used)))
+        object.__setattr__(
+            self, "source_used", MappingProxyType(dict(self.source_used))
+        )
 
     def __deepcopy__(self, memo: dict[int, object]) -> PheromoneBudgetState:
         del memo
@@ -42,7 +61,9 @@ class PheromoneBudgetState:
     def source_remaining(self, source_id: str) -> float:
         return max(0.0, self.per_source_cap - self.source_used.get(source_id, 0.0))
 
-    def consume(self, source_id: str, requested: float) -> tuple[float, PheromoneBudgetState]:
+    def consume(
+        self, source_id: str, requested: float
+    ) -> tuple[float, PheromoneBudgetState]:
         amount = _non_negative_number(requested, "pheromone budget request")
         applied = min(amount, self.round_remaining, self.source_remaining(source_id))
         updated_sources = dict(self.source_used)
@@ -72,10 +93,18 @@ def validate_pheromone_budget_state(
     budget_state: PheromoneBudgetState,
     policy: PheromonePolicy,
 ) -> None:
-    round_cap = _non_negative_number(budget_state.round_cap, "pheromone budget round_cap")
-    source_cap = _non_negative_number(budget_state.per_source_cap, "pheromone budget per_source_cap")
-    round_used = _non_negative_number(budget_state.round_used, "pheromone budget round_used")
-    if round_cap != float(policy.per_round_deposit_cap) or source_cap != float(policy.per_source_cap):
+    round_cap = _non_negative_number(
+        budget_state.round_cap, "pheromone budget round_cap"
+    )
+    source_cap = _non_negative_number(
+        budget_state.per_source_cap, "pheromone budget per_source_cap"
+    )
+    round_used = _non_negative_number(
+        budget_state.round_used, "pheromone budget round_used"
+    )
+    if round_cap != float(policy.per_round_deposit_cap) or source_cap != float(
+        policy.per_source_cap
+    ):
         raise GovernanceError("pheromone budget state caps do not match active policy")
     if round_used > round_cap:
         raise GovernanceError("pheromone round budget usage exceeds declared cap")
@@ -83,14 +112,18 @@ def validate_pheromone_budget_state(
     for source_id, used in budget_state.source_used.items():
         if not isinstance(source_id, str):
             raise GovernanceError("pheromone budget source identity must be a string")
-        amount = _non_negative_number(used, f"pheromone budget source usage {source_id}")
+        amount = _non_negative_number(
+            used, f"pheromone budget source usage {source_id}"
+        )
         if amount > source_cap:
             raise GovernanceError("pheromone source budget usage exceeds declared cap")
         total_source_usage += amount
     if not math.isfinite(total_source_usage):
         raise GovernanceError("pheromone source budget usage must remain finite")
     if abs(total_source_usage - round_used) > 1e-9:
-        raise GovernanceError("pheromone budget round and source usage do not reconstruct")
+        raise GovernanceError(
+            "pheromone budget round and source usage do not reconstruct"
+        )
 
 
 def pheromone_budget_for_policy(
@@ -153,11 +186,22 @@ def deposit_pheromone_trails(
 
     budget = pheromone_budget_for_policy(policy, budget_state)
     already_processed = set(processed_event_ids)
-    replayed = tuple(sorted(trail.trace_event_id for trail in items if trail.trace_event_id in already_processed))
-    pending = [trail for trail in items if trail.trace_event_id not in already_processed]
+    replayed = tuple(
+        sorted(
+            trail.trace_event_id
+            for trail in items
+            if trail.trace_event_id in already_processed
+        )
+    )
+    pending = [
+        trail for trail in items if trail.trace_event_id not in already_processed
+    ]
     deposited_by_identity: dict[int, PheromoneTrail] = {}
     records: list[PheromoneLifecycleRecord] = []
-    indexed = sorted(enumerate(pending), key=lambda item: pheromone_processing_key(item[1], item[0], policy))
+    indexed = sorted(
+        enumerate(pending),
+        key=lambda item: pheromone_processing_key(item[1], item[0], policy),
+    )
     for index, trail in indexed:
         # Preserve the caller's requested strength in lifecycle lineage.  The
         # bounded value is what consumes budget, but pre-clamping the recorded
@@ -203,7 +247,9 @@ def deposit_pheromone_trails(
 def clip_pheromone_deposit_strength(strength: float, policy: PheromonePolicy) -> float:
     validate_pheromone_policy(policy)
     value = _non_negative_number(strength, "pheromone deposit strength")
-    clipped = min(policy.per_round_deposit_cap, policy.per_source_cap, policy.max_strength, value)
+    clipped = min(
+        policy.per_round_deposit_cap, policy.per_source_cap, policy.max_strength, value
+    )
     if clipped < policy.min_strength:
         return 0.0
     return clipped
@@ -215,7 +261,9 @@ def evaporate_trails(
     *,
     current_step: int | None = None,
 ) -> list[PheromoneTrail]:
-    return list(evaporate_trails_with_records(trails, policy, current_step=current_step).trails)
+    return list(
+        evaporate_trails_with_records(trails, policy, current_step=current_step).trails
+    )
 
 
 def evaporate_trails_with_records(
@@ -234,7 +282,9 @@ def evaporate_trails_with_records(
     for trail in items:
         validate_pheromone_trail(trail, relaxed_policy)
         if current_step is not None and current_step < trail.updated_at_step:
-            raise GovernanceError("current_step must not precede pheromone updated step")
+            raise GovernanceError(
+                "current_step must not precede pheromone updated step"
+            )
     if not policy.enabled:
         return PheromoneBatchResult(trails=tuple(items))
     active: list[PheromoneTrail] = []
@@ -244,7 +294,11 @@ def evaporate_trails_with_records(
         active.append(updated)
         if updated == trail:
             continue
-        action = "expire" if updated.kind == "stale" and trail.kind != "stale" else "evaporate"
+        action = (
+            "expire"
+            if updated.kind == "stale" and trail.kind != "stale"
+            else "evaporate"
+        )
         elapsed_steps = updated.updated_at_step - trail.updated_at_step
         records.append(
             lifecycle_record(
@@ -269,7 +323,9 @@ def evaporate_trails_with_records(
     return PheromoneBatchResult(
         trails=tuple(active),
         records=tuple(records),
-        processed_event_ids=frozenset(trail.trace_event_id for trail in active if trail.trace_event_id),
+        processed_event_ids=frozenset(
+            trail.trace_event_id for trail in active if trail.trace_event_id
+        ),
     )
 
 
@@ -288,7 +344,9 @@ def evaporate_trail(
         raise GovernanceError("current_step must not precede pheromone updated step")
     active_policy = pheromone_policy_for_trail(trail, policy)
     if is_expired_with_policy(trail, active_policy, step):
-        return replace(trail, kind="stale", strength=policy.min_strength, updated_at_step=step)
+        return replace(
+            trail, kind="stale", strength=policy.min_strength, updated_at_step=step
+        )
 
     elapsed_steps = step - trail.updated_at_step
     if elapsed_steps == 0:
@@ -305,13 +363,15 @@ def evaporate_trail(
     )
 
 
-def retained_pheromone_strength(strength: float, policy: PheromonePolicy, elapsed_steps: int) -> float:
+def retained_pheromone_strength(
+    strength: float, policy: PheromonePolicy, elapsed_steps: int
+) -> float:
     validate_pheromone_policy(policy)
     value = _non_negative_number(strength, "pheromone strength")
     _non_negative_step(elapsed_steps, "elapsed_steps")
     retention = max(0.0, min(1.0, 1.0 - policy.evaporation_rate))
     if policy.decay_model == "exponential":
-        retained = value * (retention ** elapsed_steps)
+        retained = value * (retention**elapsed_steps)
     elif policy.decay_model == "step":
         retained = value * retention if elapsed_steps > 0 else value
     else:
@@ -325,10 +385,15 @@ def is_expired(trail: PheromoneTrail, current_step: int) -> bool:
     _non_negative_step(current_step, "current_step")
     if current_step < trail.updated_at_step:
         raise GovernanceError("current_step must not precede pheromone updated step")
-    return trail.ttl_steps is not None and current_step - trail.deposited_at_step >= trail.ttl_steps
+    return (
+        trail.ttl_steps is not None
+        and current_step - trail.deposited_at_step >= trail.ttl_steps
+    )
 
 
-def is_expired_with_policy(trail: PheromoneTrail, policy: PheromonePolicy, current_step: int) -> bool:
+def is_expired_with_policy(
+    trail: PheromoneTrail, policy: PheromonePolicy, current_step: int
+) -> bool:
     _non_negative_step(current_step, "current_step")
     if current_step < trail.updated_at_step:
         raise GovernanceError("current_step must not precede pheromone updated step")
@@ -339,20 +404,26 @@ def is_expired_with_policy(trail: PheromoneTrail, policy: PheromonePolicy, curre
     return ttl_steps is not None and current_step - trail.deposited_at_step >= ttl_steps
 
 
-def pheromone_policy_for_trail(trail: PheromoneTrail, policy: PheromonePolicy) -> PheromonePolicy:
+def pheromone_policy_for_trail(
+    trail: PheromoneTrail, policy: PheromonePolicy
+) -> PheromonePolicy:
     profile = policy.kind_profiles.get(trail.kind)
     if profile is None or profile.evaporation_rate is None:
         return policy
     return replace(policy, evaporation_rate=profile.evaporation_rate)
 
 
-def _reject_duplicate_trail_events(trails: list[PheromoneTrail], *, lifecycle: str) -> None:
+def _reject_duplicate_trail_events(
+    trails: list[PheromoneTrail], *, lifecycle: str
+) -> None:
     seen_trace_ids: set[str] = set()
     seen_records: set[tuple[object, ...]] = set()
     for trail in trails:
         if trail.trace_event_id:
             if trail.trace_event_id in seen_trace_ids:
-                raise GovernanceError(f"duplicate pheromone {lifecycle} trace_event_id: {trail.trace_event_id}")
+                raise GovernanceError(
+                    f"duplicate pheromone {lifecycle} trace_event_id: {trail.trace_event_id}"
+                )
             seen_trace_ids.add(trail.trace_event_id)
         identity = (
             trail.target,
@@ -438,18 +509,55 @@ def lifecycle_record(
     )
 
 
-for _compat_function in (validate_pheromone_budget_state, pheromone_budget_for_policy, deposit_pheromone, deposit_pheromone_trails, clip_pheromone_deposit_strength, evaporate_trails, evaporate_trails_with_records, evaporate_trail, retained_pheromone_strength, is_expired, is_expired_with_policy, pheromone_policy_for_trail, _reject_duplicate_trail_events, _deposit_clip_causal_payload, lifecycle_record,):
-    _compat_function.__module__ = 'pheroos.governance.pheromone'
+for _compat_function in (
+    validate_pheromone_budget_state,
+    pheromone_budget_for_policy,
+    deposit_pheromone,
+    deposit_pheromone_trails,
+    clip_pheromone_deposit_strength,
+    evaporate_trails,
+    evaporate_trails_with_records,
+    evaporate_trail,
+    retained_pheromone_strength,
+    is_expired,
+    is_expired_with_policy,
+    pheromone_policy_for_trail,
+    _reject_duplicate_trail_events,
+    _deposit_clip_causal_payload,
+    lifecycle_record,
+):
+    _compat_function.__module__ = "pheroos.governance.pheromone"
 del _compat_function
-for _compat_type in (PheromoneBudgetState, PheromoneBatchResult,):
-    _compat_type.__module__ = 'pheroos.governance.pheromone'
+for _compat_type in (
+    PheromoneBudgetState,
+    PheromoneBatchResult,
+):
+    _compat_type.__module__ = "pheroos.governance.pheromone"
     for _compat_descriptor in _compat_type.__dict__.values():
         if isinstance(_compat_descriptor, (staticmethod, classmethod)):
             _compat_member = _compat_descriptor.__func__
         else:
             _compat_member = _compat_descriptor
-        if callable(_compat_member) and hasattr(_compat_member, '__module__'):
-            _compat_member.__module__ = 'pheroos.governance.pheromone'
+        if callable(_compat_member) and hasattr(_compat_member, "__module__"):
+            _compat_member.__module__ = "pheroos.governance.pheromone"
 del _compat_descriptor, _compat_member, _compat_type
 
-__all__ = ('PheromoneBatchResult', 'PheromoneBudgetState', '_deposit_clip_causal_payload', '_reject_duplicate_trail_events', 'clip_pheromone_deposit_strength', 'deposit_pheromone', 'deposit_pheromone_trails', 'evaporate_trail', 'evaporate_trails', 'evaporate_trails_with_records', 'is_expired', 'is_expired_with_policy', 'lifecycle_record', 'pheromone_budget_for_policy', 'pheromone_policy_for_trail', 'retained_pheromone_strength', 'validate_pheromone_budget_state')
+__all__ = (
+    "PheromoneBatchResult",
+    "PheromoneBudgetState",
+    "_deposit_clip_causal_payload",
+    "_reject_duplicate_trail_events",
+    "clip_pheromone_deposit_strength",
+    "deposit_pheromone",
+    "deposit_pheromone_trails",
+    "evaporate_trail",
+    "evaporate_trails",
+    "evaporate_trails_with_records",
+    "is_expired",
+    "is_expired_with_policy",
+    "lifecycle_record",
+    "pheromone_budget_for_policy",
+    "pheromone_policy_for_trail",
+    "retained_pheromone_strength",
+    "validate_pheromone_budget_state",
+)

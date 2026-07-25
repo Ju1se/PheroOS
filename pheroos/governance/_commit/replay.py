@@ -57,9 +57,7 @@ def build_commit_replay_receipts(
         for challenge in candidate_input.challenges:
             receipts.append(challenge_replay_receipt(challenge))
         for disposition in candidate_input.dispositions:
-            receipts.append(
-                counterevidence_disposition_replay_receipt(disposition)
-            )
+            receipts.append(counterevidence_disposition_replay_receipt(disposition))
     for lease in tuple(leases):
         if type(lease) is not SupportLease:
             raise GovernanceError(
@@ -80,6 +78,7 @@ def build_commit_replay_receipts(
         )
     )
 
+
 def _support_lease_commit_replay_receipt(
     lease: SupportLease,
 ) -> ReplayReceipt:
@@ -97,6 +96,7 @@ def _support_lease_commit_replay_receipt(
         epoch=lease.epoch,
         principal_id=lease.principal_id,
     )
+
 
 def _scoped_commit_input_receipts(
     context: CommitEvaluationContext,
@@ -123,6 +123,7 @@ def _scoped_commit_input_receipts(
         )
     )
 
+
 def _support_revocation_commit_replay_receipt(
     revocation: SupportLeaseRevocation,
 ) -> ReplayReceipt:
@@ -148,6 +149,7 @@ def _support_revocation_commit_replay_receipt(
         principal_id=revocation.principal_id,
     )
 
+
 def _cross_record_replay_conflicts(
     candidate_inputs: Sequence[CandidateCommitInput],
     receipts: Sequence[ReplayReceipt],
@@ -168,7 +170,7 @@ def _cross_record_replay_conflicts(
     by_id: dict[tuple[ReplayNamespace, str], ReplayReceipt] = {}
     by_payload: dict[str, ReplayReceipt] = {}
     for receipt in receipts:
-        collisions = tuple(
+        receipt_collisions = tuple(
             prior
             for prior in (
                 by_nonce.get(receipt.nonce),
@@ -177,7 +179,7 @@ def _cross_record_replay_conflicts(
             )
             if prior is not None and prior != receipt
         )
-        for prior in collisions:
+        for prior in receipt_collisions:
             conflicts.add(
                 _replay_conflict_fingerprint(
                     "record_collision",
@@ -192,7 +194,7 @@ def _cross_record_replay_conflicts(
     by_execution_fingerprint: dict[str, tuple[str, str, str]] = {}
     for execution in challenge_executions:
         ref, fingerprint, challenge_fingerprint = execution
-        collisions = tuple(
+        execution_collisions = tuple(
             prior
             for prior in (
                 by_execution_ref.get(ref),
@@ -200,12 +202,12 @@ def _cross_record_replay_conflicts(
             )
             if prior is not None and prior != execution
         )
-        for prior in collisions:
+        for prior_execution in execution_collisions:
             conflicts.add(
                 commit_payload_fingerprint(
                     {
                         "conflict_kind": "challenge_execution_reuse",
-                        "left": prior,
+                        "left": prior_execution,
                         "right": execution,
                     },
                     schema="pheroos-commit-replay-conflict-v1",
@@ -215,6 +217,7 @@ def _cross_record_replay_conflicts(
         by_execution_ref[ref] = execution
         by_execution_fingerprint[fingerprint] = execution
     return tuple(sorted(conflicts))
+
 
 def _replay_conflict_fingerprint(
     conflict_kind: str,
@@ -238,5 +241,6 @@ def _replay_conflict_fingerprint(
         schema="pheroos-commit-replay-conflict-v1",
         profile="pheroos-commit-authority-v1",
     )
+
 
 build_commit_replay_receipts.__module__ = "pheroos.governance.commit"

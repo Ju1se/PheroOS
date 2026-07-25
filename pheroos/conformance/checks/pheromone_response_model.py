@@ -3,7 +3,12 @@ from __future__ import annotations
 from dataclasses import replace
 import math
 
-from pheroos.conformance.checks._manifest import active_target, candidate_set, exercise_candidate_id, target_candidate_ids
+from pheroos.conformance.checks._manifest import (
+    active_target,
+    candidate_set,
+    exercise_candidate_id,
+    target_candidate_ids,
+)
 from pheroos.conformance.report import CheckResult
 from pheroos.governance import (
     CandidateSet,
@@ -57,33 +62,103 @@ def response_model_problems(manifest: CapabilityManifest) -> list[str]:
         trail(alpha, strength, target=target, source="agent:alpha"),
         trail(beta, strength, target=target, source="agent:beta"),
     ]
-    forward = score_pheromone_trails(candidate_set=candidates, policy=policy, trails=trails)
-    reverse = score_pheromone_trails(candidate_set=candidates, policy=policy, trails=list(reversed(trails)))
-    baseline = score_pheromone_trails(candidate_set=candidates, policy=policy, trails=[])
+    forward = score_pheromone_trails(
+        candidate_set=candidates, policy=policy, trails=trails
+    )
+    reverse = score_pheromone_trails(
+        candidate_set=candidates, policy=policy, trails=list(reversed(trails))
+    )
+    baseline = score_pheromone_trails(
+        candidate_set=candidates, policy=policy, trails=[]
+    )
     profile = policy.kind_profiles.get("positive")
-    response_model = profile.response_model if profile is not None else policy.response_model
+    response_model = (
+        profile.response_model if profile is not None else policy.response_model
+    )
 
+    problems = _basic_response_problems(
+        candidates=candidates,
+        alpha=alpha,
+        target=target,
+        policy=policy,
+        response_model=response_model,
+        forward=forward,
+        reverse=reverse,
+        baseline=baseline,
+    )
+    problems.extend(
+        _response_floor_problems(
+            candidates=candidates,
+            target=target,
+            policy=policy,
+        )
+    )
+    problems.extend(
+        exploration_policy_problems(
+            candidates=candidates,
+            candidate_id=alpha,
+            target=target,
+            policy=policy,
+        )
+    )
+    return problems
+
+
+def _basic_response_problems(
+    *,
+    candidates: CandidateSet,
+    alpha: str,
+    target: str,
+    policy: PheromonePolicy,
+    response_model: str,
+    forward: dict[str, float],
+    reverse: dict[str, float],
+    baseline: dict[str, float],
+) -> list[str]:
     problems: list[str] = []
     if forward != reverse:
         problems.append("permutation_sensitive")
     if any(not math.isfinite(score) for score in forward.values()):
         problems.append("non_finite")
-    if response_model == "threshold" and policy.activation_threshold > 0 and policy.min_strength == 0:
+    if (
+        response_model == "threshold"
+        and policy.activation_threshold > 0
+        and policy.min_strength == 0
+    ):
         below = trail(alpha, 0.0, target=target, source="agent:below")
-        if score_pheromone_trails(candidate_set=candidates, policy=policy, trails=[below]) != baseline:
+        if (
+            score_pheromone_trails(
+                candidate_set=candidates, policy=policy, trails=[below]
+            )
+            != baseline
+        ):
             problems.append("threshold")
     if response_model == "saturating" and policy.saturation_threshold > 0:
         delta = abs(forward[alpha] - baseline[alpha])
         if delta > policy.saturation_threshold:
             problems.append("saturating")
-    competitive = response_model == "competitive" or policy.response_model == "competitive" or policy.competition_mode == "normalize"
+    competitive = (
+        response_model == "competitive"
+        or policy.response_model == "competitive"
+        or policy.competition_mode == "normalize"
+    )
     if competitive and not math.isclose(math.fsum(forward.values()), 0.0, abs_tol=1e-9):
         problems.append("competitive_normalize")
+    return problems
+
+
+def _response_floor_problems(
+    *,
+    candidates: CandidateSet,
+    target: str,
+    policy: PheromonePolicy,
+) -> list[str]:
     nonfallback_ids = {
         candidate.id
         for candidate in candidates.candidates
         if candidate.target == target and not candidate.safe_fallback
     }
+    problems: list[str] = []
     if policy.response_exploration_floor > 0:
         response_floor = min(policy.max_strength, policy.response_exploration_floor)
         response_result = score_pheromone_trails_result(
@@ -111,21 +186,15 @@ def response_model_problems(manifest: CapabilityManifest) -> list[str]:
         )
         if any(
             not math.isclose(
-                exploration_result.kind_breakdown[candidate_id].get("exploration_floor", 0.0),
+                exploration_result.kind_breakdown[candidate_id].get(
+                    "exploration_floor", 0.0
+                ),
                 policy.exploration_floor,
                 abs_tol=1e-9,
             )
             for candidate_id in nonfallback_ids
         ):
             problems.append("exploration_floor")
-    problems.extend(
-        exploration_policy_problems(
-            candidates=candidates,
-            candidate_id=alpha,
-            target=target,
-            policy=policy,
-        )
-    )
     return problems
 
 
@@ -166,6 +235,90 @@ def exploration_policy_problems(
             current_step=current_step,
         )
 
+    stale_trails, expected_reopen = _stale_route_reopen_probes(
+        candidate_id=candidate_id,
+        target=target,
+        minimum=minimum,
+        maximum=maximum,
+        reopen_threshold=reopen_threshold,
+    )
+
+    exercise_trails = [novelty, *stale_trails]
+    observations = observe_pheromone_exploration(
+        candidate_set=candidates,
+        trails=exercise_trails,
+        policy=policy,
+        current_step=current_step,
+        target=target,
+    )
+
+    expected_pressure = maximum * ((1.0 - decay) ** current_step)
+    novelty_observations = [
+        observation
+        for observation in observations
+        if observation.trace_event_id == novelty.trace_event_id
+    ]
+    novelty_observation = (
+        novelty_observations[0] if len(novelty_observations) == 1 else None
+    )
+    if expected_pressure > 0:
+        if (
+            novelty_observation is None
+            or not math.isclose(
+                novelty_observation.novelty_pressure,
+                expected_pressure,
+                rel_tol=1e-9,
+                abs_tol=0.0,
+            )
+            or novelty_observation.reopen_eligible
+            or novelty_observation.reason != "novelty_pressure_observed"
+        ):
+            problems.append("novelty_decay_rate")
+    elif novelty_observations:
+        problems.append("novelty_decay_rate")
+    if (
+        novelty_observation is not None
+        and not 0 <= novelty_observation.novelty_pressure <= maximum
+    ):
+        problems.append("novelty_pressure_bounds")
+
+    for trace_event_id, should_reopen in expected_reopen.items():
+        matching = [
+            observation
+            for observation in observations
+            if observation.trace_event_id == trace_event_id
+        ]
+        if should_reopen and (
+            len(matching) != 1
+            or not matching[0].reopen_eligible
+            or matching[0].reason != "stale_route_reopen_eligible"
+        ):
+            problems.append("stale_route_reopen_threshold")
+            break
+        if not should_reopen and matching:
+            problems.append("stale_route_reopen_threshold")
+            break
+
+    problems.extend(
+        disabled_exploration_problems(
+            candidates=candidates,
+            policy=policy,
+            target=target,
+            trails=exercise_trails,
+            current_step=current_step,
+        )
+    )
+    return problems
+
+
+def _stale_route_reopen_probes(
+    *,
+    candidate_id: str,
+    target: str,
+    minimum: float,
+    maximum: float,
+    reopen_threshold: float,
+) -> tuple[list[PheromoneTrail], dict[str, bool]]:
     stale_trails: list[PheromoneTrail] = []
     expected_reopen: dict[str, bool] = {}
 
@@ -201,68 +354,7 @@ def exploration_policy_problems(
         )
         stale_trails.append(above)
         expected_reopen[above.trace_event_id] = False
-
-    exercise_trails = [novelty, *stale_trails]
-    observations = observe_pheromone_exploration(
-        candidate_set=candidates,
-        trails=exercise_trails,
-        policy=policy,
-        current_step=current_step,
-        target=target,
-    )
-
-    expected_pressure = maximum * ((1.0 - decay) ** current_step)
-    novelty_observations = [
-        observation
-        for observation in observations
-        if observation.trace_event_id == novelty.trace_event_id
-    ]
-    novelty_observation = novelty_observations[0] if len(novelty_observations) == 1 else None
-    if expected_pressure > 0:
-        if (
-            novelty_observation is None
-            or not math.isclose(
-                novelty_observation.novelty_pressure,
-                expected_pressure,
-                rel_tol=1e-9,
-                abs_tol=0.0,
-            )
-            or novelty_observation.reopen_eligible
-            or novelty_observation.reason != "novelty_pressure_observed"
-        ):
-            problems.append("novelty_decay_rate")
-    elif novelty_observations:
-        problems.append("novelty_decay_rate")
-    if novelty_observation is not None and not 0 <= novelty_observation.novelty_pressure <= maximum:
-        problems.append("novelty_pressure_bounds")
-
-    for trace_event_id, should_reopen in expected_reopen.items():
-        matching = [
-            observation
-            for observation in observations
-            if observation.trace_event_id == trace_event_id
-        ]
-        if should_reopen and (
-            len(matching) != 1
-            or not matching[0].reopen_eligible
-            or matching[0].reason != "stale_route_reopen_eligible"
-        ):
-            problems.append("stale_route_reopen_threshold")
-            break
-        if not should_reopen and matching:
-            problems.append("stale_route_reopen_threshold")
-            break
-
-    problems.extend(
-        disabled_exploration_problems(
-            candidates=candidates,
-            policy=policy,
-            target=target,
-            trails=exercise_trails,
-            current_step=current_step,
-        )
-    )
-    return problems
+    return stale_trails, expected_reopen
 
 
 def disabled_exploration_problems(
@@ -294,7 +386,9 @@ def disabled_exploration_problems(
         ),
         current_step=current_step,
     )
-    if any(not math.isclose(score, 0.0, abs_tol=1e-9) for score in disabled_scores.values()):
+    if any(
+        not math.isclose(score, 0.0, abs_tol=1e-9) for score in disabled_scores.values()
+    ):
         problems.append("exploration_disabled_novelty_score")
     return problems
 

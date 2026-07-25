@@ -23,13 +23,16 @@ from pheroos.governance.principal import (
     verify_principal_attestation,
 )
 from pheroos.governance.support_lease import (
+    EligiblePrincipalCluster,
     EligibleMembershipEpochState,
     EligiblePrincipalSnapshot,
     SupportLease,
+    SupportLeaseEvaluation,
+    SupportLeaseExpiration,
     SupportLeaseProposal,
     SupportLeaseReplayState,
     SupportLeaseStatus,
-    eligible_membership_epoch_state_fingerprint,
+    SupportLeaseSwitch,
     eligible_membership_epoch_state_is_authoritative,
     eligible_membership_epoch_state_is_current,
     eligible_principal_snapshot_fingerprint,
@@ -41,7 +44,10 @@ from pheroos.governance.support_lease import (
     issue_eligible_principal_snapshot,
     issue_support_lease,
     revoke_support_lease,
+    support_lease_fingerprint,
     support_lease_is_authoritative,
+    support_lease_revocation_is_authoritative,
+    support_lease_revocation_matches,
     support_lease_replay_state_fingerprint,
     support_lease_replay_state_is_authoritative,
     support_lease_replay_state_is_current,
@@ -121,10 +127,54 @@ def commit_policy(*, target: str = TARGET) -> CollectiveCommitPolicy:
     )
     challenges = ["independent_replication"]
     bands = {
-        "LOW": risk_band(2_000_000, 500_000, 200_000, 2, 500_000, 2, 250_000, 2, challenges, "evidence_bound"),
-        "MODERATE": risk_band(2_500_000, 400_000, 150_000, 2, 600_000, 2, 300_000, 3, challenges, "evidence_bound"),
-        "HIGH": risk_band(3_000_000, 300_000, 100_000, 3, 700_000, 3, 400_000, 4, [*challenges, "counter_search"], "certified"),
-        "CRITICAL": risk_band(4_000_000, 200_000, 50_000, 4, 800_000, 4, 500_000, 5, [*challenges, "counter_search", "failure_domain_review"], "distributed"),
+        "LOW": risk_band(
+            2_000_000,
+            500_000,
+            200_000,
+            2,
+            500_000,
+            2,
+            250_000,
+            2,
+            challenges,
+            "evidence_bound",
+        ),
+        "MODERATE": risk_band(
+            2_500_000,
+            400_000,
+            150_000,
+            2,
+            600_000,
+            2,
+            300_000,
+            3,
+            challenges,
+            "evidence_bound",
+        ),
+        "HIGH": risk_band(
+            3_000_000,
+            300_000,
+            100_000,
+            3,
+            700_000,
+            3,
+            400_000,
+            4,
+            [*challenges, "counter_search"],
+            "certified",
+        ),
+        "CRITICAL": risk_band(
+            4_000_000,
+            200_000,
+            50_000,
+            4,
+            800_000,
+            4,
+            500_000,
+            5,
+            [*challenges, "counter_search", "failure_domain_review"],
+            "distributed",
+        ),
     }
     return CollectiveCommitPolicy(
         policy_version=COMMIT_POLICY_VERSION,
@@ -366,9 +416,7 @@ def proposal(
         claim_fingerprint=evidence.claim_fingerprint,
         epoch=epoch,
         principal_id=verification.principal_id,
-        positive_observation_fingerprints=(
-            verified_observation_fingerprint(evidence),
-        ),
+        positive_observation_fingerprints=(verified_observation_fingerprint(evidence),),
         nonce=f"nonce:lease:{index}",
         proposed_at_step=proposed_at_step,
         provenance=f"urn:test:lease-proposal:{index}",
@@ -415,7 +463,9 @@ def issue_lease(
     )
 
 
-def test_membership_collapses_sybil_principals_and_is_permutation_deterministic() -> None:
+def test_membership_collapses_sybil_principals_and_is_permutation_deterministic() -> (
+    None
+):
     policy = commit_policy()
     alpha = principal("principal:alpha", "cluster:a", index=1, policy=policy)
     alias = principal("principal:alpha-alias", "cluster:a", index=2, policy=policy)
@@ -557,7 +607,9 @@ def test_replay_state_duplicate_initialization_and_tampering_fail_closed() -> No
         )
 
 
-def test_support_lease_requires_authoritative_positive_bound_evidence_and_exact_ttl() -> None:
+def test_support_lease_requires_authoritative_positive_bound_evidence_and_exact_ttl() -> (
+    None
+):
     policy = commit_policy()
     alpha = principal("principal:alpha", "cluster:a", index=1, policy=policy)
     snapshot, membership_state = membership((alpha,), policy=policy)
@@ -637,7 +689,9 @@ def test_support_lease_requires_authoritative_positive_bound_evidence_and_exact_
     assert not support_lease_is_authoritative(lease)
 
 
-def test_authoritative_replay_state_rejects_cross_scope_id_and_nonce_collisions() -> None:
+def test_authoritative_replay_state_rejects_cross_scope_id_and_nonce_collisions() -> (
+    None
+):
     policy = commit_policy()
     alpha = principal("principal:alpha", "cluster:a", index=1, policy=policy)
     snapshot, membership_state = membership((alpha,), policy=policy)
@@ -695,31 +749,39 @@ def test_authoritative_replay_state_rejects_cross_scope_id_and_nonce_collisions(
         epoch=alternate_epoch,
     )
 
-    common_arguments = {
-        "principal_verification": beta,
-        "membership_snapshot": alternate_snapshot,
-        "membership_epoch_state": alternate_membership_state,
-        "replay_state": current_replay_state,
-        "positive_observations": (alternate_evidence,),
-        "commit_policy": alternate_policy,
-        "issuer_id": "governance:support",
-        "authority": AuthorityLevel.GOVERNANCE,
-        "current_step": 5,
-        "issuance_provenance": "urn:test:lease:alternate",
-        "issuance_trace_event_id": "trace:lease:alternate",
-        "prior_leases": (),
-    }
     with pytest.raises(GovernanceError, match="replay is a safety violation"):
         issue_support_lease(
             alternate_proposal,
+            principal_verification=beta,
+            membership_snapshot=alternate_snapshot,
+            membership_epoch_state=alternate_membership_state,
+            replay_state=current_replay_state,
+            positive_observations=(alternate_evidence,),
+            commit_policy=alternate_policy,
             lease_id=lease.lease_id,
-            **common_arguments,
+            issuer_id="governance:support",
+            authority=AuthorityLevel.GOVERNANCE,
+            current_step=5,
+            issuance_provenance="urn:test:lease:alternate",
+            issuance_trace_event_id="trace:lease:alternate",
+            prior_leases=(),
         )
     with pytest.raises(GovernanceError, match="replay is a safety violation"):
         issue_support_lease(
             replace(alternate_proposal, nonce=lease.nonce),
+            principal_verification=beta,
+            membership_snapshot=alternate_snapshot,
+            membership_epoch_state=alternate_membership_state,
+            replay_state=current_replay_state,
+            positive_observations=(alternate_evidence,),
+            commit_policy=alternate_policy,
             lease_id="lease:alternate",
-            **common_arguments,
+            issuer_id="governance:support",
+            authority=AuthorityLevel.GOVERNANCE,
+            current_step=5,
+            issuance_provenance="urn:test:lease:alternate",
+            issuance_trace_event_id="trace:lease:alternate",
+            prior_leases=(),
         )
 
 
@@ -1120,15 +1182,21 @@ def test_revoke_switch_boundary_is_not_equivocation_and_expiry_is_automatic() ->
         issuance_trace_event_id="trace:lease:2",
         prior_leases=(lease_a,),
     )
-    assert support_lease_status(
-        lease_a,
-        current_step=5,
-        revocations=(switch.revocation,),
-    ) is SupportLeaseStatus.REVOKED
-    assert support_lease_status(
-        switch.lease,
-        current_step=5,
-    ) is SupportLeaseStatus.ACTIVE
+    assert (
+        support_lease_status(
+            lease_a,
+            current_step=5,
+            revocations=(switch.revocation,),
+        )
+        is SupportLeaseStatus.REVOKED
+    )
+    assert (
+        support_lease_status(
+            switch.lease,
+            current_step=5,
+        )
+        is SupportLeaseStatus.ACTIVE
+    )
 
     result = evaluate_support_leases(
         (lease_a, switch.lease),
@@ -1146,10 +1214,13 @@ def test_revoke_switch_boundary_is_not_equivocation_and_expiry_is_automatic() ->
 
     expiration = expire_support_lease(switch.lease, current_step=11)
     assert expiration.expired_at_step == 11
-    assert support_lease_status(
-        switch.lease,
-        current_step=11,
-    ) is SupportLeaseStatus.EXPIRED
+    assert (
+        support_lease_status(
+            switch.lease,
+            current_step=11,
+        )
+        is SupportLeaseStatus.EXPIRED
+    )
     with pytest.raises(GovernanceError, match="has not expired"):
         expire_support_lease(switch.lease, current_step=10)
 
@@ -1217,4 +1288,248 @@ def test_cross_policy_root_membership_fails_closed() -> None:
             candidate_id="candidate:a",
             claim_fingerprint=CLAIM_ROOT,
             current_step=5,
+        )
+
+
+def test_public_revocation_status_and_invalid_lifecycle_records_fail_closed() -> None:
+    policy = commit_policy()
+    alpha = principal("principal:alpha", "cluster:a", index=1, policy=policy)
+    snapshot, membership_state = membership((alpha,), policy=policy)
+    initial_replay_state = replay_state()
+    evidence = observation(
+        alpha,
+        candidate_id="candidate:a",
+        index=1,
+        policy=policy,
+    )
+    lease, current_replay_state = issue_lease(
+        alpha,
+        evidence,
+        snapshot,
+        membership_state,
+        initial_replay_state,
+        candidate_id="candidate:a",
+        index=1,
+        current_step=4,
+        policy=policy,
+    )
+
+    with pytest.raises(GovernanceError, match="not yet active"):
+        support_lease_status(lease, current_step=3)
+    with pytest.raises(GovernanceError, match="authoritative lease"):
+        support_lease_status(
+            replace(lease, candidate_id="candidate:forged"),
+            current_step=5,
+        )
+
+    revocation = revoke_support_lease(
+        lease,
+        revocation_id="revocation:standalone",
+        reason_codes=("operator-decision",),
+        issuer_id="governance:support",
+        authority=AuthorityLevel.GOVERNANCE,
+        current_step=5,
+        provenance="urn:test:revocation:standalone",
+        trace_event_id="trace:revocation:standalone",
+    )
+    assert support_lease_revocation_is_authoritative(revocation)
+    assert support_lease_revocation_matches(
+        revocation,
+        lease=lease,
+        current_step=5,
+    )
+    assert (
+        support_lease_status(
+            lease,
+            current_step=5,
+            revocations=(revocation,),
+        )
+        is SupportLeaseStatus.REVOKED
+    )
+    assert (
+        support_lease_status(
+            lease,
+            current_step=5,
+            equivocated_lease_fingerprints=(support_lease_fingerprint(lease),),
+        )
+        is SupportLeaseStatus.EQUIVOCATED
+    )
+
+    forged_revocation = replace(revocation, candidate_id="candidate:forged")
+    assert not support_lease_revocation_is_authoritative(forged_revocation)
+    assert not support_lease_revocation_matches(
+        forged_revocation,
+        lease=lease,
+        current_step=5,
+    )
+    with pytest.raises(GovernanceError, match="governance authority"):
+        revoke_support_lease(
+            lease,
+            revocation_id="revocation:no-authority",
+            reason_codes=("invalid-authority",),
+            issuer_id="governance:support",
+            authority=AuthorityLevel.AGENT,
+            current_step=5,
+            provenance="urn:test:revocation:no-authority",
+            trace_event_id="trace:revocation:no-authority",
+        )
+    with pytest.raises(GovernanceError, match="active support lease"):
+        revoke_support_lease(
+            lease,
+            revocation_id="revocation:expired",
+            reason_codes=("too-late",),
+            issuer_id="governance:support",
+            authority=AuthorityLevel.GOVERNANCE,
+            current_step=lease.expires_at_step,
+            provenance="urn:test:revocation:expired",
+            trace_event_id="trace:revocation:expired",
+        )
+    with pytest.raises(GovernanceError, match="prior support revocation"):
+        revoke_support_lease(
+            lease,
+            revocation_id="revocation:forged-prior",
+            reason_codes=("duplicate",),
+            issuer_id="governance:support",
+            authority=AuthorityLevel.GOVERNANCE,
+            current_step=6,
+            provenance="urn:test:revocation:forged-prior",
+            trace_event_id="trace:revocation:forged-prior",
+            prior_revocations=(forged_revocation,),
+        )
+    with pytest.raises(GovernanceError, match="already revoked"):
+        revoke_support_lease(
+            lease,
+            revocation_id="revocation:duplicate",
+            reason_codes=("duplicate",),
+            issuer_id="governance:support",
+            authority=AuthorityLevel.GOVERNANCE,
+            current_step=6,
+            provenance="urn:test:revocation:duplicate",
+            trace_event_id="trace:revocation:duplicate",
+            prior_revocations=(revocation,),
+        )
+
+    receipt = current_replay_state.receipts[0]
+    with pytest.raises(GovernanceError, match="revision"):
+        replace(current_replay_state, revision=0)
+    with pytest.raises(GovernanceError, match="duplicate receipt"):
+        replace(
+            current_replay_state,
+            revision=2,
+            receipts=(receipt, receipt),
+        )
+    with pytest.raises(GovernanceError, match="authority"):
+        replace(current_replay_state, authority=AuthorityLevel.AGENT)
+    with pytest.raises(GovernanceError, match="lineage"):
+        SupportLeaseSwitch(revocation=revocation, lease=lease)
+    with pytest.raises(GovernanceError):
+        SupportLeaseExpiration(
+            lease_fingerprint="not-a-fingerprint",
+            expired_at_step=5,
+        )
+
+
+def test_public_legacy_issuance_and_evaluation_records_reject_cross_binding() -> None:
+    policy = commit_policy()
+    alpha = principal("principal:alpha", "cluster:a", index=1, policy=policy)
+    snapshot, membership_state = membership((alpha,), policy=policy)
+    initial_replay_state = replay_state()
+    evidence = observation(
+        alpha,
+        candidate_id="candidate:a",
+        index=1,
+        policy=policy,
+    )
+    valid_proposal = proposal(
+        alpha,
+        evidence,
+        candidate_id="candidate:a",
+        index=1,
+        policy=policy,
+    )
+
+    def issue(
+        selected_proposal: SupportLeaseProposal,
+        *,
+        selected_replay_state: SupportLeaseReplayState = initial_replay_state,
+        selected_observations: tuple[VerifiedObservation, ...] = (evidence,),
+        selected_issuer: str = "governance:support",
+        selected_authority: AuthorityLevel = AuthorityLevel.GOVERNANCE,
+    ) -> tuple[SupportLease, SupportLeaseReplayState]:
+        return issue_support_lease(
+            selected_proposal,
+            principal_verification=alpha,
+            membership_snapshot=snapshot,
+            membership_epoch_state=membership_state,
+            replay_state=selected_replay_state,
+            positive_observations=selected_observations,
+            commit_policy=policy,
+            lease_id="lease:public-failure",
+            issuer_id=selected_issuer,
+            authority=selected_authority,
+            current_step=4,
+            issuance_provenance="urn:test:lease:public-failure",
+            issuance_trace_event_id="trace:lease:public-failure",
+        )
+
+    with pytest.raises(GovernanceError, match="future step"):
+        issue(replace(valid_proposal, proposed_at_step=5))
+    with pytest.raises(GovernanceError, match="governance authority"):
+        issue(
+            valid_proposal,
+            selected_authority=AuthorityLevel.AGENT,
+        )
+    with pytest.raises(GovernanceError, match="authoritative replay state"):
+        issue(
+            valid_proposal,
+            selected_replay_state=replace(
+                initial_replay_state,
+                provenance="urn:test:replay:forged",
+            ),
+        )
+    with pytest.raises(GovernanceError, match="authority binding"):
+        issue(
+            valid_proposal,
+            selected_issuer="governance:other",
+        )
+    with pytest.raises(GovernanceError, match="positive evidence"):
+        issue(
+            valid_proposal,
+            selected_observations=(),
+        )
+    with pytest.raises(GovernanceError, match="references"):
+        issue(
+            replace(
+                valid_proposal,
+                positive_observation_fingerprints=("sha256:" + ("f" * 64),),
+            ),
+        )
+
+    lease, current_replay_state = issue(valid_proposal)
+    evaluation = evaluate_support_leases(
+        (lease,),
+        revocations=(),
+        membership_snapshot=snapshot,
+        membership_epoch_state=membership_state,
+        replay_state=current_replay_state,
+        commit_policy=policy,
+        candidate_id="candidate:a",
+        claim_fingerprint=CLAIM_ROOT,
+        current_step=5,
+    )
+    assert type(evaluation) is SupportLeaseEvaluation
+    with pytest.raises(GovernanceError, match="eligible clusters"):
+        replace(evaluation, eligible_cluster_count=0)
+    with pytest.raises(GovernanceError, match="cluster count mismatch"):
+        replace(evaluation, active_support_cluster_count=0)
+    with pytest.raises(GovernanceError, match="ratio"):
+        replace(evaluation, support_ratio_ppm=0)
+    with pytest.raises(GovernanceError, match="threshold result"):
+        replace(evaluation, policy_support_met=True)
+
+    cluster = snapshot.eligible_clusters[0]
+    with pytest.raises(GovernanceError, match="duplicate principal"):
+        EligiblePrincipalCluster(
+            cluster_id=cluster.cluster_id,
+            principals=(cluster.principals[0], cluster.principals[0]),
         )

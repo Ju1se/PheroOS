@@ -71,6 +71,8 @@ TCK_BACKED_COMMIT_CHECKS = FORMAL_COMMIT_CHECKS - {
     "principal_attestation_contract",
     "commit_trace_contract",
 }
+
+
 def test_formal_commit_registry_is_complete_and_unique() -> None:
     assert len(MANIFEST_CHECKS) == len(set(MANIFEST_CHECKS))
     assert FORMAL_COMMIT_CHECKS.issubset(MANIFEST_CHECKS)
@@ -264,12 +266,12 @@ def test_commit_profile_precedes_legacy_hybrid_authority_for_all_assurances(
         "hybrid_trace_contract",
         "hybrid_authority_boundary",
     }.isdisjoint(selected.required_checks)
-    assert (
-        "distributed_finality_contract" in selected.required_checks
-    ) is (assurance == "distributed")
-    assert (
-        "certificate_conflict_contract" in selected.required_checks
-    ) is (assurance == "distributed")
+    assert ("distributed_finality_contract" in selected.required_checks) is (
+        assurance == "distributed"
+    )
+    assert ("certificate_conflict_contract" in selected.required_checks) is (
+        assurance == "distributed"
+    )
 
 
 def test_hybrid_commit_report_executes_the_active_channel_contract(
@@ -323,9 +325,7 @@ def test_checked_in_commit_manifests_select_and_pass_the_declared_profile(
     assert evidence.numeric_scale == 1_000_000
     assert evidence.minimum_positive_evidence == 2_000_000
     assert evidence.minimum_source_diversity == 2
-    assert evidence.required_challenge_categories == (
-        "independent_replication",
-    )
+    assert evidence.required_challenge_categories == ("independent_replication",)
     assert evidence.require_provenance is True
     assert evidence.require_trace is True
     assert support.minimum_support_clusters == 2
@@ -345,7 +345,9 @@ def test_checked_in_commit_manifests_select_and_pass_the_declared_profile(
         "safety_violation",
     }
 
-    bands = [policy.risk_bands[name] for name in ("LOW", "MODERATE", "HIGH", "CRITICAL")]
+    bands = [
+        policy.risk_bands[name] for name in ("LOW", "MODERATE", "HIGH", "CRITICAL")
+    ]
     assert [item.minimum_positive_evidence for item in bands] == [
         2_000_000,
         2_500_000,
@@ -393,9 +395,7 @@ def test_checked_in_commit_manifests_select_and_pass_the_declared_profile(
             distributed.max_byzantine_faults,
             distributed.witness_quorum,
         ) == (4, 1, 3)
-        assert distributed.membership_size >= (
-            3 * distributed.max_byzantine_faults + 1
-        )
+        assert distributed.membership_size >= (3 * distributed.max_byzantine_faults + 1)
         assert distributed.witness_quorum <= (
             distributed.membership_size - distributed.max_byzantine_faults
         )
@@ -475,12 +475,12 @@ def test_case_35_registry_probe_is_nonrecursive(
         load_commit_tck_vectors,
     )
 
-    vector = next(
-        item for item in load_commit_tck_vectors() if item.matrix_case == 35
-    )
+    vector = next(item for item in load_commit_tck_vectors() if item.matrix_case == 35)
 
     def recurse(_manifest: CapabilityManifest) -> object:
-        raise AssertionError("case 35 must inspect registration without executing checks")
+        raise AssertionError(
+            "case 35 must inspect registration without executing checks"
+        )
 
     monkeypatch.setitem(MANIFEST_CHECKS, "commit_metrics_contract", recurse)
     uncached = replace(vector, id=f"{vector.id}:nonrecursive-proof")
@@ -598,9 +598,7 @@ def _payload_for_assurance(
 
 def _capability_payload(example: str) -> dict[str, object]:
     payload = json.loads(
-        (ROOT / "examples" / example / "capability.json").read_text(
-            encoding="utf-8"
-        )
+        (ROOT / "examples" / example / "capability.json").read_text(encoding="utf-8")
     )
     quorum = payload["protocol"]["quorum_policy"]
     payload["protocol"]["collective_commit_policy"] = _commit_policy_payload(
@@ -646,19 +644,50 @@ def _commit_policy_payload(*, target: str, fallback: str) -> dict[str, object]:
         },
         "risk_bands": {
             "LOW": _risk_band(
-                2_000_000, 500_000, 200_000, 2, 500_000, 2, 250_000, 2,
-                challenges, "evidence_bound",
+                2_000_000,
+                500_000,
+                200_000,
+                2,
+                500_000,
+                2,
+                250_000,
+                2,
+                challenges,
+                "evidence_bound",
             ),
             "MODERATE": _risk_band(
-                2_500_000, 400_000, 150_000, 2, 600_000, 2, 300_000, 3,
-                challenges, "evidence_bound",
+                2_500_000,
+                400_000,
+                150_000,
+                2,
+                600_000,
+                2,
+                300_000,
+                3,
+                challenges,
+                "evidence_bound",
             ),
             "HIGH": _risk_band(
-                3_000_000, 300_000, 100_000, 3, 700_000, 3, 400_000, 4,
-                [*challenges, "counter_search"], "certified",
+                3_000_000,
+                300_000,
+                100_000,
+                3,
+                700_000,
+                3,
+                400_000,
+                4,
+                [*challenges, "counter_search"],
+                "certified",
             ),
             "CRITICAL": _risk_band(
-                4_000_000, 200_000, 50_000, 4, 800_000, 4, 500_000, 5,
+                4_000_000,
+                200_000,
+                50_000,
+                4,
+                800_000,
+                4,
+                500_000,
+                5,
                 [*challenges, "counter_search", "failure_domain_review"],
                 "distributed",
             ),

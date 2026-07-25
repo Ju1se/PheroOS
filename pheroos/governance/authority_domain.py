@@ -1,9 +1,9 @@
 from __future__ import annotations
 
+import json
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
 from hashlib import sha256
-import json
 from math import isfinite
 from types import MappingProxyType
 from typing import Any, Protocol, runtime_checkable
@@ -11,16 +11,15 @@ from typing import Any, Protocol, runtime_checkable
 from pheroos._digest import is_canonical_sha256_fingerprint
 from pheroos.governance.errors import GovernanceError
 
-
 AUTHORITY_LEDGER_VERSION = "pheroos-governance-authority-ledger-v1"
 _DOMAIN_SCHEMA = "pheroos-authority-domain-v1"
 _HEAD_SCHEMA = "pheroos-governance-head-v1"
 _TRANSITION_SCHEMA = "pheroos-prepared-governance-transition-v1"
 _BATCH_SCHEMA = "pheroos-governance-commit-batch-v1"
 _RECEIPT_SCHEMA = "pheroos-governance-commit-receipt-v1"
-GOVERNANCE_GENESIS_ROOT = "sha256:" + sha256(
-    b"pheroos-governance-authority-genesis-v1"
-).hexdigest()
+GOVERNANCE_GENESIS_ROOT = (
+    "sha256:" + sha256(b"pheroos-governance-authority-genesis-v1").hexdigest()
+)
 
 
 @dataclass(frozen=True)
@@ -61,7 +60,9 @@ class GovernanceHead:
         _require_scope_ref(self.scope_ref, "governance head scope_ref")
         _require_identity(self.stream, "governance head stream")
         if type(self.revision) is not int or self.revision < 0:
-            raise GovernanceError("governance head revision must be a non-negative integer")
+            raise GovernanceError(
+                "governance head revision must be a non-negative integer"
+            )
         _require_digest(self.parent_root, "governance head parent_root")
         _require_digest(self.state_root, "governance head state_root")
         _require_identity(self.transition_id, "governance head transition_id")
@@ -152,26 +153,28 @@ class PreparedGovernanceTransition:
         if not isinstance(self.state_records, Mapping):
             raise GovernanceError("prepared transition state records must be a mapping")
         frozen_state = _freeze_json(self.state_records, path="state_records")
-        if not isinstance(frozen_state, Mapping):  # pragma: no cover - guarded above
-            raise GovernanceError("prepared transition state records must be a mapping")
         if not isinstance(self.identity_claims, Mapping):
-            raise GovernanceError("prepared transition identity claims must be a mapping")
+            raise GovernanceError(
+                "prepared transition identity claims must be a mapping"
+            )
         claims: dict[str, Mapping[str, Any]] = {}
         for claim_id in self.identity_claims:
             _require_identity(claim_id, "governance identity claim id")
         for claim_id in sorted(self.identity_claims):
             body = self.identity_claims[claim_id]
             if not isinstance(body, Mapping):
-                raise GovernanceError("governance identity claim body must be a mapping")
+                raise GovernanceError(
+                    "governance identity claim body must be a mapping"
+                )
             frozen_body = _freeze_json(body, path=f"identity_claims.{claim_id}")
-            if not isinstance(frozen_body, Mapping):  # pragma: no cover - guarded above
-                raise GovernanceError("governance identity claim body must be a mapping")
             claims[claim_id] = frozen_body
         object.__setattr__(self, "state_records", frozen_state)
         object.__setattr__(self, "identity_claims", MappingProxyType(claims))
         computed = _fingerprint(_TRANSITION_SCHEMA, self._root_payload())
         if self.state_root and self.state_root != computed:
-            raise GovernanceError("prepared transition state root does not match its payload")
+            raise GovernanceError(
+                "prepared transition state root does not match its payload"
+            )
         object.__setattr__(self, "state_root", computed)
 
     @classmethod
@@ -277,26 +280,34 @@ class GovernanceCommitBatch:
         ):
             raise GovernanceError("governance commit trace records must be a sequence")
         if not self.trace_records:
-            raise GovernanceError("governance commit batch requires at least one trace record")
+            raise GovernanceError(
+                "governance commit batch requires at least one trace record"
+            )
         records: list[Mapping[str, Any]] = []
         trace_ids: set[str] = set()
         for index, record in enumerate(self.trace_records):
             if not isinstance(record, Mapping):
                 raise GovernanceError("governance trace record must be a mapping")
             frozen = _freeze_json(record, path=f"trace_records[{index}]")
-            if not isinstance(frozen, Mapping):  # pragma: no cover - guarded above
-                raise GovernanceError("governance trace record must be a mapping")
-            trace_id = frozen.get("trace_id")
-            _require_identity(trace_id, "governance trace record id")
+            trace_id = _require_identity(
+                frozen.get("trace_id"),
+                "governance trace record id",
+            )
             if trace_id in trace_ids:
-                raise GovernanceError("governance commit batch trace ids must be unique")
+                raise GovernanceError(
+                    "governance commit batch trace ids must be unique"
+                )
             trace_ids.add(trace_id)
             if frozen.get("scope_ref") != self.transition.domain.scope_ref:
                 raise GovernanceError("governance trace record crosses authority scope")
             if frozen.get("stream") != self.transition.stream:
-                raise GovernanceError("governance trace record crosses authority stream")
+                raise GovernanceError(
+                    "governance trace record crosses authority stream"
+                )
             if frozen.get("transition_id") != self.transition.transition_id:
-                raise GovernanceError("governance trace record transition id is mismatched")
+                raise GovernanceError(
+                    "governance trace record transition id is mismatched"
+                )
             records.append(frozen)
         object.__setattr__(self, "trace_records", tuple(records))
         computed_trace = _fingerprint(
@@ -304,11 +315,15 @@ class GovernanceCommitBatch:
             {"records": _portable_json(records)},
         )
         if self.trace_root and self.trace_root != computed_trace:
-            raise GovernanceError("governance commit trace root does not match its records")
+            raise GovernanceError(
+                "governance commit trace root does not match its records"
+            )
         object.__setattr__(self, "trace_root", computed_trace)
         computed_batch = _fingerprint(_BATCH_SCHEMA, self._root_payload())
         if self.batch_root and self.batch_root != computed_batch:
-            raise GovernanceError("governance commit batch root does not match its payload")
+            raise GovernanceError(
+                "governance commit batch root does not match its payload"
+            )
         object.__setattr__(self, "batch_root", computed_batch)
 
     def _root_payload(self) -> dict[str, Any]:
@@ -336,7 +351,9 @@ class GovernanceCommitBatch:
             raise GovernanceError("governance commit batch schema is unsupported")
         transition_payload = payload["transition"]
         if not isinstance(transition_payload, Mapping):
-            raise GovernanceError("governance commit batch transition must be an object")
+            raise GovernanceError(
+                "governance commit batch transition must be an object"
+            )
         return cls(
             transition=PreparedGovernanceTransition.from_dict(transition_payload),
             trace_records=payload["trace_records"],
@@ -367,7 +384,9 @@ class GovernanceCommitReceipt:
         _require_identity(self.stream, "governance receipt stream")
         _require_identity(self.transition_id, "governance receipt transition id")
         if type(self.revision) is not int or self.revision < 1:
-            raise GovernanceError("governance receipt revision must be a positive integer")
+            raise GovernanceError(
+                "governance receipt revision must be a positive integer"
+            )
         for name, root in (
             ("parent_root", self.parent_root),
             ("state_root", self.state_root),
@@ -538,7 +557,9 @@ def _freeze_json(value: Any, *, path: str) -> Any:
             _freeze_json(item, path=f"{path}[{index}]")
             for index, item in enumerate(value)
         )
-    raise GovernanceError(f"{path} contains unsupported value type: {type(value).__name__}")
+    raise GovernanceError(
+        f"{path} contains unsupported value type: {type(value).__name__}"
+    )
 
 
 def _portable_json(value: Any) -> Any:
@@ -556,7 +577,9 @@ def _portable_json(value: Any) -> Any:
         return value
     if type(value) is float:
         if not isfinite(value):
-            raise GovernanceError("portable Governance payload contains a non-finite number")
+            raise GovernanceError(
+                "portable Governance payload contains a non-finite number"
+            )
         return value
     raise GovernanceError(
         "portable Governance payload contains unsupported value type: "

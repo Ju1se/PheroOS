@@ -66,7 +66,6 @@ def test_conformance_preserves_combined_schema_failures_in_one_structured_report
     assert report.profile == "pheroos-manifest-v1"
     assert "$.protocol.protocol_version" in checks["manifest_schema"].detail
     assert (
-        "$.protocol.quorum_policy.commit_threshold"
-        in checks["manifest_schema"].detail
+        "$.protocol.quorum_policy.commit_threshold" in checks["manifest_schema"].detail
     )
     assert "Traceback" not in json.dumps(report.to_dict())

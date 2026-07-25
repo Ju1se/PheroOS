@@ -6,13 +6,19 @@ from pheroos.protocol.models import PheromoneKindProfile
 from types import MappingProxyType
 from typing import Any
 
-SUPPORTED_PHEROMONE_KINDS = frozenset({"positive", "negative", "cautionary", "alarm", "novelty", "stale"})
+SUPPORTED_PHEROMONE_KINDS = frozenset(
+    {"positive", "negative", "cautionary", "alarm", "novelty", "stale"}
+)
 
 
-SUPPORTED_PHEROMONE_SUBJECT_TYPES = frozenset({"candidate", "route", "tool", "evidence", "agent"})
+SUPPORTED_PHEROMONE_SUBJECT_TYPES = frozenset(
+    {"candidate", "route", "tool", "evidence", "agent"}
+)
 
 
-SUPPORTED_PHEROMONE_RESPONSE_MODELS = frozenset({"linear", "saturating", "threshold", "competitive"})
+SUPPORTED_PHEROMONE_RESPONSE_MODELS = frozenset(
+    {"linear", "saturating", "threshold", "competitive"}
+)
 
 
 SUPPORTED_PHEROMONE_COMPETITION_MODES = frozenset({"none", "normalize"})
@@ -139,8 +145,12 @@ class PheromonePolicy:
     response_exploration_floor: float = 0.0
 
     def __post_init__(self) -> None:
-        object.__setattr__(self, "scored_subject_types", tuple(self.scored_subject_types))
-        object.__setattr__(self, "kind_profiles", MappingProxyType(dict(self.kind_profiles)))
+        object.__setattr__(
+            self, "scored_subject_types", tuple(self.scored_subject_types)
+        )
+        object.__setattr__(
+            self, "kind_profiles", MappingProxyType(dict(self.kind_profiles))
+        )
 
     def __deepcopy__(self, memo: dict[int, object]) -> PheromonePolicy:
         del memo
@@ -235,7 +245,9 @@ class PheromoneNormalizationRecord:
     def __post_init__(self) -> None:
         object.__setattr__(self, "candidate_ids", tuple(self.candidate_ids))
         object.__setattr__(self, "pre_scores", MappingProxyType(dict(self.pre_scores)))
-        object.__setattr__(self, "post_scores", MappingProxyType(dict(self.post_scores)))
+        object.__setattr__(
+            self, "post_scores", MappingProxyType(dict(self.post_scores))
+        )
 
     def __deepcopy__(self, memo: dict[int, object]) -> PheromoneNormalizationRecord:
         del memo
@@ -269,7 +281,9 @@ class PheromoneScoreResult:
                 MappingProxyType(
                     {
                         candidate_id: MappingProxyType(dict(categories))
-                        for candidate_id, categories in getattr(self, field_name).items()
+                        for candidate_id, categories in getattr(
+                            self, field_name
+                        ).items()
                     }
                 ),
             )
@@ -279,19 +293,48 @@ class PheromoneScoreResult:
         return self
 
 
-for _compat_type in (PheromoneTrail, PheromoneSubject, PheromoneEdge, PheromoneNeighborhood, PheromoneDiffusionPolicy, PheromonePolicy, PheromoneLifecycleRecord, PheromoneExplorationObservation, PheromoneNormalizationRecord, PheromoneScoreResult,):
-    _compat_type.__module__ = 'pheroos.governance.pheromone'
+for _compat_type in (
+    PheromoneTrail,
+    PheromoneSubject,
+    PheromoneEdge,
+    PheromoneNeighborhood,
+    PheromoneDiffusionPolicy,
+    PheromonePolicy,
+    PheromoneLifecycleRecord,
+    PheromoneExplorationObservation,
+    PheromoneNormalizationRecord,
+    PheromoneScoreResult,
+):
+    _compat_type.__module__ = "pheroos.governance.pheromone"
     for _compat_descriptor in _compat_type.__dict__.values():
         if isinstance(_compat_descriptor, (staticmethod, classmethod)):
             _compat_member = _compat_descriptor.__func__
         else:
             _compat_member = _compat_descriptor
-        if callable(_compat_member) and hasattr(_compat_member, '__module__'):
-            _compat_member.__module__ = 'pheroos.governance.pheromone'
+        if callable(_compat_member) and hasattr(_compat_member, "__module__"):
+            _compat_member.__module__ = "pheroos.governance.pheromone"
 del _compat_descriptor, _compat_member, _compat_type
 
-PheromonePolicy.__dataclass_fields__["scored_subject_types"].default_factory.__module__ = (
-    "pheroos.governance.pheromone"
-)
+PheromonePolicy.__dataclass_fields__[
+    "scored_subject_types"
+].default_factory.__module__ = "pheroos.governance.pheromone"
 
-__all__ = ('BREAKDOWN_CATEGORIES', 'PHEROMONE_EXTENSION_PREFIXES', 'PHEROMONE_KIND_PROFILE_MAP_VERSION', 'PheromoneDiffusionPolicy', 'PheromoneEdge', 'PheromoneExplorationObservation', 'PheromoneLifecycleRecord', 'PheromoneNeighborhood', 'PheromoneNormalizationRecord', 'PheromonePolicy', 'PheromoneScoreResult', 'PheromoneSubject', 'PheromoneTrail', 'SUPPORTED_PHEROMONE_COMPETITION_MODES', 'SUPPORTED_PHEROMONE_KINDS', 'SUPPORTED_PHEROMONE_RESPONSE_MODELS', 'SUPPORTED_PHEROMONE_SUBJECT_TYPES')
+__all__ = (
+    "BREAKDOWN_CATEGORIES",
+    "PHEROMONE_EXTENSION_PREFIXES",
+    "PHEROMONE_KIND_PROFILE_MAP_VERSION",
+    "PheromoneDiffusionPolicy",
+    "PheromoneEdge",
+    "PheromoneExplorationObservation",
+    "PheromoneLifecycleRecord",
+    "PheromoneNeighborhood",
+    "PheromoneNormalizationRecord",
+    "PheromonePolicy",
+    "PheromoneScoreResult",
+    "PheromoneSubject",
+    "PheromoneTrail",
+    "SUPPORTED_PHEROMONE_COMPETITION_MODES",
+    "SUPPORTED_PHEROMONE_KINDS",
+    "SUPPORTED_PHEROMONE_RESPONSE_MODELS",
+    "SUPPORTED_PHEROMONE_SUBJECT_TYPES",
+)

@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 from collections import UserDict, UserList
+from collections.abc import Mapping
 from enum import Enum
 import json
 import os
 from pathlib import Path
 import subprocess
 import sys
+from typing import cast
 
 import pytest
 
@@ -20,7 +22,9 @@ from pheroos.protocol import (
 PAYLOAD = {"alpha": 1, "items": ["x", "y"], "ready": True}
 SCHEMA = "pheroos-tck-vector-v1"
 PROFILE = "pheroos-commit-integrity-v1"
-EXPECTED_ROOT = "sha256:16071f8a1e64bbaef6488b366c6e917f4fbb34dfd1d38e14b6991214777e1d6b"
+EXPECTED_ROOT = (
+    "sha256:16071f8a1e64bbaef6488b366c6e917f4fbb34dfd1d38e14b6991214777e1d6b"
+)
 
 
 def test_canonical_wire_has_exact_golden_bytes_and_root() -> None:
@@ -32,11 +36,14 @@ def test_canonical_wire_has_exact_golden_bytes_and_root() -> None:
         '"schema":"pheroos-tck-vector-v1",'
         '"version":"pheroos-commit-wire-v1"}'
     )
-    assert commit_payload_fingerprint(
-        PAYLOAD,
-        schema=SCHEMA,
-        profile=PROFILE,
-    ) == EXPECTED_ROOT
+    assert (
+        commit_payload_fingerprint(
+            PAYLOAD,
+            schema=SCHEMA,
+            profile=PROFILE,
+        )
+        == EXPECTED_ROOT
+    )
 
 
 def test_canonical_root_is_independent_of_cwd_hash_seed_and_mapping_order(
@@ -74,6 +81,13 @@ print(commit_payload_fingerprint(payload, schema='pheroos-tck-vector-v1', profil
 )
 def test_canonical_wire_rejects_nonportable_values(payload: dict[str, object]) -> None:
     with pytest.raises(CommitWireError):
+        canonical_commit_payload(payload, schema=SCHEMA, profile=PROFILE)
+
+
+def test_canonical_wire_rejects_a_non_mapping_top_level_payload() -> None:
+    payload = cast(Mapping[str, object], ["not", "an", "object"])
+
+    with pytest.raises(CommitWireError, match="payload must be an object"):
         canonical_commit_payload(payload, schema=SCHEMA, profile=PROFILE)
 
 

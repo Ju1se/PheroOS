@@ -134,9 +134,7 @@ def _envelope(
     schema: str,
     profile: str,
 ) -> dict[str, object]:
-    return json.loads(
-        canonical_commit_payload(payload, schema=schema, profile=profile)
-    )
+    return json.loads(canonical_commit_payload(payload, schema=schema, profile=profile))
 
 
 def _public_init_fields(locator: str) -> set[str]:
@@ -183,7 +181,10 @@ def test_hybrid_wire_contains_only_exact_commit_and_attention_roots() -> None:
         "attention_fingerprint": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
         "authority_scope": {"const": "none"},
         "commit_authority": {"const": False},
-        "exploration_directive_fingerprint": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+        "exploration_directive_fingerprint": {
+            "type": "string",
+            "pattern": "^sha256:[0-9a-f]{64}$",
+        },
         "memory_root": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
         "replay_root": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
         "source_step_root": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
@@ -255,13 +256,14 @@ def test_total_hybrid_evaluation_wire_is_strict_total_and_no_downgrade() -> None
     valid = record_for()
     assert validate_commit_wire_record(valid) == []
     chronological_trace_ids = ["sha256:" + ("b" * 64), root]
-    assert validate_commit_wire_record(
-        record_for(trace_event_ids=chronological_trace_ids)
-    ) == []
+    assert (
+        validate_commit_wire_record(record_for(trace_event_ids=chronological_trace_ids))
+        == []
+    )
     assert set(valid["payload"]) == set(
-        _branches()["pheroos-hybrid-commit-evaluation-v1"]["properties"][
-            "payload"
-        ]["properties"]
+        _branches()["pheroos-hybrid-commit-evaluation-v1"]["properties"]["payload"][
+            "properties"
+        ]
     )
     for changes in (
         {"assurance_downgraded": True},
@@ -287,66 +289,75 @@ def test_total_hybrid_evaluation_wire_is_strict_total_and_no_downgrade() -> None
         },
     ):
         assert validate_commit_wire_record(record_for(**changes)), changes
-    assert validate_commit_wire_record(
-        record_for(
-            status="outcome",
-            terminal=True,
-            progress_ref="",
-            outcome_ref=root,
-            deliver_authorization_ref=root,
+    assert (
+        validate_commit_wire_record(
+            record_for(
+                status="outcome",
+                terminal=True,
+                progress_ref="",
+                outcome_ref=root,
+                deliver_authorization_ref=root,
+            )
         )
-    ) == []
-    assert validate_commit_wire_record(
-        record_for(
-            attention_status="unavailable",
-            binding_step_ref="",
-            attention_ref="",
-            exploration_directive_ref="",
-            diagnostics=[
-                {
-                    "code": "attention_channel_unavailable",
-                    "severity": "warning",
-                    "stage": "attention",
-                    "message": (
-                        "Hybrid attention input is missing or non-authoritative"
-                    ),
-                    "fatal": False,
-                    "references": [],
-                }
-            ],
+        == []
+    )
+    assert (
+        validate_commit_wire_record(
+            record_for(
+                attention_status="unavailable",
+                binding_step_ref="",
+                attention_ref="",
+                exploration_directive_ref="",
+                diagnostics=[
+                    {
+                        "code": "attention_channel_unavailable",
+                        "severity": "warning",
+                        "stage": "attention",
+                        "message": (
+                            "Hybrid attention input is missing or non-authoritative"
+                        ),
+                        "fatal": False,
+                        "references": [],
+                    }
+                ],
+            )
         )
-    ) == []
-    assert validate_commit_wire_record(
-        record_for(
-            authoritative=False,
-            status="invalid",
-            terminal=True,
-            attention_status="unavailable",
-            binding_step_ref="",
-            attention_ref="",
-            exploration_directive_ref="",
-            assessment_ref="",
-            context_ref="",
-            window_state_ref="",
-            replay_state_ref="",
-            progress_ref="",
-            outcome_ref="",
-            trace_event_ids=[],
-            diagnostics=[
-                {
-                    "code": "attention_channel_unavailable",
-                    "severity": "warning",
-                    "stage": "channel_binding",
-                    "message": (
-                        "Hybrid attention cannot be bound to the authoritative "
-                        "CommitAssessment"
-                    ),
-                    "fatal": False,
-                    "references": [],
-                }
-            ],
+        == []
+    )
+    assert (
+        validate_commit_wire_record(
+            record_for(
+                authoritative=False,
+                status="invalid",
+                terminal=True,
+                attention_status="unavailable",
+                binding_step_ref="",
+                attention_ref="",
+                exploration_directive_ref="",
+                assessment_ref="",
+                context_ref="",
+                window_state_ref="",
+                replay_state_ref="",
+                progress_ref="",
+                outcome_ref="",
+                trace_event_ids=[],
+                diagnostics=[
+                    {
+                        "code": "attention_channel_unavailable",
+                        "severity": "warning",
+                        "stage": "channel_binding",
+                        "message": (
+                            "Hybrid attention cannot be bound to the authoritative "
+                            "CommitAssessment"
+                        ),
+                        "fatal": False,
+                        "references": [],
+                    }
+                ],
+            )
         )
-    ) == []
+        == []
+    )
 
 
 def test_actual_total_evaluator_invalid_payload_round_trips_and_fails_closed() -> None:
@@ -385,9 +396,7 @@ def test_every_commit_envelope_has_an_exact_discriminator_and_strict_payload() -
     for branch in schema["oneOf"]:
         assert branch["additionalProperties"] is False
         assert branch["properties"]["schema"].keys() == {"const"}
-        assert branch["properties"]["version"] == {
-            "const": "pheroos-commit-wire-v1"
-        }
+        assert branch["properties"]["version"] == {"const": "pheroos-commit-wire-v1"}
         assert branch["properties"]["payload"]["additionalProperties"] is False
 
 
@@ -582,9 +591,7 @@ def test_h_certificate_and_output_payloads_validate_and_delete_each_leaf_fails(
 def test_certificate_root_mutations_and_cross_discriminator_reuse_fail_closed(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    _, _, certificate, _, _, _ = certificate_fixture._evidence_certificate(
-        monkeypatch
-    )
+    _, _, certificate, _, _, _ = certificate_fixture._evidence_certificate(monkeypatch)
     evidence = _envelope(
         evidence_commit_certificate_payload(certificate),
         schema="pheroos-evidence-commit-certificate-v1",
@@ -808,12 +815,15 @@ def test_noncritical_envelope_metadata_is_compatible_but_never_authoritative() -
     record["x-vendor.note"] = {"display": "debug-only", "weight": 0.5}
     record["ext.observer"] = {"request_id": "outside-authority-root"}
     assert validate_commit_wire_record(record) == []
-    assert commit_payload_fingerprint(
-        record["payload"],
-        schema=record["schema"],
-        profile=record["profile"],
-        version=record["version"],
-    ) == authority_root
+    assert (
+        commit_payload_fingerprint(
+            record["payload"],
+            schema=record["schema"],
+            profile=record["profile"],
+            version=record["version"],
+        )
+        == authority_root
+    )
 
     for critical_name in (
         "x-critical",
@@ -860,6 +870,342 @@ def test_every_nested_commit_numeric_schema_is_exact_integer_only() -> None:
         assert node.get("x-pheroos-exact-integer") is True, path
         if "enum" not in node:
             assert "minimum" in node and "maximum" in node, path
+
+
+def test_commit_context_and_assessment_semantic_mutations_fail_closed() -> None:
+    from pheroos.governance.commit import (
+        candidate_commit_metrics_payload,
+        commit_assessment_payload,
+        commit_evaluation_context_payload,
+    )
+    from tests.governance import test_commit_engine as engine_fixture
+
+    scenario = engine_fixture._scenario()
+    assessment = engine_fixture._assess(
+        scenario,
+        assessment_suffix="schema-semantic-adversarial",
+    )
+    context = _envelope(
+        commit_evaluation_context_payload(scenario.context),
+        schema="pheroos-commit-evaluation-context-v1",
+        profile=scenario.context.profile,
+    )
+    assessment_record = _envelope(
+        commit_assessment_payload(assessment),
+        schema="pheroos-optimal-commit-assessment-v1",
+        profile=assessment.profile,
+    )
+    metric_records = [
+        _envelope(
+            candidate_commit_metrics_payload(metric),
+            schema="pheroos-candidate-commit-metrics-v1",
+            profile=assessment.profile,
+        )
+        for metric in assessment.candidate_metrics
+    ]
+    assert validate_commit_wire_record(context) == []
+    assert validate_commit_wire_record(assessment_record) == []
+    assert all(validate_commit_wire_record(record) == [] for record in metric_records)
+
+    context_mutations: tuple[tuple[str, object], ...] = (
+        ("candidate_claims", list(reversed(context["payload"]["candidate_claims"]))),
+        (
+            "candidate_claims",
+            [
+                context["payload"]["candidate_claims"][0],
+                context["payload"]["candidate_claims"][0],
+            ],
+        ),
+        (
+            "fallback_candidate_id",
+            context["payload"]["substantive_candidate_ids"][0],
+        ),
+        ("substantive_candidate_ids", []),
+    )
+    for field, value in context_mutations:
+        malformed = deepcopy(context)
+        malformed["payload"][field] = deepcopy(value)
+        assert validate_commit_wire_record(malformed), field
+
+    malformed = deepcopy(assessment_record)
+    malformed["payload"]["candidate_metrics"] = list(
+        reversed(malformed["payload"]["candidate_metrics"])
+    )
+    assert validate_commit_wire_record(malformed)
+
+    malformed = deepcopy(assessment_record)
+    malformed["payload"]["candidate_metrics"] = [
+        malformed["payload"]["candidate_metrics"][0],
+        malformed["payload"]["candidate_metrics"][0],
+    ]
+    assert validate_commit_wire_record(malformed)
+
+    for root_name in (
+        "collective_evidence_root",
+        "collective_challenge_root",
+        "collective_lease_root",
+    ):
+        malformed = deepcopy(assessment_record)
+        malformed["payload"][root_name] = "sha256:" + "f" * 64
+        assert validate_commit_wire_record(malformed), root_name
+
+    metric_mutations: tuple[tuple[str, object], ...] = (
+        (
+            "ready_for_stability",
+            not metric_records[0]["payload"]["ready_for_stability"],
+        ),
+        (
+            "support_cluster_satisfied",
+            not metric_records[0]["payload"]["support_cluster_satisfied"],
+        ),
+    )
+    for field, value in metric_mutations:
+        malformed = deepcopy(metric_records[0])
+        malformed["payload"][field] = value
+        assert validate_commit_wire_record(malformed), field
+
+    for field, value in (
+        (
+            "margin",
+            assessment_record["payload"]["candidate_metrics"][0]["margin"] + 1,
+        ),
+        (
+            "unique_leader",
+            not assessment_record["payload"]["candidate_metrics"][0]["unique_leader"],
+        ),
+    ):
+        malformed = deepcopy(assessment_record)
+        malformed["payload"]["candidate_metrics"][0][field] = value
+        assert validate_commit_wire_record(malformed), field
+
+    assessment_mutations: tuple[tuple[str, object], ...] = (
+        ("leader_candidate_id", "candidate:forged"),
+        ("tied_candidate_ids", ["candidate:forged"]),
+        ("unique_leader", not assessment_record["payload"]["unique_leader"]),
+        ("leader_margin", assessment_record["payload"]["leader_margin"] + 1),
+        (
+            "leader_ready_for_stability",
+            not assessment_record["payload"]["leader_ready_for_stability"],
+        ),
+    )
+    for field, value in assessment_mutations:
+        malformed = deepcopy(assessment_record)
+        malformed["payload"][field] = value
+        assert validate_commit_wire_record(malformed), field
+
+    malformed = deepcopy(assessment_record)
+    malformed["payload"]["status"] = "ready"
+    malformed["payload"]["candidate_metrics"][0]["ready_for_stability"] = False
+    assert validate_commit_wire_record(malformed)
+
+    malformed = deepcopy(assessment_record)
+    malformed["payload"]["status"] = "safety_violation"
+    malformed["payload"]["equivocation_finding_ids"] = []
+    malformed["payload"]["replay_conflict_references"] = []
+    assert validate_commit_wire_record(malformed)
+
+    malformed = deepcopy(context)
+    malformed["payload"]["candidate_claims"][1]["candidate_id"] = malformed["payload"][
+        "candidate_claims"
+    ][0]["candidate_id"]
+    assert validate_commit_wire_record(malformed)
+
+    malformed = deepcopy(assessment_record)
+    malformed["payload"]["candidate_metrics"][1]["candidate_id"] = malformed["payload"][
+        "candidate_metrics"
+    ][0]["candidate_id"]
+    assert validate_commit_wire_record(malformed)
+
+    malformed = deepcopy(assessment_record)
+    malformed["payload"]["candidate_metrics"][1]["net_evidence"] = malformed["payload"][
+        "candidate_metrics"
+    ][0]["net_evidence"]
+    assert validate_commit_wire_record(malformed)
+
+
+def test_commit_window_semantic_mutations_fail_closed() -> None:
+    from pheroos.governance.commit_state import commit_window_state_payload
+
+    scenario, _assessment, window, _output_ref = certificate_fixture._stable_scenario()
+    record = _envelope(
+        commit_window_state_payload(window),
+        schema="pheroos-commit-window-state-v1",
+        profile=window.profile,
+    )
+    assert scenario.context.run_id == window.run_id
+    assert validate_commit_wire_record(record) == []
+
+    mutations: tuple[tuple[str, object], ...] = (
+        ("chain_id", "sha256:" + "f" * 64),
+        ("window_root", "sha256:" + "f" * 64),
+        ("previous_state_fingerprint", ""),
+        ("last_evaluated_step", record["payload"]["initialized_at_step"] - 1),
+        ("last_evaluated_step", record["payload"]["absolute_deadline_step"]),
+        (
+            "absolute_deadline_step",
+            record["payload"]["absolute_run_deadline_step"] + 1,
+        ),
+        ("absolute_deadline_step", record["payload"]["initialized_at_step"]),
+        ("last_assessment_status", ""),
+        ("assessment_replay_state_ref", ""),
+        ("assessment_replay_root", ""),
+        ("leader_candidate_id", ""),
+        ("window_count", record["payload"]["window_count"] + 1),
+        ("reset_budget_exhausted", True),
+    )
+    for field, value in mutations:
+        malformed = deepcopy(record)
+        malformed["payload"][field] = value
+        assert validate_commit_wire_record(malformed), field
+
+    malformed = deepcopy(record)
+    malformed["payload"]["revision"] = 0
+    assert validate_commit_wire_record(malformed)
+
+    malformed = deepcopy(record)
+    malformed["payload"]["last_assessment_ref"] = ""
+    assert validate_commit_wire_record(malformed)
+
+    malformed = deepcopy(record)
+    malformed["payload"]["ordered_assessment_refs"] = [
+        malformed["payload"]["ordered_assessment_refs"][0]
+    ]
+    assert validate_commit_wire_record(malformed)
+
+    malformed = deepcopy(record)
+    malformed["payload"]["last_ready"] = False
+    assert validate_commit_wire_record(malformed)
+
+
+def test_commit_replay_liveness_and_seal_semantic_mutations_fail_closed() -> None:
+    from pheroos.governance.commit_state import (
+        CommitAssurance,
+        CommitFinalityStatus,
+        commit_liveness_input_payload,
+        commit_replay_state_payload,
+        commit_window_seal_for_state,
+        commit_window_seal_payload,
+        initialize_commit_replay_state,
+        issue_commit_liveness_input,
+        record_commit_replay_receipts,
+    )
+    from tests.governance import test_commit_schema as schema_fixture
+
+    first_receipt = schema_fixture.replay_receipt()
+    second_receipt = replace(
+        first_receipt,
+        record_id="observation:beta",
+        nonce="nonce:observation:beta",
+        payload_fingerprint="sha256:" + "9" * 64,
+        candidate_id="candidate:beta",
+    )
+    replay = initialize_commit_replay_state(
+        profile=schema_fixture.PROFILE,
+        assurance=CommitAssurance.CERTIFIED,
+        manifest_root=schema_fixture.MANIFEST_ROOT,
+        commit_policy_root=schema_fixture.COMMIT_POLICY_ROOT,
+        protocol_id="protocol:optimal",
+        run_id="run:schema-semantic",
+        current_step=1,
+        issuer_id="governance:replay-schema",
+        authority=AuthorityLevel.GOVERNANCE,
+        provenance="urn:test:replay-schema",
+        trace_event_id="trace:replay-schema",
+    )
+    replay = record_commit_replay_receipts(
+        replay,
+        current_step=2,
+        receipts=(second_receipt, first_receipt),
+    )
+    replay_record = _envelope(
+        commit_replay_state_payload(replay),
+        schema="pheroos-commit-replay-state-v1",
+        profile=replay.profile,
+    )
+    assert validate_commit_wire_record(replay_record) == []
+
+    for field, value in (
+        ("chain_id", "sha256:" + "f" * 64),
+        ("current_step", 0),
+        ("previous_state_fingerprint", ""),
+        ("receipts", []),
+    ):
+        malformed = deepcopy(replay_record)
+        malformed["payload"][field] = value
+        assert validate_commit_wire_record(malformed), field
+
+    malformed = deepcopy(replay_record)
+    malformed["payload"]["receipts"] = list(reversed(malformed["payload"]["receipts"]))
+    assert validate_commit_wire_record(malformed)
+
+    malformed = deepcopy(replay_record)
+    malformed["payload"]["revision"] = 0
+    assert validate_commit_wire_record(malformed)
+
+    scenario, assessment, window, output_ref = certificate_fixture._stable_scenario()
+    liveness = issue_commit_liveness_input(
+        window,
+        assessment=assessment,
+        replay_state=scenario.replay_state,
+        risk_chain_state=scenario.risk_chain_state,
+        risk_assessment=scenario.risk_assessment,
+        threshold_snapshot=scenario.threshold,
+        membership_snapshot=scenario.membership_snapshot,
+        membership_epoch_state=scenario.membership_state,
+        support_replay_state=scenario.support_replay_state,
+        commit_policy=scenario.policy,
+        current_step=6,
+        finality_status=CommitFinalityStatus.PENDING,
+        input_id="liveness:schema-semantic",
+        issuer_id="governance:schema-semantic",
+        authority=AuthorityLevel.GOVERNANCE,
+        provenance="urn:test:liveness:schema-semantic",
+        trace_event_id="trace:liveness:schema-semantic",
+    )
+    liveness_record = _envelope(
+        commit_liveness_input_payload(liveness),
+        schema="pheroos-commit-liveness-input-v1",
+        profile=liveness.profile,
+    )
+    assert validate_commit_wire_record(liveness_record) == []
+
+    malformed = deepcopy(liveness_record)
+    malformed["payload"]["assessment_status"] = ""
+    assert validate_commit_wire_record(malformed)
+
+    malformed = deepcopy(liveness_record)
+    malformed["payload"]["assessment_ref"] = ""
+    assert validate_commit_wire_record(malformed)
+
+    malformed = deepcopy(liveness_record)
+    malformed["payload"]["leader_ready_for_stability"] = True
+    malformed["payload"]["leader_candidate_id"] = ""
+    assert validate_commit_wire_record(malformed)
+
+    malformed = deepcopy(liveness_record)
+    malformed["payload"]["finality_status"] = "verified"
+    malformed["payload"]["certificate_ref"] = ""
+    malformed["payload"]["finality_verification_ref"] = ""
+    malformed["payload"]["sealed_window"] = False
+    malformed["payload"]["heartbeat_continuous"] = False
+    assert validate_commit_wire_record(malformed)
+
+    malformed = deepcopy(liveness_record)
+    malformed["payload"]["certificate_ref"] = "sha256:" + "a" * 64
+    malformed["payload"]["finality_verification_ref"] = "sha256:" + "b" * 64
+    assert validate_commit_wire_record(malformed)
+
+    certificate_fixture._receipt(scenario, assessment, window, output_ref)
+    seal = commit_window_seal_for_state(window)
+    assert seal is not None
+    seal_record = _envelope(
+        commit_window_seal_payload(seal),
+        schema="pheroos-commit-window-seal-v1",
+        profile=seal.profile,
+    )
+    malformed = deepcopy(seal_record)
+    malformed["payload"]["assurance"] = "certified"
+    assert validate_commit_wire_record(malformed)
 
 
 def _schema_nodes(

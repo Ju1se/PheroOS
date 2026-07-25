@@ -449,9 +449,7 @@ def test_candidate_metric_trace_preserves_negative_nonleader_margin() -> None:
 
 
 def test_provisional_trace_binds_proposal_presence_to_witness_count() -> None:
-    validator = Draft202012Validator(
-        commit_trace_lineage_schema("commit_provisional")
-    )
+    validator = Draft202012Validator(commit_trace_lineage_schema("commit_provisional"))
     zero_witness = dict(deepcopy(_DETAILS["commit_provisional"]), witness_count=0)
     zero_witness.pop("commit_value_root")
     zero_witness.pop("proposal_digest")
@@ -463,9 +461,7 @@ def test_provisional_trace_binds_proposal_presence_to_witness_count() -> None:
     schema_rejects_fake_zero["proposal_digest"] = root("proposal:fake-zero")
     assert not validator.is_valid(schema_rejects_fake_zero)
 
-    schema_rejects_missing_positive = deepcopy(
-        make_event("commit_provisional").lineage
-    )
+    schema_rejects_missing_positive = deepcopy(make_event("commit_provisional").lineage)
     del schema_rejects_missing_positive["proposal_digest"]
     assert not validator.is_valid(schema_rejects_missing_positive)
 
@@ -481,7 +477,9 @@ def test_provisional_trace_binds_proposal_presence_to_witness_count() -> None:
         make_event("commit_provisional", details=witnessed_without_proposal)
 
 
-def test_distributed_trace_records_semantic_value_without_weakening_other_kinds() -> None:
+def test_distributed_trace_records_semantic_value_without_weakening_other_kinds() -> (
+    None
+):
     distributed = dict(
         deepcopy(_DETAILS["commit_certificate_issued"]),
         certificate_kind="distributed_commit",
@@ -509,19 +507,17 @@ def test_distributed_trace_records_semantic_value_without_weakening_other_kinds(
         make_event("certificate_conflict", details=one_value_conflict)
 
 
-def test_observation_to_output_trace_replays_without_governance_private_objects() -> None:
+def test_observation_to_output_trace_replays_without_governance_private_objects() -> (
+    None
+):
     attested = make_event("principal_attested")
     verified = make_event("principal_verified", previous=(attested,))
     risk = make_event("risk_assessed")
     membership = make_event("membership_snapshot", previous=(verified,))
     recorded = make_event("observation_recorded", previous=(attested,))
-    observation = make_event(
-        "observation_verified", previous=(recorded, verified)
-    )
+    observation = make_event("observation_verified", previous=(recorded, verified))
     challenge = make_event("challenge_recorded", previous=(verified,))
-    evidence = make_event(
-        "evidence_bound", previous=(observation, challenge)
-    )
+    evidence = make_event("evidence_bound", previous=(observation, challenge))
     lease = make_event(
         "support_lease_issued", previous=(evidence, verified, membership)
     )
@@ -532,9 +528,7 @@ def test_observation_to_output_trace_replays_without_governance_private_objects(
         previous=(evidence, lease, risk, membership, stop, permission),
     )
     window = make_event("commit_window_advanced", previous=(metrics,), step=2)
-    certificate = make_event(
-        "commit_certificate_issued", previous=(window,), step=2
-    )
+    certificate = make_event("commit_certificate_issued", previous=(window,), step=2)
     outcome_details = {
         "kind": "evidence_commit",
         "authoritative_commit": True,
@@ -591,7 +585,9 @@ def test_observation_to_output_trace_replays_without_governance_private_objects(
     assert replay.event_types[-1] == "output_decided"
 
 
-def test_commit_trace_replay_rejects_gap_cross_run_and_incomplete_terminal_chain() -> None:
+def test_commit_trace_replay_rejects_gap_cross_run_and_incomplete_terminal_chain() -> (
+    None
+):
     attested = make_event("principal_attested")
     verified = make_event("principal_verified", previous=(attested,))
 

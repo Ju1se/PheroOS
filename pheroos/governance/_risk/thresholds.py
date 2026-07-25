@@ -104,9 +104,7 @@ def issue_commit_threshold_snapshot(
         risk_band=assessment.risk_band,
         minimum_positive_evidence=band.minimum_positive_evidence,
         maximum_counterevidence=band.maximum_counterevidence,
-        maximum_counterevidence_ratio_ppm=(
-            band.maximum_counterevidence_ratio_ppm
-        ),
+        maximum_counterevidence_ratio_ppm=(band.maximum_counterevidence_ratio_ppm),
         minimum_support_clusters=band.minimum_support_clusters,
         minimum_support_ratio_ppm=band.minimum_support_ratio_ppm,
         minimum_source_diversity=band.minimum_source_diversity,
@@ -133,6 +131,7 @@ def issue_commit_threshold_snapshot(
     )
     return snapshot
 
+
 def commit_threshold_snapshot_is_authoritative(snapshot: object) -> bool:
     if type(snapshot) is not CommitThresholdSnapshot:
         return False
@@ -147,6 +146,7 @@ def commit_threshold_snapshot_is_authoritative(snapshot: object) -> bool:
         )
     except Exception:
         return False
+
 
 def commit_threshold_snapshot_matches(
     snapshot: CommitThresholdSnapshot | None,
@@ -197,6 +197,7 @@ def commit_threshold_snapshot_matches(
     except (GovernanceError, KeyError, ValueError):
         return False
 
+
 def risk_transition_is_monotonic(
     previous: RiskAssessment,
     current: RiskAssessment,
@@ -220,6 +221,7 @@ def risk_transition_is_monotonic(
         is (current.risk_band is not previous.risk_band)
     )
 
+
 def commit_threshold_transition_requires_reset(
     previous: CommitThresholdSnapshot,
     current: CommitThresholdSnapshot,
@@ -228,9 +230,7 @@ def commit_threshold_transition_requires_reset(
         commit_threshold_snapshot_is_authoritative(previous)
         and commit_threshold_snapshot_is_authoritative(current)
     ):
-        raise GovernanceError(
-            "threshold transition requires authoritative snapshots"
-        )
+        raise GovernanceError("threshold transition requires authoritative snapshots")
     for name in ("protocol_id", "run_id", "target"):
         if getattr(previous, name) != getattr(current, name):
             raise GovernanceError("threshold transition scope mismatch")

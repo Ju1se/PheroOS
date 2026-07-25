@@ -1,6 +1,6 @@
-from __future__ import annotations
+"""Public Draft facade for the governed risk and threshold ABI."""
 
-"""Stable public facade for the governed risk and threshold ABI."""
+from __future__ import annotations
 
 from pheroos.governance._risk.chain import (
     initialize_risk_assessment_chain,

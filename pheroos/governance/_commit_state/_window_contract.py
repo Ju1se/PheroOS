@@ -1,5 +1,10 @@
 from __future__ import annotations
 
+from collections.abc import Mapping
+from typing import TypedDict, cast
+
+from pheroos.governance._commit_state.invariants import _WindowBindings
+from pheroos.governance._commit_state._record_views import CommitWindowStateView
 from pheroos.governance._commit_validation import (
     require_commit_fingerprint,
     require_commit_step,
@@ -9,10 +14,78 @@ from pheroos.governance._commit.assessment import (
 )
 from pheroos.governance.commit_numeric import commit_payload_fingerprint
 from pheroos.governance.errors import GovernanceError
-from pheroos.protocol.commit_models import CollectiveCommitPolicy
+from pheroos.protocol.commit_models import (
+    CollectiveCommitPolicy,
+    CommitAssurance,
+)
 
 
-def _threshold_snapshot_bindings(snapshot: object) -> dict[str, object]:
+class _ThresholdSnapshotBindings(TypedDict):
+    profile: str
+    assurance: CommitAssurance
+    manifest_root: str
+    commit_policy_root: str
+    protocol_id: str
+    run_id: str
+    target: str
+    epoch: int
+    risk_assessment_root: str
+    threshold_root: str
+    stability_steps: int
+    issued_at_step: int
+    expires_at_step: int
+    risk_band: str
+    minimum_positive_evidence: int
+    maximum_counterevidence: int
+    maximum_counterevidence_ratio_ppm: int
+    minimum_support_clusters: int
+    minimum_support_ratio_ppm: int
+    minimum_source_diversity: int
+    minimum_margin: int
+    required_challenge_categories: tuple[str, ...]
+    minimum_assurance: str
+    publishable_outcomes: tuple[str, ...]
+    executable_outcomes: tuple[str, ...]
+
+
+class _CommitAssessmentWindowView(TypedDict):
+    assessment_ref: str
+    status: str
+    profile: str
+    assurance: CommitAssurance
+    manifest_root: str
+    commit_policy_root: str
+    protocol_id: str
+    run_id: str
+    target: str
+    epoch: int
+    context_ref: str
+    risk_assessment_root: str
+    risk_chain_state_root: str
+    risk_policy_root: str
+    membership_root: str
+    membership_snapshot_root: str
+    membership_epoch_state_root: str
+    threshold_root: str
+    replay_state_ref: str
+    replay_root: str
+    support_replay_state_root: str
+    support_replay_root: str
+    collective_evidence_root: str
+    collective_challenge_root: str
+    collective_lease_root: str
+    candidate_evidence_root: str
+    candidate_challenge_root: str
+    candidate_lease_root: str
+    stop_resolution_root: str
+    permission_root: str
+    leader_candidate_id: str
+    ready: bool
+    reason_codes: tuple[str, ...]
+    evaluated_at_step: int
+
+
+def _threshold_snapshot_bindings(snapshot: object) -> _ThresholdSnapshotBindings:
     from pheroos.governance.risk import (
         CommitThresholdSnapshot,
         commit_threshold_snapshot_fingerprint,
@@ -62,7 +135,7 @@ def _validate_window_threshold_snapshot(
     snapshot: object,
     *,
     commit_policy: CollectiveCommitPolicy,
-    bindings: dict[str, object],
+    bindings: _WindowBindings,
     risk_assessment_root: object,
     current_step: int,
 ) -> tuple[str, int]:
@@ -111,16 +184,20 @@ def _validate_window_threshold_snapshot(
         "stability_steps": band.stability_steps,
         "minimum_assurance": band.minimum_assurance,
     }
-    if any(observed[name] != value for name, value in exact_values.items()):
+    observed_values: Mapping[str, object] = observed
+    if any(observed_values[name] != value for name, value in exact_values.items()):
         raise GovernanceError(
             "commit window threshold values do not match the risk band policy"
         )
-    for name in (
-        "required_challenge_categories",
-        "publishable_outcomes",
-        "executable_outcomes",
+    for name, observed_labels in (
+        (
+            "required_challenge_categories",
+            observed["required_challenge_categories"],
+        ),
+        ("publishable_outcomes", observed["publishable_outcomes"]),
+        ("executable_outcomes", observed["executable_outcomes"]),
     ):
-        if set(observed[name]) != set(getattr(band, name)):
+        if set(observed_labels) != set(getattr(band, name)):
             raise GovernanceError(
                 f"commit window threshold {name} does not match policy"
             )
@@ -130,7 +207,7 @@ def _validate_window_threshold_snapshot(
     )
 
 
-def _commit_window_authority_key(bindings: dict[str, object]) -> str:
+def _commit_window_authority_key(bindings: _WindowBindings) -> str:
     # Epoch and mutable authority heads are deliberately excluded: every epoch
     # restart and policy/risk/membership transition stays on this one run chain.
     return commit_payload_fingerprint(
@@ -148,8 +225,8 @@ def _commit_window_authority_key(bindings: dict[str, object]) -> str:
 
 
 def _validate_window_chain_scope(
-    state: object,
-    bindings: dict[str, object],
+    state: CommitWindowStateView,
+    bindings: _WindowBindings,
     *,
     allow_epoch_change: bool = False,
 ) -> None:
@@ -164,17 +241,21 @@ def _authoritative_commit_assessment_view(
     assessment: object,
     *,
     current_step: int | None = None,
-) -> dict[str, object]:
-    return project_commit_assessment_for_window(
-        assessment,
-        current_step=current_step,
+) -> _CommitAssessmentWindowView:
+    return cast(
+        _CommitAssessmentWindowView,
+        project_commit_assessment_for_window(
+            assessment,
+            current_step=current_step,
+        ),
     )
 
 
 def _validate_assessment_matches_window_head(
-    state: object,
-    view: dict[str, object],
+    state: CommitWindowStateView,
+    view: _CommitAssessmentWindowView,
 ) -> None:
+    view_values: Mapping[str, object] = view
     for name in (
         "profile",
         "assurance",
@@ -195,7 +276,7 @@ def _validate_assessment_matches_window_head(
         ("last_context_ref", "context_ref"),
         ("last_assessment_status", "status"),
     ):
-        if getattr(state, state_name) != view[view_name]:
+        if getattr(state, state_name) != view_values[view_name]:
             raise GovernanceError(
                 f"commit liveness assessment {view_name} is not the window head"
             )
@@ -204,7 +285,7 @@ def _validate_assessment_matches_window_head(
 
 
 def _window_reset_reason(
-    state: object,
+    state: CommitWindowStateView,
     *,
     current_step: int,
     ready: bool,

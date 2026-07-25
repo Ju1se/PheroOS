@@ -2,324 +2,370 @@
 
 语言：[English](README.md) | **简体中文**
 
-PheroOS 是面向受治理、群体原生多智能体运行时的 protocol-core package。
+[![tests](https://github.com/Ju1se/PheroOS/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/Ju1se/PheroOS/actions/workflows/tests.yml)
 
-Agents are not authority. Protocol is authority.
+PheroOS 是面向受治理、群体原生多智能体运行时的 provider-free 协议核心包。
 
-本仓库定义 ABI contract、validation、governance semantics、driver boundary、trace lineage 和 conformance checks。它不是应用运行时。
+> Agents are not authority. Protocol is authority.
 
-## 状态
+PheroOS 定义外部运行时如何声明能力、隔离作用域、验证智能体输入、形成受治理的决策、
+记录因果谱系并证明兼容性。它不运行智能体循环，不调用模型或工具，不托管 API，也不
+提供数据库。
 
-PheroOS 当前是 draft ABI。
+## 项目状态
 
-公共接口由 conformance 支撑，但尚未稳定。兼容性变更应尽量保持 additive，并且不应强迫 baseline protocol 满足 swarm-specific requirements。
+| 属性 | 当前状态 |
+| --- | --- |
+| 软件包 | `pheroos 0.1.0` |
+| ABI 稳定性 | 已实现并由 Conformance 支撑的 **Draft ABI** |
+| Python | `>=3.12`；CI 覆盖 CPython 3.12、3.13 和 3.14 |
+| 运行时依赖 | 无 |
+| 已发布分发 | 无；当前文档化用户入口是源码检出，CI 与离线非发布 RC rehearsal 会构建并验证 wheel/sdist |
+| 许可证 | MIT |
 
-仓库内的 schema artifact 覆盖完整 capability manifest 形状，以及 protocol、
-kernel、driver、trace、Commit Wire 和 Commit TCK ABI surface。
+Draft 表示公共形状仍可能通过有迁移说明的变更继续演进，并不表示 reference path 只是
+占位实现。Baseline、Hybrid Pheromone、Optimal Commit、持久权威 contract 及其原子化
+reference path、Trace 与 Conformance 都已经实现并由确定性测试覆盖。在首个稳定 ABI
+发布之前，使用方应固定精确 commit，以及自己实现的 schema/profile 版本。
+已检入的 Stable Core candidate 仍是
+`draft / promotion_candidate / formal_stable=false`；当前没有任何公共 lifecycle entry
+被正式提升为 Stable。
 
-Bee-swarm、ant-colony 和 Hybrid 的 collective signal 都必须携带由 governance
-签发的 `SignalVerification`。Hybrid pheromone manifest 使用
-`pheroos-hybrid-swarm-v1` conformance profile；其完整 reference path 还要求所有数值输入
-必须是有限数，并且 output 除 commit、
-evidence provenance 和 publication permission 外，还必须具备 target-scoped stop
-resolution；当前 target 的任一 blocked resolution 都会拒绝 output。
+## 快速开始
 
-可选的 Optimal Commit Draft ABI 进一步提供 evidence/counterevidence、challenge、
-support lease、risk、稳定窗口、有界 liveness、可移植证书和 Byzantine distributed
-finality contract。Hybrid pheromone 与 layer 行为只进入 attention channel；单独改变
-attention 不能改变 commit 或 certificate。
+从源码克隆并安装：
 
-## Schema 文档版本
-
-四个核心 schema surface 都具有不可变的 legacy v1 alias，以及独立的 strict v2 文档：
-
-| Surface | 冻结的 v1 `$id` 与 CLI alias | Strict v2 artifact 与 selector |
-| --- | --- | --- |
-| Capability | `https://pheroos.dev/schemas/capability.schema.json`；`capability`/`capability-v1` | `schemas/capability-v2.schema.json`；`pheroos-capability-schema-v2` |
-| Protocol | `https://pheroos.dev/schemas/protocol.schema.json`；`protocol`/`protocol-v1` | `schemas/protocol-v2.schema.json`；`pheroos-protocol-schema-v2` |
-| Driver | `https://pheroos.dev/schemas/driver.schema.json`；`driver`/`driver-v1` | `schemas/driver-v2.schema.json`；`descriptor_version=pheroos-driver-descriptor-v2` |
-| Kernel | `https://pheroos.dev/schemas/kernel.schema.json`；`kernel`/`kernel-v1` | `schemas/kernel-v2.schema.json`；`plan_version=pheroos-kernel-plan-v2` |
-
-旧的无版本 `$id` 和 CLI alias 永久固定到 v1；它们绝不会根据文档形状或 package
-版本选择 v2。Capability 与 Protocol v2 是 schema-document 版本，其 payload 仍声明
-`protocol_version=pheroos.protocol.v1`。Driver 的 `descriptor_version` 与
-`DriverDescriptor.version` 中的外部 provider 版本相互独立；Kernel 使用自己的
-`plan_version` discriminator。
-
-Typed v1-to-v2 迁移必须显式且无损。Driver 迁移使用
-`upgrade_driver_descriptor_v1`，不可迁移输入会产生 typed error。Kernel 的
-`os_plan_v1_from_dict` 返回非权威 `LegacyOSPlan`；`upgrade_os_plan_v1` 要求调用者提供
-scope、readiness、probe、capability 和 provider-version 事实，不会编造默认值。
-
-## 文档
-
-- [SPEC.md](SPEC.md) - protocol-core 规范。
-- [CONTRIBUTING.md](CONTRIBUTING.md) - 贡献流程和 patch 要求。
-- [SECURITY.md](SECURITY.md) - 漏洞报告和协议安全边界。
-- [docs/process/index.md](docs/process/index.md) - 源树 process 入口。
-- [docs/protocol/runtime-integration.md](docs/protocol/runtime-integration.md) - 外部 runtime 如何与 PheroOS 组合。
-- [docs/protocol/hybrid-pheromone-abi.md](docs/protocol/hybrid-pheromone-abi.md) - Hybrid Pheromone 的规范 ABI。
-- [docs/protocol/hybrid-pheromone-v1-migration.md](docs/protocol/hybrid-pheromone-v1-migration.md) - draft Hybrid v1 迁移说明。
-- [docs/protocol/optimal-commit-abi.md](docs/protocol/optimal-commit-abi.md) - 完整 Optimal Commit Draft ABI 语义。
-- [docs/protocol/optimal-commit-v1-migration.md](docs/protocol/optimal-commit-v1-migration.md) - opt-in manifest 与 runtime 迁移。
-- [docs/protocol/runtime-adapter-guide.md](docs/protocol/runtime-adapter-guide.md) - 如何将 `DriverSpec` 映射到外部 adapter。
-- [docs/protocol/extension-points.md](docs/protocol/extension-points.md) - 扩展边界。
-- [docs/process/api-lifecycle.md](docs/process/api-lifecycle.md) - 公共 API 与 ABI 生命周期。
-- [docs/process/schema-v1-v2-migration.md](docs/process/schema-v1-v2-migration.md) - 冻结的 v1 schema alias 与显式 v2 迁移。
-- [docs/conformance/conformance-suite.md](docs/conformance/conformance-suite.md) - 兼容性检查。
-- [docs/process/release-checklist.md](docs/process/release-checklist.md) - 发布门槛。
-- [CHANGELOG.md](CHANGELOG.md) - draft ABI 变更和迁移说明。
-- [AGENTS.md](AGENTS.md) - coding agent 的仓库规则。
-
-## 目录结构
-
-```text
-pheroos/
-  protocol/       Manifest objects, schema helpers, validation.
-  kernel/         Capability planning, permissions, runtime context contracts.
-  governance/     Authority, evidence, quorum, collective decision, output checks.
-  drivers/        Provider-neutral driver ABI and lifecycle objects.
-  trace/          Canonical trace events and append-only test store.
-  conformance/    Deterministic compatibility checks.
-  cli/            Thin wrapper around core packages.
-
-examples/
-  toy-protocol/    Minimal governed protocol.
-  e2e-protocol/    Provider-free governed vertical slice.
-  swarm-protocol/  Swarm-native collective decision example.
-  hybrid-pheromone-protocol/  完整 Hybrid Pheromone ABI 示例。
-  adaptive-pheromone-replay/  trace-like adaptive input replay 示例。
-  hybrid-commit-protocol/     Hybrid attention 与 evidence-governed commit 示例。
-  commit-certificate-replay/  可移植证书重建与 mutation 拒绝示例。
-  distributed-commit-protocol/  Byzantine quorum、provisional、conflict 与 deadline 示例。
-
-schemas/           Exported ABI schema artifacts.
-docs/              Protocol and process documentation.
-tests/             Provider-free deterministic tests.
+```bash
+git clone https://github.com/Ju1se/PheroOS.git
+cd PheroOS
+python3.12 -m venv .venv
+. .venv/bin/activate
+python -m pip install -e .
 ```
 
-## 核心表面
-
-`pheroos.protocol` 负责声明和验证。
-
-`pheroos.kernel` 负责 planning boundary。它不调用工具、模型、provider 或 secret。
-
-`pheroos.governance` 负责 authority 和 decision semantics。Agent 可以提出建议；governance 负责验证。
-
-`pheroos.drivers` 负责通用 capability contract。真实 provider adapter 应位于 protocol-core 之外。
-
-`pheroos.trace` 负责 provider-neutral lineage。它不是 database、queue、event bus 或 runtime monitor。
-
-`pheroos.conformance` 证明 ABI compatibility。
-
-以上 package facade 是对外高聚合入口。内部实现按 commit state、support、certificate、
-distributed finality、Hybrid evaluation、swarm 和 pheromone lifecycle 拆成单向依赖的
-private engine。Private module path 不是 ABI；facade 保持 canonical object identity，
-并委托给唯一实现 owner，不使用动态 service registry。Governance 与 Conformance 使用
-静态、线程安全的 lazy facade；Commit TCK 的 artifact 路径不会加载可选 reference
-adapter 或 Governance engine。全部 facade 导出与兼容模块仍由已检入的 API lifecycle
-artifact 管理。
-
-内置 Commit Wire 与 Trace dispatch 由 immutable static contract registry 驱动，schema
-生成与 validation 共享同一规则所有者。Namespaced extension 仍可作为非权威 metadata
-扩展，但不能在运行时安装新的 authority handler。
-
-## 管理 CLI
-
-本地 thin CLI 通过 versioned JSON 提供协议管理能力，不会启动 API server：
+验证最小协议并运行其选定的 Conformance profile：
 
 ```bash
 pheroos version
+pheroos validate examples/toy-protocol/capability.json
+pheroos conformance examples/toy-protocol
+```
+
+CLI 返回 versioned JSON。通过的报告包含 `"ok": true`，以及实际应用于目标的准确
+profile 和 checks。
+
+顶层 examples 是源码检出中的测试样例，不会打进 wheel。安装后的 CLI、schema、ABI 与
+TCK 命令可以从任意目录运行。
+
+开发环境安装与验证：
+
+```bash
+python -m pip install -e ".[dev]"
+python -m pytest -q
+pheroos source-conformance .
+```
+
+## 协议模型
+
+PheroOS 将运行时执行与协议权威分离。
+
+运行路径是：
+
+```text
+capability manifest
+-> Protocol 严格验证
+-> RuntimeScope 与 Kernel plan
+-> 外部 Driver 绑定和 scoped invocation
+-> 经过 Governance 验证的事实、报告与信号
+-> 受治理的 decision 或显式 terminal outcome，包括 safe fallback
+-> canonical Trace 与 output authorization
+```
+
+兼容性路径独立运行：
+
+```text
+manifest / adapter / installed artifact
+-> versioned Conformance profile 或 TCK
+-> 确定性 PASS 或 FAIL report
+```
+
+外部 runtime 始终是编排者。它负责 agents、模型与工具调用、调度、网络、凭据、持久化
+基础设施和交付；PheroOS 负责信任边界上的 contract 与确定性 reference semantics。
+
+## 架构与边界
+
+| 公共表面 | 负责内容 | 明确边界 |
+| --- | --- | --- |
+| `pheroos.protocol` | Manifest、candidate、policy、schema、loading 与 validation | 纯 contract code；不依赖 Kernel、runtime、provider 或 Conformance |
+| `pheroos.kernel` | scope-aware plan、permission、readiness、connection 与 exposure contract | 决定可用能力；不调用工具/provider，也不做领域结论 |
+| `pheroos.drivers` | provider-neutral descriptor 与 `declare -> validate -> register -> probe -> bind -> expose -> invoke -> trace` 生命周期 | 真实 adapter 与 provider SDK 位于 core 之外 |
+| `pheroos.governance` | verification、evidence、quorum、swarm decision、risk、commit、certificate、finality 与 output gate | Agent 和 adaptive layer 可以提议；只有依照已声明 Protocol 行事的 Governance 才能签发 runtime decision authority |
+| `pheroos.trace` | canonical `TraceEvent`、scoped envelope、validation 与 append-only store contract | 不是 database、queue、event bus 或 monitor daemon |
+| `pheroos.conformance` | Manifest profile、source check、外部 adapter matrix 与 Commit TCK | 确定性、provider-free、network-free |
+| `pheroos.cli` | 本地 versioned-JSON 管理命令 | 只是 thin wrapper；不是 HTTP API 或服务 |
+
+Import graph 保持单向：Protocol、Drivers 与 Trace 是基础层；Kernel 只依赖 Protocol 和
+Drivers；Governance 不依赖 Kernel runtime machinery；Conformance 组合全部核心表面；
+CLI 只委托公共 facade。Private engine 不构成第二套 ABI。
+
+## 治理不变量
+
+- Agent、scout、learned layer、evolutionary layer 与 metacognitive layer 可以提出记录，
+  但不能签发权威。
+- 调用方控制的 `verified` 标志不是 verification。Scout、recruitment、inhibition 与
+  quorum input 只有携带匹配的 governance-issued `SignalVerification` 才会生效。
+- Governance 只能提交为当前 target 声明的 candidate；共识失败时选择该 target 已声明
+  的 safe fallback。
+- Pheromone 是有界 collective memory 与 attention，不是 evidence、truth、permission、
+  quorum、certificate 或 output authority。
+- 未知 critical version、非有限数、跨 scope 记录、畸形 authority fact 与陈旧 state
+  head 全部 fail closed。
+- 受治理的 Baseline Output v2 与 collective output path 必须分别通过四道独立门槛：
+  对 declared candidate 的权威 commit、带 provenance 的 evidence、当前 target 至少一个
+  `StopResolution` 且不存在 blocked 的同 target resolution，以及当前 publication
+  permission。
+- Optimal Commit 签发的每个 terminal outcome 都可以交付；publication 与 execution
+  仍是彼此独立的当前 action decision，不能仅由 delivery 自动获得。
+
+## 按需启用的决策路径
+
+可选协议不会改变未声明它们的 baseline manifest。
+
+| 路径 | Manifest 选择条件 | 受治理行为 | Conformance profile | 示例 |
+| --- | --- | --- | --- | --- |
+| Baseline | 未声明 swarm 或 Commit | verified quorum、declared candidate、safe fallback | `pheroos-core-v1` | [`toy-protocol`](examples/toy-protocol/)、[`e2e-protocol`](examples/e2e-protocol/) |
+| Basic swarm | `mode=bee_swarm` 或 `mode=ant_colony` | verified scout、recruitment/inhibition、有界 pheromone memory | `pheroos-swarm-v1` | [`swarm-protocol`](examples/swarm-protocol/) |
+| Hybrid Pheromone v1 | v1 manifest 中的 `mode=hybrid` | diffusion、feedback、nonlinear response、L1-L4 proposal 与有界 adjustment | `pheroos-hybrid-swarm-v1` | [`hybrid-pheromone-protocol`](examples/hybrid-pheromone-protocol/) |
+| Scoped Hybrid Replay v2 | Capability/Protocol v3 document 选择 `pheroos.protocol.v2` | Store-backed durable replay 与 scoped authority | 精确的 v2 Store、session、replay 与 runtime-integration Conformance | [`hybrid-replay-protocol`](examples/hybrid-replay-protocol/) |
+| Optimal Commit | `collective_commit_policy` | evidence-governed truth、stability、liveness、certificate、可选 distributed finality | assurance-specific Commit profile | [`hybrid-commit-protocol`](examples/hybrid-commit-protocol/)、[`distributed-commit-protocol`](examples/distributed-commit-protocol/) |
+
+Optimal Commit 会根据 assurance 与已声明的 Hybrid attention semantics 选择
+`pheroos-commit-integrity-v1`、`pheroos-hybrid-commit-v1`、
+`pheroos-certified-commit-v1` 或 `pheroos-distributed-commit-v1`。
+
+### Hybrid Pheromone：attention 与 collective memory
+
+主要 Draft 路径是由 StateStore 支撑的 Hybrid Replay v2：
+
+```text
+evaluate_hybrid_collective_step_v2(...)
+-> build_hybrid_replay_advance_request_v2(...)
+-> open_hybrid_replay_authority_session_v2(...)
+-> advance_hybrid_replay_state_v2(...)
+-> 重启后 rehydrate_hybrid_replay_state_v2(...)
+```
+
+evaluator 会先验证完整 input batch，再执行有界 adjustment、deposit、evaporation、
+diffusion、feedback reinforcement、nonlinear response、L1-L4 coordination、scoring、
+independent-scout gate 与 commit-or-fallback。它返回的非 portable source proof 与精确
+authority context 绑定。只有 StateStore 原子 commit 才能产生 durable replay authority；
+portable snapshot、digest、checkpoint 或同形对象都不能产生 authority。rehydration 会证明
+committed inclusion 与 position，且只有 current head 才能作为下一次 advance 的 parent。
+确定性重启与 fresh-subprocess continuation 见
+[`hybrid-replay-protocol`](examples/hybrid-replay-protocol/)。
+
+`evaluate_hybrid_collective_step(...)`、`HybridReplayState` 与
+`replay_state_from_hybrid_step(...)` 仅作为 Deprecated Draft 兼容面保留；它们描述旧的
+process-local 路径，不是 durable v2 authority 或 restart 主路径。
+
+### Optimal Commit：truth 与 authority
+
+Optimal Commit 严格分离两个 channel：
+
+| Channel | 输入 | 可以影响 | 不能执行 |
+| --- | --- | --- | --- |
+| Exploration/attention | Scout、pheromone、recruitment、inhibition、layer proposal | 搜索优先级、candidate attention、外部 evidence collection | 创建 evidence、改变 commit truth、签发 certificate |
+| Truth/authority | 已验证的 principal、risk、membership、evidence、counterevidence、challenge、lease、stop、permission、replay 与 prior-window record | Commit metrics、terminal outcome、certificate 与 action gate | 调用 provider 或绕过 declared policy |
+
+Manifest 选择 assurance level：
+
+| Assurance | 所需结果 |
+| --- | --- |
+| `advisory` | Advisory 或 declared fallback；不产生 epistemic commit |
+| `evidence_bound` | 稳定 evidence decision 加当前 local receipt |
+| `certified` | Evidence-bound proof 加可独立验证的 portable certificate |
+| `distributed` | Portable proof 加 static-epoch Byzantine quorum finality |
+
+`evaluate_hybrid_commit_step(request=...)` 是统一的最终裁决边界。Assurance 不会
+静默降级，identifier order 不会打破 tie，absolute deadline 也不能被延长。到达 deadline
+时必须返回显式 commit 或 non-commit terminal outcome。这个保证要求外部 runtime 持续
+用单调递增的 logical step 调用 evaluator；protocol-core 不负责调度调用，也不推进时钟。
+Distributed assurance 验证 `n >= 3f + 1`、`2q - n > f`、精确 witness/value root、
+replay、equivocation 与 conflict freeze；networking 和 witness collection 仍由外部
+runtime 负责。
+
+## 运行时集成
+
+每个外部 runtime request 都应创建 `RuntimeScope(tenant_id, run_id, request_id)`。由
+tenant/run 派生的
+`scope_ref` 绑定 Kernel plan、Driver invocation/result receipt、Governance authority
+domain 与 scoped Trace。来自另一个 scope 的相同 payload 不是 retry，也不能复用 authority。
+
+持久 v2 权威通过外部 adapter 接入：
+
+- `GovernanceStateStoreV2` 提供显式 head、compare-and-swap、immutable prepared
+  transition、atomic state-plus-authority-Trace batch、receipt、rehydration、retirement
+  与 tombstone。
+- v2 持久序列是 `准备并验证 exact portable request（仅在该 ABI 定义时携带
+  context-bound source proof）-> 绑定并打开 request-scoped authority session ->
+  atomic_commit_v2(state + authority-critical Trace) -> 验证 typed committed result 与
+  receipt -> 重用前 rehydrate 并重新检查 inclusion/currentness`。在精确 state 和 Trace
+  batch 完成提交并通过验证前，proposal 不能暴露持久 output authority。
+- `ScopedTraceStoreV2` 是面向已选 tenant/run scope 的独立 provider-neutral
+  append-only lineage contract。
+- 内置 in-memory store 是确定性 reference adapter，不是生产数据库。外部 store 可在
+  集成前运行 `run_governance_state_store_conformance_v2(...)` 与
+  `run_scoped_trace_store_conformance_v2(...)`。未版本化的
+  `GovernanceStateStore` 仍是 v1 trusted-host Draft 兼容路径；generic `TraceStore`
+  仍是独立的 reconstructible projection。两者都不是 v2 的 alias 或静默升级。
+
+Driver declaration 可以使用 opaque `config_ref`；provider kind、version 与 capability
+metadata 可以声明，但 credential 与具体 connection configuration 必须留在 manifest
+之外。仅提供大模型 API key 还不足以运行 multi-agent system：外部 runtime 还必须提供
+model/tool adapter、orchestration、符合 Conformance 的 store、取消/重试/恢复与 output
+delivery。PheroOS 本身不会读取该 key。
+
+参见 [runtime integration contract](docs/protocol/runtime-integration.md) 与
+[runtime adapter guide](docs/protocol/runtime-adapter-guide.md)。
+
+## ABI 版本与兼容性
+
+原始无版本 schema ID 和 CLI alias 是冻结的 v1 compatibility root。新语义使用独立
+document 与精确 selector：
+
+| Surface | 冻结 v1 `$id` / alias | Versioned compatibility document | 当前精确 opt-in |
+| --- | --- | --- | --- |
+| Capability | `https://pheroos.dev/schemas/capability.schema.json`; `capability`, `capability-v1` | `schemas/capability-v2.schema.json`; `pheroos-capability-schema-v2`; payload `pheroos.protocol.v1` | `schemas/capability-v3.schema.json`; `pheroos-capability-schema-v3`; payload `pheroos.protocol.v2` |
+| Protocol | `https://pheroos.dev/schemas/protocol.schema.json`; `protocol`, `protocol-v1` | `schemas/protocol-v2.schema.json`; `pheroos-protocol-schema-v2`; payload `pheroos.protocol.v1` | `schemas/protocol-v3.schema.json`; `pheroos-protocol-schema-v3`; payload `pheroos.protocol.v2` |
+| Driver | `https://pheroos.dev/schemas/driver.schema.json`; `driver`, `driver-v1` | `schemas/driver-v2.schema.json` | `descriptor_version=pheroos-driver-descriptor-v2` |
+| Kernel | `https://pheroos.dev/schemas/kernel.schema.json`; `kernel`, `kernel-v1` | `schemas/kernel-v2.schema.json` | `plan_version=pheroos-kernel-plan-v2` |
+| Runtime scope | 无 | 无 | `schemas/runtime-scope-v1.schema.json`; `pheroos-runtime-scope-v1` |
+| Scoped authority | 无 | 无 | `schemas/authority-v2.schema.json`; `pheroos-authority-schema-v2`; `schemas/scoped-authority-tck-v2.schema.json`; `pheroos-scoped-authority-tck-v2` |
+
+Schema-document version 与 protocol payload version 相互独立。Capability/Protocol v3
+是 scoped authority v2 的精确 Draft opt-in。Driver 的 `descriptor_version` 与
+`DriverDescriptor.version` 中的外部 provider version 相互独立；Kernel 使用
+`plan_version` 独立选择 plan。
+
+Reader 必须显式选择版本；object shape 或 package version 绝不会把 v1 静默升级到 v2。
+Migration 不能编造 readiness、scope、capability、provider-version 或 authority fact。
+公共 Python shape 与 lifecycle 分别记录在
+[`public-python-api-v1.json`](pheroos/conformance/abi/public-python-api-v1.json) 和
+[`public-python-api-lifecycle-v1.json`](pheroos/conformance/abi/public-python-api-lifecycle-v1.json)。
+
+`pheroos validate`、`pheroos conformance` 与 `pheroos profile show` 选择 legacy v1
+manifest profile。Capability/Protocol v3 artifact 使用精确 wire validation 和专用的 v2
+Store/session/runtime Conformance；legacy command 不会根据 object shape 推断 v2。
+
+Namespaced `x-*`、`ext.*` 与 manifest `extensions` 保持开放，但只能作为非权威 metadata。
+新增能够改变 commit truth 或 authority 的 record 必须具有 versioned ABI、validation、
+Trace lineage、Conformance 与 migration note。
+
+参见 [schema migration rules](docs/process/schema-v1-v2-migration.md)、
+[API lifecycle](docs/process/api-lifecycle.md) 与
+[extension boundaries](docs/protocol/extension-points.md)。
+
+## CLI 参考
+
+本地 CLI 不会启动服务：
+
+```bash
+pheroos version
+pheroos validate examples/toy-protocol/capability.json
+pheroos conformance examples/toy-protocol
+pheroos source-conformance .
 pheroos profile show examples/hybrid-commit-protocol/capability.json
 pheroos schema list
 pheroos schema show commit
-pheroos schema export capability-v2
-pheroos schema export protocol-v2
-pheroos schema export driver-v2
-pheroos schema export kernel-v2
-pheroos wire validate commit record.json
-pheroos wire validate driver-v2 descriptor.json
-pheroos wire validate kernel-v2 plan.json
+pheroos schema export commit > commit.schema.json
+pheroos wire validate commit path/to/commit-record.json
+pheroos wire validate capability-v3 examples/hybrid-replay-protocol/capability.json
+pheroos tck run --version v1
 pheroos tck run --version v2
 pheroos abi show
 pheroos abi diff
 ```
 
-Schema drift 使用 `python scripts/generate_schema_artifacts.py --check` 检查。
-`--write` 只重新生成 v2 artifact，绝不会改写冻结的 v1 文件。
+未知 critical version 和 malformed wire record 会返回 versioned、fail-closed JSON result，
+并使用非零 exit status。
 
-未知 critical version 与畸形 wire record 会 fail closed。HTTP API、认证、限流、
-远程路由和 service discovery 属于外部 runtime/gateway，不进入 protocol-core。
+## 示例
 
-## Runtime 集成
+所有示例均为 deterministic、provider-free、network-free、domain-neutral。
 
-外部 runtime 可以 fork 或依赖本仓库，并围绕 ABI 构建自己的 agent loop、model call、tool call、database、memory store、scheduling、queue、server 和 secret management。
+| 示例 | 证明内容 |
+| --- | --- |
+| [`toy-protocol`](examples/toy-protocol/) | 最小 manifest、declared candidate、quorum 与 fallback |
+| [`e2e-protocol`](examples/e2e-protocol/) | 最小 Protocol -> Kernel -> Driver -> Governance -> Trace vertical slice |
+| [`swarm-protocol`](examples/swarm-protocol/) | 基础 verified swarm signal 与 bounded pheromone memory |
+| [`hybrid-pheromone-protocol`](examples/hybrid-pheromone-protocol/) | 完整 Hybrid collective step 与四个 output gate |
+| [`hybrid-replay-protocol`](examples/hybrid-replay-protocol/) | Scoped Hybrid Replay v2、重启与 fresh-process continuation |
+| [`adaptive-pheromone-replay`](examples/adaptive-pheromone-replay/) | 外部 adaptive proposal 与 governance-issued replay state |
+| [`scoped-output-protocol`](examples/scoped-output-protocol/) | Baseline Output v2 activation、current grant 与 atomic output commit |
+| [`runtime-integration-protocol`](examples/runtime-integration-protocol/) | 精确版本的 Driver、authority、Trace、recovery 与 delivery transcript |
+| [`risk-v2-protocol`](examples/risk-v2-protocol/) | Store-backed risk authority 与 restart-safe currentness |
+| [`support-v2-protocol`](examples/support-v2-protocol/) | Principal、membership 与 support authority v2 |
+| [`hybrid-commit-protocol`](examples/hybrid-commit-protocol/) | Attention/truth 分离、stability、liveness 与 no downgrade |
+| [`commit-evidence-v2-protocol`](examples/commit-evidence-v2-protocol/) | Durable evidence truth 与 counterevidence binding |
+| [`commit-decision-v2-protocol`](examples/commit-decision-v2-protocol/) | 带精确 evidence lineage 的 durable terminal decision |
+| [`commit-certificate-v2-protocol`](examples/commit-certificate-v2-protocol/) | Portable certificate verification、authority-leaf binding 与 tamper rejection |
+| [`commit-certificate-replay`](examples/commit-certificate-replay/) | Portable certificate 重建与 mutation/replay rejection |
+| [`distributed-commit-protocol`](examples/distributed-commit-protocol/) | Byzantine quorum、provisional state、conflict freeze 与 deadline |
+| [`distributed-commit-v2-protocol`](examples/distributed-commit-v2-protocol/) | Durable distributed witness/finality authority |
+| [`commit-finality-v2-protocol`](examples/commit-finality-v2-protocol/) | Decision-to-certificate-to-distributed finality composition |
 
-每个 request 都构造 `RuntimeScope(tenant_id, run_id, request_id)`，并将由 tenant/run
-派生的 `scope_ref` 贯穿 Kernel、Driver、Governance 与 scoped Trace。持久权威通过外部
-`GovernanceStateStore` adapter 提供：state 与 Trace 原子提交，compare-and-swap head
-拒绝 fork，只有验证过的 store receipt 才能完成持久 output authority。仓库内的
-in-memory store 只是 reference adapter，不是数据库。
+## 一致性验证与发布完整性
 
-append-only lineage 使用独立且 provider-neutral 的 `TraceStore` Protocol。外部
-StateStore/TraceStore 实现可在集成前运行公开的
-`run_governance_state_store_conformance(...)` 与
-`run_trace_store_conformance(...)` 矩阵。
+冻结的 Commit TCK v1 包含 38 个 legacy adversarial vector。TCK v2 使用 23 个
+expected-free declarative case：adapter 只接收 input，expected result 由 harness 持有。
+公共 reference adapter 与独立 standard-library spec model 必须一致；malformed、
+echo/constant、out-of-order、state-leaking 与 timeout adapter 必须被拒绝。
 
-推荐组合路径：
-
-```text
-manifest
--> validation
--> kernel plan
--> external adapter binding
--> evidence, scout reports, and signals
--> governance decision
--> trace lineage
--> output authorization
--> conformance
-```
-
-Provider 配置应留在 manifest 之外。使用 `config_ref` 这类 opaque external reference；不要把 API key、password、token、credential 或 secret 写入协议文件。
-
-## Swarm 语义
-
-Swarm-native behavior 是协议行为，不是 swarm framework。
-
-蜂群概念映射为 scout report、recruitment signal、inhibition signal、quorum、consensus 和 safe fallback。
-
-蚁群概念映射为 pheromone trail、evaporation、positive 或 negative feedback、bounded source contribution 和 traceable collective memory。
-
-Pheromone 不是 evidence、truth、permission、quorum 或 output authority。
-
-所有 swarm mode 的 scout 和已启用 collective signal 只有通过 governance verification
-后才能计数或影响评分。Hybrid runtime 还向 `evaluate_hybrid_collective_step(...)` 提交
-trail、topology、feedback、layer proposal、performance snapshot、
-strategy bias 以及有界 policy-adjustment proposal。这个 pure reference step 按 manifest
-声明执行 deposit、evaporation、diffusion、reinforcement、coordination、scoring、scout
-gate 和 commit-or-fallback，并返回该真实路径产生的 canonical `trace_events`。
-
-`LayerCoordinationState` 是 governance output，不是具有 authority 的 Hybrid input。外部
-runtime 必须提交 `LayerProposal` 及相关 proposal input，由 governance 重新计算协调结果。
-Manifest ABI 只有一个 canonical `PheromoneKindProfile`，由 `pheroos.protocol` 导出；
-`pheroos.governance` 中的同名符号是同一个 compatibility type。
-
-## 不在范围内
-
-本仓库不应成为：
-
-- agent framework
-- model-provider gateway
-- FastAPI 或 product server
-- dashboard
-- LangGraph runtime
-- LiteLLM/OpenAI/Ollama/vLLM wrapper
-- database、queue、worker pool 或 daemon
-- plugin marketplace
-- domain workflow package
-
-## 兼容性
-
-Baseline governed protocol 在没有 swarm behavior 时仍然有效。
-
-Swarm-specific conformance 只在 manifest 声明 swarm collective mode 时适用。
-
-Hybrid declaration 选择 `pheroos-hybrid-swarm-v1`，其中包含 core、swarm 和 Hybrid
-required checks。Baseline quorum 和 basic swarm protocol 不会因此增加 Hybrid-only required
-field 或 check。
-
-Optimal Commit 同样是 opt-in。只有显式声明 `collective_commit_policy` 的 manifest
-才选择 Commit profile；baseline、swarm 与 Hybrid v1 manifest 保持原有 profile、result
-和 trace 行为。
-
-## 发布完整性
-
-CI 覆盖 Python 3.12 至 3.14，并在外部工作目录分别验证 wheel 与 sdist。只有通过这些
-检查的精确 distribution bytes 才能进入 deterministic CycloneDX/SPDX SBOM 生成和受信
-main branch provenance attestation。Pull request 始终保持 read-only permission。Build
-provenance 只说明 artifact 来源，不会创建 protocol evidence 或 governance authority。
-详见[发布检查清单](docs/process/release-checklist.md)。
-
-## Hybrid Pheromone Draft ABI
-
-完整 Hybrid reference path 已作为确定性、provider-free 的 protocol-core vertical slice
-交付：governance signal verification、有界 deposit/evaporation/diffusion/reinforcement、
-L1–L4 coordination、run-scoped policy adjustment、declared-candidate consensus 或 safe
-fallback、四个 output gate，以及可因果重放的 trace/conformance。Pheromone 始终只是
-collective memory，不会成为 evidence 或 authority。
-
-外部 runtime 只能使用 `replay_state_from_hybrid_step(...)` 返回的 governance-issued
-`HybridReplayState` 继续 Hybrid run。Replay receipt 会绑定 deposit、diffusion、feedback 和
-adjustment payload；trace conformance 会拒绝 payload substitution、跨 lifecycle identity
-collision，以及缺少匹配 issued prior state 的 replay claim。详见
-[ABI 参考](docs/protocol/hybrid-pheromone-abi.md)和
-[迁移说明](docs/protocol/hybrid-pheromone-v1-migration.md)。
-
-可通过以下 provider-free reference 验证：
+常用验证命令：
 
 ```bash
-.venv/bin/python -m pheroos.cli.main conformance examples/hybrid-pheromone-protocol
-.venv/bin/python examples/hybrid-pheromone-protocol/run.py
-.venv/bin/python examples/adaptive-pheromone-replay/replay.py
+python -m pytest -q
+pheroos source-conformance .
+python scripts/generate_schema_artifacts.py --check
+python scripts/generate_commit_tck.py --check
+python scripts/generate_public_api_inventory.py --check
+python scripts/generate_governance_public_api.py --check
 ```
 
-## Optimal Commit Draft ABI
+CI 覆盖 CPython 3.12 至 3.14，验证 import DAG 与 public ABI，从外部工作目录分别测试
+wheel/sdist 安装并执行 reference performance budget。Release gate 绑定完整 workflow
+execution context，使用 hash-closed Ubuntu x86_64 CPython 3.12-3.14 toolchain，从原始 Git
+tree/blob object 快照 candidate，并从精确 wheel/sdist metadata 与 filename 派生
+CycloneDX/SPDX identity。Provenance 证明 artifact 来源，但不创建 protocol evidence 或
+governance authority。已检入的 branch/tag ruleset 与 immutable-release setting 只是
+inert policy，并未成为远程保护。这是 build 与 attestation pipeline，不是 GitHub Release
+或 package publication 的证据。参见
+[Conformance Suite](docs/conformance/conformance-suite.md) 与
+[release checklist](docs/process/release-checklist.md)。
 
-Optimal Commit 将探索压力与事实权威分离。通过治理验证的 principal、risk、membership、
-observation、counterevidence、challenge、support lease、stop、permission、replay 和
-prior-window head 共同决定精确的 fixed-point commit metrics。唯一 leader 必须在连续稳定
-窗口内满足全部声明 gate；candidate identifier 不会用于打破 tie。
+## 文档
 
-Manifest 可选择 `advisory`、`evidence_bound`、`certified` 或 `distributed`
-assurance。缺少当前 assurance 所需证明时，不会静默产生低等级 commit。新 attention、
-evidence、leader 变化、reset 或 finality delay 都不能延长 absolute deadline。
+- 核心规范：[SPEC.md](SPEC.md)
+- Hybrid Pheromone：[ABI reference](docs/protocol/hybrid-pheromone-abi.md)、
+  [durable Replay v2](docs/protocol/hybrid-replay-v2.md) 与
+  [v1 migration](docs/protocol/hybrid-pheromone-v1-migration.md)
+- Optimal Commit：[ABI reference](docs/protocol/optimal-commit-abi.md) 与
+  [v1 migration](docs/protocol/optimal-commit-v1-migration.md)
+- 项目流程：[development index](docs/process/index.md)、
+  [CONTRIBUTING.md](CONTRIBUTING.md) 与 [CHANGELOG.md](CHANGELOG.md)
+- 安全：[SECURITY.md](SECURITY.md)
 
-这个 liveness 保证的前提是外部 runtime 持续推进单调 logical step 并重复调用
-evaluator。它保证终态响应，而不是强制 evidence commit：`safe_fallback`、
-`advisory`、`blocked`、`invalid`、`finality_unavailable` 与
-`safety_violation` 仍是显式 non-commit outcome。
+## 非目标
 
-`evaluate_hybrid_commit_step(request=...)` 在 governance envelope 可用时返回权威 progress
-或 terminal outcome，并携带精确 window/replay head、所需 certificate/finality record、
-terminal 时适用的 output decision、canonical trace、diagnostics，以及绑定全部
-authority leaf 的 root。
-Malformed authority fact 会 fail closed。缺失、畸形或与当前 step 不匹配的 attention
-会被隔离为非权威诊断，不能否决本来有效的 commit path。每个已签发 terminal outcome
-都能 deliver；publish 与 execute 仍需独立、当前 action authority。
-
-Distributed assurance 验证 `n >= 3f + 1` 与 `2q - n > f`、精确 witness proposal
-digest、semantic commit-value root、membership/epoch scope、replay/equivocation 和
-conflict freeze。同一语义值的 proof-envelope 重试不会冻结 epoch；candidate、claim、
-output 或任一 authority root 不同才构成冲突。Core 只定义 record 与确定性 governance；
-network、witness collector、scheduler、provider 和 storage 留在外部。
-
-冻结的 TCK v1 覆盖 38 个 legacy 对抗 vector。TCK v2 新增 23 个 expected-free
-声明式 request case：adapter 只能看到 input，expected 由 harness 持有。公共 reference
-adapter 与独立 standard-library spec model 必须一致；echo/constant、malformed、乱序、
-state leakage 与 timeout adapter 都必须失败。Active Commit conformance 没有 skip 或
-N/A 路径。运行方式：
-
-```bash
-.venv/bin/python -c \
-  'from pheroos.conformance import run_commit_tck; assert run_commit_tck().ok'
-.venv/bin/python -m pheroos.cli.main tck run --version v2
-.venv/bin/python -m pheroos.cli.main conformance examples/hybrid-commit-protocol
-.venv/bin/python -m pheroos.cli.main conformance examples/distributed-commit-protocol
-.venv/bin/python examples/hybrid-commit-protocol/run.py
-.venv/bin/python examples/commit-certificate-replay/replay.py
-.venv/bin/python examples/distributed-commit-protocol/run.py
-```
-
-Manifest extension 是 metadata，除非被协议不变量正式采用。Extension metadata 不创建 evidence、permission、quorum、commit authority 或 output authority。
+Protocol-core 不是 agent framework、model-provider gateway、FastAPI 或 product server、
+dashboard、LangGraph runtime、provider SDK wrapper、database、queue、worker pool、daemon、
+plugin marketplace 或 domain workflow package。外部 runtime 可以围绕 ABI 实现这些能力。
 
 ## 开发
 
-保持变更 small、deterministic、provider-free、network-free 和 domain-neutral。
+变更应保持 small、deterministic、domain-neutral、provider-free，并直接由 test、example、
+Trace 或 Conformance 覆盖。不要为了让测试通过而削弱 package boundary。
 
-优先使用 dataclass、pure function、explicit validation、small schema、provider-free example、direct test 和 conformance check。
-
-不要为了让测试通过而削弱 package boundary。
-
-## License
+## 许可证
 
 参见 [LICENSE](LICENSE)。

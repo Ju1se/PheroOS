@@ -8,6 +8,7 @@ from dataclasses import dataclass
 from pheroos.governance._distributed.invariants import (
     _coerce_assurance,
     _coerce_authority,
+    _construct_dataclass,
     _require_sequence,
     _strict_mapping,
 )
@@ -321,8 +322,9 @@ def portable_membership_snapshot_from_payload(
             "portable membership principals",
         )
         principals = tuple(
-            PortableEligiblePrincipal(
-                **_strict_mapping(
+            _construct_dataclass(
+                PortableEligiblePrincipal,
+                _strict_mapping(
                     raw_principal,
                     {
                         "failure_domain",
@@ -332,37 +334,20 @@ def portable_membership_snapshot_from_payload(
                         "verified_method",
                     },
                     "portable membership principal",
-                )
+                ),
             )
             for raw_principal in raw_principals
         )
         clusters.append(
-            PortableEligibleCluster(
-                cluster_id=cluster["cluster_id"],
-                principals=principals,
+            _construct_dataclass(
+                PortableEligibleCluster,
+                {"cluster_id": cluster["cluster_id"], "principals": principals},
             )
         )
-    return PortableMembershipSnapshot(
-        snapshot_id=values["snapshot_id"],
-        profile=values["profile"],
-        assurance=_coerce_assurance(values["assurance"]),
-        manifest_root=values["manifest_root"],
-        commit_policy_root=values["commit_policy_root"],
-        protocol_id=values["protocol_id"],
-        run_id=values["run_id"],
-        target=values["target"],
-        epoch=values["epoch"],
-        eligible_clusters=tuple(clusters),
-        membership_root=values["membership_root"],
-        issuer_id=values["issuer_id"],
-        membership_method=values["membership_method"],
-        authority=_coerce_authority(values["authority"]),
-        issued_at_step=values["issued_at_step"],
-        expires_at_step=values["expires_at_step"],
-        provenance=values["provenance"],
-        trace_event_id=values["trace_event_id"],
-        snapshot_fingerprint=values["snapshot_fingerprint"],
-    )
+    values["assurance"] = _coerce_assurance(values["assurance"])
+    values["authority"] = _coerce_authority(values["authority"])
+    values["eligible_clusters"] = tuple(clusters)
+    return _construct_dataclass(PortableMembershipSnapshot, values)
 
 
 for _name in (

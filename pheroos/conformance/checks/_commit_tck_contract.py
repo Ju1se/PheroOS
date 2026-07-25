@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 """Shared exact-vector runner for active Optimal Commit conformance checks.
 
 The individual checks select the adversarial matrix cases that prove their
@@ -7,6 +5,8 @@ invariant.  This helper delegates to the public TCK adapter and compares the
 complete expected result; it does not duplicate governance algorithms or turn
 exceptions into a passing result.
 """
+
+from __future__ import annotations
 
 from collections.abc import Iterable
 
@@ -75,11 +75,7 @@ def check_commit_tck_cases(
         tuple(by_case[case] for case in required),
         adapter=ReferenceCommitTckAdapter(),
     )
-    failures = tuple(
-        result
-        for result in report.results
-        if not result.ok
-    )
+    failures = tuple(result for result in report.results if not result.ok)
     if failures:
         detail = "; ".join(
             f"case {result.matrix_case} ({result.vector_id}): "

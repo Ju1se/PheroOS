@@ -2,9 +2,14 @@ from __future__ import annotations
 
 from math import isclose
 
-from pheroos.conformance.checks._manifest import active_target, candidate_set, exercise_candidate_id
+from pheroos.conformance.checks._manifest import (
+    active_target,
+    candidate_set,
+    exercise_candidate_id,
+)
 from pheroos.conformance.report import CheckResult
 from pheroos.governance import (
+    CandidateSet,
     PheromonePolicy,
     PheromoneTrail,
     pheromone_policy_from_collective,
@@ -15,6 +20,7 @@ from pheroos.governance import (
 from pheroos.governance.errors import GovernanceError
 from pheroos.protocol.models import (
     CapabilityManifest,
+    PheromoneKindProfile,
     SUPPORTED_PHEROMONE_KINDS,
     effective_pheromone_scored_subject_types,
     has_hybrid_pheromone_features,
@@ -41,76 +47,22 @@ def check_hybrid(manifest: CapabilityManifest) -> CheckResult:
     candidates = candidate_set(manifest)
     candidate_id = exercise_candidate_id(manifest)
     if candidate_id is None:
-        return CheckResult("pheromone_subject_scoring", False, "active_target_candidates")
+        return CheckResult(
+            "pheromone_subject_scoring", False, "active_target_candidates"
+        )
     target = active_target(manifest)
     pheromone_policy = pheromone_policy_from_collective(policy)
-    baseline = score_pheromone_trails(candidate_set=candidates, policy=pheromone_policy, trails=[])
+    baseline = score_pheromone_trails(
+        candidate_set=candidates, policy=pheromone_policy, trails=[]
+    )
     declared_subjects = list(pheromone_policy.scored_subject_types)
-    subject_scores: dict[str, tuple[float, bool]] = {}
-    problems: list[str] = []
-    for subject_type in declared_subjects:
-        scoring_kind = next(
-            (
-                kind
-                for kind in sorted(
-                    set(pheromone_policy.kind_profiles)
-                    | (set(SUPPORTED_PHEROMONE_KINDS) - {"stale"})
-                )
-                for profile in (pheromone_policy.kind_profiles.get(kind),)
-                if kind_response_can_score(kind, profile, pheromone_policy)
-                and subject_type
-                in effective_pheromone_scored_subject_types(
-                    kind,
-                    profile,
-                    pheromone_policy.scored_subject_types,
-                )
-            ),
-            "",
-        )
-        if not scoring_kind:
-            # A globally declared subject is allowed to have no active kind
-            # under this exact policy (for example every applicable kind has
-            # zero weight, saturation is disabled, or novelty is disabled).
-            # Exercise one declared binding and prove it remains a no-score
-            # path instead of inventing a positive-pressure requirement.
-            scoring_kind = no_score_probe_kind(
-                subject_type,
-                pheromone_policy,
-            )
-        subject_id = candidate_id if subject_type == "candidate" else f"{subject_type}:conformance"
-        trails = manifest_trails(
-            candidate_id=candidate_id,
-            subject_type=subject_type,
-            subject_id=subject_id,
-            strength=manifest_trail_strength(pheromone_policy),
-            target=target,
-            kind=scoring_kind,
-            diversity=pheromone_policy.min_source_diversity,
-        )
-        result = score_pheromone_trails_result(
-            candidate_set=candidates,
-            policy=pheromone_policy,
-            trails=trails,
-        )
-        if subject_type == "candidate":
-            contribution = float(
-                result.kind_breakdown[candidate_id].get(scoring_kind, 0.0)
-            )
-        else:
-            contribution = float(
-                result.subject_breakdown[candidate_id].get(subject_type, 0.0)
-            )
-        profile = pheromone_policy.kind_profiles.get(scoring_kind)
-        active = bool(
-            kind_response_can_score(scoring_kind, profile, pheromone_policy)
-            and subject_type
-            in effective_pheromone_scored_subject_types(
-                scoring_kind,
-                profile,
-                pheromone_policy.scored_subject_types,
-            )
-        )
-        subject_scores[subject_type] = (contribution, active)
+    subject_scores = _collect_subject_scores(
+        declared_subjects=declared_subjects,
+        candidates=candidates,
+        candidate_id=candidate_id,
+        target=target,
+        policy=pheromone_policy,
+    )
     evidence_score = score_pheromone_trails(
         candidate_set=candidates,
         policy=pheromone_policy,
@@ -124,40 +76,161 @@ def check_hybrid(manifest: CapabilityManifest) -> CheckResult:
             diversity=pheromone_policy.min_source_diversity,
         ),
     )[candidate_id]
+    rejects_undeclared = _rejects_undeclared_candidate_binding(
+        candidates=candidates,
+        target=target,
+        policy=pheromone_policy,
+    )
+
+    competitive = (
+        pheromone_policy.response_model == "competitive"
+        or pheromone_policy.competition_mode == "normalize"
+    )
+    problems = _subject_score_problems(
+        subject_scores,
+        competitive_singleton=competitive and len(candidates.candidates) == 1,
+    )
+    if evidence_score != baseline[candidate_id]:
+        problems.append("evidence_subject_scored")
+    if not rejects_undeclared:
+        problems.append("undeclared_candidate_binding")
+    return CheckResult("pheromone_subject_scoring", not problems, ", ".join(problems))
+
+
+def _collect_subject_scores(
+    *,
+    declared_subjects: list[str],
+    candidates: CandidateSet,
+    candidate_id: str,
+    target: str,
+    policy: PheromonePolicy,
+) -> dict[str, tuple[float, bool]]:
+    return {
+        subject_type: _score_declared_subject(
+            subject_type=subject_type,
+            candidates=candidates,
+            candidate_id=candidate_id,
+            target=target,
+            policy=policy,
+        )
+        for subject_type in declared_subjects
+    }
+
+
+def _score_declared_subject(
+    *,
+    subject_type: str,
+    candidates: CandidateSet,
+    candidate_id: str,
+    target: str,
+    policy: PheromonePolicy,
+) -> tuple[float, bool]:
+    scoring_kind = _scoring_kind_for_subject(subject_type, policy)
+    subject_id = (
+        candidate_id if subject_type == "candidate" else f"{subject_type}:conformance"
+    )
+    trails = manifest_trails(
+        candidate_id=candidate_id,
+        subject_type=subject_type,
+        subject_id=subject_id,
+        strength=manifest_trail_strength(policy),
+        target=target,
+        kind=scoring_kind,
+        diversity=policy.min_source_diversity,
+    )
+    result = score_pheromone_trails_result(
+        candidate_set=candidates,
+        policy=policy,
+        trails=trails,
+    )
+    if subject_type == "candidate":
+        contribution = float(result.kind_breakdown[candidate_id].get(scoring_kind, 0.0))
+    else:
+        contribution = float(
+            result.subject_breakdown[candidate_id].get(subject_type, 0.0)
+        )
+    profile = policy.kind_profiles.get(scoring_kind)
+    active = bool(
+        kind_response_can_score(scoring_kind, profile, policy)
+        and subject_type
+        in effective_pheromone_scored_subject_types(
+            scoring_kind,
+            profile,
+            policy.scored_subject_types,
+        )
+    )
+    return contribution, active
+
+
+def _scoring_kind_for_subject(subject_type: str, policy: PheromonePolicy) -> str:
+    scoring_kind = next(
+        (
+            kind
+            for kind in sorted(
+                set(policy.kind_profiles) | (set(SUPPORTED_PHEROMONE_KINDS) - {"stale"})
+            )
+            for profile in (policy.kind_profiles.get(kind),)
+            if kind_response_can_score(kind, profile, policy)
+            and subject_type
+            in effective_pheromone_scored_subject_types(
+                kind,
+                profile,
+                policy.scored_subject_types,
+            )
+        ),
+        "",
+    )
+    if scoring_kind:
+        return scoring_kind
+    # A globally declared subject is allowed to have no active kind under this
+    # exact policy. Exercise one declared binding and prove it remains no-score.
+    return no_score_probe_kind(subject_type, policy)
+
+
+def _subject_score_problems(
+    subject_scores: dict[str, tuple[float, bool]],
+    *,
+    competitive_singleton: bool,
+) -> list[str]:
+    problems: list[str] = []
+    for subject_type, (contribution, response_active) in subject_scores.items():
+        if (
+            response_active
+            and isclose(contribution, 0.0, abs_tol=1e-12)
+            and not competitive_singleton
+        ):
+            problems.append(f"declared_{subject_type}_subject_no_score")
+        if not response_active and not isclose(
+            contribution,
+            0.0,
+            abs_tol=1e-12,
+        ):
+            problems.append(f"declared_{subject_type}_unexpected_score")
+    return problems
+
+
+def _rejects_undeclared_candidate_binding(
+    *,
+    candidates: CandidateSet,
+    target: str,
+    policy: PheromonePolicy,
+) -> bool:
     try:
         validate_pheromone_trail(
             trail(
                 candidate_id="candidate:missing",
                 subject_type="route",
                 subject_id="route:missing",
-                strength=manifest_trail_strength(pheromone_policy),
+                strength=manifest_trail_strength(policy),
                 target=target,
                 source_suffix="missing",
             ),
-            pheromone_policy,
+            policy,
             candidate_set=candidates,
         )
     except GovernanceError:
-        rejects_undeclared = True
-    else:
-        rejects_undeclared = False
-
-    competitive = (
-        pheromone_policy.response_model == "competitive"
-        or pheromone_policy.competition_mode == "normalize"
-    )
-    for subject_type, (contribution, response_active) in subject_scores.items():
-        if response_active and isclose(contribution, 0.0, abs_tol=1e-12) and not (
-            competitive and len(candidates.candidates) == 1
-        ):
-            problems.append(f"declared_{subject_type}_subject_no_score")
-        if not response_active and not isclose(contribution, 0.0, abs_tol=1e-12):
-            problems.append(f"declared_{subject_type}_unexpected_score")
-    if evidence_score != baseline[candidate_id]:
-        problems.append("evidence_subject_scored")
-    if not rejects_undeclared:
-        problems.append("undeclared_candidate_binding")
-    return CheckResult("pheromone_subject_scoring", not problems, ", ".join(problems))
+        return True
+    return False
 
 
 def manifest_trails(
@@ -192,7 +265,7 @@ def manifest_trail_strength(policy: PheromonePolicy) -> float:
 
 def kind_response_can_score(
     kind: str,
-    profile: object | None,
+    profile: PheromoneKindProfile | None,
     policy: PheromonePolicy,
 ) -> bool:
     if not effective_pheromone_scored_subject_types(

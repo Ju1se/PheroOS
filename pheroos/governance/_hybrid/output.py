@@ -1,6 +1,6 @@
-from __future__ import annotations
-
 """Typed certificate selection for terminal output authorization."""
+
+from __future__ import annotations
 
 from pheroos.governance._certificate.local import LocalCommitReceipt
 from pheroos.governance._certificate.outcome import OutcomeCertificate
@@ -17,7 +17,13 @@ def _certificate_for_outcome(
     evidence_certificate: EvidenceCommitCertificate | None,
     distributed_certificate: DistributedCommitCertificate | None,
     outcome_certificate: OutcomeCertificate | None,
-) -> object | None:
+) -> (
+    LocalCommitReceipt
+    | EvidenceCommitCertificate
+    | DistributedCommitCertificate
+    | OutcomeCertificate
+    | None
+):
     if outcome.kind is not DecisionOutcomeKind.EVIDENCE_COMMIT:
         return outcome_certificate
     if outcome.assurance is CommitAssurance.EVIDENCE_BOUND:

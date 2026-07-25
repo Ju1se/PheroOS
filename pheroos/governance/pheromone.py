@@ -1,14 +1,19 @@
-from __future__ import annotations
-
 """Compatibility facade for lifecycle-scoped governance implementations."""
 
-# ruff: noqa: F401 -- owner-module globals support annotations and pickle.
+from __future__ import annotations
+
+# The private owner modules deliberately preserve the historical public
+# ``__module__`` value for pickle and annotation compatibility.  These imports
+# provide that public annotation namespace; wildcard imports are constrained by
+# each owner module's explicit ``__all__`` contract.
+# ruff: noqa: F401,F403
 import math
 from collections import deque
 from collections.abc import Mapping
 from dataclasses import dataclass, field, replace
 from types import MappingProxyType
 from typing import Any
+
 from pheroos.governance._validation import is_nonblank_string
 from pheroos.governance.candidate import CandidateSet
 from pheroos.governance.errors import GovernanceError
@@ -20,178 +25,9 @@ from pheroos.protocol.models import (
     is_scored_pheromone_subject_type,
 )
 from pheroos.trace import canonical_pheromone_clip_payload
-from typing import cast
 
-from pheroos.governance._pheromone.records import BREAKDOWN_CATEGORIES as _compat_BREAKDOWN_CATEGORIES
-from pheroos.governance._pheromone.records import PHEROMONE_EXTENSION_PREFIXES as _compat_PHEROMONE_EXTENSION_PREFIXES
-from pheroos.governance._pheromone.records import PHEROMONE_KIND_PROFILE_MAP_VERSION as _compat_PHEROMONE_KIND_PROFILE_MAP_VERSION
-from pheroos.governance._pheromone.records import PheromoneDiffusionPolicy as _compat_PheromoneDiffusionPolicy
-from pheroos.governance._pheromone.records import PheromoneEdge as _compat_PheromoneEdge
-from pheroos.governance._pheromone.records import PheromoneExplorationObservation as _compat_PheromoneExplorationObservation
-from pheroos.governance._pheromone.records import PheromoneLifecycleRecord as _compat_PheromoneLifecycleRecord
-from pheroos.governance._pheromone.records import PheromoneNeighborhood as _compat_PheromoneNeighborhood
-from pheroos.governance._pheromone.records import PheromoneNormalizationRecord as _compat_PheromoneNormalizationRecord
-from pheroos.governance._pheromone.records import PheromonePolicy as _compat_PheromonePolicy
-from pheroos.governance._pheromone.records import PheromoneScoreResult as _compat_PheromoneScoreResult
-from pheroos.governance._pheromone.records import PheromoneSubject as _compat_PheromoneSubject
-from pheroos.governance._pheromone.records import PheromoneTrail as _compat_PheromoneTrail
-from pheroos.governance._pheromone.records import SUPPORTED_PHEROMONE_COMPETITION_MODES as _compat_SUPPORTED_PHEROMONE_COMPETITION_MODES
-from pheroos.governance._pheromone.records import SUPPORTED_PHEROMONE_KINDS as _compat_SUPPORTED_PHEROMONE_KINDS
-from pheroos.governance._pheromone.records import SUPPORTED_PHEROMONE_RESPONSE_MODELS as _compat_SUPPORTED_PHEROMONE_RESPONSE_MODELS
-from pheroos.governance._pheromone.records import SUPPORTED_PHEROMONE_SUBJECT_TYPES as _compat_SUPPORTED_PHEROMONE_SUBJECT_TYPES
-from pheroos.governance._pheromone.invariants import _DEFAULT_KIND_PRIORITY as _compat__DEFAULT_KIND_PRIORITY
-from pheroos.governance._pheromone.invariants import _finite_number as _compat__finite_number
-from pheroos.governance._pheromone.invariants import _non_negative_number as _compat__non_negative_number
-from pheroos.governance._pheromone.invariants import _non_negative_step as _compat__non_negative_step
-from pheroos.governance._pheromone.invariants import _trail_clip_payload as _compat__trail_clip_payload
-from pheroos.governance._pheromone.invariants import canonical_pheromone_kind_profiles as _compat_canonical_pheromone_kind_profiles
-from pheroos.governance._pheromone.invariants import clip_pheromone_strength as _compat_clip_pheromone_strength
-from pheroos.governance._pheromone.invariants import diffusion_policy_from_collective as _compat_diffusion_policy_from_collective
-from pheroos.governance._pheromone.invariants import is_extension_pheromone_value as _compat_is_extension_pheromone_value
-from pheroos.governance._pheromone.invariants import legacy_pheromone_weight as _compat_legacy_pheromone_weight
-from pheroos.governance._pheromone.invariants import normalize_legacy_pheromone_trail as _compat_normalize_legacy_pheromone_trail
-from pheroos.governance._pheromone.invariants import pheromone_bound_candidate_id as _compat_pheromone_bound_candidate_id
-from pheroos.governance._pheromone.invariants import pheromone_candidate_id as _compat_pheromone_candidate_id
-from pheroos.governance._pheromone.invariants import pheromone_kind_priority as _compat_pheromone_kind_priority
-from pheroos.governance._pheromone.invariants import pheromone_lineage as _compat_pheromone_lineage
-from pheroos.governance._pheromone.invariants import pheromone_policy_from_collective as _compat_pheromone_policy_from_collective
-from pheroos.governance._pheromone.invariants import pheromone_processing_key as _compat_pheromone_processing_key
-from pheroos.governance._pheromone.invariants import pheromone_source_id as _compat_pheromone_source_id
-from pheroos.governance._pheromone.invariants import pheromone_subject_id as _compat_pheromone_subject_id
-from pheroos.governance._pheromone.invariants import pheromone_subject_type as _compat_pheromone_subject_type
-from pheroos.governance._pheromone.invariants import scoreable_pheromone_candidate_id as _compat_scoreable_pheromone_candidate_id
-from pheroos.governance._pheromone.invariants import subject_key as _compat_subject_key
-from pheroos.governance._pheromone.invariants import topology_subject_candidate_id as _compat_topology_subject_candidate_id
-from pheroos.governance._pheromone.invariants import topology_subject_target as _compat_topology_subject_target
-from pheroos.governance._pheromone.invariants import validate_pheromone_diffusion_policy as _compat_validate_pheromone_diffusion_policy
-from pheroos.governance._pheromone.invariants import validate_pheromone_policy as _compat_validate_pheromone_policy
-from pheroos.governance._pheromone.invariants import validate_pheromone_subject_binding as _compat_validate_pheromone_subject_binding
-from pheroos.governance._pheromone.invariants import validate_pheromone_topology as _compat_validate_pheromone_topology
-from pheroos.governance._pheromone.invariants import validate_pheromone_trail as _compat_validate_pheromone_trail
-from pheroos.governance._pheromone.lifecycle import PheromoneBatchResult as _compat_PheromoneBatchResult
-from pheroos.governance._pheromone.lifecycle import PheromoneBudgetState as _compat_PheromoneBudgetState
-from pheroos.governance._pheromone.lifecycle import _deposit_clip_causal_payload as _compat__deposit_clip_causal_payload
-from pheroos.governance._pheromone.lifecycle import _reject_duplicate_trail_events as _compat__reject_duplicate_trail_events
-from pheroos.governance._pheromone.lifecycle import clip_pheromone_deposit_strength as _compat_clip_pheromone_deposit_strength
-from pheroos.governance._pheromone.lifecycle import deposit_pheromone as _compat_deposit_pheromone
-from pheroos.governance._pheromone.lifecycle import deposit_pheromone_trails as _compat_deposit_pheromone_trails
-from pheroos.governance._pheromone.lifecycle import evaporate_trail as _compat_evaporate_trail
-from pheroos.governance._pheromone.lifecycle import evaporate_trails as _compat_evaporate_trails
-from pheroos.governance._pheromone.lifecycle import evaporate_trails_with_records as _compat_evaporate_trails_with_records
-from pheroos.governance._pheromone.lifecycle import is_expired as _compat_is_expired
-from pheroos.governance._pheromone.lifecycle import is_expired_with_policy as _compat_is_expired_with_policy
-from pheroos.governance._pheromone.lifecycle import lifecycle_record as _compat_lifecycle_record
-from pheroos.governance._pheromone.lifecycle import pheromone_budget_for_policy as _compat_pheromone_budget_for_policy
-from pheroos.governance._pheromone.lifecycle import pheromone_policy_for_trail as _compat_pheromone_policy_for_trail
-from pheroos.governance._pheromone.lifecycle import retained_pheromone_strength as _compat_retained_pheromone_strength
-from pheroos.governance._pheromone.lifecycle import validate_pheromone_budget_state as _compat_validate_pheromone_budget_state
-from pheroos.governance._pheromone.scoring import _capped_pheromone_score_contributions as _compat__capped_pheromone_score_contributions
-from pheroos.governance._pheromone.scoring import add_breakdown as _compat_add_breakdown
-from pheroos.governance._pheromone.scoring import add_dimension_breakdown as _compat_add_dimension_breakdown
-from pheroos.governance._pheromone.scoring import apply_pheromone_response as _compat_apply_pheromone_response
-from pheroos.governance._pheromone.scoring import cap_source_contribution as _compat_cap_source_contribution
-from pheroos.governance._pheromone.scoring import collect_pheromone_source_diversity as _compat_collect_pheromone_source_diversity
-from pheroos.governance._pheromone.scoring import empty_score_breakdown as _compat_empty_score_breakdown
-from pheroos.governance._pheromone.scoring import kind_breakdown_category as _compat_kind_breakdown_category
-from pheroos.governance._pheromone.scoring import normalize_pheromone_scores as _compat_normalize_pheromone_scores
-from pheroos.governance._pheromone.scoring import observe_pheromone_exploration as _compat_observe_pheromone_exploration
-from pheroos.governance._pheromone.scoring import pheromone_kind_can_suppress_positive as _compat_pheromone_kind_can_suppress_positive
-from pheroos.governance._pheromone.scoring import raw_pheromone_delta as _compat_raw_pheromone_delta
-from pheroos.governance._pheromone.scoring import score_pheromone_trails as _compat_score_pheromone_trails
-from pheroos.governance._pheromone.scoring import score_pheromone_trails_result as _compat_score_pheromone_trails_result
-from pheroos.governance._pheromone.scoring import score_pheromone_trails_with_breakdown as _compat_score_pheromone_trails_with_breakdown
-from pheroos.governance._pheromone.scoring import subject_breakdown_category as _compat_subject_breakdown_category
-from pheroos.governance._pheromone.diffusion import _diffusion_clip_causal_payload as _compat__diffusion_clip_causal_payload
-from pheroos.governance._pheromone.diffusion import _diffusion_replay_fingerprint as _compat__diffusion_replay_fingerprint
-from pheroos.governance._pheromone.diffusion import diffuse_pheromone_trails as _compat_diffuse_pheromone_trails
-from pheroos.governance._pheromone.diffusion import diffuse_pheromone_trails_with_records as _compat_diffuse_pheromone_trails_with_records
-from pheroos.governance._pheromone.diffusion import outgoing_edges as _compat_outgoing_edges
-from pheroos.governance._pheromone.diffusion import pheromone_diffusion_trace_event_id as _compat_pheromone_diffusion_trace_event_id
-
-SUPPORTED_PHEROMONE_KINDS = cast(Any, _compat_SUPPORTED_PHEROMONE_KINDS)
-SUPPORTED_PHEROMONE_SUBJECT_TYPES = cast(Any, _compat_SUPPORTED_PHEROMONE_SUBJECT_TYPES)
-SUPPORTED_PHEROMONE_RESPONSE_MODELS = cast(Any, _compat_SUPPORTED_PHEROMONE_RESPONSE_MODELS)
-SUPPORTED_PHEROMONE_COMPETITION_MODES = cast(Any, _compat_SUPPORTED_PHEROMONE_COMPETITION_MODES)
-PHEROMONE_EXTENSION_PREFIXES = cast(Any, _compat_PHEROMONE_EXTENSION_PREFIXES)
-PHEROMONE_KIND_PROFILE_MAP_VERSION = cast(Any, _compat_PHEROMONE_KIND_PROFILE_MAP_VERSION)
-BREAKDOWN_CATEGORIES = cast(Any, _compat_BREAKDOWN_CATEGORIES)
-PheromoneTrail = cast(Any, _compat_PheromoneTrail)
-PheromoneSubject = cast(Any, _compat_PheromoneSubject)
-PheromoneEdge = cast(Any, _compat_PheromoneEdge)
-PheromoneNeighborhood = cast(Any, _compat_PheromoneNeighborhood)
-PheromoneDiffusionPolicy = cast(Any, _compat_PheromoneDiffusionPolicy)
-PheromonePolicy = cast(Any, _compat_PheromonePolicy)
-PheromoneLifecycleRecord = cast(Any, _compat_PheromoneLifecycleRecord)
-PheromoneBudgetState = cast(Any, _compat_PheromoneBudgetState)
-PheromoneBatchResult = cast(Any, _compat_PheromoneBatchResult)
-PheromoneExplorationObservation = cast(Any, _compat_PheromoneExplorationObservation)
-PheromoneNormalizationRecord = cast(Any, _compat_PheromoneNormalizationRecord)
-PheromoneScoreResult = cast(Any, _compat_PheromoneScoreResult)
-pheromone_policy_from_collective = cast(Any, _compat_pheromone_policy_from_collective)
-canonical_pheromone_kind_profiles = cast(Any, _compat_canonical_pheromone_kind_profiles)
-normalize_legacy_pheromone_trail = cast(Any, _compat_normalize_legacy_pheromone_trail)
-diffusion_policy_from_collective = cast(Any, _compat_diffusion_policy_from_collective)
-_finite_number = cast(Any, _compat__finite_number)
-_non_negative_number = cast(Any, _compat__non_negative_number)
-_non_negative_step = cast(Any, _compat__non_negative_step)
-validate_pheromone_policy = cast(Any, _compat_validate_pheromone_policy)
-validate_pheromone_diffusion_policy = cast(Any, _compat_validate_pheromone_diffusion_policy)
-validate_pheromone_budget_state = cast(Any, _compat_validate_pheromone_budget_state)
-pheromone_budget_for_policy = cast(Any, _compat_pheromone_budget_for_policy)
-clip_pheromone_strength = cast(Any, _compat_clip_pheromone_strength)
-validate_pheromone_trail = cast(Any, _compat_validate_pheromone_trail)
-deposit_pheromone = cast(Any, _compat_deposit_pheromone)
-deposit_pheromone_trails = cast(Any, _compat_deposit_pheromone_trails)
-clip_pheromone_deposit_strength = cast(Any, _compat_clip_pheromone_deposit_strength)
-evaporate_trails = cast(Any, _compat_evaporate_trails)
-evaporate_trails_with_records = cast(Any, _compat_evaporate_trails_with_records)
-evaporate_trail = cast(Any, _compat_evaporate_trail)
-retained_pheromone_strength = cast(Any, _compat_retained_pheromone_strength)
-is_expired = cast(Any, _compat_is_expired)
-is_expired_with_policy = cast(Any, _compat_is_expired_with_policy)
-pheromone_policy_for_trail = cast(Any, _compat_pheromone_policy_for_trail)
-pheromone_subject_type = cast(Any, _compat_pheromone_subject_type)
-pheromone_subject_id = cast(Any, _compat_pheromone_subject_id)
-pheromone_candidate_id = cast(Any, _compat_pheromone_candidate_id)
-pheromone_bound_candidate_id = cast(Any, _compat_pheromone_bound_candidate_id)
-pheromone_lineage = cast(Any, _compat_pheromone_lineage)
-scoreable_pheromone_candidate_id = cast(Any, _compat_scoreable_pheromone_candidate_id)
-pheromone_source_id = cast(Any, _compat_pheromone_source_id)
-_DEFAULT_KIND_PRIORITY = cast(Any, _compat__DEFAULT_KIND_PRIORITY)
-pheromone_kind_priority = cast(Any, _compat_pheromone_kind_priority)
-pheromone_processing_key = cast(Any, _compat_pheromone_processing_key)
-_reject_duplicate_trail_events = cast(Any, _compat__reject_duplicate_trail_events)
-_trail_clip_payload = cast(Any, _compat__trail_clip_payload)
-_deposit_clip_causal_payload = cast(Any, _compat__deposit_clip_causal_payload)
-_diffusion_clip_causal_payload = cast(Any, _compat__diffusion_clip_causal_payload)
-_diffusion_replay_fingerprint = cast(Any, _compat__diffusion_replay_fingerprint)
-lifecycle_record = cast(Any, _compat_lifecycle_record)
-collect_pheromone_source_diversity = cast(Any, _compat_collect_pheromone_source_diversity)
-_capped_pheromone_score_contributions = cast(Any, _compat__capped_pheromone_score_contributions)
-score_pheromone_trails = cast(Any, _compat_score_pheromone_trails)
-score_pheromone_trails_with_breakdown = cast(Any, _compat_score_pheromone_trails_with_breakdown)
-score_pheromone_trails_result = cast(Any, _compat_score_pheromone_trails_result)
-pheromone_kind_can_suppress_positive = cast(Any, _compat_pheromone_kind_can_suppress_positive)
-raw_pheromone_delta = cast(Any, _compat_raw_pheromone_delta)
-legacy_pheromone_weight = cast(Any, _compat_legacy_pheromone_weight)
-kind_breakdown_category = cast(Any, _compat_kind_breakdown_category)
-subject_breakdown_category = cast(Any, _compat_subject_breakdown_category)
-apply_pheromone_response = cast(Any, _compat_apply_pheromone_response)
-normalize_pheromone_scores = cast(Any, _compat_normalize_pheromone_scores)
-empty_score_breakdown = cast(Any, _compat_empty_score_breakdown)
-add_breakdown = cast(Any, _compat_add_breakdown)
-add_dimension_breakdown = cast(Any, _compat_add_dimension_breakdown)
-validate_pheromone_topology = cast(Any, _compat_validate_pheromone_topology)
-topology_subject_candidate_id = cast(Any, _compat_topology_subject_candidate_id)
-topology_subject_target = cast(Any, _compat_topology_subject_target)
-validate_pheromone_subject_binding = cast(Any, _compat_validate_pheromone_subject_binding)
-diffuse_pheromone_trails = cast(Any, _compat_diffuse_pheromone_trails)
-diffuse_pheromone_trails_with_records = cast(Any, _compat_diffuse_pheromone_trails_with_records)
-pheromone_diffusion_trace_event_id = cast(Any, _compat_pheromone_diffusion_trace_event_id)
-outgoing_edges = cast(Any, _compat_outgoing_edges)
-subject_key = cast(Any, _compat_subject_key)
-observe_pheromone_exploration = cast(Any, _compat_observe_pheromone_exploration)
-cap_source_contribution = cast(Any, _compat_cap_source_contribution)
-is_extension_pheromone_value = cast(Any, _compat_is_extension_pheromone_value)
-
-del _compat_BREAKDOWN_CATEGORIES, _compat_PHEROMONE_EXTENSION_PREFIXES, _compat_PHEROMONE_KIND_PROFILE_MAP_VERSION, _compat_PheromoneBatchResult, _compat_PheromoneBudgetState, _compat_PheromoneDiffusionPolicy, _compat_PheromoneEdge, _compat_PheromoneExplorationObservation, _compat_PheromoneLifecycleRecord, _compat_PheromoneNeighborhood, _compat_PheromoneNormalizationRecord, _compat_PheromonePolicy, _compat_PheromoneScoreResult, _compat_PheromoneSubject, _compat_PheromoneTrail, _compat_SUPPORTED_PHEROMONE_COMPETITION_MODES, _compat_SUPPORTED_PHEROMONE_KINDS, _compat_SUPPORTED_PHEROMONE_RESPONSE_MODELS, _compat_SUPPORTED_PHEROMONE_SUBJECT_TYPES, _compat__DEFAULT_KIND_PRIORITY, _compat__capped_pheromone_score_contributions, _compat__deposit_clip_causal_payload, _compat__diffusion_clip_causal_payload, _compat__diffusion_replay_fingerprint, _compat__finite_number, _compat__non_negative_number, _compat__non_negative_step, _compat__reject_duplicate_trail_events, _compat__trail_clip_payload, _compat_add_breakdown, _compat_add_dimension_breakdown, _compat_apply_pheromone_response, _compat_canonical_pheromone_kind_profiles, _compat_cap_source_contribution, _compat_clip_pheromone_deposit_strength, _compat_clip_pheromone_strength, _compat_collect_pheromone_source_diversity, _compat_deposit_pheromone, _compat_deposit_pheromone_trails, _compat_diffuse_pheromone_trails, _compat_diffuse_pheromone_trails_with_records, _compat_diffusion_policy_from_collective, _compat_empty_score_breakdown, _compat_evaporate_trail, _compat_evaporate_trails, _compat_evaporate_trails_with_records, _compat_is_expired, _compat_is_expired_with_policy, _compat_is_extension_pheromone_value, _compat_kind_breakdown_category, _compat_legacy_pheromone_weight, _compat_lifecycle_record, _compat_normalize_legacy_pheromone_trail, _compat_normalize_pheromone_scores, _compat_observe_pheromone_exploration, _compat_outgoing_edges, _compat_pheromone_bound_candidate_id, _compat_pheromone_budget_for_policy, _compat_pheromone_candidate_id, _compat_pheromone_diffusion_trace_event_id, _compat_pheromone_kind_can_suppress_positive, _compat_pheromone_kind_priority, _compat_pheromone_lineage, _compat_pheromone_policy_for_trail, _compat_pheromone_policy_from_collective, _compat_pheromone_processing_key, _compat_pheromone_source_id, _compat_pheromone_subject_id, _compat_pheromone_subject_type, _compat_raw_pheromone_delta, _compat_retained_pheromone_strength, _compat_score_pheromone_trails, _compat_score_pheromone_trails_result, _compat_score_pheromone_trails_with_breakdown, _compat_scoreable_pheromone_candidate_id, _compat_subject_breakdown_category, _compat_subject_key, _compat_topology_subject_candidate_id, _compat_topology_subject_target, _compat_validate_pheromone_budget_state, _compat_validate_pheromone_diffusion_policy, _compat_validate_pheromone_policy, _compat_validate_pheromone_subject_binding, _compat_validate_pheromone_topology, _compat_validate_pheromone_trail
+from pheroos.governance._pheromone.diffusion import *
+from pheroos.governance._pheromone.invariants import *
+from pheroos.governance._pheromone.lifecycle import *
+from pheroos.governance._pheromone.records import *
+from pheroos.governance._pheromone.scoring import *

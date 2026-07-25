@@ -505,6 +505,12 @@ Meta-learning boundary:
 
 ## 6. Collective Decision Pipeline
 
+This section specifies the deterministic v1 Hybrid scoring/reducer semantics.
+For authority that must continue across calls, processes, or restarts, runtimes
+MUST use the Store-backed [Hybrid Replay v2](hybrid-replay-v2.md) journey. The
+v1 `HybridReplayState` described below is a Deprecated Draft compatibility
+carrier; it is not a durable StateStore inclusion/currentness proof.
+
 The canonical pure reference entry point is
 `evaluate_hybrid_collective_step(...) -> HybridCollectiveStep`. External
 runtimes submit ABI records; they do not submit a precomputed decision,

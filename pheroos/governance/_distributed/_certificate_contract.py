@@ -1,11 +1,53 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING, Protocol
+
 from pheroos.governance.errors import GovernanceError
 
 
+if TYPE_CHECKING:
+
+    class _ReceiptStateView(Protocol):
+        @property
+        def membership_snapshot_root(self) -> str: ...
+
+        @property
+        def membership_epoch_state_root(self) -> str: ...
+
+    class _MembershipView(Protocol):
+        @property
+        def snapshot_fingerprint(self) -> str: ...
+
+        @property
+        def membership_root(self) -> str: ...
+
+    class _CertificateView(Protocol):
+        @property
+        def proposal(self) -> object: ...
+
+        @property
+        def membership_snapshot(self) -> _MembershipView: ...
+
+        @property
+        def membership_snapshot_root(self) -> str: ...
+
+        @property
+        def membership_root(self) -> str: ...
+else:
+
+    class _ReceiptStateView(Protocol):
+        pass
+
+    class _MembershipView(Protocol):
+        pass
+
+    class _CertificateView(Protocol):
+        pass
+
+
 def _validate_receipt_state_binding(
-    receipt: object,
-    state: object,
+    receipt: _ReceiptStateView,
+    state: _ReceiptStateView,
 ) -> None:
     for name in (
         "profile",
@@ -27,7 +69,7 @@ def _validate_receipt_state_binding(
 
 
 def _validate_certificate_proposal_binding(
-    certificate: object,
+    certificate: _CertificateView,
 ) -> None:
     proposal = certificate.proposal
     for name in (

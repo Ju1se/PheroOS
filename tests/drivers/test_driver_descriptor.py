@@ -11,7 +11,9 @@ from pheroos.drivers.errors import DriverError
 
 
 def test_driver_descriptor_registers_by_id() -> None:
-    descriptor = DriverDescriptor(id="driver:toy", kind="tool", version="0.1.0", capabilities=["invoke"])
+    descriptor = DriverDescriptor(
+        id="driver:toy", kind="tool", version="0.1.0", capabilities=["invoke"]
+    )
     registry = DriverRegistry()
 
     registry.register(descriptor)
@@ -39,7 +41,9 @@ def test_driver_descriptor_registers_by_id() -> None:
         ),
     ],
 )
-def test_registry_and_lifecycle_reject_the_same_invalid_descriptors(descriptor: DriverDescriptor) -> None:
+def test_registry_and_lifecycle_reject_the_same_invalid_descriptors(
+    descriptor: DriverDescriptor,
+) -> None:
     registry = DriverRegistry()
 
     assert validate(descriptor) is False
@@ -110,11 +114,28 @@ def test_registry_exposes_only_detached_read_only_descriptor_snapshots() -> None
         registry.get("driver:forged")
 
 
-def test_registry_constructor_routes_initial_descriptors_through_lifecycle_validation() -> None:
+def test_registry_constructor_routes_initial_descriptors_through_lifecycle_validation() -> (
+    None
+):
     invalid = DriverDescriptor(id="   ", kind="tool", version="0.1.0")
 
     with pytest.raises(DriverError, match="descriptor is invalid"):
         DriverRegistry({"driver:invalid": invalid})
+
+
+def test_registry_constructor_rejects_a_key_that_does_not_match_descriptor_id() -> None:
+    descriptor = DriverDescriptor(id="driver:actual", kind="tool", version="1")
+
+    with pytest.raises(DriverError, match="key does not match descriptor id"):
+        DriverRegistry({"driver:alias": descriptor})
+
+
+def test_registry_constructor_registers_a_matching_descriptor() -> None:
+    descriptor = DriverDescriptor(id="driver:actual", kind="tool", version="1")
+
+    registry = DriverRegistry({descriptor.id: descriptor})
+
+    assert registry.get(descriptor.id) == descriptor
 
 
 def test_registration_preserves_complete_canonical_descriptor_shape() -> None:

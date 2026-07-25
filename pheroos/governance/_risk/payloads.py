@@ -42,10 +42,12 @@ def risk_assessment_chain_state_payload(
         "trace_event_id": state.trace_event_id,
     }
 
+
 def risk_assessment_chain_state_fingerprint(
     state: RiskAssessmentChainState,
 ) -> str:
     return _risk_assessment_chain_state_snapshot(state)
+
 
 def risk_assessment_payload(assessment: RiskAssessment) -> dict[str, object]:
     if type(assessment) is not RiskAssessment:
@@ -62,9 +64,7 @@ def risk_assessment_payload(assessment: RiskAssessment) -> dict[str, object]:
         "issued_at_step": assessment.issued_at_step,
         "issuer_id": assessment.issuer_id,
         "manifest_root": assessment.manifest_root,
-        "previous_assessment_fingerprint": (
-            assessment.previous_assessment_fingerprint
-        ),
+        "previous_assessment_fingerprint": (assessment.previous_assessment_fingerprint),
         "profile": assessment.profile,
         "protocol_id": assessment.protocol_id,
         "provenance": assessment.provenance,
@@ -83,8 +83,10 @@ def risk_assessment_payload(assessment: RiskAssessment) -> dict[str, object]:
         ),
     }
 
+
 def risk_assessment_fingerprint(assessment: RiskAssessment) -> str:
     return _risk_assessment_snapshot(assessment)
+
 
 def commit_threshold_snapshot_payload(
     snapshot: CommitThresholdSnapshot,
@@ -130,10 +132,12 @@ def commit_threshold_snapshot_payload(
         "trace_event_id": snapshot.trace_event_id,
     }
 
+
 def commit_threshold_snapshot_fingerprint(
     snapshot: CommitThresholdSnapshot,
 ) -> str:
     return _threshold_snapshot(snapshot)
+
 
 def _risk_assessment_snapshot(assessment: RiskAssessment) -> str:
     return commit_payload_fingerprint(
@@ -141,6 +145,7 @@ def _risk_assessment_snapshot(assessment: RiskAssessment) -> str:
         schema="pheroos-risk-assessment-v1",
         profile=assessment.profile,
     )
+
 
 def _risk_assessment_chain_state_snapshot(
     state: RiskAssessmentChainState,
@@ -150,6 +155,7 @@ def _risk_assessment_chain_state_snapshot(
         schema="pheroos-risk-assessment-chain-state-v1",
         profile=state.profile,
     )
+
 
 def _threshold_snapshot(snapshot: CommitThresholdSnapshot) -> str:
     return commit_payload_fingerprint(

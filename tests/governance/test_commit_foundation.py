@@ -124,7 +124,11 @@ def outcome(**overrides: object) -> DecisionOutcome:
         "authority_scope": AuthorityScope.NONE,
         "authoritative_commit": False,
         "epistemically_committed": False,
-        **{name: value for name, value in LINEAGE.items() if name != "minimum_stability_steps"},
+        **{
+            name: value
+            for name, value in LINEAGE.items()
+            if name != "minimum_stability_steps"
+        },
         "candidate_id": "candidate:safe",
         "assessment_ref": ASSESSMENT_REF,
         "sealed_window": False,
@@ -171,10 +175,13 @@ def test_fixed_point_reference_operations_are_integer_only() -> None:
     assert checked_add(1, 2, -1) == 2
     assert checked_add(MAX_AUTHORITY_INTEGER, 1, -1) == MAX_AUTHORITY_INTEGER
     assert checked_add(MAX_AUTHORITY_INTEGER, -1, 1) == MAX_AUTHORITY_INTEGER
-    assert scaled_ratio(
-        MAX_AUTHORITY_INTEGER,
-        MAX_AUTHORITY_INTEGER * 2,
-    ) == 500_000
+    assert (
+        scaled_ratio(
+            MAX_AUTHORITY_INTEGER,
+            MAX_AUTHORITY_INTEGER * 2,
+        )
+        == 500_000
+    )
     assert checked_multiply(-3, 2) == -6
     assert checked_subtract(1, 2) == -1
     assert require_authority_integer(-1, "net evidence", allow_negative=True) == -1
@@ -194,14 +201,18 @@ def test_canonical_commit_payload_is_order_independent_and_versioned() -> None:
         "schema": "pheroos-test-record-v1",
         "profile": "pheroos-commit-integrity-v1",
     }
-    assert canonical_commit_payload(first, **canonical_args) == canonical_commit_payload(
+    assert canonical_commit_payload(
+        first, **canonical_args
+    ) == canonical_commit_payload(
         second,
         **canonical_args,
     )
     assert json.loads(canonical_commit_payload(first, **canonical_args))["version"] == (
         "pheroos-commit-wire-v1"
     )
-    assert commit_payload_fingerprint(first, **canonical_args) == commit_payload_fingerprint(
+    assert commit_payload_fingerprint(
+        first, **canonical_args
+    ) == commit_payload_fingerprint(
         second,
         **canonical_args,
     )
@@ -351,7 +362,11 @@ def test_only_governance_issued_outcome_is_authoritative_and_tamper_evident() ->
         authority_scope=AuthorityScope.NONE,
         authoritative_commit=False,
         epistemically_committed=False,
-        **{name: value for name, value in LINEAGE.items() if name != "minimum_stability_steps"},
+        **{
+            name: value
+            for name, value in LINEAGE.items()
+            if name != "minimum_stability_steps"
+        },
         sealed_window=False,
         seal_ref="",
         sealed_at_step=0,
@@ -420,9 +435,9 @@ def test_set_like_decision_fields_have_permutation_stable_roots() -> None:
     first_outcome = outcome(reason_codes=("deadline_reached", "insufficient_evidence"))
     second_outcome = outcome(reason_codes=("insufficient_evidence", "deadline_reached"))
 
-    assert decision_progress_fingerprint(first_progress) == decision_progress_fingerprint(
-        second_progress
-    )
+    assert decision_progress_fingerprint(
+        first_progress
+    ) == decision_progress_fingerprint(second_progress)
     assert decision_outcome_fingerprint(first_outcome) == decision_outcome_fingerprint(
         second_outcome
     )
@@ -479,22 +494,28 @@ def test_terminal_priority_is_total_and_does_not_lower_commit_gates(
     }
     conditions.update(overrides)
 
-    assert select_terminal_outcome_kind(
-        **conditions,
-        deadline_outcome="safe_fallback",
-    ) is expected
+    assert (
+        select_terminal_outcome_kind(
+            **conditions,
+            deadline_outcome="safe_fallback",
+        )
+        is expected
+    )
 
 
 def test_deadline_always_selects_declared_noncommit_when_commit_is_not_ready() -> None:
-    assert select_terminal_outcome_kind(
-        invalid=False,
-        safety_violation=False,
-        blocked=False,
-        evidence_commit_ready=False,
-        finality_unavailable=False,
-        deadline_reached=True,
-        deadline_outcome="advisory",
-    ) is DecisionOutcomeKind.ADVISORY
+    assert (
+        select_terminal_outcome_kind(
+            invalid=False,
+            safety_violation=False,
+            blocked=False,
+            evidence_commit_ready=False,
+            finality_unavailable=False,
+            deadline_reached=True,
+            deadline_outcome="advisory",
+        )
+        is DecisionOutcomeKind.ADVISORY
+    )
     with pytest.raises(GovernanceError, match="must be boolean"):
         select_terminal_outcome_kind(
             invalid=1,  # type: ignore[arg-type]

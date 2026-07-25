@@ -1,6 +1,6 @@
-from __future__ import annotations
-
 """Declared-assurance finality and terminal certificate resolution."""
+
+from __future__ import annotations
 
 from pheroos.governance._certificate.local import (
     LocalCommitReceipt,
@@ -42,6 +42,16 @@ from pheroos.governance.distributed_commit import (
     verify_distributed_commit_finality,
 )
 from pheroos.governance.errors import GovernanceError
+from pheroos.governance.risk import (
+    CommitThresholdSnapshot,
+    RiskAssessment,
+    RiskAssessmentChainState,
+)
+from pheroos.governance.support_lease import (
+    EligibleMembershipEpochState,
+    EligiblePrincipalSnapshot,
+    SupportLeaseReplayState,
+)
 from pheroos.protocol.commit_models import CollectiveCommitPolicy, CommitAssurance
 
 
@@ -53,6 +63,12 @@ def _resolve_declared_finality(
     window_state: CommitWindowState,
     replay_state: CommitReplayState,
     commit_policy: CollectiveCommitPolicy,
+    risk_chain_state: RiskAssessmentChainState,
+    risk_assessment: RiskAssessment,
+    threshold_snapshot: CommitThresholdSnapshot,
+    membership_snapshot: EligiblePrincipalSnapshot,
+    membership_epoch_state: EligibleMembershipEpochState,
+    support_replay_state: SupportLeaseReplayState,
 ) -> tuple[
     LocalCommitReceipt | None,
     EvidenceCommitCertificate | None,
@@ -90,13 +106,13 @@ def _resolve_declared_finality(
             assessment,
             window_state,
             commit_policy=commit_policy,
-            risk_chain_state=request.risk_chain_state,  # type: ignore[arg-type]
-            risk_assessment=request.risk_assessment,  # type: ignore[arg-type]
-            threshold_snapshot=request.threshold_snapshot,  # type: ignore[arg-type]
-            membership_snapshot=request.membership_snapshot,  # type: ignore[arg-type]
-            membership_epoch_state=request.membership_epoch_state,  # type: ignore[arg-type]
+            risk_chain_state=risk_chain_state,
+            risk_assessment=risk_assessment,
+            threshold_snapshot=threshold_snapshot,
+            membership_snapshot=membership_snapshot,
+            membership_epoch_state=membership_epoch_state,
             replay_state=replay_state,
-            support_replay_state=request.support_replay_state,  # type: ignore[arg-type]
+            support_replay_state=support_replay_state,
             output_payload_fingerprint=request.output_payload_fingerprint,
             receipt_id=f"{request.request_id}:local-receipt",
             issuer_id=request.issuer_id,
@@ -107,7 +123,10 @@ def _resolve_declared_finality(
         )
 
     if local_receipt is None:
-        if request.evidence_certificate is not None or request.distributed_certificate is not None:
+        if (
+            request.evidence_certificate is not None
+            or request.distributed_certificate is not None
+        ):
             raise GovernanceError("higher-assurance certificate lacks a local receipt")
         return (
             None,
@@ -121,21 +140,26 @@ def _resolve_declared_finality(
         )
 
     if assurance is CommitAssurance.EVIDENCE_BOUND:
-        if request.evidence_certificate is not None or request.distributed_certificate is not None:
-            raise GovernanceError("evidence-bound assurance cannot accept a higher proof")
+        if (
+            request.evidence_certificate is not None
+            or request.distributed_certificate is not None
+        ):
+            raise GovernanceError(
+                "evidence-bound assurance cannot accept a higher proof"
+            )
         verification = verify_local_commit_finality(
             local_receipt,
             context,
             assessment,
             window_state,
             commit_policy=commit_policy,
-            risk_chain_state=request.risk_chain_state,  # type: ignore[arg-type]
-            risk_assessment=request.risk_assessment,  # type: ignore[arg-type]
-            threshold_snapshot=request.threshold_snapshot,  # type: ignore[arg-type]
-            membership_snapshot=request.membership_snapshot,  # type: ignore[arg-type]
-            membership_epoch_state=request.membership_epoch_state,  # type: ignore[arg-type]
+            risk_chain_state=risk_chain_state,
+            risk_assessment=risk_assessment,
+            threshold_snapshot=threshold_snapshot,
+            membership_snapshot=membership_snapshot,
+            membership_epoch_state=membership_epoch_state,
             replay_state=replay_state,
-            support_replay_state=request.support_replay_state,  # type: ignore[arg-type]
+            support_replay_state=support_replay_state,
             current_step=request.current_step,
             verifier_id=request.issuer_id,
             authority=request.authority,
@@ -194,8 +218,13 @@ def _resolve_declared_finality(
         raise GovernanceError("portable evidence certificate verification failed")
 
     if assurance is CommitAssurance.CERTIFIED:
-        if request.distributed_state is not None or request.distributed_certificate is not None:
-            raise GovernanceError("certified assurance cannot accept distributed finality")
+        if (
+            request.distributed_state is not None
+            or request.distributed_certificate is not None
+        ):
+            raise GovernanceError(
+                "certified assurance cannot accept distributed finality"
+            )
         verification = verify_evidence_commit_finality(
             evidence_certificate,
             local_receipt,
@@ -203,13 +232,13 @@ def _resolve_declared_finality(
             assessment,
             window_state,
             commit_policy=commit_policy,
-            risk_chain_state=request.risk_chain_state,  # type: ignore[arg-type]
-            risk_assessment=request.risk_assessment,  # type: ignore[arg-type]
-            threshold_snapshot=request.threshold_snapshot,  # type: ignore[arg-type]
-            membership_snapshot=request.membership_snapshot,  # type: ignore[arg-type]
-            membership_epoch_state=request.membership_epoch_state,  # type: ignore[arg-type]
+            risk_chain_state=risk_chain_state,
+            risk_assessment=risk_assessment,
+            threshold_snapshot=threshold_snapshot,
+            membership_snapshot=membership_snapshot,
+            membership_epoch_state=membership_epoch_state,
             replay_state=replay_state,
-            support_replay_state=request.support_replay_state,  # type: ignore[arg-type]
+            support_replay_state=support_replay_state,
             trusted_issuer_attestations=request.trusted_issuer_attestations,
             current_step=request.current_step,
             verifier_id=request.issuer_id,
@@ -310,6 +339,7 @@ def _resolve_declared_finality(
         (),
     )
 
+
 def _resolve_outcome_certificate(
     request: HybridCommitEvaluationRequest,
     *,
@@ -363,7 +393,6 @@ def _resolve_outcome_certificate(
         if commit_policy.certificate.issuer_attestation_required:
             return None
         raise
-
 
 
 __all__: list[str] = []

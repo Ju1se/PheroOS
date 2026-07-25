@@ -7,7 +7,6 @@ import pytest
 
 from pheroos.governance.authority import AuthorityLevel
 from pheroos.governance.certificate import (
-    evidence_commit_certificate_payload,
     issue_outcome_certificate,
     local_commit_receipt_fingerprint,
     local_commit_receipt_is_authoritative,
@@ -383,7 +382,11 @@ def test_every_terminal_kind_is_deliverable_and_result_is_tamper_evident(
         assert commit_output_authorization_fingerprint(result).startswith("sha256:")
         forged = replace(result)
         assert not commit_output_authorization_is_authoritative(forged)
-        object.__setattr__(result, "output_payload_fingerprint", engine_fixture._fingerprint("tampered"))
+        object.__setattr__(
+            result,
+            "output_payload_fingerprint",
+            engine_fixture._fingerprint("tampered"),
+        )
         assert not commit_output_authorization_is_authoritative(result)
 
 
@@ -440,9 +443,9 @@ def test_publish_requires_current_publish_stop_permission_and_certificate() -> N
                 getattr(result, record.name),
             )
         object.__setattr__(forged_result, record.name, mutated)
-        assert not commit_output_authorization_is_authoritative(
-            forged_result
-        ), record.name
+        assert not commit_output_authorization_is_authoritative(forged_result), (
+            record.name
+        )
 
     # A historical commit stays valid; only the current publication is denied.
     expired = authorize_terminal_publication(
@@ -646,9 +649,7 @@ def test_safe_fallback_can_publish_only_when_explicitly_allowed_and_never_execut
         )
 
     monkeypatch.setattr(engine_fixture, "_policy", fallback_publish_policy)
-    scenario, window, outcome = _nonready_outcome(
-        DecisionOutcomeKind.SAFE_FALLBACK
-    )
+    scenario, window, outcome = _nonready_outcome(DecisionOutcomeKind.SAFE_FALLBACK)
     output_ref = output_payload_fingerprint(
         {"kind": "safe_fallback", "epistemic_commit": False},
         profile=outcome.profile,
@@ -696,20 +697,23 @@ def test_safe_fallback_can_publish_only_when_explicitly_allowed_and_never_execut
         expected_output_payload_fingerprint=output_ref,
     )
 
-    assert issue_outcome_certificate(
-        outcome,
-        window,
-        commit_policy=scenario.policy,
-        output_payload_fingerprint=output_ref,
-        certificate_id=f"outcome-certificate:{scenario.run_id}",
-        context=scenario.context,
-        assessment=None,
-        issuer_id="governance:outcome-certificate",
-        authority=AuthorityLevel.GOVERNANCE,
-        issued_at_step=outcome.current_step,
-        provenance=f"urn:test:outcome-certificate:{scenario.run_id}",
-        trace_event_id=f"trace:outcome-certificate:{scenario.run_id}",
-    ) is certificate
+    assert (
+        issue_outcome_certificate(
+            outcome,
+            window,
+            commit_policy=scenario.policy,
+            output_payload_fingerprint=output_ref,
+            certificate_id=f"outcome-certificate:{scenario.run_id}",
+            context=scenario.context,
+            assessment=None,
+            issuer_id="governance:outcome-certificate",
+            authority=AuthorityLevel.GOVERNANCE,
+            issued_at_step=outcome.current_step,
+            provenance=f"urn:test:outcome-certificate:{scenario.run_id}",
+            trace_event_id=f"trace:outcome-certificate:{scenario.run_id}",
+        )
+        is certificate
+    )
     with pytest.raises(GovernanceError, match="different body"):
         issue_outcome_certificate(
             outcome,
@@ -822,9 +826,7 @@ def test_safe_fallback_can_publish_only_when_explicitly_allowed_and_never_execut
 def test_certified_noncommit_outcome_certificate_verifies_from_wire_payload(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    scenario, assessment, window, sealed_output_ref = _certified_scenario(
-        monkeypatch
-    )
+    scenario, assessment, window, sealed_output_ref = _certified_scenario(monkeypatch)
     _receipt(scenario, assessment, window, sealed_output_ref)
     outcome = _reduce_certified_finality_unavailable(
         scenario,

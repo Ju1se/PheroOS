@@ -239,7 +239,9 @@ def principal_verification_matches(
             principal_id,
             "expected principal_id",
         )
-        current = require_commit_step(current_step, "principal verification current_step")
+        current = require_commit_step(
+            current_step, "principal verification current_step"
+        )
         expected_cluster = (
             require_commit_text(cluster_id, "expected cluster_id")
             if cluster_id is not None
@@ -257,7 +259,9 @@ def principal_verification_matches(
             and verification.target == expected_target
             and verification.epoch == expected_epoch
             and verification.principal_id == expected_principal
-            and (expected_cluster is None or verification.cluster_id == expected_cluster)
+            and (
+                expected_cluster is None or verification.cluster_id == expected_cluster
+            )
             and verification.issued_at_step <= current < verification.expires_at_step
         )
     except GovernanceError:

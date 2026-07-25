@@ -1,6 +1,8 @@
+"""Authority-envelope and prior-trace preflight validation."""
+
 from __future__ import annotations
 
-"""Authority-envelope and prior-trace preflight validation."""
+from typing import TypedDict, cast
 
 from pheroos.governance._hybrid.request import HybridCommitEvaluationRequest
 from pheroos.governance.commit import (
@@ -45,9 +47,26 @@ from pheroos.trace import TraceEvent
 from pheroos.trace.commit_contracts import replay_commit_trace
 
 
+class _AuthorityHeads(TypedDict):
+    risk_chain_state: RiskAssessmentChainState
+    risk_assessment: RiskAssessment
+    threshold_snapshot: CommitThresholdSnapshot
+    membership_snapshot: EligiblePrincipalSnapshot
+    membership_epoch_state: EligibleMembershipEpochState
+    support_replay_state: SupportLeaseReplayState
+
+
+class _AuthorityEnvelope(_AuthorityHeads):
+    assessment: CommitAssessment
+    context: CommitEvaluationContext
+    window_state: CommitWindowState
+    replay_state: CommitReplayState
+    commit_policy: CollectiveCommitPolicy
+
+
 def _establish_authority_envelope(
     request: HybridCommitEvaluationRequest,
-) -> dict[str, object]:
+) -> _AuthorityEnvelope:
     assessment = request.commit_assessment
     context = request.context
     window_state = request.window_state
@@ -109,91 +128,111 @@ def _establish_authority_envelope(
                 f"replay {name} does not match CommitAssessment authority"
             )
     if context.context_id == "" or (
-        commit_evaluation_context_fingerprint(context)
-        != assessment.context_fingerprint
+        commit_evaluation_context_fingerprint(context) != assessment.context_fingerprint
     ):
         raise GovernanceError("assessment does not bind the supplied context")
-    if policy.assurance != assessment.assurance.value or policy.target != assessment.target:
-        raise GovernanceError("commit policy assurance/target does not match assessment")
+    if (
+        policy.assurance != assessment.assurance.value
+        or policy.target != assessment.target
+    ):
+        raise GovernanceError(
+            "commit policy assurance/target does not match assessment"
+        )
     if (
         commit_policy_fingerprint(policy, profile=assessment.profile)
         != assessment.commit_policy_root
     ):
         raise GovernanceError("commit policy root does not match assessment")
-    _validate_authority_heads(request, assessment=assessment)
+    heads = _validate_authority_heads(request, assessment=assessment)
     return {
         "assessment": assessment,
         "context": context,
         "window_state": window_state,
         "replay_state": replay_state,
         "commit_policy": policy,
+        **heads,
     }
+
 
 def _validate_authority_heads(
     request: HybridCommitEvaluationRequest,
     *,
     assessment: CommitAssessment,
-) -> None:
-    if type(request.risk_chain_state) is not RiskAssessmentChainState or not (
-        risk_assessment_chain_state_is_current(request.risk_chain_state)
+) -> _AuthorityHeads:
+    risk_chain_state = request.risk_chain_state
+    risk_assessment = request.risk_assessment
+    threshold_snapshot = request.threshold_snapshot
+    membership_snapshot = request.membership_snapshot
+    membership_epoch_state = request.membership_epoch_state
+    support_replay_state = request.support_replay_state
+    if type(risk_chain_state) is not RiskAssessmentChainState or not (
+        risk_assessment_chain_state_is_current(risk_chain_state)
     ):
         raise GovernanceError("risk chain current head is unavailable")
-    if type(request.risk_assessment) is not RiskAssessment or not (
-        risk_assessment_is_authoritative(request.risk_assessment)
+    if type(risk_assessment) is not RiskAssessment or not (
+        risk_assessment_is_authoritative(risk_assessment)
     ):
         raise GovernanceError("risk assessment authority is unavailable")
-    if type(request.threshold_snapshot) is not CommitThresholdSnapshot or not (
-        commit_threshold_snapshot_is_authoritative(request.threshold_snapshot)
+    if type(threshold_snapshot) is not CommitThresholdSnapshot or not (
+        commit_threshold_snapshot_is_authoritative(threshold_snapshot)
     ):
         raise GovernanceError("threshold snapshot authority is unavailable")
-    if type(request.membership_snapshot) is not EligiblePrincipalSnapshot or not (
-        eligible_principal_snapshot_is_authoritative(request.membership_snapshot)
+    if type(membership_snapshot) is not EligiblePrincipalSnapshot or not (
+        eligible_principal_snapshot_is_authoritative(membership_snapshot)
     ):
         raise GovernanceError("membership snapshot authority is unavailable")
-    if type(request.membership_epoch_state) is not EligibleMembershipEpochState or not (
-        eligible_membership_epoch_state_is_current(request.membership_epoch_state)
+    if type(membership_epoch_state) is not EligibleMembershipEpochState or not (
+        eligible_membership_epoch_state_is_current(membership_epoch_state)
     ):
         raise GovernanceError("membership epoch current head is unavailable")
-    if type(request.support_replay_state) is not SupportLeaseReplayState or not (
-        support_lease_replay_state_is_current(request.support_replay_state)
+    if type(support_replay_state) is not SupportLeaseReplayState or not (
+        support_lease_replay_state_is_current(support_replay_state)
     ):
         raise GovernanceError("support replay current head is unavailable")
     exact_roots = {
         "risk_chain_state_fingerprint": risk_assessment_chain_state_fingerprint(
-            request.risk_chain_state
+            risk_chain_state
         ),
-        "risk_assessment_fingerprint": risk_assessment_fingerprint(
-            request.risk_assessment
-        ),
+        "risk_assessment_fingerprint": risk_assessment_fingerprint(risk_assessment),
         "threshold_fingerprint": commit_threshold_snapshot_fingerprint(
-            request.threshold_snapshot
+            threshold_snapshot
         ),
         "membership_snapshot_fingerprint": (
-            eligible_principal_snapshot_fingerprint(request.membership_snapshot)
+            eligible_principal_snapshot_fingerprint(membership_snapshot)
         ),
         "membership_epoch_state_fingerprint": (
-            eligible_membership_epoch_state_fingerprint(
-                request.membership_epoch_state
-            )
+            eligible_membership_epoch_state_fingerprint(membership_epoch_state)
         ),
         "support_replay_state_fingerprint": (
-            support_lease_replay_state_fingerprint(request.support_replay_state)
+            support_lease_replay_state_fingerprint(support_replay_state)
         ),
     }
     for name, observed in exact_roots.items():
         if getattr(assessment, name) != observed:
             raise GovernanceError(f"authority head {name} does not match assessment")
+    return {
+        "risk_chain_state": risk_chain_state,
+        "risk_assessment": risk_assessment,
+        "threshold_snapshot": threshold_snapshot,
+        "membership_snapshot": membership_snapshot,
+        "membership_epoch_state": membership_epoch_state,
+        "support_replay_state": support_replay_state,
+    }
+
 
 def _validated_prior_trace(
     request: HybridCommitEvaluationRequest,
     *,
     assessment: CommitAssessment,
 ) -> tuple[TraceEvent, ...]:
-    events = tuple(request.prior_trace_events)
-    if not events or any(type(item) is not TraceEvent for item in events):
+    runtime_events = tuple(request.prior_trace_events)
+    if not runtime_events or any(
+        type(item) is not TraceEvent for item in runtime_events
+    ):
         raise GovernanceError(
             "authoritative Hybrid Commit evaluation requires prior TraceEvent lineage"
         )
+    events = tuple(cast(TraceEvent, item) for item in runtime_events)
     replay = replay_commit_trace(events, require_complete=False)
     expected_identity = (
         assessment.protocol_id,
@@ -262,9 +301,11 @@ def _validated_prior_trace(
         raise GovernanceError(
             "prior trace lacks required authority lineage: " + ", ".join(missing)
         )
-    risk_ref = risk_assessment_fingerprint(request.risk_assessment)  # type: ignore[arg-type]
+    risk_ref = risk_assessment_fingerprint(
+        cast(RiskAssessment, request.risk_assessment)
+    )
     membership_ref = eligible_principal_snapshot_fingerprint(
-        request.membership_snapshot  # type: ignore[arg-type]
+        cast(EligiblePrincipalSnapshot, request.membership_snapshot)
     )
     stop_ref = assessment.stop_resolution_fingerprint
     permission_ref = assessment.permission_fingerprint
@@ -276,24 +317,20 @@ def _validated_prior_trace(
     }
     for event_type, expected_ref in exact_refs.items():
         if not any(
-            event.lineage["record_ref"] == expected_ref
-            for event in by_type[event_type]
+            event.lineage["record_ref"] == expected_ref for event in by_type[event_type]
         ):
             raise GovernanceError(
                 f"prior {event_type} trace does not bind the current authority head"
             )
     evidence_refs = {
-        item.evidence_binding_fingerprint
-        for item in assessment.candidate_metrics
+        item.evidence_binding_fingerprint for item in assessment.candidate_metrics
     }
     observed_evidence = {
-        event.lineage["record_ref"]
-        for event in by_type["evidence_bound"]
+        event.lineage["record_ref"] for event in by_type["evidence_bound"]
     }
     if not evidence_refs.issubset(observed_evidence):
         raise GovernanceError("prior evidence trace does not cover assessed candidates")
     return events
-
 
 
 __all__: list[str] = []

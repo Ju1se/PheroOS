@@ -1,13 +1,42 @@
 from __future__ import annotations
 
 from dataclasses import replace
+from typing import TYPE_CHECKING, Any, Protocol, TypeVar, cast
 
 from pheroos.governance.errors import GovernanceError
 
 
+_StateT = TypeVar("_StateT")
+
+
+if TYPE_CHECKING:
+
+    class _WitnessView(Protocol):
+        @property
+        def membership_root(self) -> str: ...
+
+    class _VerificationView(Protocol):
+        @property
+        def witness(self) -> _WitnessView: ...
+
+    class _DistributedStateView(Protocol):
+        @property
+        def membership_root(self) -> str: ...
+else:
+
+    class _WitnessView(Protocol):
+        pass
+
+    class _VerificationView(Protocol):
+        pass
+
+    class _DistributedStateView(Protocol):
+        pass
+
+
 def _validate_verification_state_binding(
-    verification: object,
-    state: object,
+    verification: _VerificationView,
+    state: _DistributedStateView,
 ) -> None:
     witness = verification.witness
     for name in (
@@ -46,7 +75,10 @@ def _validate_proposal_state_binding(
 
 
 def _replace_distributed_state(
-    state: object,
-    **changes: object,
-) -> object:
-    return replace(state, **changes)
+    state: _StateT,
+    **changes: Any,
+) -> _StateT:
+    replaced: object = replace(cast(Any, state), **changes)
+    if type(replaced) is not type(state):
+        raise GovernanceError("distributed state replacement changed record type")
+    return cast(_StateT, replaced)

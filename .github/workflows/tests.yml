@@ -9,7 +9,6 @@ permissions:
   contents: read
 
 env:
-  PIP_CONSTRAINT: ${{ github.workspace }}/requirements/ci-constraints.txt
   PIP_DISABLE_PIP_VERSION_CHECK: "1"
   PYTHONHASHSEED: "0"
   # ZIP timestamps cannot represent dates before 1980. Keep release builds
@@ -18,16 +17,31 @@ env:
 
 jobs:
   python-tests:
-    name: Python ${{ matrix.python-version }} deterministic suite
+    name: Python ${{ matrix.python-version }} / ${{ matrix.shard }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
         python-version: ["3.12", "3.13", "3.14"]
+        shard:
+          - foundation
+          - governance-1
+          - governance-2
+          - governance-3
+          - governance-4
+          - trace-1
+          - trace-2
+          - conformance-1
+          - conformance-2
+          - conformance-runtime
+          - ecosystem
+          - policy
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
       - name: Set up Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
@@ -36,10 +50,10 @@ jobs:
         run: sha256sum --check requirements/ci-constraints.sha256
       - name: Install provider-free core and test dependencies
         run: |
-          python -m pip install --constraint requirements/ci-constraints.txt setuptools==80.9.0 wheel==0.45.1
-          python -m pip install --no-build-isolation --constraint requirements/ci-constraints.txt -e ".[dev]"
-      - name: Run deterministic test suite
-        run: python -m pytest -q
+          python -m pip install --require-hashes --only-binary=:all: -r requirements/ci-constraints.txt
+          python -m pip install --no-deps --no-build-isolation -e .
+      - name: Run one checked deterministic test shard
+        run: python scripts/run_test_shard.py "${{ matrix.shard }}"
 
   lint-and-typing:
     runs-on: ubuntu-latest
@@ -47,6 +61,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
       - name: Set up Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
@@ -55,16 +71,22 @@ jobs:
         run: sha256sum --check requirements/ci-constraints.sha256
       - name: Install exact lint and type tools
         run: >-
-          python -m pip install --constraint requirements/ci-constraints.txt
-          ruff==0.13.3 mypy==1.18.2
-      - name: Reject critical Python defects
-        run: python -m ruff check --select E9,F63,F7,F82 pheroos scripts tests
-      - name: Incrementally type-check stable ABI boundaries
+          python -m pip install --require-hashes --only-binary=:all: -r requirements/ci-constraints.txt
+      - name: Enforce full-repository Ruff lint
+        run: python -m ruff check pheroos scripts tests
+      - name: Enforce full-repository Ruff formatting
+        run: python -m ruff format --check pheroos scripts tests
+      - name: Type-check the complete package without cached results
+        run: python -m mypy --no-incremental pheroos
+      - name: Type-check release tooling without cached results
         run: >-
-          python -m mypy --incremental --cache-dir .mypy_cache
-          --follow-imports=skip --ignore-missing-imports --check-untyped-defs
-          pheroos/_immutable.py pheroos/_scope.py pheroos/drivers/invocation.py
-          pheroos/kernel/run_scope.py pheroos/conformance/report.py
+          python -m mypy --no-incremental scripts/release_candidate.py
+          scripts/generate_release_sbom.py
+          scripts/check_distribution_reproducibility.py
+          scripts/check_ci_supply_chain.py
+          scripts/check_repository_policy.py
+      - name: Strictly type-check the Stable candidate owner closure
+        run: python scripts/check_stable_typing.py --check
 
   schema-version-drift:
     runs-on: ubuntu-latest
@@ -72,14 +94,16 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
       - name: Set up Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: "3.12"
       - name: Install test dependencies
         run: |
-          python -m pip install --constraint requirements/ci-constraints.txt setuptools==80.9.0 wheel==0.45.1
-          python -m pip install --no-build-isolation --constraint requirements/ci-constraints.txt -e ".[dev]"
+          python -m pip install --require-hashes --only-binary=:all: -r requirements/ci-constraints.txt
+          python -m pip install --no-deps --no-build-isolation -e .
       - name: Check schema, report, and static contract drift
         run: >-
           python -m pytest -q tests/cli/test_schema_export.py
@@ -92,6 +116,7 @@ jobs:
           python scripts/generate_commit_tck.py --check
           python scripts/generate_public_api_inventory.py --check
           python scripts/generate_governance_public_api.py --check
+          python scripts/check_legacy_authority_inventory.py --check
           git diff --check
 
   public-abi-shape-drift:
@@ -100,14 +125,16 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
       - name: Set up Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: "3.14"
       - name: Install test dependencies
         run: |
-          python -m pip install --constraint requirements/ci-constraints.txt setuptools==80.9.0 wheel==0.45.1
-          python -m pip install --no-build-isolation --constraint requirements/ci-constraints.txt -e ".[dev]"
+          python -m pip install --require-hashes --only-binary=:all: -r requirements/ci-constraints.txt
+          python -m pip install --no-deps --no-build-isolation -e .
       - name: Verify public shape, lifecycle, aliases, and ownership
         run: >-
           python -m pytest -q tests/test_public_api_inventory.py
@@ -121,14 +148,16 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
       - name: Set up Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: "3.12"
       - name: Install test dependencies
         run: |
-          python -m pip install --constraint requirements/ci-constraints.txt setuptools==80.9.0 wheel==0.45.1
-          python -m pip install --no-build-isolation --constraint requirements/ci-constraints.txt -e ".[dev]"
+          python -m pip install --require-hashes --only-binary=:all: -r requirements/ci-constraints.txt
+          python -m pip install --no-deps --no-build-isolation -e .
       - name: Reject malformed, duplicate, non-finite, and unknown-version input
         run: >-
           python -m pytest -q tests/protocol/test_manifest_validation.py
@@ -140,14 +169,16 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
       - name: Set up Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: "3.12"
       - name: Install test dependencies
         run: |
-          python -m pip install --constraint requirements/ci-constraints.txt setuptools==80.9.0 wheel==0.45.1
-          python -m pip install --no-build-isolation --constraint requirements/ci-constraints.txt -e ".[dev]"
+          python -m pip install --require-hashes --only-binary=:all: -r requirements/ci-constraints.txt
+          python -m pip install --no-deps --no-build-isolation -e .
       - name: Run frozen 38-case legacy TCK and adversarial mutations
         run: |
           python -m pytest -q tests/conformance/test_commit_tck.py
@@ -159,14 +190,16 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
       - name: Set up Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: "3.12"
       - name: Install test dependencies
         run: |
-          python -m pip install --constraint requirements/ci-constraints.txt setuptools==80.9.0 wheel==0.45.1
-          python -m pip install --no-build-isolation --constraint requirements/ci-constraints.txt -e ".[dev]"
+          python -m pip install --require-hashes --only-binary=:all: -r requirements/ci-constraints.txt
+          python -m pip install --no-deps --no-build-isolation -e .
       - name: Run declarative v2 reference and manifest-derived proof
         run: |
           python -m pheroos.cli.main tck run --version v2
@@ -178,14 +211,16 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
       - name: Set up Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: "3.12"
       - name: Install test dependencies
         run: |
-          python -m pip install --constraint requirements/ci-constraints.txt setuptools==80.9.0 wheel==0.45.1
-          python -m pip install --no-build-isolation --constraint requirements/ci-constraints.txt -e ".[dev]"
+          python -m pip install --require-hashes --only-binary=:all: -r requirements/ci-constraints.txt
+          python -m pip install --no-deps --no-build-isolation -e .
       - name: Run independent JSONL spec model from an external cwd
         run: |
           python -m pheroos.cli.main tck run --version v2 --adapter "python -I -m pheroos.conformance.commit_tck_v2_spec_adapter"
@@ -197,14 +232,16 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
       - name: Set up Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: "3.12"
       - name: Install test dependencies
         run: |
-          python -m pip install --constraint requirements/ci-constraints.txt setuptools==80.9.0 wheel==0.45.1
-          python -m pip install --no-build-isolation --constraint requirements/ci-constraints.txt -e ".[dev]"
+          python -m pip install --require-hashes --only-binary=:all: -r requirements/ci-constraints.txt
+          python -m pip install --no-deps --no-build-isolation -e .
       - name: Prove malicious and stateful adapters fail closed
         run: >-
           python -m pytest -q tests/conformance/test_commit_tck_v2.py
@@ -216,20 +253,23 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
       - name: Set up Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: "3.12"
       - name: Install test dependencies
         run: |
-          python -m pip install --constraint requirements/ci-constraints.txt setuptools==80.9.0 wheel==0.45.1
-          python -m pip install --no-build-isolation --constraint requirements/ci-constraints.txt -e ".[dev]"
+          python -m pip install --require-hashes --only-binary=:all: -r requirements/ci-constraints.txt
+          python -m pip install --no-deps --no-build-isolation -e .
       - name: Verify consumers, lazy facade, identities, and provider-free examples
         run: >-
           python -m pytest -q tests/e2e tests/test_public_api_contract.py
           tests/governance/test_lazy_facade.py
           tests/governance/test_static_engine_compatibility.py
           tests/governance/test_lifecycle_module_decomposition.py
+          tests/examples/test_hybrid_replay_protocol.py
       - name: Run maintained protocol examples
         run: |
           pheroos validate examples/toy-protocol/capability.json
@@ -246,14 +286,16 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
       - name: Set up Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: "3.12"
       - name: Install test dependencies
         run: |
-          python -m pip install --constraint requirements/ci-constraints.txt setuptools==80.9.0 wheel==0.45.1
-          python -m pip install --no-build-isolation --constraint requirements/ci-constraints.txt -e ".[dev]"
+          python -m pip install --require-hashes --only-binary=:all: -r requirements/ci-constraints.txt
+          python -m pip install --no-deps --no-build-isolation -e .
       - name: Verify opaque scope, cross-scope denial, and concurrent idempotency
         run: >-
           python -m pytest -q tests/kernel/test_runtime_scope.py
@@ -268,19 +310,31 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
       - name: Set up Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: "3.12"
       - name: Install test dependencies
         run: |
-          python -m pip install --constraint requirements/ci-constraints.txt setuptools==80.9.0 wheel==0.45.1
-          python -m pip install --no-build-isolation --constraint requirements/ci-constraints.txt -e ".[dev]"
+          python -m pip install --require-hashes --only-binary=:all: -r requirements/ci-constraints.txt
+          python -m pip install --no-deps --no-build-isolation -e .
       - name: Verify restart, CAS, atomic state-plus-trace, and 32-worker races
         run: >-
           python -m pytest -q tests/governance/test_authority_ledger.py
           tests/governance/test_atomic_hybrid_commit.py
           tests/conformance/test_authority_ledger_contract.py
+      - name: Verify durable Hybrid Replay v2 Governance, Conformance, and Trace
+        run: >-
+          python -m pytest -q tests/governance/test_hybrid_replay_v2_*.py
+          tests/conformance/test_hybrid_replay_v2_contract.py
+          tests/trace/test_hybrid_replay_v2_trace_contract.py
+      - name: Verify Hybrid Replay v2 public-proxy and resource boundaries
+        run: >-
+          python -m pytest -q
+          tests/conformance/test_hybrid_replay_v2_contract.py::test_hybrid_replay_v2_adversarial_support_uses_only_public_abi_proxies
+          tests/conformance/test_hybrid_replay_v2_contract.py::test_hybrid_replay_v2_resource_support_uses_only_public_constructors
 
   wheel-sdist-external-cwd:
     runs-on: ubuntu-latest
@@ -288,6 +342,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
       - name: Set up Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
@@ -296,8 +352,7 @@ jobs:
         run: sha256sum --check requirements/ci-constraints.sha256
       - name: Install exact build backend
         run: >-
-          python -m pip install --constraint requirements/ci-constraints.txt
-          build==1.3.0 setuptools==80.9.0 wheel==0.45.1
+          python -m pip install --require-hashes --only-binary=:all: -r requirements/ci-constraints.txt
       - name: Build reproducible wheel and sdist without an unpinned resolver
         run: |
           python -m build --no-isolation
@@ -310,25 +365,39 @@ jobs:
           python -m venv "$RUNNER_TEMP/pheroos-wheel"
           "$RUNNER_TEMP/pheroos-wheel/bin/python" -m pip install --no-deps dist/*.whl
           python -m venv "$RUNNER_TEMP/pheroos-sdist"
-          "$RUNNER_TEMP/pheroos-sdist/bin/python" -m pip install --constraint requirements/ci-constraints.txt setuptools==80.9.0 wheel==0.45.1
+          "$RUNNER_TEMP/pheroos-sdist/bin/python" -m pip install --require-hashes --only-binary=:all: -r "$GITHUB_WORKSPACE/requirements/ci-constraints.txt"
           "$RUNNER_TEMP/pheroos-sdist/bin/python" -m pip install --no-build-isolation --no-deps dist/*.tar.gz
       - name: Verify installed artifacts outside the source working directory
         run: |
           cd "$RUNNER_TEMP"
-          for ENVIRONMENT in pheroos-wheel pheroos-sdist; do
-            PYTHON="$RUNNER_TEMP/$ENVIRONMENT/bin/python"
-            PHEROOS="$RUNNER_TEMP/$ENVIRONMENT/bin/pheroos"
-            "$PYTHON" -m pip check
-            "$PHEROOS" version
-            "$PHEROOS" validate "$GITHUB_WORKSPACE/examples/toy-protocol/capability.json"
-            "$PHEROOS" conformance "$GITHUB_WORKSPACE/examples/toy-protocol"
-            "$PHEROOS" conformance "$GITHUB_WORKSPACE/examples/swarm-protocol"
-            "$PHEROOS" conformance "$GITHUB_WORKSPACE/examples/hybrid-pheromone-protocol"
-            "$PHEROOS" source-conformance
-            "$PHEROOS" schema list
-            "$PHEROOS" tck run --version v1
-            "$PHEROOS" tck run --version v2
-          done
+          PYTHON="$RUNNER_TEMP/pheroos-wheel/bin/python"
+          PHEROOS="$RUNNER_TEMP/pheroos-wheel/bin/pheroos"
+          "$PYTHON" -m pip check
+          "$PHEROOS" version
+          "$PHEROOS" validate "$GITHUB_WORKSPACE/examples/toy-protocol/capability.json"
+          "$PHEROOS" conformance "$GITHUB_WORKSPACE/examples/toy-protocol"
+          "$PHEROOS" conformance "$GITHUB_WORKSPACE/examples/swarm-protocol"
+          "$PHEROOS" conformance "$GITHUB_WORKSPACE/examples/hybrid-pheromone-protocol"
+          "$PHEROOS" wire validate capability-v3 "$GITHUB_WORKSPACE/examples/hybrid-replay-protocol/capability.json"
+          "$PYTHON" "$GITHUB_WORKSPACE/examples/hybrid-replay-protocol/run.py"
+          "$PHEROOS" source-conformance
+          "$PHEROOS" schema list
+          "$PHEROOS" tck run --version v1
+          "$PHEROOS" tck run --version v2
+          PYTHON="$RUNNER_TEMP/pheroos-sdist/bin/python"
+          PHEROOS="$RUNNER_TEMP/pheroos-sdist/bin/pheroos"
+          "$PYTHON" -m pip check
+          "$PHEROOS" version
+          "$PHEROOS" validate "$GITHUB_WORKSPACE/examples/toy-protocol/capability.json"
+          "$PHEROOS" conformance "$GITHUB_WORKSPACE/examples/toy-protocol"
+          "$PHEROOS" conformance "$GITHUB_WORKSPACE/examples/swarm-protocol"
+          "$PHEROOS" conformance "$GITHUB_WORKSPACE/examples/hybrid-pheromone-protocol"
+          "$PHEROOS" wire validate capability-v3 "$GITHUB_WORKSPACE/examples/hybrid-replay-protocol/capability.json"
+          "$PYTHON" "$GITHUB_WORKSPACE/examples/hybrid-replay-protocol/run.py"
+          "$PHEROOS" source-conformance
+          "$PHEROOS" schema list
+          "$PHEROOS" tck run --version v1
+          "$PHEROOS" tck run --version v2
       - name: Preserve the exact distributions that passed external validation
         uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
         with:
@@ -343,14 +412,16 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
       - name: Set up Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: "3.12"
       - name: Install test dependencies
         run: |
-          python -m pip install --constraint requirements/ci-constraints.txt setuptools==80.9.0 wheel==0.45.1
-          python -m pip install --no-build-isolation --constraint requirements/ci-constraints.txt -e ".[dev]"
+          python -m pip install --require-hashes --only-binary=:all: -r requirements/ci-constraints.txt
+          python -m pip install --no-deps --no-build-isolation -e .
       - name: Verify static DAG, unique owners, and absence of hidden registries
         run: >-
           python -m pytest -q tests/kernel/test_kernel_import_boundary.py
@@ -369,18 +440,160 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
       - name: Set up Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: "3.12"
       - name: Install test dependencies
         run: |
-          python -m pip install --constraint requirements/ci-constraints.txt setuptools==80.9.0 wheel==0.45.1
-          python -m pip install --no-build-isolation --constraint requirements/ci-constraints.txt -e ".[dev]"
+          python -m pip install --require-hashes --only-binary=:all: -r requirements/ci-constraints.txt
+          python -m pip install --no-deps --no-build-isolation -e .
       - name: Verify immutable reference budgets
         run: |
           python -m pytest -q tests/performance/test_reference_performance_contract.py
           python scripts/check_reference_performance.py --check --quick
+
+  engineering-baseline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.12"
+      - name: Verify reproducible toolchain constraints
+        run: sha256sum --check requirements/ci-constraints.sha256
+      - name: Install provider-free core and exact baseline tools
+        run: |
+          python -m pip install --require-hashes --only-binary=:all: -r requirements/ci-constraints.txt
+          python -m pip install --no-deps --no-build-isolation -e .
+      - name: Enforce the checked engineering baseline
+        run: python scripts/check_engineering_baseline.py --check
+      - name: Run WP-00 policy and baseline tests
+        run: >-
+          python -m pytest -q tests/ci/test_engineering_baseline.py
+          tests/ci/test_quality_gate.py
+          tests/ci/test_repository_policy.py
+          tests/governance/test_wp00_legacy_characterization.py
+
+  coverage-measure:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        shard:
+          - foundation
+          - governance-1
+          - governance-2
+          - governance-3
+          - governance-4
+          - trace-1
+          - trace-2
+          - conformance-1
+          - conformance-2
+          - conformance-runtime
+          - ecosystem
+          - policy
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.14"
+      - name: Verify reproducible toolchain constraints
+        run: sha256sum --check requirements/ci-constraints.sha256
+      - name: Install exact CI-only coverage tooling
+        run: |
+          python -m pip install --require-hashes --only-binary=:all: -r requirements/ci-constraints.txt
+          python -m pip install --no-deps --no-build-isolation -e .
+      - name: Measure one immutable branch-coverage shard
+        run: >-
+          python scripts/check_coverage_gate.py
+          --measure-shard "${{ matrix.shard }}"
+          --measure-only
+          --data-file ".coverage.${{ matrix.shard }}"
+      - name: Upload exact shard data for offline combination
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
+        with:
+          name: pheroos-coverage-${{ matrix.shard }}
+          path: .coverage.${{ matrix.shard }}
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
+
+  coverage-gate:
+    needs: [coverage-measure]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout complete history for changed-source coverage
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.14"
+      - name: Verify reproducible toolchain constraints
+        run: sha256sum --check requirements/ci-constraints.sha256
+      - name: Install exact CI-only coverage tooling
+        run: |
+          python -m pip install --require-hashes --only-binary=:all: -r requirements/ci-constraints.txt
+          python -m pip install --no-deps --no-build-isolation -e .
+      - name: Download all immutable branch-coverage shards
+        uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
+        with:
+          pattern: pheroos-coverage-*
+          path: coverage-data
+          merge-multiple: true
+      - name: Resolve exact changed-source base
+        env:
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PUSH_BEFORE_SHA: ${{ github.event.before }}
+        run: python scripts/check_coverage_gate.py --emit-ci-base >> "$GITHUB_ENV"
+      - name: Enforce combined branch coverage and local ratchets
+        run: >-
+          python scripts/check_coverage_gate.py
+          --combine-shards-dir coverage-data --data-file .coverage
+          --base-ref "$COVERAGE_BASE_REF"
+      - name: Test coverage gate fail-closed semantics
+        run: python -m pytest -q tests/ci/test_coverage_gate.py
+
+  authority-mutation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.14"
+      - name: Verify reproducible toolchain constraints
+        run: sha256sum --check requirements/ci-constraints.sha256
+      - name: Install provider-free core and test dependencies
+        run: |
+          python -m pip install --require-hashes --only-binary=:all: -r requirements/ci-constraints.txt
+          python -m pip install --no-deps --no-build-isolation -e .
+      - name: Kill every checked-in P0 authority mutant
+        run: python scripts/check_authority_mutation.py --profile pr
+      - name: Test four-state mutation scoring and fail-closed policy
+        run: >-
+          python -m pytest -q tests/ci/test_authority_mutation_gate.py
+          tests/ci/test_authority_mutation_probes.py
 
   supply-chain:
     needs: [wheel-sdist-external-cwd]
@@ -389,6 +602,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
       - name: Set up Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
@@ -397,6 +612,7 @@ jobs:
         run: |
           sha256sum --check requirements/ci-constraints.sha256
           python scripts/check_ci_supply_chain.py --check
+          python scripts/check_repository_policy.py --check
       - name: Download the exact externally validated distributions
         uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
         with:
@@ -441,6 +657,10 @@ jobs:
       - import-dag-and-cold-import
       - reference-performance
       - supply-chain
+      - engineering-baseline
+      - coverage-measure
+      - coverage-gate
+      - authority-mutation
     runs-on: ubuntu-latest
     timeout-minutes: 20
     permissions:
@@ -451,6 +671,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
       - name: Set up Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
@@ -479,3 +701,46 @@ jobs:
         with:
           subject-path: dist/*
           sbom-path: sbom/pheroos.spdx.json
+
+  quality-gate:
+    name: quality-gate
+    if: ${{ always() }}
+    needs:
+      - python-tests
+      - lint-and-typing
+      - schema-version-drift
+      - public-abi-shape-drift
+      - manifest-negative
+      - tck-v1-legacy
+      - tck-v2-reference
+      - tck-v2-independent
+      - external-adapter-adversarial
+      - consumer-compat
+      - scope-concurrency-lifecycle
+      - authority-restart-atomicity
+      - wheel-sdist-external-cwd
+      - import-dag-and-cold-import
+      - reference-performance
+      - supply-chain
+      - engineering-baseline
+      - coverage-measure
+      - coverage-gate
+      - authority-mutation
+      - provenance
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout the policy evaluator
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.12"
+      - name: Require every validation result and event-correct provenance
+        env:
+          QUALITY_GATE_NEEDS: ${{ toJSON(needs) }}
+        run: python scripts/check_quality_gate.py

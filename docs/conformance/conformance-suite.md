@@ -114,6 +114,126 @@ Conformance reports include the profile version that was applied.
   cross-surface binding, authority-ledger atomicity, and the provider-neutral
   StateStore/TraceStore adapter contracts. It supersedes source-v2.
 
+The exact local scoped-authority v2 profile is now active as Draft through
+Capability/Protocol schema v3, StateStore/Session/Baseline Output v2, and
+Runtime Integration v1. The authenticated external-verifier and formal Stable
+profiles remain unactivated. WP-02 first implemented the additive Draft
+`pheroos-governance-state-store-conformance-v2` matrix for the exact
+[StateStore v2 ABI](../protocol/authority-store-v2.md); the same matrix passes
+the private reference Store and an independent stdlib model that imports only
+public v2 contracts. Its public failure-stage and persisted-artifact mutation
+registries make the exact adapter matrix discoverable. The closed 24-case
+mutation registry includes a synchronized cross-stream order/index rewrite so
+omitting historical full-read-set replay cannot pass. A corrupt persistent
+image must be rejected during restart; returning either the original object or
+another exposed StateStore fails Conformance. For this test-only adapter hook,
+`TypeError` denotes an unsupported/invalid image shape and `ValueError` denotes
+failed image integrity; any other exception is an adapter failure, not a valid
+corrupt-image rejection. Adapter observation and mutation
+hooks are trusted, operator-selected test instrumentation: the harness strictly
+parses their detached canonical image bytes and recomputes the image fingerprint,
+but does not claim cryptographic attestation against a malicious adapter that
+fabricates both values.
+
+WP-03 implements the additive public Draft
+`pheroos-governance-authority-session-conformance-v2` matrix defined by the
+[Authority Session v2 ABI](../protocol/authority-session-v2.md). The same
+matrix runs unchanged against the private reference StateStore and the
+independent public-contract-only stdlib Store model. It proves grant activation
+and revocation, local and authenticated verifier boundaries, opaque
+store/run/request-bound handles, exact retry, session-captured grant and
+lifecycle preconditions, verified-signal persistence, complete domain-seal
+closure, Trace validation, restart evidence, exact Store-version rejection,
+immutable detached-Mapping reads, direct committed read-set bindings, and
+forgery/race failures. The
+matrix is an explicit external-adapter entrypoint; it is not selected by a
+legacy manifest or emitted as an active profile.
+
+WP-04 adds the active public Draft
+`pheroos-baseline-output-conformance-v2` matrix for exact Capability Schema v3
+and `pheroos.protocol.v2` baseline output. The same matrix runs against the
+reference and independent StateStore adapters and covers declared manifest,
+evidence, stop, decision, action-permission, output, complete read-set, restart,
+revocation, and terminal delivery semantics without requiring a swarm or
+certificate profile.
+
+WP-05 adds the active public Draft
+`pheroos-governance-hybrid-replay-conformance-v2` matrix for
+[Hybrid Replay v2](../protocol/hybrid-replay-v2.md). The same expected-free
+matrix runs unchanged against the reference and independent stdlib Store. It
+proves the complete deposit/diffusion/feedback/adjustment receipt set, exact
+manifest/candidate/base-policy/topology source binding, raw-v1 rejection,
+atomic Trace/read-set lineage, deterministic roots, Store restart and
+rehydration, exact retry, historical parent currentness, and concurrent-fork
+retry semantics. Its public-ABI Store proxy additionally covers unavailable
+reconciliation, historical-parent and rehydration reads, post-publication
+lost-response recovery with a full canonical-transition comparison, conflicting
+retry rejection, every replay-state/grant/lifecycle read-set substitution, extra and
+missing read-set entries, and Trace `read_set_root` tampering. It does not use
+the adapter's private image, mutation oracle, or failure hook.
+
+The same matrix runs real public-constructor resource vectors for aggregate
+causal overflow, cycle, depth, node, aggregate text, aggregate lineage, and
+the final canonical snapshot, including each exact boundary and its one-unit
+overflow. Exact structural vectors deliberately progress from resource
+preflight to closed-shape rejection; they are not described as valid
+snapshots. The exact 16 MiB case is a complete valid snapshot. Resource
+rejections prove an unchanged Store head and zero atomic writes. The
+single-topology-index check remains in the Governance implementation suite
+because an index-build count is not part of the public ABI. Active cases return
+only PASS or FAIL; there is no skip or N/A lane. This adapter matrix is
+separate from legacy manifest-profile checks so baseline and v1 manifests are
+not forced onto the scoped v2 authority path.
+
+WP-05 also adds the separate active public Draft
+`pheroos-governance-commit-replay-conformance-v2` matrix for
+[Commit Replay State v2](../protocol/commit-state-v2.md). It runs unchanged
+against the reference and independent stdlib StateStore adapters and proves an
+explicit zero-receipt genesis, receipt-bearing child advance, the exact
+replay/grant/lifecycle read-set, canonical `commit_replay_advanced` Trace,
+restart and historical rehydration, exact retry, superseded currentness,
+concurrent-fork retry, raw-source rejection without mutation, and deterministic
+roots/transcripts. Its public-only adversarial submatrices additionally cover
+reconciliation/parent/rehydration finality and zero-write outcomes, canonical
+lost-response recovery/conflict, complete historical read-set and Trace
+tampering, State/request/receipt/Trace substitution or deletion, cross-context
+session/source rejection, 32-way same-request and two-fork races, and exact/+1
+count, UTF-8 text, 8 MiB snapshot, and aggregate-byte preflight bounds. These
+checks use a delegating public Store proxy rather than adapter tamper or image
+inspection hooks. The matrix attests replay bookkeeping only: portable replay
+receipts and their source proof do not verify upstream evidence authority.
+Until later WP-05 upstream authority heads and consumers are migrated, this
+Draft adapter contract is neither Stable nor a production-complete Commit
+profile.
+
+WP-05 also exposes the public-checks Draft
+`pheroos-governance-risk-conformance-v2` matrix for
+[Risk State v2](../protocol/risk-state-v2.md). The same public-ABI matrix runs
+against the reference and independent stdlib StateStore adapters. It proves
+manifest/authority-selector and issuer binding, atomic assessment plus state
+Trace, complete risk/grant/lifecycle read sets, restart rehydration, historical
+and sealed-domain verification, exact retry after revocation or sealing,
+lost-response recovery, finality failures, 32-way races, mutation rejection,
+and exact/+1 resource bounds. A public black-box lane prepares proposals for
+all 130 epochs after epoch 7 and proves their stream set has size one, then
+commits the direct epoch 7 to epoch 137 advance with `parent_epoch`, revision,
+reset, and currentness enforced. This catches a per-epoch design that would
+exhaust the Store's 127 non-lifecycle heads. The matrix imports no
+private Governance owner or test helper and does not activate a Stable Commit
+profile.
+
+The Draft `pheroos-scoped-authority-tck-v2` schema and strict reader now define
+an expected-free case/report vocabulary over the active StateStore v2,
+Authority Session v2, and Baseline Output v2 matrices. This artifact does not
+self-certify an implementation and is not an aggregate runtime runner. The
+remaining reserved activation contracts are the authenticated
+`pheroos-issuer-grant-verifier-conformance-v2`, the external scoped-authority
+profile, and `pheroos-source-v4`; each becomes active only when its own complete
+gate lands. Capability Schema v3 and the exact local scoped-authority profile
+are already active. Current reports must not emit unactivated profile IDs or
+report their checks as skipped/N/A. The frozen decision is documented in
+[authority-v2-decision.md](../protocol/authority-v2-decision.md).
+
 Commit profile selection takes precedence over legacy Hybrid authority and
 output checks. Certified and distributed manifests that also declare Hybrid
 attention retain their declared assurance profile and append the Hybrid
@@ -141,7 +261,8 @@ output permission. Learned and evolutionary layers may propose bounded changes,
 but only governance can commit a declared candidate or use the declared safe
 fallback.
 
-The Hybrid trace check executes `evaluate_hybrid_collective_step(...)` with
+The legacy Hybrid swarm profile's trace check executes
+`evaluate_hybrid_collective_step(...)` with
 inputs derived from the active manifest, validates the canonical events field by
 field, reconstructs candidate and pheromone category/kind/subject scores, and
 causally replays deposit, evaporation/expiry, diffusion, and reinforcement into
@@ -151,6 +272,11 @@ performance-snapshot metrics, and accepted adjustment bounds before comparing
 confidence, weights, conflicts, resolution, fallback, and layer score effects.
 Both consensus and safe-fallback decision paths are replayed. A declared event
 name or self-consistent reported output is not proof that a transition happened.
+
+Durable Hybrid Replay v2 is a separate active adapter contract. It proves
+StateStore-backed inclusion/currentness, exact retry, atomic state-plus-Trace,
+restart, and source-context binding; passing the v1 trace check does not satisfy
+that contract.
 Rejected deposit, diffusion, and feedback clips are exercised as real
 governance outputs. Conformance mutates every causal payload leaf, each receipt
 field, feedback request/delta/reward, source identity/provenance, and topology
@@ -330,12 +456,37 @@ Its concurrency matrix runs 32 same-batch retries and 32 conflicting-batch
 workers. That load is not added to the provider ABI.
 Conformance never owns the provider or database lifecycle.
 
+External StateStore implementations may additionally run the Draft Authority
+Session v2 composition matrix over the same adapter:
+
+```python
+from pheroos.conformance import run_governance_authority_session_conformance_v2
+
+authority_result = run_governance_authority_session_conformance_v2(state_adapter)
+```
+
+Passing it proves this bounded session slice only. It does not claim external
+identity verification or replace the authenticated verifier. The Draft
+scoped-authority TCK schema composes the exact case vocabulary, but an
+implementation still has to run and report every underlying matrix; possessing
+or echoing the artifact is not Conformance.
+
 Release verification runs both boundaries. It also runs both TCK generations
 from the source tree and from separate wheel and sdist installations under an
 external working directory; matching golden roots and exact results are
-required.
+required. Commit TCK v2 imports its terminal selector and historical portable
+v1 certificate reader through registry-free public leaf modules. The latter
+checks frozen proof bytes and supplied attestation bindings only; passing that
+case does not establish StateStore inclusion, currentness, session authority,
+publication authority, or finality.
 
 ## Rules
+
+The Draft runtime version-composition contract is documented in
+[runtime-compatibility-v1.md](runtime-compatibility-v1.md). Its manifest root
+binds exact version declarations, while the named TCKs and reports separately
+prove implementations. Baseline compatibility never selects Hybrid or Optimal
+Commit profiles implicitly.
 
 - Conformance checks should prove protocol invariants, not product policy.
 - Checks must not require provider credentials, network access, databases, or

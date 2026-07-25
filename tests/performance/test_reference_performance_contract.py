@@ -43,9 +43,7 @@ def test_reference_performance_budget_is_complete_and_locked() -> None:
     }
     assert payload["policy"]["third_party_conformance_requirement"] is False
     assert payload["policy"]["closed_scope_active_authority_records_after_retire"] == 0
-    assert payload["policy"]["commit_tck_v1_warm_clock"] == (
-        COMMIT_TCK_V1_WARM_CLOCK
-    )
+    assert payload["policy"]["commit_tck_v1_warm_clock"] == (COMMIT_TCK_V1_WARM_CLOCK)
     assert payload["policy"]["commit_tck_v1_warm_quick_samples"] == (
         COMMIT_TCK_V1_WARM_QUICK_SAMPLES
     )

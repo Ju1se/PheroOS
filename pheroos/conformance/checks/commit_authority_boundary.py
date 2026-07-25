@@ -37,9 +37,38 @@ def check(manifest: CapabilityManifest) -> CheckResult:
     if context is None:
         return CheckResult("commit_authority_boundary", True)
 
-    problems: list[str] = []
     decision_ref = _decision_ref(context)
     permission_allowed = context.assurance is not CommitAssurance.ADVISORY
+    problems = _permission_authority_problems(
+        context,
+        decision_ref=decision_ref,
+        permission_allowed=permission_allowed,
+    )
+    problems.extend(_stop_authority_problems(context, decision_ref=decision_ref))
+    problems.extend(_blocked_stop_problems(context, decision_ref=decision_ref))
+    tck_result = check_commit_tck_cases(
+        manifest,
+        check_name="commit_authority_boundary",
+        matrix_cases=(21, 22, 23),
+    )
+    if not tck_result.ok:
+        problems.append(tck_result.detail or "authority TCK failed")
+
+    unique = sorted(set(problems))
+    return CheckResult(
+        "commit_authority_boundary",
+        not unique,
+        "; ".join(unique) if unique else tck_result.detail,
+    )
+
+
+def _permission_authority_problems(
+    context: ActiveCommitContext,
+    *,
+    decision_ref: str,
+    permission_allowed: bool,
+) -> list[str]:
+    problems: list[str] = []
     permission = _issue_permission(
         context,
         decision_ref=decision_ref,
@@ -115,7 +144,15 @@ def check(manifest: CapabilityManifest) -> CheckResult:
         trace_event_id="trace:conformance:permission:forged-authority",
     ):
         problems.append("agent_permission_authority_accepted")
+    return problems
 
+
+def _stop_authority_problems(
+    context: ActiveCommitContext,
+    *,
+    decision_ref: str,
+) -> list[str]:
+    problems: list[str] = []
     stop_verification = _issue_stop_verification(
         context,
         decision_ref=decision_ref,
@@ -178,7 +215,15 @@ def check(manifest: CapabilityManifest) -> CheckResult:
         trace_event_id="trace:conformance:stop:forged-authority",
     ):
         problems.append("agent_stop_verification_authority_accepted")
+    return problems
 
+
+def _blocked_stop_problems(
+    context: ActiveCommitContext,
+    *,
+    decision_ref: str,
+) -> list[str]:
+    problems: list[str] = []
     blocked_stop = _issue_stop_verification(
         context,
         decision_ref=decision_ref,
@@ -201,21 +246,7 @@ def check(manifest: CapabilityManifest) -> CheckResult:
         require_unblocked=False,
     ):
         problems.append("blocked_stop_denial_not_verifiable")
-
-    tck_result = check_commit_tck_cases(
-        manifest,
-        check_name="commit_authority_boundary",
-        matrix_cases=(21, 22, 23),
-    )
-    if not tck_result.ok:
-        problems.append(tck_result.detail or "authority TCK failed")
-
-    unique = sorted(set(problems))
-    return CheckResult(
-        "commit_authority_boundary",
-        not unique,
-        "; ".join(unique) if unique else tck_result.detail,
-    )
+    return problems
 
 
 def _decision_ref(context: ActiveCommitContext) -> str:

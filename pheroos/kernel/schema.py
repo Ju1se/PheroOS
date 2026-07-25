@@ -2,6 +2,11 @@ from __future__ import annotations
 
 from typing import Any
 
+from pheroos._scope import (
+    RUNTIME_SCOPE_COMPONENT_MAX_LENGTH,
+    RUNTIME_SCOPE_SCHEMA_V1_ID,
+    RUNTIME_SCOPE_VERSION,
+)
 from pheroos.kernel._versions import (
     KERNEL_PLAN_VERSION_V2,
     KERNEL_SCHEMA_V1_ID,
@@ -176,4 +181,37 @@ def kernel_schema_v2() -> dict[str, Any]:
     return schema
 
 
-__all__ = ["kernel_schema", "kernel_schema_v2"]
+def runtime_scope_schema_v1() -> dict[str, Any]:
+    """Return the exact portable Runtime Scope v1 wire schema."""
+
+    portable_component = {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": RUNTIME_SCOPE_COMPONENT_MAX_LENGTH,
+        "pattern": r"^(?!\s)(?![\s\S]*\s$)(?![\s\S]*\u0000)[\s\S]+$",
+    }
+    return object_schema(
+        {
+            "scope_version": {"const": RUNTIME_SCOPE_VERSION},
+            "tenant_id": dict(portable_component),
+            "run_id": dict(portable_component),
+            "request_id": dict(portable_component),
+            "scope_ref": {
+                "type": "string",
+                "pattern": "^sha256:[0-9a-f]{64}$",
+            },
+        },
+        required=[
+            "scope_version",
+            "tenant_id",
+            "run_id",
+            "request_id",
+            "scope_ref",
+        ],
+    ) | {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "$id": RUNTIME_SCOPE_SCHEMA_V1_ID,
+    }
+
+
+__all__ = ["kernel_schema", "kernel_schema_v2", "runtime_scope_schema_v1"]

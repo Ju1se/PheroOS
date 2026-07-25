@@ -9,17 +9,16 @@ baseline with slower numbers cannot silently relax CI.
 from __future__ import annotations
 
 import argparse
-from collections.abc import Callable
-from hashlib import sha256
 import json
 import os
-from pathlib import Path
 import statistics
 import subprocess
 import sys
+from collections.abc import Callable
+from hashlib import sha256
+from pathlib import Path
 from time import perf_counter
 from typing import Any
-
 
 ROOT = Path(__file__).resolve().parents[1]
 BASELINE_PATH = ROOT / "docs" / "process" / "reference-performance-v1.json"
@@ -75,9 +74,7 @@ def measure_reference_performance(*, quick: bool = False) -> dict[str, float]:
     samples = 3 if quick else 7
     measurements: dict[str, float] = {}
     measurements["governance_cold_import_median"] = _cold_import_median(samples)
-    measurements["manifest_load_validate_median"] = _manifest_median(
-        5 if quick else 15
-    )
+    measurements["manifest_load_validate_median"] = _manifest_median(5 if quick else 15)
     measurements["commit_tck_v1_warm"] = _commit_tck_v1_warm(
         samples=(
             COMMIT_TCK_V1_WARM_QUICK_SAMPLES
@@ -310,23 +307,41 @@ def _validate_locked_budgets(payload: dict[str, Any]) -> None:
         raise RuntimeError("reference performance time budgets are incomplete")
     if not isinstance(ratios, dict) or set(ratios) != set(HARD_CEILINGS_RATIOS):
         raise RuntimeError("reference performance ratio budgets are incomplete")
-    for name, ceiling in HARD_CEILINGS_SECONDS.items():
-        value = seconds[name]
+    _validate_ceiling_values(
+        seconds,
+        HARD_CEILINGS_SECONDS,
+        invalid_label="budget",
+        exceeded_label="budget",
+    )
+    _validate_ceiling_values(
+        ratios,
+        HARD_CEILINGS_RATIOS,
+        invalid_label="ratio",
+        exceeded_label="ratio",
+    )
+    _validate_performance_policy(payload.get("policy"))
+
+
+def _validate_ceiling_values(
+    values: dict[str, Any],
+    ceilings: dict[str, float],
+    *,
+    invalid_label: str,
+    exceeded_label: str,
+) -> None:
+    for name, ceiling in ceilings.items():
+        value = values[name]
         if not isinstance(value, (int, float)) or isinstance(value, bool):
-            raise RuntimeError(f"reference performance budget is invalid: {name}")
+            raise RuntimeError(
+                f"reference performance {invalid_label} is invalid: {name}"
+            )
         if value > ceiling:
             raise RuntimeError(
-                f"reference performance budget exceeds locked ceiling: {name}"
+                f"reference performance {exceeded_label} exceeds locked ceiling: {name}"
             )
-    for name, ceiling in HARD_CEILINGS_RATIOS.items():
-        value = ratios[name]
-        if not isinstance(value, (int, float)) or isinstance(value, bool):
-            raise RuntimeError(f"reference performance ratio is invalid: {name}")
-        if value > ceiling:
-            raise RuntimeError(
-                f"reference performance ratio exceeds locked ceiling: {name}"
-            )
-    policy = payload.get("policy")
+
+
+def _validate_performance_policy(policy: object) -> None:
     if not isinstance(policy, dict):
         raise RuntimeError("reference performance policy is missing")
     if policy.get("commit_tck_v1_warm_clock") != COMMIT_TCK_V1_WARM_CLOCK:

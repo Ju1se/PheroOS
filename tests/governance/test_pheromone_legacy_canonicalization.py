@@ -79,7 +79,9 @@ def test_explicit_kind_profile_wins_full_double_write_conflict() -> None:
     assert profiles["negative"].weight == policy.pheromone_negative_weight
 
 
-@pytest.mark.parametrize("kind", ["positive", "negative", "cautionary", "alarm", "novelty"])
+@pytest.mark.parametrize(
+    "kind", ["positive", "negative", "cautionary", "alarm", "novelty"]
+)
 def test_scalar_only_runtime_keeps_legacy_score_semantics(kind: str) -> None:
     collective = CollectiveDecisionPolicy(
         pheromone_positive_weight=1.25,

@@ -27,15 +27,25 @@ def check(manifest: CapabilityManifest) -> CheckResult:
 
     problems: list[str] = []
     diagnostics = [
-        item
-        for item in validate_capability_manifest(manifest)
-        if item.level == "error"
+        item for item in validate_capability_manifest(manifest) if item.level == "error"
     ]
     problems.extend(f"diagnostic:{item.code}" for item in diagnostics)
     if type(policy) is not CollectiveCommitPolicy:
         problems.append("canonical_policy_type")
         return _result(problems)
+    problems.extend(_target_and_fallback_problems(manifest, policy))
+    profile_problems, profile_version = _profile_contract_problems(manifest, policy)
+    problems.extend(profile_problems)
+    if profile_version is not None:
+        problems.extend(_authority_root_problems(manifest, policy, profile_version))
+    return _result(problems)
 
+
+def _target_and_fallback_problems(
+    manifest: CapabilityManifest,
+    policy: CollectiveCommitPolicy,
+) -> list[str]:
+    problems: list[str] = []
     target_ids = {target.id for target in manifest.protocol.targets}
     candidates = {candidate.id: candidate for candidate in manifest.protocol.candidates}
     fallback_id = policy.terminal_outcome.safe_fallback_candidate
@@ -55,42 +65,52 @@ def check(manifest: CapabilityManifest) -> CheckResult:
         problems.append("safe_fallback_marker")
     elif fallback.target != policy.target:
         problems.append("fallback_target_binding")
+    return problems
 
+
+def _profile_contract_problems(
+    manifest: CapabilityManifest,
+    policy: CollectiveCommitPolicy,
+) -> tuple[list[str], str | None]:
+    problems: list[str] = []
     try:
         selected = profile_for_manifest(manifest)
     except (TypeError, ValueError) as exc:
         problems.append(f"profile_selection:{type(exc).__name__}:{exc}")
-        return _result(problems)
+        return problems, None
     expected_version = _expected_profile_version(manifest, policy)
     if selected.version != expected_version:
-        problems.append(
-            f"profile_selection:{selected.version}!={expected_version}"
-        )
+        problems.append(f"profile_selection:{selected.version}!={expected_version}")
     missing_authority_checks = sorted(
         set(COMMIT_AUTHORITY_CHECKS) - set(selected.required_checks)
     )
-    problems.extend(
-        f"profile_missing:{name}" for name in missing_authority_checks
-    )
+    problems.extend(f"profile_missing:{name}" for name in missing_authority_checks)
+    return problems, selected.version
 
+
+def _authority_root_problems(
+    manifest: CapabilityManifest,
+    policy: CollectiveCommitPolicy,
+    profile_version: str,
+) -> list[str]:
+    problems: list[str] = []
     manifest_root = commit_manifest_fingerprint(
         manifest,
-        profile=selected.version,
+        profile=profile_version,
     )
-    policy_root = commit_policy_fingerprint(policy, profile=selected.version)
+    policy_root = commit_policy_fingerprint(policy, profile=profile_version)
     if not _is_sha256_root(manifest_root):
         problems.append("manifest_authority_root")
     if not _is_sha256_root(policy_root):
         problems.append("policy_authority_root")
     if manifest_root != commit_manifest_fingerprint(
         manifest,
-        profile=selected.version,
+        profile=profile_version,
     ):
         problems.append("manifest_authority_root_nondeterministic")
-    if policy_root != commit_policy_fingerprint(policy, profile=selected.version):
+    if policy_root != commit_policy_fingerprint(policy, profile=profile_version):
         problems.append("policy_authority_root_nondeterministic")
-
-    return _result(problems)
+    return problems
 
 
 def _expected_profile_version(

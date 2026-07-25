@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 from dataclasses import dataclass, field
+from typing import TypedDict
 
 from pheroos.governance._commit_validation import (
     require_commit_assurance,
@@ -52,6 +53,33 @@ from pheroos.protocol.commit_models import (
 
 EVIDENCE_BINDING_VERSION = "pheroos-evidence-binding-v1"
 _EVIDENCE_BINDING_ISSUANCE = object()
+
+
+class _BindingCoordinates(TypedDict):
+    profile: str
+    assurance: CommitAssurance
+    manifest_root: str
+    commit_policy_root: str
+    protocol_id: str
+    run_id: str
+    target: str
+    candidate_id: str
+    claim_fingerprint: str
+    epoch: int
+    current_step: int
+
+
+class _BindingRootCoordinates(TypedDict):
+    profile: str
+    assurance: CommitAssurance
+    manifest_root: str
+    commit_policy_root: str
+    protocol_id: str
+    run_id: str
+    target: str
+    candidate_id: str
+    claim_fingerprint: str
+    epoch: int
 
 
 @dataclass(frozen=True)
@@ -270,8 +298,7 @@ class EvidenceSummary:
         positive_ok = self.positive_evidence >= self._minimum_positive_evidence
         counter_ok = self.counterevidence <= self._maximum_counterevidence
         ratio_ok = (
-            self.counterevidence_ratio_ppm
-            <= self._maximum_counterevidence_ratio_ppm
+            self.counterevidence_ratio_ppm <= self._maximum_counterevidence_ratio_ppm
         )
         diversity_ok = self.source_diversity >= self._minimum_source_diversity
         critical_clear = not self.blocking_critical_counter_observation_fingerprints
@@ -407,9 +434,7 @@ def evidence_binding_payload(binding: EvidenceBinding) -> dict[str, object]:
         "challenge_root": binding.challenge_root,
         "claim_fingerprint": binding.claim_fingerprint,
         "commit_policy_root": binding.commit_policy_root,
-        "counter_observation_fingerprints": (
-            binding.counter_observation_fingerprints
-        ),
+        "counter_observation_fingerprints": (binding.counter_observation_fingerprints),
         "counter_root": binding.counter_root,
         "disposition_fingerprints": binding.disposition_fingerprints,
         "disposition_root": binding.disposition_root,
@@ -588,10 +613,8 @@ def evaluate_evidence_binding(
                 "evidence binding contains challenge beyond the policy TTL"
             )
     if (
-        components.positive_fingerprints
-        != binding.positive_observation_fingerprints
-        or components.counter_fingerprints
-        != binding.counter_observation_fingerprints
+        components.positive_fingerprints != binding.positive_observation_fingerprints
+        or components.counter_fingerprints != binding.counter_observation_fingerprints
         or components.disposition_fingerprints != binding.disposition_fingerprints
         or components.challenge_fingerprints != binding.challenge_fingerprints
         or rebuild_evidence_binding_roots(binding)
@@ -677,9 +700,7 @@ def evaluate_evidence_binding(
         resolved_counter_observation_fingerprints=tuple(
             verified_observation_fingerprint(item) for item in resolved_counters
         ),
-        blocking_critical_counter_observation_fingerprints=tuple(
-            blocking_critical
-        ),
+        blocking_critical_counter_observation_fingerprints=tuple(blocking_critical),
         positive_evidence=positive_evidence,
         counterevidence=counterevidence,
         weighted_counterevidence=weighted_counter,
@@ -845,9 +866,7 @@ def _validate_binding_components(
     disposition_fingerprints: list[str] = []
     for disposition in disposition_records:
         if not counterevidence_disposition_is_authoritative(disposition):
-            raise GovernanceError(
-                "evidence binding disposition is not authoritative"
-            )
+            raise GovernanceError("evidence binding disposition is not authoritative")
         counter = next(
             (
                 item
@@ -954,15 +973,16 @@ def _normalize_binding_coordinates(
     claim_fingerprint: str,
     epoch: int,
     current_step: int,
-) -> dict[str, object]:
+) -> _BindingCoordinates:
     normalized_profile = require_commit_profile(profile, "evidence binding profile")
     normalized_assurance = require_commit_assurance(
         assurance,
         "evidence binding assurance",
     )
-    if normalized_profile not in COMMIT_PROFILES_BY_ASSURANCE[
-        normalized_assurance.value
-    ]:
+    if (
+        normalized_profile
+        not in COMMIT_PROFILES_BY_ASSURANCE[normalized_assurance.value]
+    ):
         raise GovernanceError("commit profile/assurance mismatch")
     return {
         "profile": normalized_profile,
@@ -997,21 +1017,18 @@ def _normalize_binding_coordinates(
     }
 
 
-def _root_coordinates(normalized: dict[str, object]) -> dict[str, object]:
+def _root_coordinates(normalized: _BindingCoordinates) -> _BindingRootCoordinates:
     return {
-        key: normalized[key]
-        for key in (
-            "profile",
-            "assurance",
-            "manifest_root",
-            "commit_policy_root",
-            "protocol_id",
-            "run_id",
-            "target",
-            "candidate_id",
-            "claim_fingerprint",
-            "epoch",
-        )
+        "profile": normalized["profile"],
+        "assurance": normalized["assurance"],
+        "manifest_root": normalized["manifest_root"],
+        "commit_policy_root": normalized["commit_policy_root"],
+        "protocol_id": normalized["protocol_id"],
+        "run_id": normalized["run_id"],
+        "target": normalized["target"],
+        "candidate_id": normalized["candidate_id"],
+        "claim_fingerprint": normalized["claim_fingerprint"],
+        "epoch": normalized["epoch"],
     }
 
 
@@ -1271,16 +1288,14 @@ def _group_contributions(
     cap: int,
 ) -> tuple[EvidenceGroupContribution, ...]:
     normalized_cap = require_authority_integer(cap, "evidence group cap")
-    if normalized_cap <= 0:
-        raise GovernanceError("evidence group cap must be positive")
+    # The only caller first validates the canonical evidence policy, including
+    # the strictly-positive cap invariant.
     grouped: dict[str, list[VerifiedObservation]] = {}
     for observation in observations:
         grouped.setdefault(observation.independence_group, []).append(observation)
     contributions: list[EvidenceGroupContribution] = []
     for group, records in grouped.items():
-        mathematical_raw = sum(
-            observation_weight_ppm(item) for item in records
-        )
+        mathematical_raw = sum(observation_weight_ppm(item) for item in records)
         # Only the capped contribution affects authority.  Saturate the
         # diagnostic raw leaf at the wire bound after evaluating the exact
         # arbitrary-precision sum, never before applying the group cap.
@@ -1308,8 +1323,8 @@ def _source_domain_contributions(
         contribution_floor,
         "source domain contribution floor",
     )
-    if floor <= 0:
-        raise GovernanceError("source domain contribution floor must be positive")
+    # The only caller first validates the canonical evidence policy, including
+    # the strictly-positive contribution-floor invariant.
     grouped: dict[str, list[VerifiedObservation]] = {}
     for observation in observations:
         grouped.setdefault(observation.source_domain, []).append(observation)

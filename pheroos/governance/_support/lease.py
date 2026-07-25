@@ -1,16 +1,12 @@
 from __future__ import annotations
 from collections.abc import Callable, Sequence
-from typing import Any
-from typing import Any
+from typing import Any, cast
 from pheroos.governance._commit_validation import (
-    require_commit_fingerprint,
-    require_commit_profile,
     require_commit_step,
     require_commit_text,
 )
-from pheroos.governance._legacy.authority_registry import LEGACY_AUTHORITY_REGISTRY
 from pheroos.governance.authority import AuthorityLevel, can_verify
-from pheroos.governance.commit_numeric import checked_add, commit_payload_fingerprint
+from pheroos.governance.commit_numeric import checked_add
 from pheroos.governance.errors import GovernanceError
 from pheroos.governance.observation import (
     ObservationPolarity,
@@ -21,33 +17,22 @@ from pheroos.governance.observation import (
 from pheroos.governance.principal import (
     PrincipalVerification,
     principal_verification_fingerprint,
-    principal_verification_is_authoritative,
     principal_verification_matches,
 )
-from pheroos.protocol.commit_models import CollectiveCommitPolicy, CommitAssurance
+from pheroos.protocol.commit_models import (
+    CollectiveCommitPolicy,
+    SupportLeasePolicy,
+)
 from pheroos.governance._support.invariants import (
     _canonical_fingerprints,
-    _eligible_cluster_payload,
-    _equivocation_finding_id,
-    _membership_epoch_authority_key,
-    _membership_root,
-    _normalized_bindings,
-    _record_bindings_equal,
     _same_commit_scope,
-    _support_replay_authority_key,
-    _validate_bound_record,
     _validate_commit_policy_binding,
-    _validate_eligible_principal,
     _validate_support_policy,
 )
 from pheroos.governance._support.records import (
     EligibleMembershipEpochState,
-    EligiblePrincipal,
-    EligiblePrincipalCluster,
     EligiblePrincipalSnapshot,
-    SupportEquivocationFinding,
     SupportLease,
-    SupportLeaseEvaluation,
     SupportLeaseExpiration,
     SupportLeaseProposal,
     SupportLeaseReplayReceipt,
@@ -55,48 +40,21 @@ from pheroos.governance._support.records import (
     SupportLeaseRevocation,
     SupportLeaseStatus,
     SupportLeaseSwitch,
-    _LEGACY_MEMBERSHIP_EPOCH_CURSORS,
-    _LEGACY_SUPPORT_REPLAY_CURSORS,
-    _MEMBERSHIP_EPOCH_STATE_ISSUANCE,
-    _MEMBERSHIP_SNAPSHOT_ISSUANCE,
-    _MembershipEpochCursor,
     _SUPPORT_LEASE_ISSUANCE,
-    _SUPPORT_LEASE_REPLAY_STATE_ISSUANCE,
     _SUPPORT_REVOCATION_ISSUANCE,
     _SupportLeaseReplayCursor,
-    _canonical_support_replay_receipts,
-    _membership_epoch_state_snapshot,
-    _membership_snapshot,
     _support_lease_snapshot,
-    _support_replay_root,
-    _support_replay_state_snapshot,
     _support_revocation_snapshot,
-    _validate_equivocation_finding,
-    _validate_membership_epoch_state_shape,
-    _validate_membership_snapshot_shape,
-    _validate_support_evaluation,
     _validate_support_lease_shape,
     _validate_support_proposal,
-    _validate_support_replay_receipt,
-    _validate_support_replay_state_shape,
     _validate_support_revocation_shape,
     eligible_membership_epoch_state_fingerprint,
-    eligible_membership_epoch_state_payload,
-    eligible_principal_snapshot_fingerprint,
-    eligible_principal_snapshot_payload,
     support_lease_fingerprint,
-    support_lease_payload,
     support_lease_proposal_fingerprint,
-    support_lease_proposal_payload,
-    support_lease_replay_receipt_payload,
     support_lease_replay_state_fingerprint,
-    support_lease_replay_state_payload,
-    support_lease_revocation_fingerprint,
-    support_lease_revocation_payload,
 )
 from pheroos.governance._support.membership import (
     _membership_contains_principal,
-    eligible_membership_epoch_state_is_current,
     eligible_principal_snapshot_matches,
 )
 from pheroos.governance._support.replay import (
@@ -134,7 +92,7 @@ def evaluate_lease_status(
     canonical_fingerprints: Callable[..., tuple[str, ...]],
     lease_fingerprint: Callable[[Any], str],
     effective_revocation: Callable[..., Any | None],
-    status_type: type,
+    status_type: Any,
 ) -> Any:
     if not is_authoritative(lease):
         raise GovernanceError("support lease status requires an authoritative lease")
@@ -180,154 +138,42 @@ def issue_support_lease(
     prior_lease: SupportLease | None = None,
     prior_revocation: SupportLeaseRevocation | None = None,
 ) -> tuple[SupportLease, SupportLeaseReplayState]:
-    if type(proposal) is not SupportLeaseProposal:
-        raise GovernanceError("support lease issuance requires a canonical proposal")
-    _validate_support_proposal(proposal)
-    if type(authority) is not AuthorityLevel or not can_verify(authority):
-        raise GovernanceError("support lease issuance requires governance authority")
-    current = require_commit_step(current_step, "support lease current_step")
-    if proposal.proposed_at_step > current:
-        raise GovernanceError("support lease proposal is from a future step")
-    _validate_commit_policy_binding(commit_policy, proposal)
-    lease_policy = commit_policy.support_lease
-    _validate_support_policy(lease_policy)
-    normalized_issuer = require_commit_text(issuer_id, "support lease issuer_id")
-    if not support_lease_replay_state_is_authoritative(replay_state):
-        raise GovernanceError(
-            "support lease issuance requires an authoritative replay state"
-        )
-    if (
-        replay_state.profile != proposal.profile
-        or replay_state.protocol_id != proposal.protocol_id
-        or replay_state.issuer_id != normalized_issuer
-        or replay_state.authority is not authority
-    ):
-        raise GovernanceError("support lease replay authority binding mismatch")
-
-    if not eligible_principal_snapshot_matches(
-        membership_snapshot,
-        epoch_state=membership_epoch_state,
-        profile=proposal.profile,
-        assurance=proposal.assurance,
-        manifest_root=proposal.manifest_root,
-        commit_policy_root=proposal.commit_policy_root,
-        protocol_id=proposal.protocol_id,
-        run_id=proposal.run_id,
-        target=proposal.target,
-        epoch=proposal.epoch,
-        current_step=current,
-    ):
-        raise GovernanceError(
-            "support lease membership is forged, stale, or has a binding mismatch"
-        )
-    if not principal_verification_matches(
-        principal_verification,
-        profile=proposal.profile,
-        assurance=proposal.assurance,
-        manifest_root=proposal.manifest_root,
-        commit_policy_root=proposal.commit_policy_root,
-        protocol_id=proposal.protocol_id,
-        run_id=proposal.run_id,
-        target=proposal.target,
-        epoch=proposal.epoch,
-        principal_id=proposal.principal_id,
-        current_step=current,
-    ):
-        raise GovernanceError(
-            "support lease principal verification is forged, stale, or mismatched"
-        )
-    if not _membership_contains_principal(
-        membership_snapshot,
-        principal_id=proposal.principal_id,
-        cluster_id=principal_verification.cluster_id,
-        verification_fingerprint=principal_verification_fingerprint(
-            principal_verification
-        ),
-    ):
-        raise GovernanceError(
-            "support lease principal is not in the eligible membership snapshot"
-        )
-
-    observations = tuple(positive_observations)
-    if not observations:
-        raise GovernanceError("support lease requires positive evidence")
-    observation_fingerprints: list[str] = []
-    observation_expiries: list[int] = []
-    for observation in observations:
-        if not verified_observation_matches(
-            observation,
-            profile=proposal.profile,
-            assurance=proposal.assurance,
-            manifest_root=proposal.manifest_root,
-            commit_policy_root=proposal.commit_policy_root,
-            protocol_id=proposal.protocol_id,
-            run_id=proposal.run_id,
-            target=proposal.target,
-            candidate_id=proposal.candidate_id,
-            claim_fingerprint=proposal.claim_fingerprint,
-            epoch=proposal.epoch,
-            current_step=current,
-            polarity=ObservationPolarity.SUPPORT,
-        ):
-            raise GovernanceError(
-                "support lease evidence is not authoritative, positive, fresh, and bound"
-            )
-        observation_fingerprints.append(verified_observation_fingerprint(observation))
-        observation_expiries.append(observation.expires_at_step)
-    normalized_observations = _canonical_fingerprints(
-        observation_fingerprints,
-        "support lease evidence fingerprints",
+    current, lease_policy, normalized_issuer = _validate_support_lease_request(
+        proposal,
+        replay_state=replay_state,
+        commit_policy=commit_policy,
+        issuer_id=issuer_id,
+        authority=authority,
+        current_step=current_step,
     )
-    if normalized_observations != proposal.positive_observation_fingerprints:
-        raise GovernanceError(
-            "support lease proposal evidence references do not match verified evidence"
-        )
-
-    expires = checked_add(current, lease_policy.lease_ttl_steps)
-    if principal_verification.expires_at_step < expires:
-        raise GovernanceError(
-            "support lease TTL exceeds principal verification freshness"
-        )
-    if membership_snapshot.expires_at_step < expires:
-        raise GovernanceError("support lease TTL exceeds membership freshness")
-    if min(observation_expiries) < expires:
-        raise GovernanceError("support lease TTL exceeds referenced evidence freshness")
-
-    normalized_prior_lease_fingerprint = ""
-    if (prior_lease is None) != (prior_revocation is None):
-        raise GovernanceError(
-            "support lease switch requires both prior lease and revocation"
-        )
-    if prior_lease is not None and prior_revocation is not None:
-        if not support_lease_is_authoritative(prior_lease):
-            raise GovernanceError(
-                "support lease switch prior lease is not authoritative"
-            )
-        if not support_lease_revocation_matches(
-            prior_revocation,
-            lease=prior_lease,
+    _validate_support_lease_principal(
+        proposal,
+        principal_verification=principal_verification,
+        membership_snapshot=membership_snapshot,
+        membership_epoch_state=membership_epoch_state,
+        current_step=current,
+    )
+    normalized_observations, observation_expiries = (
+        _validated_support_lease_observations(
+            proposal,
+            positive_observations=positive_observations,
             current_step=current,
-        ):
-            raise GovernanceError(
-                "support lease switch revocation is forged or mismatched"
-            )
-        if prior_revocation.revoked_at_step != current:
-            raise GovernanceError(
-                "support lease switch must revoke and issue at the same step"
-            )
-        if not _same_commit_scope(prior_lease, proposal):
-            raise GovernanceError("support lease switch scope mismatch")
-        if (
-            prior_lease.principal_id != proposal.principal_id
-            or prior_lease.principal_cluster_id != principal_verification.cluster_id
-        ):
-            raise GovernanceError(
-                "support lease switch must preserve principal and cluster identity"
-            )
-        if prior_lease.candidate_id == proposal.candidate_id:
-            raise GovernanceError("support lease switch requires a different candidate")
-        normalized_prior_lease_fingerprint = support_lease_fingerprint(prior_lease)
-
+        )
+    )
+    expires = checked_add(current, lease_policy.lease_ttl_steps)
+    _validate_support_lease_expiration(
+        principal_verification=principal_verification,
+        membership_snapshot=membership_snapshot,
+        observation_expiries=observation_expiries,
+        expires_at_step=expires,
+    )
+    normalized_prior_lease_fingerprint = _validate_support_lease_switch(
+        proposal,
+        principal_verification=principal_verification,
+        prior_lease=prior_lease,
+        prior_revocation=prior_revocation,
+        current_step=current,
+    )
     proposal_fingerprint = support_lease_proposal_fingerprint(proposal)
     replay_collision = _support_replay_collision_by_keys(
         replay_state,
@@ -335,49 +181,24 @@ def issue_support_lease(
         proposal_fingerprint=proposal_fingerprint,
         nonce=proposal.nonce,
     )
-    if replay_collision is not None:
-        cursor = replay_state._cursor
-        if type(cursor) is not _SupportLeaseReplayCursor:
-            raise GovernanceError("support lease replay cursor is invalid")
-        stored = cursor.leases_by_fingerprint.get(replay_collision.lease_fingerprint)
-        current_replay_state = cursor.current_state
-        if not (
-            type(stored) is SupportLease
-            and support_lease_is_authoritative(stored)
-            and type(current_replay_state) is SupportLeaseReplayState
-            and support_lease_replay_state_is_current(current_replay_state)
-            and stored.proposal_fingerprint == proposal_fingerprint
-            and stored.lease_id == lease_id
-            and stored.nonce == proposal.nonce
-            and stored.profile == proposal.profile
-            and stored.assurance is proposal.assurance
-            and stored.manifest_root == proposal.manifest_root
-            and stored.commit_policy_root == proposal.commit_policy_root
-            and stored.protocol_id == proposal.protocol_id
-            and stored.run_id == proposal.run_id
-            and stored.target == proposal.target
-            and stored.candidate_id == proposal.candidate_id
-            and stored.claim_fingerprint == proposal.claim_fingerprint
-            and stored.epoch == proposal.epoch
-            and stored.principal_id == proposal.principal_id
-            and stored.principal_cluster_id == principal_verification.cluster_id
-            and stored.principal_verification_fingerprint
-            == principal_verification_fingerprint(principal_verification)
-            and stored.membership_root == membership_snapshot.membership_root
-            and stored.membership_epoch_state_fingerprint
-            == eligible_membership_epoch_state_fingerprint(membership_epoch_state)
-            and stored.positive_observation_fingerprints == normalized_observations
-            and stored.prior_lease_fingerprint == normalized_prior_lease_fingerprint
-            and stored.issuer_id == normalized_issuer
-            and stored.authority is authority
-            and stored.proposal_provenance == proposal.provenance
-            and stored.proposal_trace_event_id == proposal.trace_event_id
-            and stored.issuance_provenance == issuance_provenance
-            and stored.issuance_trace_event_id == issuance_trace_event_id
-            and stored.issued_at_step <= current < stored.expires_at_step
-        ):
-            raise GovernanceError("support lease replay is a safety violation")
-        return stored, current_replay_state
+    replay_result = _support_lease_key_replay_result(
+        replay_collision,
+        replay_state=replay_state,
+        proposal=proposal,
+        principal_verification=principal_verification,
+        membership_snapshot=membership_snapshot,
+        membership_epoch_state=membership_epoch_state,
+        normalized_observations=normalized_observations,
+        normalized_prior_lease_fingerprint=normalized_prior_lease_fingerprint,
+        lease_id=lease_id,
+        normalized_issuer=normalized_issuer,
+        authority=authority,
+        current_step=current,
+        issuance_provenance=issuance_provenance,
+        issuance_trace_event_id=issuance_trace_event_id,
+    )
+    if replay_result is not None:
+        return replay_result
 
     lease = SupportLease(
         lease_id=require_commit_text(lease_id, "support lease lease_id"),
@@ -426,10 +247,284 @@ def issue_support_lease(
         "replay_receipt_fingerprint",
         _support_lease_replay_request_fingerprint(lease),
     )
+    return _record_support_lease(
+        lease,
+        replay_state=replay_state,
+        prior_leases=prior_leases,
+        current_step=current,
+    )
+
+
+def _validate_support_lease_request(
+    proposal: SupportLeaseProposal,
+    *,
+    replay_state: SupportLeaseReplayState,
+    commit_policy: CollectiveCommitPolicy,
+    issuer_id: str,
+    authority: object,
+    current_step: int,
+) -> tuple[int, SupportLeasePolicy, str]:
+    if type(proposal) is not SupportLeaseProposal:
+        raise GovernanceError("support lease issuance requires a canonical proposal")
+    _validate_support_proposal(proposal)
+    if type(authority) is not AuthorityLevel or not can_verify(authority):
+        raise GovernanceError("support lease issuance requires governance authority")
+    current = require_commit_step(current_step, "support lease current_step")
+    if proposal.proposed_at_step > current:
+        raise GovernanceError("support lease proposal is from a future step")
+    _validate_commit_policy_binding(commit_policy, proposal)
+    lease_policy = commit_policy.support_lease
+    _validate_support_policy(lease_policy)
+    normalized_issuer = require_commit_text(issuer_id, "support lease issuer_id")
+    if not support_lease_replay_state_is_authoritative(replay_state):
+        raise GovernanceError(
+            "support lease issuance requires an authoritative replay state"
+        )
+    if (
+        replay_state.profile != proposal.profile
+        or replay_state.protocol_id != proposal.protocol_id
+        or replay_state.issuer_id != normalized_issuer
+        or replay_state.authority is not authority
+    ):
+        raise GovernanceError("support lease replay authority binding mismatch")
+    return current, lease_policy, normalized_issuer
+
+
+def _validate_support_lease_principal(
+    proposal: SupportLeaseProposal,
+    *,
+    principal_verification: PrincipalVerification,
+    membership_snapshot: EligiblePrincipalSnapshot,
+    membership_epoch_state: EligibleMembershipEpochState,
+    current_step: int,
+) -> None:
+    if not eligible_principal_snapshot_matches(
+        membership_snapshot,
+        epoch_state=membership_epoch_state,
+        profile=proposal.profile,
+        assurance=proposal.assurance,
+        manifest_root=proposal.manifest_root,
+        commit_policy_root=proposal.commit_policy_root,
+        protocol_id=proposal.protocol_id,
+        run_id=proposal.run_id,
+        target=proposal.target,
+        epoch=proposal.epoch,
+        current_step=current_step,
+    ):
+        raise GovernanceError(
+            "support lease membership is forged, stale, or has a binding mismatch"
+        )
+    if not principal_verification_matches(
+        principal_verification,
+        profile=proposal.profile,
+        assurance=proposal.assurance,
+        manifest_root=proposal.manifest_root,
+        commit_policy_root=proposal.commit_policy_root,
+        protocol_id=proposal.protocol_id,
+        run_id=proposal.run_id,
+        target=proposal.target,
+        epoch=proposal.epoch,
+        principal_id=proposal.principal_id,
+        current_step=current_step,
+    ):
+        raise GovernanceError(
+            "support lease principal verification is forged, stale, or mismatched"
+        )
+    if not _membership_contains_principal(
+        membership_snapshot,
+        principal_id=proposal.principal_id,
+        cluster_id=principal_verification.cluster_id,
+        verification_fingerprint=principal_verification_fingerprint(
+            principal_verification
+        ),
+    ):
+        raise GovernanceError(
+            "support lease principal is not in the eligible membership snapshot"
+        )
+
+
+def _validated_support_lease_observations(
+    proposal: SupportLeaseProposal,
+    *,
+    positive_observations: Sequence[VerifiedObservation],
+    current_step: int,
+) -> tuple[tuple[str, ...], tuple[int, ...]]:
+    observations = tuple(positive_observations)
+    if not observations:
+        raise GovernanceError("support lease requires positive evidence")
+    observation_fingerprints: list[str] = []
+    observation_expiries: list[int] = []
+    for observation in observations:
+        if not verified_observation_matches(
+            observation,
+            profile=proposal.profile,
+            assurance=proposal.assurance,
+            manifest_root=proposal.manifest_root,
+            commit_policy_root=proposal.commit_policy_root,
+            protocol_id=proposal.protocol_id,
+            run_id=proposal.run_id,
+            target=proposal.target,
+            candidate_id=proposal.candidate_id,
+            claim_fingerprint=proposal.claim_fingerprint,
+            epoch=proposal.epoch,
+            current_step=current_step,
+            polarity=ObservationPolarity.SUPPORT,
+        ):
+            raise GovernanceError(
+                "support lease evidence is not authoritative, positive, fresh, "
+                "and bound"
+            )
+        observation_fingerprints.append(verified_observation_fingerprint(observation))
+        observation_expiries.append(observation.expires_at_step)
+    normalized_observations = _canonical_fingerprints(
+        observation_fingerprints,
+        "support lease evidence fingerprints",
+    )
+    if normalized_observations != proposal.positive_observation_fingerprints:
+        raise GovernanceError(
+            "support lease proposal evidence references do not match verified evidence"
+        )
+    return normalized_observations, tuple(observation_expiries)
+
+
+def _validate_support_lease_expiration(
+    *,
+    principal_verification: PrincipalVerification,
+    membership_snapshot: EligiblePrincipalSnapshot,
+    observation_expiries: Sequence[int],
+    expires_at_step: int,
+) -> None:
+    expires = expires_at_step
+    if principal_verification.expires_at_step < expires:
+        raise GovernanceError(
+            "support lease TTL exceeds principal verification freshness"
+        )
+    if membership_snapshot.expires_at_step < expires:
+        raise GovernanceError("support lease TTL exceeds membership freshness")
+    if min(observation_expiries) < expires:
+        raise GovernanceError("support lease TTL exceeds referenced evidence freshness")
+
+
+def _validate_support_lease_switch(
+    proposal: SupportLeaseProposal,
+    *,
+    principal_verification: PrincipalVerification,
+    prior_lease: SupportLease | None,
+    prior_revocation: SupportLeaseRevocation | None,
+    current_step: int,
+) -> str:
+    normalized_prior_lease_fingerprint = ""
+    if (prior_lease is None) != (prior_revocation is None):
+        raise GovernanceError(
+            "support lease switch requires both prior lease and revocation"
+        )
+    if prior_lease is not None and prior_revocation is not None:
+        if not support_lease_is_authoritative(prior_lease):
+            raise GovernanceError(
+                "support lease switch prior lease is not authoritative"
+            )
+        if not support_lease_revocation_matches(
+            prior_revocation,
+            lease=prior_lease,
+            current_step=current_step,
+        ):
+            raise GovernanceError(
+                "support lease switch revocation is forged or mismatched"
+            )
+        if prior_revocation.revoked_at_step != current_step:
+            raise GovernanceError(
+                "support lease switch must revoke and issue at the same step"
+            )
+        if not _same_commit_scope(prior_lease, proposal):
+            raise GovernanceError("support lease switch scope mismatch")
+        if (
+            prior_lease.principal_id != proposal.principal_id
+            or prior_lease.principal_cluster_id != principal_verification.cluster_id
+        ):
+            raise GovernanceError(
+                "support lease switch must preserve principal and cluster identity"
+            )
+        if prior_lease.candidate_id == proposal.candidate_id:
+            raise GovernanceError("support lease switch requires a different candidate")
+        normalized_prior_lease_fingerprint = support_lease_fingerprint(prior_lease)
+    return normalized_prior_lease_fingerprint
+
+
+def _support_lease_key_replay_result(
+    replay_collision: SupportLeaseReplayReceipt | None,
+    *,
+    replay_state: SupportLeaseReplayState,
+    proposal: SupportLeaseProposal,
+    principal_verification: PrincipalVerification,
+    membership_snapshot: EligiblePrincipalSnapshot,
+    membership_epoch_state: EligibleMembershipEpochState,
+    normalized_observations: tuple[str, ...],
+    normalized_prior_lease_fingerprint: str,
+    lease_id: str,
+    normalized_issuer: str,
+    authority: object,
+    current_step: int,
+    issuance_provenance: str,
+    issuance_trace_event_id: str,
+) -> tuple[SupportLease, SupportLeaseReplayState] | None:
+    if replay_collision is None:
+        return None
+    proposal_fingerprint = support_lease_proposal_fingerprint(proposal)
+    cursor = replay_state._cursor
+    if type(cursor) is not _SupportLeaseReplayCursor:
+        raise GovernanceError("support lease replay cursor is invalid")
+    stored = cursor.leases_by_fingerprint.get(replay_collision.lease_fingerprint)
+    current_replay_state = cursor.current_state
+    if not (
+        type(stored) is SupportLease
+        and support_lease_is_authoritative(stored)
+        and type(current_replay_state) is SupportLeaseReplayState
+        and support_lease_replay_state_is_current(current_replay_state)
+        and stored.proposal_fingerprint == proposal_fingerprint
+        and stored.lease_id == lease_id
+        and stored.nonce == proposal.nonce
+        and stored.profile == proposal.profile
+        and stored.assurance is proposal.assurance
+        and stored.manifest_root == proposal.manifest_root
+        and stored.commit_policy_root == proposal.commit_policy_root
+        and stored.protocol_id == proposal.protocol_id
+        and stored.run_id == proposal.run_id
+        and stored.target == proposal.target
+        and stored.candidate_id == proposal.candidate_id
+        and stored.claim_fingerprint == proposal.claim_fingerprint
+        and stored.epoch == proposal.epoch
+        and stored.principal_id == proposal.principal_id
+        and stored.principal_cluster_id == principal_verification.cluster_id
+        and stored.principal_verification_fingerprint
+        == principal_verification_fingerprint(principal_verification)
+        and stored.membership_root == membership_snapshot.membership_root
+        and stored.membership_epoch_state_fingerprint
+        == eligible_membership_epoch_state_fingerprint(membership_epoch_state)
+        and stored.positive_observation_fingerprints == normalized_observations
+        and stored.prior_lease_fingerprint == normalized_prior_lease_fingerprint
+        and stored.issuer_id == normalized_issuer
+        and stored.authority is authority
+        and stored.proposal_provenance == proposal.provenance
+        and stored.proposal_trace_event_id == proposal.trace_event_id
+        and stored.issuance_provenance == issuance_provenance
+        and stored.issuance_trace_event_id == issuance_trace_event_id
+        and stored.issued_at_step <= current_step < stored.expires_at_step
+    ):
+        raise GovernanceError("support lease replay is a safety violation")
+    return stored, current_replay_state
+
+
+def _record_support_lease(
+    lease: SupportLease,
+    *,
+    replay_state: SupportLeaseReplayState,
+    prior_leases: Sequence[SupportLease],
+    current_step: int,
+) -> tuple[SupportLease, SupportLeaseReplayState]:
     replayed_from_history = _support_lease_replay_result(
         lease,
         prior_leases=tuple(prior_leases),
-        current_step=current,
+        current_step=current_step,
     )
     parent_state_fingerprint = support_lease_replay_state_fingerprint(replay_state)
     request_fingerprint = _support_lease_snapshot(lease)
@@ -437,42 +532,21 @@ def issue_support_lease(
     if type(cursor) is not _SupportLeaseReplayCursor:
         raise GovernanceError("support lease replay cursor is invalid")
     with cursor.lock:
-        if cursor.current_state_fingerprint != parent_state_fingerprint:
-            transition = cursor.transitions.get(parent_state_fingerprint)
-            if transition is not None and transition[0] == request_fingerprint:
-                prior_lease_result = transition[1]
-                prior_state_result = transition[2]
-                if (
-                    type(prior_lease_result) is SupportLease
-                    and type(prior_state_result) is SupportLeaseReplayState
-                    and support_lease_is_authoritative(prior_lease_result)
-                    and support_lease_replay_state_is_current(prior_state_result)
-                ):
-                    return prior_lease_result, prior_state_result
-                raise GovernanceError(
-                    "support lease replay result is no longer available"
-                )
-            raise GovernanceError("support lease replay state is stale or would fork")
-
-        collision_receipt = _support_replay_collision_receipt(replay_state, lease)
-        if collision_receipt is not None:
-            stored = cursor.leases_by_fingerprint.get(
-                collision_receipt.lease_fingerprint
-            )
-            if (
-                stored is None
-                or not support_lease_is_authoritative(stored)
-                or _support_lease_replay_result(
-                    lease,
-                    prior_leases=(stored,),
-                    current_step=current,
-                )
-                is not stored
-            ):
-                raise GovernanceError(
-                    "support lease replay receipt conflicts with local authority state"
-                )
-            return stored, replay_state
+        stale_result = _support_lease_stale_transition_result(
+            cursor,
+            parent_state_fingerprint=parent_state_fingerprint,
+            request_fingerprint=request_fingerprint,
+        )
+        if stale_result is not None:
+            return stale_result
+        collision_result = _support_lease_receipt_collision_result(
+            cursor,
+            lease=lease,
+            replay_state=replay_state,
+            current_step=current_step,
+        )
+        if collision_result is not None:
+            return collision_result
         if replayed_from_history is not None:
             raise GovernanceError(
                 "caller lease history is not present in the authoritative replay state"
@@ -499,6 +573,56 @@ def issue_support_lease(
             next_state,
         )
         return lease, next_state
+
+
+def _support_lease_stale_transition_result(
+    cursor: _SupportLeaseReplayCursor,
+    *,
+    parent_state_fingerprint: str,
+    request_fingerprint: str,
+) -> tuple[SupportLease, SupportLeaseReplayState] | None:
+    if cursor.current_state_fingerprint == parent_state_fingerprint:
+        return None
+    transition = cursor.transitions.get(parent_state_fingerprint)
+    if transition is not None and transition[0] == request_fingerprint:
+        prior_lease_result = transition[1]
+        prior_state_result = transition[2]
+        if (
+            type(prior_lease_result) is SupportLease
+            and type(prior_state_result) is SupportLeaseReplayState
+            and support_lease_is_authoritative(prior_lease_result)
+            and support_lease_replay_state_is_current(prior_state_result)
+        ):
+            return prior_lease_result, prior_state_result
+        raise GovernanceError("support lease replay result is no longer available")
+    raise GovernanceError("support lease replay state is stale or would fork")
+
+
+def _support_lease_receipt_collision_result(
+    cursor: _SupportLeaseReplayCursor,
+    *,
+    lease: SupportLease,
+    replay_state: SupportLeaseReplayState,
+    current_step: int,
+) -> tuple[SupportLease, SupportLeaseReplayState] | None:
+    collision_receipt = _support_replay_collision_receipt(replay_state, lease)
+    if collision_receipt is None:
+        return None
+    stored = cursor.leases_by_fingerprint.get(collision_receipt.lease_fingerprint)
+    if (
+        stored is None
+        or not support_lease_is_authoritative(stored)
+        or _support_lease_replay_result(
+            lease,
+            prior_leases=(stored,),
+            current_step=current_step,
+        )
+        is not stored
+    ):
+        raise GovernanceError(
+            "support lease replay receipt conflicts with local authority state"
+        )
+    return stored, replay_state
 
 
 def support_lease_is_authoritative(lease: object) -> bool:
@@ -717,16 +841,19 @@ def support_lease_status(
     revocations: Sequence[SupportLeaseRevocation] = (),
     equivocated_lease_fingerprints: Sequence[str] = (),
 ) -> SupportLeaseStatus:
-    return evaluate_lease_status(
-        lease,
-        current_step=current_step,
-        revocations=revocations,
-        equivocated_lease_fingerprints=equivocated_lease_fingerprints,
-        is_authoritative=support_lease_is_authoritative,
-        canonical_fingerprints=_canonical_fingerprints,
-        lease_fingerprint=support_lease_fingerprint,
-        effective_revocation=_effective_revocation,
-        status_type=SupportLeaseStatus,
+    return cast(
+        SupportLeaseStatus,
+        evaluate_lease_status(
+            lease,
+            current_step=current_step,
+            revocations=revocations,
+            equivocated_lease_fingerprints=equivocated_lease_fingerprints,
+            is_authoritative=support_lease_is_authoritative,
+            canonical_fingerprints=_canonical_fingerprints,
+            lease_fingerprint=support_lease_fingerprint,
+            effective_revocation=_effective_revocation,
+            status_type=SupportLeaseStatus,
+        ),
     )
 
 

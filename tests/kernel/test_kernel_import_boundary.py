@@ -1,4 +1,5 @@
 import ast
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -19,6 +20,7 @@ def test_root_foundation_modules_are_explicit_and_small() -> None:
         "_digest",
         "_immutable",
         "_scope",
+        "_unicode",
         "_version",
     }
 
@@ -32,7 +34,10 @@ def test_core_import_does_not_load_removed_runtime_modules() -> None:
         "assert not loaded, loaded"
     )
 
-    subprocess.run([sys.executable, "-c", code], cwd=ROOT, check=True)
+    env = dict(os.environ)
+    env.pop("COVERAGE_PROCESS_CONFIG", None)
+    env.pop("COVERAGE_PROCESS_START", None)
+    subprocess.run([sys.executable, "-c", code], cwd=ROOT, env=env, check=True)
 
 
 def test_core_package_has_no_forbidden_import_roots() -> None:
@@ -60,12 +65,16 @@ def test_core_package_respects_package_import_dag() -> None:
     assert result.ok is True, result.detail
 
 
-def test_package_import_dag_resolves_relative_cross_package_imports(tmp_path: Path) -> None:
+def test_package_import_dag_resolves_relative_cross_package_imports(
+    tmp_path: Path,
+) -> None:
     protocol = tmp_path / "pheroos" / "protocol"
     protocol.mkdir(parents=True)
     (tmp_path / "pheroos" / "__init__.py").write_text("", encoding="utf-8")
     (protocol / "__init__.py").write_text("", encoding="utf-8")
-    (protocol / "bad.py").write_text("from ..governance import Candidate\n", encoding="utf-8")
+    (protocol / "bad.py").write_text(
+        "from ..governance import Candidate\n", encoding="utf-8"
+    )
 
     result = check(tmp_path)
 
@@ -74,7 +83,9 @@ def test_package_import_dag_resolves_relative_cross_package_imports(tmp_path: Pa
     assert "pheroos.governance" in result.detail
 
 
-def test_package_import_dag_resolves_absolute_root_alias_imports(tmp_path: Path) -> None:
+def test_package_import_dag_resolves_absolute_root_alias_imports(
+    tmp_path: Path,
+) -> None:
     protocol = tmp_path / "pheroos" / "protocol"
     protocol.mkdir(parents=True)
     (tmp_path / "pheroos" / "__init__.py").write_text("", encoding="utf-8")

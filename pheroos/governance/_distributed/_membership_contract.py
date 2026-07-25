@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+from collections.abc import Sequence
+from typing import TYPE_CHECKING, Protocol
+
 from pheroos.governance._commit_validation import (
     require_commit_fingerprint,
     require_commit_step,
@@ -15,8 +18,102 @@ from pheroos.protocol.commit_models import (
 )
 
 
+if TYPE_CHECKING:
+
+    class _PortablePrincipalView(Protocol):
+        @property
+        def principal_id(self) -> str: ...
+
+        @property
+        def principal_verification_fingerprint(self) -> str: ...
+
+        @property
+        def verified_issuer_id(self) -> str: ...
+
+        @property
+        def verified_method(self) -> str: ...
+
+        @property
+        def failure_domain(self) -> str: ...
+
+    class _PortableClusterView(Protocol):
+        @property
+        def cluster_id(self) -> str: ...
+
+        @property
+        def principals(self) -> Sequence[_PortablePrincipalView]: ...
+
+    class _PortableMembershipView(Protocol):
+        @property
+        def snapshot_id(self) -> str: ...
+
+        @property
+        def profile(self) -> str: ...
+
+        @property
+        def assurance(self) -> CommitAssurance: ...
+
+        @property
+        def manifest_root(self) -> str: ...
+
+        @property
+        def commit_policy_root(self) -> str: ...
+
+        @property
+        def protocol_id(self) -> str: ...
+
+        @property
+        def run_id(self) -> str: ...
+
+        @property
+        def target(self) -> str: ...
+
+        @property
+        def epoch(self) -> int: ...
+
+        @property
+        def eligible_clusters(self) -> Sequence[_PortableClusterView]: ...
+
+        @property
+        def membership_root(self) -> str: ...
+
+        @property
+        def issuer_id(self) -> str: ...
+
+        @property
+        def membership_method(self) -> str: ...
+
+        @property
+        def authority(self) -> AuthorityLevel: ...
+
+        @property
+        def issued_at_step(self) -> int: ...
+
+        @property
+        def expires_at_step(self) -> int: ...
+
+        @property
+        def provenance(self) -> str: ...
+
+        @property
+        def trace_event_id(self) -> str: ...
+
+        @property
+        def snapshot_fingerprint(self) -> str: ...
+else:
+
+    class _PortablePrincipalView(Protocol):
+        pass
+
+    class _PortableClusterView(Protocol):
+        pass
+
+    class _PortableMembershipView(Protocol):
+        pass
+
+
 def _validate_portable_membership_snapshot(
-    snapshot: object,
+    snapshot: _PortableMembershipView,
 ) -> None:
     if snapshot.profile != DISTRIBUTED_COMMIT_PROFILE_VERSION:
         raise GovernanceError("portable membership profile is not distributed")
@@ -87,7 +184,7 @@ def _validate_portable_membership_snapshot(
 
 
 def _portable_clusters_payload(
-    snapshot: object,
+    snapshot: _PortableMembershipView,
 ) -> tuple[dict[str, object], ...]:
     return tuple(
         {
@@ -110,7 +207,7 @@ def _portable_clusters_payload(
 
 
 def _portable_snapshot_payload_unchecked(
-    snapshot: object,
+    snapshot: _PortableMembershipView,
 ) -> dict[str, object]:
     return {
         "assurance": snapshot.assurance,
@@ -135,7 +232,7 @@ def _portable_snapshot_payload_unchecked(
 
 
 def _validate_membership_policy(
-    membership: object,
+    membership: _PortableMembershipView,
     policy: DistributedCommitPolicy,
 ) -> None:
     _validate_portable_membership_snapshot(membership)
@@ -155,9 +252,9 @@ def _validate_membership_policy(
 
 
 def _portable_member(
-    membership: object,
+    membership: _PortableMembershipView,
     principal_id: str,
-) -> tuple[str, object] | None:
+) -> tuple[str, _PortablePrincipalView] | None:
     for cluster in membership.eligible_clusters:
         for principal in cluster.principals:
             if principal.principal_id == principal_id:

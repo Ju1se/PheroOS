@@ -6,8 +6,82 @@ The project is currently pre-stable. Until the first stable ABI release, entries
 
 ## Unreleased
 
+### Removed
+
+- Withdrew the unshipped Draft helper
+  `commit_replay_receipt_v2_from_v1` before WP-05 public activation. A portable
+  v2 replay receipt does not inherit authority from a process-local v1 receipt;
+  callers must construct the explicit portable record and obtain authority only
+  through StateStore-backed prepare, session, commit, and rehydration. The v1
+  receipt ABI itself remains available under the declared compatibility window.
+
+### Deprecated
+
+- Recorded the exact 86-name WP-05 legacy authority cohort as Deprecated with
+  fully qualified, public, StateStore-backed v2 replacements and an earliest
+  removal version of `0.3.0`. The cohort covers process-local Hybrid replay,
+  Commit replay/window/finality, Risk, Membership/Support, certificate/local
+  finality, and Distributed authority entrypoints only. Portable historical
+  records, codecs, body-root helpers, and independent verification remain
+  Draft data surfaces. No legacy implementation or registry is physically
+  removed by this lifecycle change.
+
 ### Added
 
+- Added a Governance-owned Draft Baseline Output v2 aggregate write entrypoint
+  for the Stable promotion candidate. External runtimes pass only a versioned
+  Store/domain, portable grant and activation identity, optional host verifier,
+  exact portable verified-signal requests, and a portable output request.
+  Governance retains opaque capability/session custody and returns only a
+  portable commit attempt or Baseline result. Strict consumer and wheel/sdist
+  evidence covers committed output, duplicate-free retry, restart recovery,
+  revocation, expiry, currentness loss, and blocked publication. The candidate
+  remains `formal_stable=false`; no provider, database, runtime, or external
+  effect was added.
+- Added a clean-commit-only release-candidate dry-run that separates the
+  publishable wheel/sdist subject from the comparison-only second build,
+  materializes verified raw blobs from the captured Git commit/tree before
+  either build without archive attributes or checkout filters, verifies
+  identical source/wheel/sdist external-CWD transcripts, and emits an
+  allowlisted staging set with artifact-derived CycloneDX/SPDX, Stable-candidate
+  ABI diff, migration notes, release manifest, commit/tree identity, and
+  SHA-256 bindings. SBOM identity is single-valued and bound to distribution
+  filenames and metadata roots. CI tools install only from a hash-closed Ubuntu
+  x86_64 wheel lock verified for CPython 3.12–3.14; editable source installation
+  is offline and `--no-deps`. The reviewed workflow header and complete job
+  blocks have exact execution-context digests. The companion workflow remains
+  read-only and cannot tag or publish; disabled `v*` tag update/deletion rules
+  are only a WP-13 activation proposal.
+- Machine-readable engineering baseline and repository-policy gates for the
+  production-readiness program. The baseline records one-way test, Ruff,
+  Mypy, complexity, dependency, and artifact-integrity floors; CI exposes one
+  required `quality-gate` result and a disabled, reviewable main-branch
+  ruleset proposal without claiming that remote protection is active.
+- Implemented the additive Draft WP-02 StateStore v2 slice: exact canonical
+  Protocol/Governance records, bounded multi-read/single-write atomic commits,
+  immutable historical inclusion with `CURRENT`/`SUPERSEDED`/`SEALED`
+  observations, typed total failures and reconciliation, atomic domain seals,
+  deterministic restart equivalence, a private provider-free reference Store,
+  and one exact-version Conformance matrix shared with an independent stdlib
+  model. This does not activate an authority v2 manifest profile, add a
+  database, or change v1 wire behavior.
+- Implemented the public Draft WP-03 Authority Session v2 slice: strict
+  portable issuer grants/verifications/requests, opaque store- and run-bound
+  capabilities, request-specific least-privilege sessions, atomic
+  verified-signal and domain-retirement paths, four authority-critical Trace
+  contracts, exact StateStore-version and Trace-batch domain binding, and one
+  reusable exact-version Conformance matrix shared by the reference and
+  independent stdlib StateStore models. The complete scoped
+  authority manifest profile, external verifier TCK, and Output v2 remain
+  inactive; no v1 behavior, database, provider, or runtime was added.
+- Accepted scoped authority v2 decision set: an explicit
+  `pheroos.protocol.v2` opt-in, separate v3 Capability/Protocol schema
+  documents, local and authenticated authority profiles, an atomic bounded
+  authority read-set, historical inclusion/current-position separation,
+  provider-neutral StateStore and verifier Conformance contracts, a 17-code
+  diagnostic registry, and strict v2-or-fail migration with no v1 assurance
+  fallback. Existing v1 manifests and schema-document v2 artifacts retain
+  their current bytes and meaning.
 - Four explicit schema-document tracks with byte-frozen v1 `$id`/CLI aliases
   and separate versioned v2 artifacts: `capability.schema.json`/`capability`
   to `capability-v2.schema.json`, `protocol.schema.json`/`protocol` to

@@ -6,7 +6,9 @@ from pheroos.protocol import load_capability_manifest
 
 
 def test_layer_conformance_exercises_every_builtin_action(monkeypatch) -> None:
-    manifest = load_capability_manifest("examples/hybrid-pheromone-protocol/capability.json")
+    manifest = load_capability_manifest(
+        "examples/hybrid-pheromone-protocol/capability.json"
+    )
     observed: set[str] = set()
     evaluate = layer_coordination_policy.evaluate_layer_coordination
 
@@ -30,7 +32,9 @@ def test_layer_conformance_exercises_every_builtin_action(monkeypatch) -> None:
 
 
 def test_layer_action_proof_derives_manifest_thresholds_and_provenance() -> None:
-    manifest = load_capability_manifest("examples/hybrid-pheromone-protocol/capability.json")
+    manifest = load_capability_manifest(
+        "examples/hybrid-pheromone-protocol/capability.json"
+    )
     policy = manifest.protocol.collective_decision_policy
     assert policy is not None
     policy = replace(
@@ -55,7 +59,9 @@ def test_layer_action_proof_derives_manifest_thresholds_and_provenance() -> None
 def test_kind_conformance_exercises_priority_and_suppression_interactions(
     monkeypatch,
 ) -> None:
-    manifest = load_capability_manifest("examples/hybrid-pheromone-protocol/capability.json")
+    manifest = load_capability_manifest(
+        "examples/hybrid-pheromone-protocol/capability.json"
+    )
     policy = manifest.protocol.collective_decision_policy
     assert policy is not None
     profiles = {

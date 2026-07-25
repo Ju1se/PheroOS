@@ -1,15 +1,9 @@
-"""Frozen v1 compatibility state isolated from the durable authority path.
+"""Private namespace for frozen v1 compatibility implementations.
 
-New integrations must use :class:`GovernanceStateStore`.  This package exists
-only so pre-0.2 v1 issuers retain their exact replay/fork behavior during the
-declared migration window without scattering process globals across domain
-modules.
+The package initializer is deliberately inert.  Legacy owners that still need
+the process-local authority registry import its private module explicitly;
+merely importing an unrelated compatibility helper must not initialize that
+registry in an otherwise durable v2 process.
 """
 
-from pheroos.governance._legacy.authority_registry import (
-    LEGACY_AUTHORITY_REGISTRY,
-    LegacyAuthorityRegistry,
-)
-
-
-__all__ = ["LEGACY_AUTHORITY_REGISTRY", "LegacyAuthorityRegistry"]
+__all__: list[str] = []

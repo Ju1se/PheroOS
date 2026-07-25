@@ -23,7 +23,10 @@ SECRET_KEY_PARTS = frozenset(
 
 
 def is_namespaced_extension(value: str) -> bool:
-    return any(value.startswith(prefix) and len(value) > len(prefix) for prefix in EXTENSION_PREFIXES)
+    return any(
+        value.startswith(prefix) and len(value) > len(prefix)
+        for prefix in EXTENSION_PREFIXES
+    )
 
 
 def collect_extensions(payload: dict[str, Any]) -> dict[str, Any]:
@@ -59,14 +62,20 @@ def secret_like_paths(value: Any, *, path: str = "") -> list[str]:
         return paths
     if isinstance(value, Sequence) and not isinstance(value, (str, bytes, bytearray)):
         for index, item in enumerate(value):
-            paths.extend(secret_like_paths(item, path=f"{path}[{index}]" if path else f"[{index}]"))
+            paths.extend(
+                secret_like_paths(
+                    item, path=f"{path}[{index}]" if path else f"[{index}]"
+                )
+            )
     return paths
 
 
 def reject_secret_like_fields(payload: dict[str, Any]) -> None:
     paths = secret_like_paths(payload)
     if paths:
-        raise ValueError(f"secret-like manifest fields are not allowed: {', '.join(paths)}")
+        raise ValueError(
+            f"secret-like manifest fields are not allowed: {', '.join(paths)}"
+        )
 
 
 def dotted(prefix: str, item: str) -> str:

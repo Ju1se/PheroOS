@@ -4,6 +4,15 @@ PheroOS protocol-core defines the ABI boundary for external multi-agent runtimes
 
 It does not implement the runtime.
 
+The Draft exact version-composition artifact and evaluator are documented in
+[Runtime Compatibility Manifest v1](../conformance/runtime-compatibility-v1.md).
+That manifest does not replace the named implementation TCKs or grant output
+authority.
+
+The public-facade and strict-typing boundary for the Draft promotion candidate
+is the [Stable Core consumer contract](stable-core-consumer.md). It is a
+candidate consumption guide, not a formal Stable or production-runtime claim.
+
 ## Integration Shape
 
 External runtimes should compose PheroOS in this order:
@@ -122,12 +131,112 @@ turning them into runtime records. The manifest loader applies the checked-in
 schema before typed mapping, rejects unknown non-namespaced fields and invalid
 typed shapes, and rejects `NaN`, `Infinity`, and `-Infinity`.
 
+Kernel planning uses the same Protocol validation dispatch. A legacy
+`CapabilityManifest` retains its v1 validation semantics, while an exact
+canonical `ScopedCapabilityManifestV2` is validated through its closed v2
+declarations and is never projected onto legacy output-policy fields. Both
+manifest generations resolve through `OSKernel.plan(...)` to the existing
+Kernel Plan v2 document; Capability schema v3 does not imply or create a Kernel
+Plan v3. Unsupported, forged, or non-canonical manifest objects fail closed as
+typed diagnostics and cannot expose permissions, connections, or Drivers.
+
 Directly constructed Python records do not bypass the boundary. Governance
 entry points reject booleans used as numbers, non-finite values, invalid
 bounds, undeclared subjects or candidates, cross-target records, and incomplete
 lineage. Public frozen records defensively snapshot nested lists and mappings
 at their trust boundary; a runtime should still treat submitted records as
 immutable.
+
+## Draft Runtime Integration Transcript v1
+
+The exact local `pheroos.protocol.v2` scoped-authority profile is active as a
+Draft protocol-core composition. This transcript does not activate the
+authenticated external-verifier profile, make any lifecycle entry Stable, or
+provide the external runtime itself.
+
+The provisional `pheroos.conformance.runtime_integration` facade defines an
+exact-version, provider-free and expected-free transcript TCK. It composes one
+preconstructed request through eight ordered layers:
+
+```text
+compatibility -> scope -> protocol -> kernel -> drivers
+              -> governance -> output -> trace
+```
+
+The adapter must independently re-read Capability schema v3, produce Kernel
+Plan v2 for the exact portable `RuntimeScope`, validate and persist Driver
+Invocation v2, evaluate Baseline Output v2 or consume a closed Commit v2
+observation lane, project action eligibility, and append the seven preceding
+steps to Scoped TraceStore v2. The verifier re-runs Kernel planning and
+recomputes every stage, predecessor, output, and Trace binding; an adapter's
+self-reported root is never sufficient.
+
+Driver checkpoints remain implementation-defined bytes. The transcript carries
+their canonical base64url encoding and SHA-256 binding, then calls the
+adapter's own checkpoint reader to prove the exact receipt survives restart.
+The matrix also requires cross-scope and cross-key misses and rejection of a
+byte-tampered checkpoint. This does not standardize a database or checkpoint
+format.
+
+Crash recovery is not accepted from `recovered_after_commit` alone. For every
+recovery case the adapter must expose the `GovernanceStateReaderV2` created by
+its post-commit Store restart, keyed by the exact request root and scope. The
+TCK calls `recover_baseline_output_result_v2` itself and requires the complete
+recovered result to equal the transcript result. Unknown, cross-request, and
+cross-scope lookups must not return a reader. After reopening the recovery
+image, the fixture advances one deterministic source-only witness stream. The
+TCK requires the returned reader to retain the pre-witness genesis head, so a
+reader over the still-live source fails. This proves the checkpoint/reopen
+snapshot-isolation invariant without object identity, self-report, or a
+process-global registry. It does not claim a fresh operating-system process;
+fresh-process interoperability remains the WP12 external-runtime gate.
+
+The certificate cases use exact `CommitFinalityProjectionV2`
+observed/successor records generated from the same committed Certificate
+states, plus a bound `CommitDecisionOutcomeV2` as portable diagnostic data.
+Authority is proved on the opaque path: the adapter commits an observed
+Certificate state and, for the stale case, a successor, restarts the
+Governance Store, and returns the corresponding
+`VerifiedCommitCertificateStateV2` handles. The TCK requires the observed
+handle to be stale, the successor handle to be current, and the stale handle's
+output action to remain denied. No boolean, projection root, or portable
+outcome substitutes for that Store-backed currentness check.
+Even a current handle can open the action gate only when its committed stream,
+revision, transition, snapshot, receipt, seal, frozen dependencies, and step
+exactly bind the declared observation. Mandatory positive cases prove current
+Certificate-bound publication and execution separately; unrelated current and
+unrelated stale/successor pairs are fail-closed.
+
+The stale permission and stop cases each append one legal same-state successor
+to the selected Baseline Output dependency stream. After restart the TCK
+compares every head in the complete declared output read set: within that set,
+exactly the committed output stream and the selected dependency advance. This
+is a precise declared-read-set claim, not a claim that the TCK enumerates every
+implementation-global stream; the source-only restart witness is deliberately
+outside that read set. The output stays deliverable while current action
+authority is denied.
+
+Wall-clock timeout and client cancellation are simultaneous-capable outer
+runtime observations. They may prevent Governance evaluation, but neither
+advances a protocol logical deadline, commits a candidate, or creates output
+authority. A deterministic precedence selects the transcript disposition while
+both observations remain present in diagnostics.
+
+The same matrix runs against the protocol-core reference adapter and the
+public-facade-only independent fixture in
+[`examples/runtime-integration-protocol`](../../examples/runtime-integration-protocol/README.md).
+The fixture uses independent stdlib Driver, Trace, and Governance stores and a
+different Driver checkpoint format. Echo, constant, malformed, out-of-order,
+timeout-ignoring, cross-request-state, cross-scope, self-root, checkpoint-liar,
+no-restart-recovery, live-source-reader, unrelated-current-certificate,
+unrelated-stale-certificate, stale-permission, stale-stop, stale-certificate,
+and action-coupling adapters must fail.
+
+This ABI remains Draft/provisional. It creates no provider, clock, scheduler,
+task loop, worker, subprocess controller, server, queue, or database. An HTTP
+200 response, provider success, Trace append, or delivery acknowledgement is
+an observation only; none is evidence, permission, commit, certificate
+currentness, publication authority, or execution authority.
 
 ## Optional Optimal Commit Workflow
 
@@ -202,6 +311,18 @@ Kernel plans, Driver requests/results, Governance authority domains, and scoped
 Trace envelopes. A result from a different scope is not reusable authority,
 even when its payload is otherwise byte-identical.
 
+The Runtime Scope v1 JSON Schema is structural, not an authority verifier. It
+checks the closed fields, exact version, basic text form, and the
+1024-character per-component wire resource bound. A forged but syntactically
+valid SHA-256-looking `scope_ref` can therefore pass JSON Schema. Every trusted
+reader must call `RuntimeScope.from_dict(...)`, which derives the expected
+identity from `tenant_id` and `run_id` and fails closed on mismatch. The typed
+reader additionally requires Unicode NFC and Unicode scalar values because
+those canonicality rules are not expressible by this JSON Schema. The bound
+applies to the portable wire ABI
+only: legacy Python constructors can still
+hold values that `to_dict()` correctly refuses to make portable.
+
 Durable Governance integration uses the provider-neutral
 `GovernanceStateStore` protocol. The core supplies
 `InMemoryGovernanceStateStore` only as a deterministic reference and test
@@ -218,6 +339,74 @@ evaluate_hybrid_commit_step
 -> finalize_hybrid_commit_transition
 -> expose output only from AtomicHybridCommitStatus.COMMITTED
 ```
+
+That sequence is the current Draft v1 trusted-host compatibility path. Its
+finalize step compares a receipt with the current head, so it does not provide
+the historical-inclusion/current-actionability separation reserved for scoped
+authority v2. New integrations must not describe the v1 receipt as a portable
+credential or production identity proof.
+
+WP-02 now implements the additive Draft StateStore v2 storage/finality slice:
+`GovernanceStateStoreV2.atomic_commit_v2(...)`, the atomic canonical read-set,
+historical committed-transition lookup, separate dynamic commit-position
+inspection, and authority-critical Trace in the same Store commit. Its
+provider-free reference and independent adapter are covered by the exact
+StateStore v2 Conformance contract. The generic `TraceStore` remains a
+reconstructible projection, and these v2 names are not aliases or a silent
+upgrade of the current v1 methods.
+
+WP-03 now adds the public Draft non-portable Authority Session v2 slice on top
+of StateStore v2. A trusted coordinator activates a portable grant, binds a
+store- and run-specific capability, opens a request-specific session, and may
+atomically commit a verified-signal fact or domain seal. The session owns the
+exact selected writer; it never enters agent context, Driver exposure, wire,
+checkpoint, or Trace. The same session matrix passes the reference and
+independent stdlib StateStore models.
+
+External runtimes using Baseline Output v2 can avoid custody of those opaque
+objects through `evaluate_and_commit_governed_baseline_output_v2(...)`. The
+runtime supplies only the versioned Store/domain, portable grant and stable
+activation identity/epoch, optional host verifier, exact portable
+verified-signal requests, and portable Baseline request. Governance performs
+activation reconciliation, fresh binding, signal commits, permission issuance,
+and output evaluation/commit internally. An activation epoch later than the
+request epoch is rejected before any Store mutation. The result is a portable commit
+attempt until the output stage is reached, then a portable Baseline result.
+Neither transport success nor the returned object performs an external effect.
+
+An external runtime that needs durable risk authority uses the public
+[Risk State v2 ABI](risk-state-v2.md) in one explicit sequence:
+
+```text
+exact ScopedProtocolManifestV2 + current Risk parent
+-> prepare_risk_state_advance_v2(...) -> portable request + local source proof
+-> bind QUALIFY_EVIDENCE capability and open request-bound session
+-> advance_risk_state_v2(...) -> atomic state + two closed Trace events
+-> serialize only the portable request
+-> rehydrate_risk_state_v2(...) against a fresh StateStore reader
+-> require_current_risk_state_v2(...) before the next advance
+```
+
+Epoch changes advance that same target/run/policy stream and record
+`parent_epoch` plus a required window reset; they do not allocate one stream per
+epoch. The provider-free [`risk-v2-protocol`](../../examples/risk-v2-protocol/README.md)
+example advances from epoch 7 to 137 after a reference Store restart; the
+public Conformance lane separately prepares all 130 intervening epoch proposals
+and proves they resolve to one stream. The
+reference Conformance adapter is test infrastructure, not a production database
+or runtime. Portable JSON, roots, or the non-portable source proof alone cannot
+authorize risk, commit a candidate, or authorize output.
+
+Capability schema v3 dispatch, the scoped authority manifest, Baseline Output
+v2, and their reference/independent conformance paths are now implemented as
+Draft ABI. Certified and distributed profiles still require their declared
+external issuer/witness verifiers and their own exact composite TCK gates;
+using StateStore or Authority Session v2 alone cannot authorize publication or
+execution. See
+the [authority decision](authority-v2-decision.md),
+[threat model](authority-trust-model-v2.md), and
+[migration contract](authority-v2-migration.md), plus the exact
+[Authority Session v2 contract](authority-session-v2.md).
 
 `evaluate_and_commit_hybrid_step(...)` composes that sequence for an explicit
 `AuthorityDomain` and store. A stale compare-and-swap head returns
@@ -279,30 +468,37 @@ independent-scout gate.
 
 Pheromone is bounded collective memory.
 
-External runtimes may store pheromone history outside protocol-core, then pass current trails into governance reference functions.
-
-Basic swarm runtimes may use the smaller collective helpers. Hybrid runtimes
-should use the complete pure reference entry point:
+Basic swarm runtimes may use the smaller collective helpers. A Hybrid runtime
+that needs authority across calls, processes, or restarts must use the durable
+Hybrid Replay v2 journey:
 
 ```text
-evaluate_hybrid_collective_step(
-    protocol_id,
-    candidate_set,
-    policy,
-    target,
-    current_step,
-    ...
-) -> HybridCollectiveStep
+exact ScopedProtocolManifestV2 + authority context + deterministic proposals
+-> evaluate_hybrid_collective_step_v2(...) -> VerifiedHybridSourceStepV2
+-> build_hybrid_replay_advance_request_v2(...)
+-> open_hybrid_replay_authority_session_v2(...)
+-> advance_hybrid_replay_state_v2(...) -> atomic State + Trace commit
+-> rehydrate_hybrid_replay_state_v2(...) after restart
+-> evaluate the next step only from the verified current parent
 ```
 
-Its inputs include governance-verified scout, recruitment, and inhibition
-records; existing and newly deposited trails; declared topology; feedback;
-layer proposals, snapshots, and strategy biases; bounded adjustment proposals;
-and, for a subsequent step, a governance-issued `HybridReplayState`. The
-function validates batches before applying any state
-transition and performs the declared adjustment, deposit, evaporation, diffusion,
-reinforcement, response, L1-L4 coordination, scoring, independent-scout gate,
-and commit-or-safe-fallback order.
+The source proof is non-portable and is bound to the exact domain, scope, run,
+epoch, manifest, target, candidates, base and effective policy, topology,
+current step, and parent snapshot. The advance operation independently rebuilds
+that projection and verifies the complete StateStore read set before committing.
+Neither a raw JSON snapshot, digest, checkpoint, pickle, legacy replay record,
+nor same-shaped dataclass grants authority. A committed historical snapshot can
+be rehydrated for proof; only a Store-verified current head may parent the next
+advance. A legal concurrent successor produces a bounded retry, while a fork,
+rollback, or substitution fails closed.
+
+The complete step inputs include governance-verified scout, recruitment, and
+inhibition records; newly deposited trails; declared topology; feedback; layer
+proposals, snapshots, and strategy biases; and bounded adjustment proposals.
+The evaluator validates the batch before applying any transition and performs
+the declared adjustment, deposit, evaporation, diffusion, reinforcement,
+response, L1-L4 coordination, scoring, independent-scout gate, and
+commit-or-safe-fallback order.
 
 The Draft ABI keeps two explicitly different bounded exploration controls.
 `pheromone_exploration_floor` supplies a response baseline for non-negative
@@ -312,7 +508,7 @@ independent-scout gate, and both are constrained to `[0, 1]`.
 Novelty trails do not score when exploration is disabled. In the complete step,
 novelty decay is folded into evaporation before lifecycle timestamps advance.
 
-The result contains `decision`, `state`, `active_trails`,
+The verified source step contains `decision`, `state`, `active_trails`,
 `layer_coordination`, `adjustment_overlay`, `effective_policy`, deposit,
 evaporation, diffusion, and reinforcement lifecycle record tuples, exploration
 observations, processed replay identities, and `budget_state`. Its
@@ -320,22 +516,20 @@ observations, processed replay identities, and `budget_state`. Its
 do not synthesize an expire, fallback, reinforcement, or other lifecycle event
 when that transition did not occur.
 
-To continue a Hybrid run, call
-`replay_state_from_hybrid_step(previous_step)` and pass the result as
-`replay_state` to the next complete step. Raw `processed_*` identity sets are
-not authoritative, and caller-provided `existing_trails` cannot replace memory
-inside an issued replay state. `HybridReplayState` and `HybridCollectiveStep`
-constructors remain public ABI shapes, but only instances issued by governance
-are accepted at this trust boundary.
-Issued replay state also carries disjoint immutable payload receipts for
+The durable snapshot carries disjoint immutable payload receipts for
 deposit, diffusion, feedback, and adjustment lifecycles. Reusing an id is
 idempotent only when the complete ABI payload is the same; changing a subject,
 outcome, strength, topology attenuation, provenance, or adjustment fails
-closed. `replay_ignored` trace lineage includes the complete canonical
-`replay_payload` and both payload fingerprints. Trace validation recomputes the
-current fingerprint, while actual-trace conformance additionally requires the
-matching governance-issued prior `HybridReplayState`; two matching
-caller-authored digest strings are not proof of prior processing.
+closed. Snapshot projections preserve the exact four receipt classes, bounded
+active memory, budget, cumulative policy overlay, source lineage, and canonical
+roots needed to continue after restart without trusting caller-maintained
+processed-id sets.
+
+`evaluate_hybrid_collective_step(...)`, `HybridReplayState`, and
+`replay_state_from_hybrid_step(...)` are Deprecated Draft compatibility
+surfaces for the earlier process-local path. They remain available during the
+declared lifecycle window, but a production integration must not use their
+sentinel/registry issuance as a durable trust root.
 
 Every governance-produced rejected deposit, diffusion, or feedback
 `pheromone_clip` carries a versioned `causal_payload` and

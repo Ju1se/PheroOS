@@ -119,17 +119,26 @@ def validate_pheromone_feedback(
         if not isinstance(getattr(feedback, field_name), str):
             raise GovernanceError(f"pheromone feedback {field_name} must be a string")
     if feedback.outcome not in SUPPORTED_PHEROMONE_FEEDBACK_OUTCOMES:
-        raise GovernanceError(f"unsupported pheromone feedback outcome: {feedback.outcome}")
+        raise GovernanceError(
+            f"unsupported pheromone feedback outcome: {feedback.outcome}"
+        )
     if not is_nonblank_string(feedback.source_id):
         raise GovernanceError("pheromone feedback source_id is required")
-    if feedback.subject_type not in SUPPORTED_PHEROMONE_SUBJECT_TYPES and not is_extension_pheromone_value(feedback.subject_type):
-        raise GovernanceError(f"unsupported pheromone feedback subject type: {feedback.subject_type}")
+    if (
+        feedback.subject_type not in SUPPORTED_PHEROMONE_SUBJECT_TYPES
+        and not is_extension_pheromone_value(feedback.subject_type)
+    ):
+        raise GovernanceError(
+            f"unsupported pheromone feedback subject type: {feedback.subject_type}"
+        )
     if not is_nonblank_string(feedback.subject_id):
         raise GovernanceError("pheromone feedback subject_id is required")
     if not is_nonblank_string(feedback.target):
         raise GovernanceError("pheromone feedback target is required")
     if target is not None and feedback.target != target:
-        raise GovernanceError(f"pheromone feedback targets {feedback.target}, not active target {target}")
+        raise GovernanceError(
+            f"pheromone feedback targets {feedback.target}, not active target {target}"
+        )
     if not is_nonblank_string(feedback.candidate_id):
         raise GovernanceError("pheromone feedback must declare candidate_id")
     for field_name in ("evidence_id", "provenance", "trace_event_id"):
@@ -140,9 +149,13 @@ def validate_pheromone_feedback(
             )
     if feedback.subject_type == "candidate":
         if feedback.subject_id != feedback.candidate_id:
-            raise GovernanceError("candidate pheromone feedback subject_id must match candidate_id")
+            raise GovernanceError(
+                "candidate pheromone feedback subject_id must match candidate_id"
+            )
     if feedback.candidate_id and candidate_set is not None:
-        candidate_set.require_declared_for_target(feedback.candidate_id, feedback.target)
+        candidate_set.require_declared_for_target(
+            feedback.candidate_id, feedback.target
+        )
     if neighborhood is not None:
         validate_pheromone_topology(
             neighborhood,
@@ -218,7 +231,9 @@ def reinforce_pheromone_trails_with_records(
             target=target,
         )
     for trail in existing:
-        validate_pheromone_trail(trail, policy, candidate_set=candidate_set, target=target)
+        validate_pheromone_trail(
+            trail, policy, candidate_set=candidate_set, target=target
+        )
         if neighborhood is not None:
             validate_pheromone_subject_binding(
                 neighborhood,
@@ -238,14 +253,20 @@ def reinforce_pheromone_trails_with_records(
         )
     _reject_duplicate_feedback(items)
     if any(not is_nonblank_string(item) for item in processed_feedback_ids):
-        raise GovernanceError("processed pheromone feedback ids must be non-blank strings")
+        raise GovernanceError(
+            "processed pheromone feedback ids must be non-blank strings"
+        )
     budget = pheromone_budget_for_policy(policy, budget_state)
     if not policy.feedback_enabled:
         return PheromoneReinforcementResult(trails=tuple(existing), budget_state=budget)
 
     known_lineage_ids = set(processed_feedback_ids)
     replayed_feedback_ids = tuple(
-        sorted(item.trace_event_id for item in items if item.trace_event_id in known_lineage_ids)
+        sorted(
+            item.trace_event_id
+            for item in items
+            if item.trace_event_id in known_lineage_ids
+        )
     )
     pending = [item for item in items if item.trace_event_id not in known_lineage_ids]
     processed = set(processed_feedback_ids)
@@ -257,7 +278,9 @@ def reinforce_pheromone_trails_with_records(
     for item in ordered:
         kind = pheromone_kind_for_feedback(item)
         if kind == "stale":
-            changed, stale_records = stale_matching_trails_with_records(reinforced, item, policy)
+            changed, stale_records = stale_matching_trails_with_records(
+                reinforced, item, policy
+            )
             reinforced = changed
             records.extend(
                 replace(
@@ -272,14 +295,22 @@ def reinforce_pheromone_trails_with_records(
 
         requested = abs(float(item.strength_delta or item.reward))
         index = find_matching_trail_index(reinforced, item, kind)
-        current_strength = float(reinforced[index].strength) if index is not None else 0.0
+        current_strength = (
+            float(reinforced[index].strength) if index is not None else 0.0
+        )
         if index is not None and item.step < reinforced[index].updated_at_step:
-            raise GovernanceError("pheromone feedback step must not precede matching trail update")
+            raise GovernanceError(
+                "pheromone feedback step must not precede matching trail update"
+            )
         source_trace_event_id = (
-            reinforced[index].trace_event_id if index is not None else item.trace_event_id
+            reinforced[index].trace_event_id
+            if index is not None
+            else item.trace_event_id
         )
         headroom = max(0.0, float(policy.max_strength) - current_strength)
-        applied, updated_budget = budget.consume(item.source_id, min(requested, headroom))
+        applied, updated_budget = budget.consume(
+            item.source_id, min(requested, headroom)
+        )
         if index is None and applied < policy.min_strength:
             applied = 0.0
             updated_budget = budget
@@ -302,7 +333,9 @@ def reinforce_pheromone_trails_with_records(
                     updated_at_step=item.step,
                 )
             else:
-                rejected = replace(reinforced[index], trace_event_id=item.trace_event_id)
+                rejected = replace(
+                    reinforced[index], trace_event_id=item.trace_event_id
+                )
             record = lifecycle_record(
                 "reinforce_rejected",
                 rejected,
@@ -321,7 +354,9 @@ def reinforce_pheromone_trails_with_records(
                     source_provenance=rejected.provenance,
                 ),
             )
-            records.append(replace(record, outcome=item.outcome, reward=float(item.reward)))
+            records.append(
+                replace(record, outcome=item.outcome, reward=float(item.reward))
+            )
             continue
 
         if index is None:
@@ -342,7 +377,9 @@ def reinforce_pheromone_trails_with_records(
                 ttl_steps=profile.ttl_steps if profile is not None else None,
                 lineage_event_ids=(item.trace_event_id,),
             )
-            validate_pheromone_trail(updated, policy, candidate_set=candidate_set, target=target)
+            validate_pheromone_trail(
+                updated, policy, candidate_set=candidate_set, target=target
+            )
             reinforced.append(updated)
         else:
             current = reinforced[index]
@@ -357,7 +394,9 @@ def reinforce_pheromone_trails_with_records(
                     dict.fromkeys((*current.lineage_event_ids, item.trace_event_id))
                 ),
             )
-            validate_pheromone_trail(updated, policy, candidate_set=candidate_set, target=target)
+            validate_pheromone_trail(
+                updated, policy, candidate_set=candidate_set, target=target
+            )
             reinforced[index] = updated
         record = lifecycle_record(
             "reinforce",
@@ -395,7 +434,9 @@ def pheromone_kind_for_feedback(feedback: PheromoneFeedback) -> str:
     return "stale"
 
 
-def find_matching_trail_index(trails: list[PheromoneTrail], feedback: PheromoneFeedback, kind: str) -> int | None:
+def find_matching_trail_index(
+    trails: list[PheromoneTrail], feedback: PheromoneFeedback, kind: str
+) -> int | None:
     for index, trail in enumerate(trails):
         if (
             trail.kind == kind
@@ -447,7 +488,9 @@ def stale_matching_trails_with_records(
             changed.append(trail)
             continue
         if feedback.step < trail.updated_at_step:
-            raise GovernanceError("pheromone feedback step must not precede matching trail update")
+            raise GovernanceError(
+                "pheromone feedback step must not precede matching trail update"
+            )
         mutation_trace_event_id = feedback.trace_event_id
         if len(matching) > 1:
             # One stale outcome can invalidate several kind-specific memories.
@@ -480,11 +523,15 @@ def stale_matching_trails_with_records(
             source_kind=trail.kind,
             cause_trace_event_id=feedback.trace_event_id,
         )
-        records.append(replace(record, outcome=feedback.outcome, reward=float(feedback.reward)))
+        records.append(
+            replace(record, outcome=feedback.outcome, reward=float(feedback.reward))
+        )
     return changed, records
 
 
-def feedback_processing_key(feedback: PheromoneFeedback, policy: PheromonePolicy) -> tuple[object, ...]:
+def feedback_processing_key(
+    feedback: PheromoneFeedback, policy: PheromonePolicy
+) -> tuple[object, ...]:
     kind = pheromone_kind_for_feedback(feedback)
     synthetic = PheromoneTrail(
         candidate_id=feedback.candidate_id,
@@ -514,7 +561,9 @@ def _reject_duplicate_feedback(feedback: list[PheromoneFeedback]) -> None:
     identities: set[tuple[object, ...]] = set()
     for item in feedback:
         if item.trace_event_id in trace_ids:
-            raise GovernanceError(f"duplicate pheromone feedback trace_event_id: {item.trace_event_id}")
+            raise GovernanceError(
+                f"duplicate pheromone feedback trace_event_id: {item.trace_event_id}"
+            )
         trace_ids.add(item.trace_event_id)
         identity = (
             item.source_id,

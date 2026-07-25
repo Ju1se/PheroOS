@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
+from typing import TypeVar
+
 from pheroos.governance._certificate.local import (
     LocalCommitReceipt,
     local_commit_receipt_fingerprint,
@@ -16,6 +19,7 @@ from pheroos.governance._certificate.portable import (
     evidence_commit_certificate_fingerprint,
 )
 from pheroos.governance._hybrid.binding import (
+    HybridCommitStep,
     hybrid_commit_step_fingerprint,
     hybrid_commit_step_is_authoritative,
 )
@@ -30,6 +34,8 @@ from pheroos.governance._hybrid.evaluation_records import (
 )
 from pheroos.governance._hybrid.request import HybridCommitEvaluationRequest
 from pheroos.governance.attention import (
+    AttentionBreakdown,
+    ExplorationDirective,
     attention_breakdown_fingerprint,
     attention_breakdown_is_authoritative,
     exploration_directive_fingerprint,
@@ -43,6 +49,7 @@ from pheroos.governance.commit import (
 from pheroos.governance.commit_numeric import commit_payload_fingerprint
 from pheroos.governance.commit_state import (
     CommitFinalityVerification,
+    CommitReplayState,
     CommitWindowState,
     advance_commit_window_state,
     commit_finality_verification_fingerprint,
@@ -72,6 +79,9 @@ from pheroos.governance.output import (
 )
 from pheroos.protocol.commit_models import CollectiveCommitPolicy
 from pheroos.trace.commit_contracts import replay_commit_trace
+
+
+_RecordT = TypeVar("_RecordT")
 
 
 def _advance_window_if_required(
@@ -110,6 +120,7 @@ def _advance_window_if_required(
         raise GovernanceError("sealed window assessment step changed")
     return window_state
 
+
 def hybrid_commit_evaluation_is_authoritative(value: object) -> bool:
     if type(value) is not HybridCommitEvaluation or not value.authoritative:
         return False
@@ -122,25 +133,30 @@ def hybrid_commit_evaluation_is_authoritative(value: object) -> bool:
             and issuance[1] == hybrid_commit_evaluation_fingerprint(value)
         ):
             return False
-        if not (
-            commit_assessment_is_authoritative(value.commit_assessment)
-            and commit_assessment_fingerprint(value.commit_assessment)
-            == value.assessment_ref
-        ):
+        assessment = value.commit_assessment
+        if type(assessment) is not CommitAssessment:
             return False
-        if not (
-            commit_window_state_is_authoritative(value.commit_window_state)
-            and commit_window_state_fingerprint(value.commit_window_state)
-            == value.window_state_ref
-            and value.commit_window_state.window_root == value.window_root
-        ):
+        if not commit_assessment_is_authoritative(assessment):
             return False
-        if not (
-            commit_replay_state_is_authoritative(value.commit_replay_state)
-            and commit_replay_state_fingerprint(value.commit_replay_state)
-            == value.replay_state_ref
-            and value.commit_replay_state.receipt_root == value.replay_root
-        ):
+        if commit_assessment_fingerprint(assessment) != value.assessment_ref:
+            return False
+        window_state = value.commit_window_state
+        if type(window_state) is not CommitWindowState:
+            return False
+        if not commit_window_state_is_authoritative(window_state):
+            return False
+        if commit_window_state_fingerprint(window_state) != value.window_state_ref:
+            return False
+        if window_state.window_root != value.window_root:
+            return False
+        replay_state = value.commit_replay_state
+        if type(replay_state) is not CommitReplayState:
+            return False
+        if not commit_replay_state_is_authoritative(replay_state):
+            return False
+        if commit_replay_state_fingerprint(replay_state) != value.replay_state_ref:
+            return False
+        if replay_state.receipt_root != value.replay_root:
             return False
         if value.attention_status is HybridCommitAttentionStatus.UNAVAILABLE:
             if any(
@@ -157,113 +173,111 @@ def hybrid_commit_evaluation_is_authoritative(value: object) -> bool:
             if not _has_exact_attention_channel_diagnostic(value.diagnostics):
                 return False
         elif value.attention_status is HybridCommitAttentionStatus.VERIFIED:
-            if not (
-                value.binding_step_ref
-                and hybrid_commit_step_is_authoritative(value.binding_step)
-                and hybrid_commit_step_fingerprint(value.binding_step)
-                == value.binding_step_ref
-                and value.attention_ref
-                and value.attention is not None
-                and attention_breakdown_is_authoritative(value.attention)
-                and attention_breakdown_fingerprint(value.attention)
-                == value.attention_ref
-                and value.exploration_directive_ref
-                and value.exploration_directive is not None
-                and exploration_directive_is_authoritative(
-                    value.exploration_directive
-                )
-                and exploration_directive_fingerprint(
-                    value.exploration_directive
-                )
-                == value.exploration_directive_ref
-                and value.exploration_directive.source_attention_fingerprint
-                == value.attention_ref
-                and value.exploration_directive.protocol_id
-                == value.attention.protocol_id
-                and value.exploration_directive.target == value.attention.target
-                and value.exploration_directive.current_step
-                == value.attention.current_step
-                and not any(
-                    item.code == _ATTENTION_CHANNEL_DIAGNOSTIC_CODE
-                    for item in value.diagnostics
-                )
+            binding_step = value.binding_step
+            attention = value.attention
+            directive = value.exploration_directive
+            if not value.binding_step_ref or type(binding_step) is not HybridCommitStep:
+                return False
+            if not hybrid_commit_step_is_authoritative(binding_step):
+                return False
+            if hybrid_commit_step_fingerprint(binding_step) != value.binding_step_ref:
+                return False
+            if not value.attention_ref or type(attention) is not AttentionBreakdown:
+                return False
+            if not attention_breakdown_is_authoritative(attention):
+                return False
+            if attention_breakdown_fingerprint(attention) != value.attention_ref:
+                return False
+            if (
+                not value.exploration_directive_ref
+                or type(directive) is not ExplorationDirective
+            ):
+                return False
+            if not exploration_directive_is_authoritative(directive):
+                return False
+            if (
+                exploration_directive_fingerprint(directive)
+                != value.exploration_directive_ref
+            ):
+                return False
+            if directive.source_attention_fingerprint != value.attention_ref:
+                return False
+            if directive.protocol_id != attention.protocol_id:
+                return False
+            if directive.target != attention.target:
+                return False
+            if directive.current_step != attention.current_step:
+                return False
+            if any(
+                item.code == _ATTENTION_CHANNEL_DIAGNOSTIC_CODE
+                for item in value.diagnostics
             ):
                 return False
         else:
             return False
         if value.status is HybridCommitEvaluationStatus.PROGRESS:
+            progress = value.decision_progress
             if not (
-                decision_progress_is_authoritative(value.decision_progress)
-                and decision_progress_fingerprint(value.decision_progress)
-                == value.progress_ref
+                progress is not None
+                and decision_progress_is_authoritative(progress)
+                and decision_progress_fingerprint(progress) == value.progress_ref
                 and value.decision_outcome is None
                 and not value.outcome_ref
             ):
                 return False
-        elif not (
-            decision_outcome_is_authoritative(value.decision_outcome)
-            and decision_outcome_fingerprint(value.decision_outcome)
-            == value.outcome_ref
-            and value.decision_progress is None
-            and not value.progress_ref
-        ):
-            return False
-
-        optional_records = (
-            (
+        else:
+            outcome = value.decision_outcome
+            if not (
+                outcome is not None
+                and decision_outcome_is_authoritative(outcome)
+                and decision_outcome_fingerprint(outcome) == value.outcome_ref
+                and value.decision_progress is None
+                and not value.progress_ref
+            ):
+                return False
+        optional_records_valid = (
+            _optional_record_matches(
                 value.local_receipt,
                 value.local_receipt_ref,
-                LocalCommitReceipt,
-                local_commit_receipt_fingerprint,
-                local_commit_receipt_is_authoritative,
-            ),
-            (
+                expected_type=LocalCommitReceipt,
+                fingerprint=local_commit_receipt_fingerprint,
+                authoritative=local_commit_receipt_is_authoritative,
+            )
+            and _optional_record_matches(
                 value.evidence_certificate,
                 value.evidence_certificate_ref,
-                EvidenceCommitCertificate,
-                evidence_commit_certificate_fingerprint,
-                None,
-            ),
-            (
+                expected_type=EvidenceCommitCertificate,
+                fingerprint=evidence_commit_certificate_fingerprint,
+            )
+            and _optional_record_matches(
                 value.distributed_state,
                 value.distributed_state_ref,
-                DistributedCommitState,
-                distributed_commit_state_fingerprint,
-                distributed_commit_state_is_authoritative,
-            ),
-            (
+                expected_type=DistributedCommitState,
+                fingerprint=distributed_commit_state_fingerprint,
+                authoritative=distributed_commit_state_is_authoritative,
+            )
+            and _optional_record_matches(
                 value.distributed_certificate,
                 value.distributed_certificate_ref,
-                DistributedCommitCertificate,
-                distributed_commit_certificate_fingerprint,
-                None,
-            ),
-            (
+                expected_type=DistributedCommitCertificate,
+                fingerprint=distributed_commit_certificate_fingerprint,
+            )
+            and _optional_record_matches(
                 value.outcome_certificate,
                 value.outcome_certificate_ref,
-                OutcomeCertificate,
-                outcome_certificate_fingerprint,
-                None,
-            ),
-            (
+                expected_type=OutcomeCertificate,
+                fingerprint=outcome_certificate_fingerprint,
+            )
+            and _optional_record_matches(
                 value.finality_verification,
                 value.finality_verification_ref,
-                CommitFinalityVerification,
-                commit_finality_verification_fingerprint,
-                commit_finality_verification_is_authoritative,
-            ),
+                expected_type=CommitFinalityVerification,
+                fingerprint=commit_finality_verification_fingerprint,
+                authoritative=commit_finality_verification_is_authoritative,
+            )
         )
-        for runtime, ref, expected_type, fingerprint, authoritative in optional_records:
-            if runtime is None:
-                if ref:
-                    return False
-                continue
-            if not (type(runtime) is expected_type and ref):
-                return False
-            if authoritative is not None and not authoritative(runtime):
-                return False
-            if fingerprint(runtime) != ref:
-                return False
+        if not optional_records_valid:
+            return False
         if value.distributed_certificate is not None and not (
             value.distributed_state is not None
             and distributed_commit_value_root(value.distributed_certificate.proposal)
@@ -300,11 +314,14 @@ def hybrid_commit_evaluation_is_authoritative(value: object) -> bool:
         trace_ids = tuple(event.lineage["event_id"] for event in value.trace_events)
         if trace_ids != value.trace_event_ids:
             return False
-        if commit_payload_fingerprint(
-            {"event_ids": trace_ids},
-            schema="pheroos-hybrid-commit-evaluation-trace-root-v1",
-            profile=value.profile,
-        ) != value.trace_root:
+        if (
+            commit_payload_fingerprint(
+                {"event_ids": trace_ids},
+                schema="pheroos-hybrid-commit-evaluation-trace-root-v1",
+                profile=value.profile,
+            )
+            != value.trace_root
+        ):
             return False
         for event in value.trace_events:
             event.validate()
@@ -315,6 +332,25 @@ def hybrid_commit_evaluation_is_authoritative(value: object) -> bool:
         return True
     except Exception:
         return False
+
+
+def _optional_record_matches(
+    runtime: object | None,
+    ref: str,
+    *,
+    expected_type: type[_RecordT],
+    fingerprint: Callable[[_RecordT], str],
+    authoritative: Callable[[_RecordT], bool] | None = None,
+) -> bool:
+    if runtime is None:
+        return not ref
+    if type(runtime) is not expected_type or not ref:
+        return False
+    canonical = runtime
+    if authoritative is not None and not authoritative(canonical):
+        return False
+    return fingerprint(canonical) == ref
+
 
 def _distributed_certificate_registered_final(
     certificate: DistributedCommitCertificate,
@@ -337,7 +373,6 @@ def _distributed_certificate_registered_final(
         )
     except (AttributeError, GovernanceError, ValueError):
         return False
-
 
 
 __all__ = ["hybrid_commit_evaluation_is_authoritative"]

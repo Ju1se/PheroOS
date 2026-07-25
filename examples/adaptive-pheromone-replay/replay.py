@@ -20,7 +20,11 @@ from pheroos.governance import (
     replay_state_from_hybrid_step,
     verify_signal_input,
 )
-from pheroos.protocol import collective_fallback_id, load_capability_manifest, validate_capability_manifest
+from pheroos.protocol import (
+    collective_fallback_id,
+    load_capability_manifest,
+    validate_capability_manifest,
+)
 
 
 REPLAY_FIXTURE = (
@@ -45,10 +49,14 @@ REPLAY_FIXTURE = (
 
 def run_replay(repo_root: Path | None = None) -> dict[str, Any]:
     root = repo_root or Path(__file__).resolve().parents[2]
-    manifest = load_capability_manifest(root / "examples/hybrid-pheromone-protocol/capability.json")
+    manifest = load_capability_manifest(
+        root / "examples/hybrid-pheromone-protocol/capability.json"
+    )
     diagnostics = validate_capability_manifest(manifest)
     if diagnostics:
-        raise ValueError(f"manifest diagnostics: {[item.to_dict() for item in diagnostics]}")
+        raise ValueError(
+            f"manifest diagnostics: {[item.to_dict() for item in diagnostics]}"
+        )
 
     protocol = manifest.protocol
     policy = protocol.collective_decision_policy
@@ -116,12 +124,16 @@ def run_replay(repo_root: Path | None = None) -> dict[str, Any]:
         and event.lineage.get("result") == "replay_ignored"
     ]
     decision_events = [
-        event for event in replay_step.trace_events if event.event_type in {"commit", "fallback"}
+        event
+        for event in replay_step.trace_events
+        if event.event_type in {"commit", "fallback"}
     ]
     authority_retained = (
         len(decision_events) == 1
         and replay_step.decision.committed
-        and candidate_set.require_declared_for_target(replay_step.decision.candidate_id, target).id
+        and candidate_set.require_declared_for_target(
+            replay_step.decision.candidate_id, target
+        ).id
         == replay_step.decision.candidate_id
     )
     return {
@@ -148,7 +160,9 @@ def run_replay(repo_root: Path | None = None) -> dict[str, Any]:
         "replayed_feedback_ids": replayed_feedback_ids,
         "replay_reinforcement_count": len(replay_step.reinforcement_records),
         "replay_trace_events": [event.event_type for event in replay_step.trace_events],
-        "authority": "governance_retained" if authority_retained else "authority_violation",
+        "authority": "governance_retained"
+        if authority_retained
+        else "authority_violation",
     }
 
 

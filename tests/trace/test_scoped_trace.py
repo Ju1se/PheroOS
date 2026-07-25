@@ -31,7 +31,9 @@ def scoped_event() -> ScopedTraceEvent:
     )
 
 
-def test_scoped_trace_round_trip_binds_opaque_scope_without_changing_inner_event() -> None:
+def test_scoped_trace_round_trip_binds_opaque_scope_without_changing_inner_event() -> (
+    None
+):
     envelope = scoped_event()
     portable = json.loads(json.dumps(envelope.to_dict()))
 

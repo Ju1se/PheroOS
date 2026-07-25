@@ -1,6 +1,7 @@
 # PheroOS Protocol-Core Specification
 
-Status: draft ABI v0.1
+Status: Draft ABI v0.1.0. The exact local scoped-authority v2 profile is
+implemented as Draft; no public lifecycle entry is formally Stable.
 
 PheroOS is an open swarm-native multi-agent operating protocol-core package for governed multi-agent runtimes.
 
@@ -20,7 +21,8 @@ PheroOS protocol-core defines:
 - Conformance Suite: deterministic checks that prove protocol-core compatibility.
 - Provider-free examples: deterministic compatibility examples for baseline,
   e2e, basic swarm, Hybrid Pheromone, adaptive-record replay, Hybrid Commit,
-  portable certificate replay, and distributed-finality behavior.
+  portable certificate replay, distributed-finality behavior, and the durable
+  scoped-authority v2 journeys.
 
 PheroOS protocol-core does not define:
 
@@ -51,47 +53,59 @@ The public schema artifacts are:
 
 - `schemas/capability.schema.json`
 - `schemas/capability-v2.schema.json`
+- `schemas/capability-v3.schema.json`
 - `schemas/protocol.schema.json`
 - `schemas/protocol-v2.schema.json`
+- `schemas/protocol-v3.schema.json`
 - `schemas/kernel.schema.json`
 - `schemas/kernel-v2.schema.json`
+- `schemas/runtime-scope-v1.schema.json`
 - `schemas/driver.schema.json`
 - `schemas/driver-v2.schema.json`
 - `schemas/trace.schema.json`
+- `schemas/authority-v2.schema.json`
 - `schemas/commit.schema.json`
 - `schemas/commit-tck.schema.json`
 - `schemas/commit-tck-v2.schema.json`
 - `schemas/commit-tck-request-v2.schema.json`
 - `schemas/commit-tck-response-v2.schema.json`
+- `schemas/scoped-authority-tck-v2.schema.json`
 - `schemas/conformance-report-v2.schema.json`
 - `schemas/scoped-trace-event-v1.schema.json`
 - `pheroos/conformance/abi/public-python-api-v1.json`
 - `pheroos/conformance/abi/public-python-api-lifecycle-v1.json`
+- `pheroos/conformance/abi/runtime-compatibility-v1.json`
+- `pheroos/conformance/abi/stable-python-api-v1.json`
 
 The public CLI surfaces cover version/profile inspection, manifest validation,
-conformance evaluation, schema list/show/export, typed wire validation, TCK
-v1/v2 execution, and public ABI show/diff operations. CLI output is versioned
-JSON; the CLI does not start a server.
+conformance evaluation, catalog-derived schema list/show/export, typed wire
+validation, TCK v1/v2 execution, scoped-authority TCK inspection, runtime
+compatibility inspection, and public/candidate ABI show/diff operations. CLI
+output is versioned JSON; the CLI does not start a server.
 
 ### Schema document versioning
 
 The original unversioned Capability, Protocol, Driver, and Kernel schema IDs
 are frozen v1 compatibility roots. Their unversioned CLI aliases remain pinned
-to the same documents and must never silently move to v2:
+to the same documents and must never silently move to a newer document:
 
-| Surface | Frozen v1 `$id` / CLI alias | Versioned v2 document / selector |
+| Surface | Frozen v1 `$id` / CLI alias | Additive document and exact selector |
 | --- | --- | --- |
-| Capability | `https://pheroos.dev/schemas/capability.schema.json` / `capability`, `capability-v1` | `capability-v2.schema.json` / `pheroos-capability-schema-v2` |
-| Protocol | `https://pheroos.dev/schemas/protocol.schema.json` / `protocol`, `protocol-v1` | `protocol-v2.schema.json` / `pheroos-protocol-schema-v2` |
+| Capability | `https://pheroos.dev/schemas/capability.schema.json` / `capability`, `capability-v1` | `capability-v2.schema.json` / `pheroos-capability-schema-v2`; `capability-v3.schema.json` / `pheroos-capability-schema-v3` |
+| Protocol | `https://pheroos.dev/schemas/protocol.schema.json` / `protocol`, `protocol-v1` | `protocol-v2.schema.json` / `pheroos-protocol-schema-v2`; `protocol-v3.schema.json` / `pheroos-protocol-schema-v3` |
 | Driver | `https://pheroos.dev/schemas/driver.schema.json` / `driver`, `driver-v1` | `driver-v2.schema.json` / `descriptor_version=pheroos-driver-descriptor-v2` |
-| Kernel | `https://pheroos.dev/schemas/kernel.schema.json` / `kernel`, `kernel-v1` | `kernel-v2.schema.json` / `plan_version=pheroos-kernel-plan-v2` |
+| Kernel | `https://pheroos.dev/schemas/kernel.schema.json` / `kernel`, `kernel-v1` | `kernel-v2.schema.json` / `plan_version=pheroos-kernel-plan-v2`; companion `runtime-scope-v1.schema.json` |
+| Scoped authority | no legacy alias | `authority-v2.schema.json` / `pheroos-authority-schema-v2`; `scoped-authority-tck-v2.schema.json` / `pheroos-scoped-authority-tck-v2` |
 
-Capability and Protocol v2 identify stricter schema documents; accepted
-payloads continue to carry `protocol_version=pheroos.protocol.v1`. Driver's
+Capability and Protocol v2 identify stricter schema documents whose payloads
+continue to carry `protocol_version=pheroos.protocol.v1`. Capability and
+Protocol v3 are a separate exact pair for
+`protocol_version=pheroos.protocol.v2` and require one closed scoped-authority
+policy/profile selection. A v3 document never falls back to a v1 reader, and
+readers never infer either semantic version from object shape. Driver's
 `descriptor_version` is distinct from the external provider version in
 `DriverDescriptor.version`. Kernel plan selection is independently controlled
-by `plan_version`. Readers must select legacy discriminator-free documents as
-v1 explicitly and must never infer an authoritative version from object shape.
+by `plan_version`; Capability/Protocol v3 does not imply a Kernel Plan v3.
 
 Typed migration is explicit and fail-closed. `upgrade_driver_descriptor_v1`
 returns a complete v2 document or raises
@@ -109,8 +123,10 @@ The schema drift gate is:
 python scripts/generate_schema_artifacts.py --check
 ```
 
-`--write` regenerates only versioned v2 artifacts and cannot rewrite the four
-frozen v1 roots.
+The closed `pheroos.conformance.schema_catalog` is the only schema artifact
+registry used by generation and the management CLI. `--write` writes only
+catalog entries explicitly marked writeable, verifies frozen entries, and
+cannot rewrite the four frozen v1 roots.
 
 ### Strict ABI loading
 
@@ -222,6 +238,76 @@ A compatible implementation should satisfy these requirements:
 31. Unknown protocol, wire, profile, report, schema, TCK, or lifecycle-critical
     versions fail closed. Existing version identifiers do not change meaning
     in place.
+32. The scoped-authority path accepts only the exact Capability/Protocol v3,
+    `pheroos.protocol.v2`, policy, profile, wire, canonical, ledger, Store,
+    Trace-batch, and read-set identifiers. Cross-version selection and
+    authenticated-to-local fallback fail closed.
+33. `AuthorityLevel`, caller booleans, digests, portable records, and public
+    legacy issuers are not credentials. Authority v2 issuance requires a
+    scope-, operation-, grant-, domain-, request-, epoch-, and Store-bound
+    session; the authenticated profile additionally requires a host-selected
+    external grant verifier.
+34. Historical inclusion and current actionability are independent. A legal
+    successor, restart, or domain seal does not erase committed history, while
+    a stale, revoked, expired, retired, or conflicting grant cannot authorize a
+    current action.
+35. Baseline Output v2 commits one complete authority read-set and remains
+    deliverable after publication or execution becomes unavailable. Delivery
+    never substitutes for a current action permission.
+36. A runtime compatibility claim must match the checked exact-version
+    compatibility manifest and pass the named implementation TCKs. A
+    self-reported root, transport success, or provider result creates no
+    protocol authority.
+
+## Scoped Authority v2 Draft Semantics
+
+The exact local scoped-authority path is an implemented Draft vertical slice,
+not a Stable or production-identity claim. Capability/Protocol schema v3
+selects `pheroos.protocol.v2` plus
+`pheroos-scoped-authority-local-v2`. The local profile trusts the
+deployment-selected coordinator and StateStore writer. The separate
+`pheroos-scoped-authority-authenticated-v2` profile requires a host-selected
+issuer-grant verifier and has no fallback to local authority when that verifier
+is absent or fails.
+
+`GovernanceStateStoreV2` is the historical trust root. It validates a complete
+multi-stream read-set and atomically commits immutable state, canonical
+authority-critical Trace, and the exact receipt under compare-and-swap.
+`AuthoritySessionV2` binds a non-portable capability to the selected Store,
+ledger/domain, `RuntimeScope`, request, operation, grant activation, epoch, and
+payload. Portable projections regain authority only after exact Store
+inclusion and currentness verification; object identity and same-shaped bytes
+are insufficient.
+
+The Governance-owned Baseline Output v2 journey composes activation, verified
+signal, action permission, output commit, exact retry, restart recovery,
+revocation/expiry, successor currentness, and blocked publication without
+exposing an opaque session or capability. Its terminal result is durable and
+deliverable. Publication and execution remain separate current actions.
+Commit Replay, Hybrid Replay, Risk, Support, Gate, Evidence, Decision,
+Certificate, Distributed, and Finality v2 slices use the same portable-history
+versus Store-authority separation.
+
+The exact version composition for an external implementation is checked in
+[`runtime-compatibility-v1.json`](pheroos/conformance/abi/runtime-compatibility-v1.json)
+and documented in
+[`runtime-compatibility-v1.md`](docs/conformance/runtime-compatibility-v1.md).
+The candidate consumer surface is checked in
+[`stable-python-api-v1.json`](pheroos/conformance/abi/stable-python-api-v1.json).
+That artifact remains
+`draft / promotion_candidate / formal_stable=false`; formal Stable promotion
+requires the external-runtime, final-RC, audit, and protected-main gates in the
+[API lifecycle](docs/process/api-lifecycle.md).
+
+The detailed authority decision, threat model, migration, Store, session, and
+baseline output contracts are:
+
+- [Authority v2 decision](docs/protocol/authority-v2-decision.md)
+- [Authority v2 threat model](docs/protocol/authority-trust-model-v2.md)
+- [Authority v2 migration](docs/protocol/authority-v2-migration.md)
+- [Governance StateStore v2](docs/protocol/authority-store-v2.md)
+- [Authority Session v2](docs/protocol/authority-session-v2.md)
+- [Baseline Output v2](docs/protocol/baseline-output-v2.md)
 
 ## Swarm-Native Semantics
 
@@ -374,11 +460,14 @@ metrics or certificate truth roots. See
 Governance `AuthorityDomain`, and `ScopedTraceEvent`. Matching payload data in
 another scope is neither a retry nor reusable authority.
 
-`GovernanceStateStore` is a provider-neutral protocol with explicit heads,
-immutable prepared transitions, atomic state-plus-Trace batches, CAS,
-idempotent transition ids, identity claims, receipts, snapshots, rehydration,
-retirement, and tombstones. `InMemoryGovernanceStateStore` is the deterministic
-reference adapter for tests and examples. It is not a production database.
+The legacy Draft `GovernanceStateStore` remains available for its declared
+compatibility cohort. The exact scoped-authority path uses
+`GovernanceStateStoreV2`, with explicit multi-stream heads, immutable prepared
+transitions, complete read-sets, atomic state-plus-Trace batches, CAS,
+idempotent transition ids, identity claims, receipts, inclusion proofs,
+snapshots, historical rehydration, domain sealing, retirement, and tombstones.
+`InMemoryGovernanceStateStoreV2` is the deterministic reference adapter for
+tests and examples. It is not a production database.
 
 The durable Hybrid Commit boundary is `prepare -> atomic_commit -> receipt
 verification -> finalize`. A prepared evaluation is a proposal. State must not
@@ -388,10 +477,21 @@ runtimes may implement database-backed adapters outside protocol-core and must
 pass the same scope, restart, CAS, idempotency, atomicity, and retirement
 conformance.
 
-`TraceStore` is the separate provider-neutral append-only boundary. It exposes
-only canonical append and immutable chronological record snapshots. External
-StateStore and TraceStore fixtures use the public conformance-adapter Protocols
-and execute the same matrices as the bundled in-memory references.
+`ScopedTraceStoreV2` is the separate provider-neutral append-only lineage
+boundary for scope-bound canonical events, checkpoints, idempotent append, and
+restart. `DriverInvocationStoreV2` provides the corresponding
+provider-neutral invocation receipt/checkpoint boundary. Neither Store creates
+Governance authority. External StateStore, TraceStore, and DriverInvocationStore
+fixtures use the public conformance-adapter Protocols and execute the same
+exact-version matrices as the bundled in-memory references.
+
+The provider-free Runtime Integration v1 transcript composes the compatibility
+manifest, RuntimeScope, Protocol, Kernel, Driver, Governance, output, and Trace
+layers. It verifies restart recovery and current action gates through the
+adapter's public Store readers rather than trusting booleans or self-reported
+roots. A real provider, production database, process boundary, transactional
+outbox, wall-clock cancellation, and external effect remain responsibilities
+of an independent runtime.
 
 ## Extension Rules
 
@@ -429,12 +529,14 @@ Extensions should not add:
 
 ## Versioning
 
-The current public ABI is draft `0.1.0`.
+The current package and public ABI version is Draft `0.1.0`.
 
 The package version has one dependency-free owner, `pheroos._version`, and is
-re-exported as `pheroos.__version__`. Protocol manifests currently accept only
-the explicitly supported `pheroos.protocol.v1`; an unknown value is not mapped
-to current defaults.
+re-exported as `pheroos.__version__`. The legacy manifest path accepts the
+explicitly supported `pheroos.protocol.v1`. The separate exact authority
+manifest readers accept `pheroos.protocol.v2` only with Capability/Protocol
+schema v3 and a complete scoped-authority declaration. Neither reader maps an
+unknown or mismatched version to current defaults.
 
 Before the first stable ABI release, changes may still refine dataclass fields, schema shape, and conformance checks. Such changes should be documented in `CHANGELOG.md`, reviewed through the contribution and API lifecycle process, and backed by tests or conformance.
 
@@ -442,6 +544,17 @@ The fail-closed Hybrid v1 tightening and consumer actions are recorded in
 [`docs/protocol/hybrid-pheromone-v1-migration.md`](docs/protocol/hybrid-pheromone-v1-migration.md).
 The opt-in Optimal Commit activation and no-downgrade migration are recorded in
 [`docs/protocol/optimal-commit-v1-migration.md`](docs/protocol/optimal-commit-v1-migration.md).
+The scoped-authority selection, migration, and earliest possible legacy
+removal window are recorded in
+[`docs/protocol/authority-v2-migration.md`](docs/protocol/authority-v2-migration.md).
+
+`pheroos/conformance/abi/stable-python-api-v1.json` is a reviewed, type-closed
+promotion candidate, not a Stable lifecycle inventory. Until the separately
+governed promotion gate succeeds, its lifecycle is
+`draft / promotion_candidate / formal_stable=false`, and the public lifecycle
+inventory contains no formally Stable export. The supported public-facade
+consumption path is documented in the
+[Stable Core consumer contract](docs/protocol/stable-core-consumer.md).
 
 After a stable ABI release, incompatible changes should require:
 
@@ -479,6 +592,15 @@ Reports include the applicable profile version:
 - `pheroos-certified-commit-v1` for independently verifiable portable proof.
 - `pheroos-distributed-commit-v1` for Byzantine quorum finality and conflict
   handling.
+- `pheroos-governance-state-store-conformance-v2`,
+  `pheroos-governance-authority-session-conformance-v2`, and
+  `pheroos-scoped-authority-tck-v2` for the durable scoped-authority trust
+  boundary.
+- `pheroos-baseline-output-conformance-v2`,
+  `pheroos-driver-invocation-store-conformance-v2`,
+  `pheroos-scoped-trace-store-conformance-v2`, and
+  `pheroos-runtime-integration-conformance-v1` for the provider-neutral
+  external-runtime composition.
 
 The applied profile is a gate: required checks must be present and passing for
 the profile contract to pass.
@@ -493,11 +615,15 @@ PASS or FAIL; skip/N/A is not a compatibility result. Both TCK generations
 must run from source and from isolated wheel and sdist installations under an
 external working directory.
 
-Release validation is enforced by CI and release governance. The exact wheel
-and sdist bytes that pass external validation feed deterministic CycloneDX and
-SPDX SBOMs and, only on a trusted main-branch push, provenance attestations.
-CI provenance does not create protocol evidence, permission, or governance
-authority. The specification defines invariants and compatibility
+Release-candidate validation is defined by the local fail-closed dry-run and
+the reviewed release workflow. It builds one subject wheel/sdist, uses a
+separate comparison build only for reproducibility, validates the subject from
+an external working directory, and derives CycloneDX, SPDX, hashes, ABI diff,
+and migration evidence from those exact bytes. A real candidate still requires
+a clean candidate commit; remote tag, Release, attestation, ruleset activation,
+Stable promotion, and GA are separately authorized release actions. CI
+provenance does not create protocol evidence, permission, or Governance
+authority. This specification defines invariants and compatibility
 expectations; it is not a local runbook.
 
 ## Governance Principle

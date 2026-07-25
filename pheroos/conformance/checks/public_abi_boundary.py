@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 from types import MappingProxyType
+from typing import cast
 
 import pheroos.governance as governance
 import pheroos.protocol as protocol
@@ -242,11 +243,11 @@ def representative_snapshot_problems() -> list[str]:
     layer_bounds = {"learned": [0.0, 1.0]}
     policy = protocol.CollectiveDecisionPolicy(
         pheromone_kind_profiles=policy_profiles,
-        layer_weight_bounds=layer_bounds,
+        layer_weight_bounds=cast(dict[str, tuple[float, float]], layer_bounds),
     )
     candidate_inputs = [Candidate("candidate:one", "decision:one")]
     evidence_inputs = [EvidenceNode("evidence:one", "content", "driver:one")]
-    candidate_set = CandidateSet(candidate_inputs)
+    candidate_set = CandidateSet(tuple(candidate_inputs))
     evidence = EvidenceGraph(evidence_inputs)
     metadata = {"nested": {"values": ["original"]}}
     envelope = InputEnvelope("snapshot", metadata=metadata)
@@ -271,7 +272,7 @@ def representative_snapshot_problems() -> list[str]:
     trace_store.records[0].event.lineage["nested"]["values"].append("mutated")
 
     problems: list[str] = []
-    if kind_profile.scored_subject_types != ("candidate",):
+    if tuple(kind_profile.scored_subject_types) != ("candidate",):
         problems.append("snapshot:kind_subjects")
     if kind_profile.extensions["x-profile"]["values"] != ("original",):
         problems.append("snapshot:kind_extensions")
@@ -279,7 +280,9 @@ def representative_snapshot_problems() -> list[str]:
         problems.append("snapshot:policy_profiles")
     if policy.layer_weight_bounds["learned"] != (0.0, 1.0):
         problems.append("snapshot:policy_bounds")
-    if tuple(candidate.id for candidate in candidate_set.candidates) != ("candidate:one",):
+    if tuple(candidate.id for candidate in candidate_set.candidates) != (
+        "candidate:one",
+    ):
         problems.append("snapshot:candidates")
     if tuple(node.id for node in evidence.nodes) != ("evidence:one",):
         problems.append("snapshot:evidence")

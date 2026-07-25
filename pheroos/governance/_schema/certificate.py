@@ -44,6 +44,7 @@ def _validate_local_commit_receipt_semantics(
         return ["$.payload: local receipt typed lineage is invalid"]
     return []
 
+
 def _validate_evidence_certificate_semantics(
     payload: Mapping[str, Any],
 ) -> list[str]:
@@ -59,6 +60,7 @@ def _validate_evidence_certificate_semantics(
         return ["$.payload: evidence certificate roots or typed lineage are invalid"]
     return []
 
+
 def _validate_outcome_certificate_semantics(
     payload: Mapping[str, Any],
 ) -> list[str]:
@@ -72,6 +74,7 @@ def _validate_outcome_certificate_semantics(
     except (GovernanceError, TypeError, ValueError):
         return ["$.payload: outcome certificate roots or typed lineage are invalid"]
     return []
+
 
 def _validate_commit_output_authorization_semantics(
     payload: Mapping[str, Any],
@@ -101,6 +104,7 @@ def _validate_commit_output_authorization_semantics(
             "$.payload: authorized publish/execute requires every authority ref"
         )
     return errors
+
 
 def _certificate_lineage_properties(
     *,
@@ -139,12 +143,14 @@ def _certificate_lineage_properties(
         "window_state_root": fingerprint_schema(),
     }
 
+
 def _certificate_header_properties() -> dict[str, Any]:
     return {
         "canonicalization": {"const": COMMIT_CANONICAL_VERSION},
         "hash_algorithm": {"const": "sha256"},
         "wire_version": {"const": COMMIT_WIRE_VERSION},
     }
+
 
 def _certificate_issuer_properties() -> dict[str, Any]:
     return {
@@ -155,6 +161,7 @@ def _certificate_issuer_properties() -> dict[str, Any]:
         "trace_event_id": canonical_text_schema(),
     }
 
+
 def local_commit_receipt_payload_schema() -> dict[str, Any]:
     return strict_object_schema(
         {
@@ -162,9 +169,7 @@ def local_commit_receipt_payload_schema() -> dict[str, Any]:
             **_certificate_header_properties(),
             **_certificate_lineage_properties(),
             **_certificate_issuer_properties(),
-            "assurance": {
-                "enum": ["certified", "distributed", "evidence_bound"]
-            },
+            "assurance": {"enum": ["certified", "distributed", "evidence_bound"]},
             "authority_scope": {"const": "governance_local"},
             "candidate_id": canonical_text_schema(),
             "receipt_id": canonical_text_schema(),
@@ -172,6 +177,7 @@ def local_commit_receipt_payload_schema() -> dict[str, Any]:
             "schema_discriminator": {"const": "local_commit_receipt"},
         }
     )
+
 
 def evidence_commit_certificate_payload_schema() -> dict[str, Any]:
     return strict_object_schema(
@@ -186,14 +192,13 @@ def evidence_commit_certificate_payload_schema() -> dict[str, Any]:
             "certificate_body_root": fingerprint_schema(),
             "certificate_id": canonical_text_schema(),
             "certificate_root": fingerprint_schema(),
-            "certificate_version": {
-                "const": "pheroos-evidence-commit-certificate-v1"
-            },
+            "certificate_version": {"const": "pheroos-evidence-commit-certificate-v1"},
             "issuer_attestation_refs": canonical_text_set_schema(minimum=1),
             "local_receipt_ref": fingerprint_schema(),
             "schema_discriminator": {"const": "evidence_commit_certificate"},
         }
     )
+
 
 def outcome_certificate_payload_schema() -> dict[str, Any]:
     schema = strict_object_schema(
@@ -309,16 +314,12 @@ def outcome_certificate_payload_schema() -> dict[str, Any]:
         },
         {
             "if": {
-                "properties": {
-                    "assurance": {"enum": ["certified", "distributed"]}
-                },
+                "properties": {"assurance": {"enum": ["certified", "distributed"]}},
                 "required": ["assurance"],
             },
             "then": {
                 "properties": {
-                    "issuer_attestation_refs": canonical_text_set_schema(
-                        minimum=1
-                    )
+                    "issuer_attestation_refs": canonical_text_set_schema(minimum=1)
                 }
             },
             "else": {
@@ -344,6 +345,7 @@ def outcome_certificate_payload_schema() -> dict[str, Any]:
         },
     ]
     return schema
+
 
 def commit_output_authorization_payload_schema() -> dict[str, Any]:
     return strict_object_schema(

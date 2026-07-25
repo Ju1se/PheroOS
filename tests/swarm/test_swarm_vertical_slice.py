@@ -35,7 +35,11 @@ def test_provider_free_swarm_collective_vertical_slice() -> None:
 
     candidates = CandidateSet(
         [
-            Candidate(id=candidate.id, target=candidate.target, safe_fallback=candidate.safe_fallback)
+            Candidate(
+                id=candidate.id,
+                target=candidate.target,
+                safe_fallback=candidate.safe_fallback,
+            )
             for candidate in protocol.candidates
         ]
     )
@@ -96,9 +100,31 @@ def test_provider_free_swarm_collective_vertical_slice() -> None:
 
     pheromone_policy = pheromone_policy_from_collective(policy)
     raw_pheromones = [
-        pheromone("candidate:alpha", target, "positive", "evidence:a", "scout:a", "trace:pheromone:positive", strength=9),
-        pheromone("candidate:beta", target, "negative", "evidence:b", "scout:b", "trace:pheromone:negative"),
-        pheromone("candidate:beta", target, "cautionary", "evidence:b", "scout:b", "trace:pheromone:cautionary"),
+        pheromone(
+            "candidate:alpha",
+            target,
+            "positive",
+            "evidence:a",
+            "scout:a",
+            "trace:pheromone:positive",
+            strength=9,
+        ),
+        pheromone(
+            "candidate:beta",
+            target,
+            "negative",
+            "evidence:b",
+            "scout:b",
+            "trace:pheromone:negative",
+        ),
+        pheromone(
+            "candidate:beta",
+            target,
+            "cautionary",
+            "evidence:b",
+            "scout:b",
+            "trace:pheromone:cautionary",
+        ),
         pheromone(
             "candidate:alpha",
             target,
@@ -117,7 +143,9 @@ def test_provider_free_swarm_collective_vertical_slice() -> None:
     ]
     for trail in pheromones:
         requested = next(
-            item.strength for item in raw_pheromones if item.trace_event_id == trail.trace_event_id
+            item.strength
+            for item in raw_pheromones
+            if item.trace_event_id == trail.trace_event_id
         )
         trace.append(
             TraceEvent(
@@ -282,17 +310,18 @@ def test_provider_free_swarm_collective_vertical_slice() -> None:
             event_type="candidate_score",
             protocol_id=protocol.id,
             target=target,
-                reason="candidate scores computed",
-                lineage={
-                    "scores": dict(state.scores),
-                    "score_breakdown": {
-                        candidate_id: dict(categories)
-                        for candidate_id, categories in state.score_breakdown.items()
-                    },
-                "scout_diversity": {
-                    candidate_id: len(scouts) for candidate_id, scouts in state.independent_scouts.items()
+            reason="candidate scores computed",
+            lineage={
+                "scores": dict(state.scores),
+                "score_breakdown": {
+                    candidate_id: dict(categories)
+                    for candidate_id, categories in state.score_breakdown.items()
                 },
-                    "pheromone_source_diversity": dict(state.pheromone_source_diversity),
+                "scout_diversity": {
+                    candidate_id: len(scouts)
+                    for candidate_id, scouts in state.independent_scouts.items()
+                },
+                "pheromone_source_diversity": dict(state.pheromone_source_diversity),
             },
         )
     )
@@ -340,8 +369,8 @@ def test_provider_free_swarm_collective_vertical_slice() -> None:
                     }
                     for trail in evaporated
                 ],
-                    "current_step": 1,
-                    "source_diversity": dict(state.pheromone_source_diversity),
+                "current_step": 1,
+                "source_diversity": dict(state.pheromone_source_diversity),
             },
         )
     )
@@ -388,7 +417,11 @@ def test_provider_free_swarm_collective_vertical_slice() -> None:
 
     evidence = EvidenceGraph(
         [
-            EvidenceNode(id=report.evidence_id, content=report.candidate_id, provenance=report.provenance)
+            EvidenceNode(
+                id=report.evidence_id,
+                content=report.candidate_id,
+                provenance=report.provenance,
+            )
             for report in scout_reports
         ]
     )
@@ -414,7 +447,8 @@ def test_provider_free_swarm_collective_vertical_slice() -> None:
             "output authorized by collective contract",
             lineage={
                 "committed_candidate": decision.committed,
-                "evidence_provenance": evidence.has_evidence() and evidence.has_provenance(),
+                "evidence_provenance": evidence.has_evidence()
+                and evidence.has_provenance(),
                 "stop_resolution": not stop_resolution.blocked,
                 "publication_permission": True,
                 "authorized": authorized,
@@ -425,7 +459,10 @@ def test_provider_free_swarm_collective_vertical_slice() -> None:
     assert decision.candidate_id == "candidate:alpha"
     assert authorized is True
     path_alternative = "commit" if decision_event == "fallback" else "fallback"
-    actual_required = set(protocol.trace_policy.required_events) - {path_alternative, "recovery"}
+    actual_required = set(protocol.trace_policy.required_events) - {
+        path_alternative,
+        "recovery",
+    }
     assert trace.require_events(actual_required) == []
     observed = {item.event_type for item in trace.events}
     assert path_alternative not in observed
@@ -463,11 +500,15 @@ def verified_scout(
         f"runtime:{source_id}",
         target=target,
         trace_event_id=trace_event_id,
-        verification=verification(target, source_id, candidate_id, f"{trace_event_id}:verified"),
+        verification=verification(
+            target, source_id, candidate_id, f"{trace_event_id}:verified"
+        ),
     )
 
 
-def verified_recruitment(source_id: str, candidate_id: str, target: str) -> RecruitmentSignal:
+def verified_recruitment(
+    source_id: str, candidate_id: str, target: str
+) -> RecruitmentSignal:
     trace_event_id = f"trace:{source_id}"
     return RecruitmentSignal(
         source_id,
@@ -476,11 +517,15 @@ def verified_recruitment(source_id: str, candidate_id: str, target: str) -> Recr
         target=target,
         provenance=f"runtime:{source_id}",
         trace_event_id=trace_event_id,
-        verification=verification(target, source_id, candidate_id, f"{trace_event_id}:verified"),
+        verification=verification(
+            target, source_id, candidate_id, f"{trace_event_id}:verified"
+        ),
     )
 
 
-def verified_inhibition(source_id: str, candidate_id: str, target: str) -> InhibitionSignal:
+def verified_inhibition(
+    source_id: str, candidate_id: str, target: str
+) -> InhibitionSignal:
     trace_event_id = f"trace:{source_id}"
     return InhibitionSignal(
         source_id,
@@ -489,11 +534,15 @@ def verified_inhibition(source_id: str, candidate_id: str, target: str) -> Inhib
         target=target,
         provenance=f"runtime:{source_id}",
         trace_event_id=trace_event_id,
-        verification=verification(target, source_id, candidate_id, f"{trace_event_id}:verified"),
+        verification=verification(
+            target, source_id, candidate_id, f"{trace_event_id}:verified"
+        ),
     )
 
 
-def verification(target: str, source_id: str, candidate_id: str, trace_event_id: str) -> object:
+def verification(
+    target: str, source_id: str, candidate_id: str, trace_event_id: str
+) -> object:
     return verify_signal_input(
         target=target,
         source_id=source_id,

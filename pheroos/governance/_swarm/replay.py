@@ -18,13 +18,26 @@ from pheroos.governance._pheromone.records import (
 from pheroos.governance.pheromone_feedback import PheromoneFeedback
 from pheroos.governance.policy_adjustment import PolicyAdjustmentProposal
 from pheroos.governance.policy_adjustment import RunScopedPolicyOverlay
-from pheroos.governance.policy_adjustment import run_scoped_policy_overlay_is_authoritative
+from pheroos.governance.policy_adjustment import (
+    run_scoped_policy_overlay_is_authoritative,
+)
 from pheroos.governance.quorum import quorum_decision_is_authoritative
 from pheroos.protocol.models import CollectiveDecisionPolicy
 from pheroos.trace import TraceEvent
 from typing import Any
-from pheroos.governance._swarm.records import CollectiveDecisionState, HybridCollectiveStep, HybridReplayState, _HYBRID_REPLAY_STATE_ISSUANCE, _HYBRID_STEP_ISSUANCE
-from pheroos.governance._swarm.signals import InhibitionSignal, RecruitmentSignal, ScoutReport
+from pheroos.governance._swarm.records import (
+    CollectiveDecisionState,
+    HybridCollectiveStep,
+    HybridReplayState,
+    _HYBRID_REPLAY_STATE_ISSUANCE,
+    _HYBRID_STEP_ISSUANCE,
+)
+from pheroos.governance._swarm.signals import (
+    InhibitionSignal,
+    RecruitmentSignal,
+    ScoutReport,
+)
+
 
 def _canonical_authority_value(value: Any) -> Any:
     """Return an immutable, type-aware value snapshot for issued authority.
@@ -95,7 +108,9 @@ def _canonical_authority_value(value: Any) -> Any:
     raise TypeError(f"unsupported authority snapshot value: {type_id[0]}.{type_id[1]}")
 
 
-def _hybrid_authority_snapshot(record: object) -> tuple[tuple[str, Any], ...]:
+def _hybrid_authority_snapshot(
+    record: HybridCollectiveStep | HybridReplayState,
+) -> tuple[tuple[str, Any], ...]:
     return tuple(
         (item.name, _canonical_authority_value(getattr(record, item.name)))
         for item in dataclass_fields(record)
@@ -132,7 +147,10 @@ def _hybrid_step_bindings_match(
             and event.target == target
             for event in step.trace_events
         )
-        and all(type(trail) is PheromoneTrail and trail.target == target for trail in step.active_trails)
+        and all(
+            type(trail) is PheromoneTrail and trail.target == target
+            for trail in step.active_trails
+        )
         and all(
             type(record) is PheromoneLifecycleRecord and record.target == target
             for record in lifecycle_records
@@ -142,7 +160,9 @@ def _hybrid_step_bindings_match(
             and observation.target == target
             for observation in step.exploration_observations
         )
-        and (step.budget_state is None or type(step.budget_state) is PheromoneBudgetState)
+        and (
+            step.budget_state is None or type(step.budget_state) is PheromoneBudgetState
+        )
     )
 
 
@@ -208,8 +228,16 @@ def _replay_state_from_verified_hybrid_step(
     traversal.  The public ABI above remains fail-closed for every caller.
     """
 
-    protocol_id = step._issuance[1]
-    target = step._issuance[2]
+    issuance = step._issuance
+    if not (
+        isinstance(issuance, tuple)
+        and len(issuance) == 4
+        and isinstance(issuance[1], str)
+        and isinstance(issuance[2], str)
+    ):
+        raise GovernanceError("hybrid collective step issuance is malformed")
+    protocol_id = issuance[1]
+    target = issuance[2]
     state = HybridReplayState(
         protocol_id=protocol_id,
         target=target,
@@ -222,6 +250,33 @@ def _replay_state_from_verified_hybrid_step(
         feedback_replay_receipts=step.feedback_replay_receipts,
         adjustment_replay_receipts=step.adjustment_replay_receipts,
     )
+    return _issue_hybrid_replay_state(
+        state,
+        protocol_id=protocol_id,
+        target=target,
+    )
+
+
+def _issue_hybrid_replay_state(
+    state: HybridReplayState,
+    *,
+    protocol_id: str,
+    target: str,
+) -> HybridReplayState:
+    """Issue validated ephemeral replay memory with the existing v1 token.
+
+    Hybrid Replay v2 calls this only after StateStore currentness has been
+    verified and its portable snapshot has been reconstructed exactly.  The
+    helper deliberately reuses ``_HYBRID_REPLAY_STATE_ISSUANCE``: restart
+    compatibility must not create a second registry, cursor, or sentinel.
+    """
+
+    if type(state) is not HybridReplayState or not _hybrid_replay_state_bindings_match(
+        state,
+        protocol_id=protocol_id,
+        target=target,
+    ):
+        raise GovernanceError("hybrid replay state authority bindings are invalid")
     object.__setattr__(
         state,
         "_issuance",
@@ -235,6 +290,26 @@ def _replay_state_from_verified_hybrid_step(
     return state
 
 
+def _hybrid_replay_state_bindings_match(
+    state: object,
+    *,
+    protocol_id: str,
+    target: str,
+) -> bool:
+    return bool(
+        type(state) is HybridReplayState
+        and is_nonblank_string(protocol_id)
+        and is_nonblank_string(target)
+        and state.protocol_id == protocol_id
+        and state.target == target
+        and all(
+            type(trail) is PheromoneTrail and trail.target == target
+            for trail in state.active_trails
+        )
+        and _replay_receipts_match_processed_ids(state)
+    )
+
+
 def hybrid_replay_state_is_authoritative(state: object) -> bool:
     if type(state) is not HybridReplayState:
         return False
@@ -246,14 +321,12 @@ def hybrid_replay_state_is_authoritative(state: object) -> bool:
             and issuance[0] is _HYBRID_REPLAY_STATE_ISSUANCE
             and issuance[1] == state.protocol_id
             and issuance[2] == state.target
-            and is_nonblank_string(state.protocol_id)
-            and is_nonblank_string(state.target)
             and issuance[3] == _hybrid_authority_snapshot(state)
-            and all(
-                type(trail) is PheromoneTrail and trail.target == state.target
-                for trail in state.active_trails
+            and _hybrid_replay_state_bindings_match(
+                state,
+                protocol_id=issuance[1],
+                target=issuance[2],
             )
-            and _replay_receipts_match_processed_ids(state)
         )
     except Exception:
         # Replay memory is an authority input, so corruption is a denial rather
@@ -261,7 +334,9 @@ def hybrid_replay_state_is_authoritative(state: object) -> bool:
         return False
 
 
-def _replay_receipts_match_processed_ids(state: object) -> bool:
+def _replay_receipts_match_processed_ids(
+    state: HybridCollectiveStep | HybridReplayState,
+) -> bool:
     receipt_id_sets = tuple(
         set(receipts)
         for receipts in (
@@ -273,13 +348,8 @@ def _replay_receipts_match_processed_ids(state: object) -> bool:
     )
     all_receipt_ids = set().union(*receipt_id_sets)
     return bool(
-        sum(len(trace_ids) for trace_ids in receipt_id_sets)
-        == len(all_receipt_ids)
-        and
-        (
-            set(state.deposit_replay_receipts)
-            | set(state.diffusion_replay_receipts)
-        )
+        sum(len(trace_ids) for trace_ids in receipt_id_sets) == len(all_receipt_ids)
+        and (set(state.deposit_replay_receipts) | set(state.diffusion_replay_receipts))
         == set(state.processed_pheromone_event_ids)
         and set(state.feedback_replay_receipts) == set(state.processed_feedback_ids)
         and set(state.adjustment_replay_receipts) == set(state.processed_adjustment_ids)
@@ -305,7 +375,9 @@ def _canonical_replay_value(value: Any) -> Any:
     if isinstance(value, (list, tuple)):
         return tuple(_canonical_replay_value(item) for item in value)
     if isinstance(value, (set, frozenset)):
-        return tuple(sorted((_canonical_replay_value(item) for item in value), key=repr))
+        return tuple(
+            sorted((_canonical_replay_value(item) for item in value), key=repr)
+        )
     return value
 
 
@@ -438,14 +510,17 @@ def _validate_complete_hybrid_trace_identity(
             getattr(report.verification, "trace_event_id", ""),
             "scout_verification",
         )
-    for signal, owner in (
-        *((signal, "recruitment") for signal in recruitment_signals),
-        *((signal, "inhibition") for signal in inhibition_signals),
-    ):
-        register(signal.trace_event_id, owner)
+    for recruitment in recruitment_signals:
+        register(recruitment.trace_event_id, "recruitment")
         register(
-            getattr(signal.verification, "trace_event_id", ""),
-            f"{owner}_verification",
+            getattr(recruitment.verification, "trace_event_id", ""),
+            "recruitment_verification",
+        )
+    for inhibition in inhibition_signals:
+        register(inhibition.trace_event_id, "inhibition")
+        register(
+            getattr(inhibition.verification, "trace_event_id", ""),
+            "inhibition_verification",
         )
     for trail in deposits:
         register(trail.trace_event_id, "deposit")
@@ -462,8 +537,8 @@ def _validate_complete_hybrid_trace_identity(
         register(item.trace_event_id, "feedback")
     for bias in strategy_biases:
         register(bias.trace_event_id, "strategy_bias")
-    for proposal in adjustment_proposals:
-        register(proposal.trace_event_id, "adjustment")
+    for adjustment in adjustment_proposals:
+        register(adjustment.trace_event_id, "adjustment")
 
     duplicate_inputs = next(
         (
@@ -475,8 +550,7 @@ def _validate_complete_hybrid_trace_identity(
     )
     if duplicate_inputs is not None:
         raise GovernanceError(
-            "duplicate hybrid trace_event_id across input surfaces: "
-            f"{duplicate_inputs}"
+            f"duplicate hybrid trace_event_id across input surfaces: {duplicate_inputs}"
         )
 
     receipt_maps = {
@@ -527,8 +601,40 @@ def _validate_complete_hybrid_trace_identity(
             )
 
 
-for _compat_function in (_canonical_authority_value, _hybrid_authority_snapshot, _hybrid_step_bindings_match, _issue_hybrid_collective_step, hybrid_collective_step_is_authoritative, replay_state_from_hybrid_step, hybrid_replay_state_is_authoritative, _replay_receipts_match_processed_ids, _canonical_replay_value, _trail_replay_fingerprint, _feedback_replay_fingerprint, _adjustment_replay_fingerprint, _validate_replay_receipts, _extend_replay_receipts, _validate_complete_hybrid_trace_identity,):
-    _compat_function.__module__ = 'pheroos.governance.collective'
+for _compat_function in (
+    _canonical_authority_value,
+    _hybrid_authority_snapshot,
+    _hybrid_step_bindings_match,
+    _issue_hybrid_collective_step,
+    hybrid_collective_step_is_authoritative,
+    replay_state_from_hybrid_step,
+    hybrid_replay_state_is_authoritative,
+    _replay_receipts_match_processed_ids,
+    _canonical_replay_value,
+    _trail_replay_fingerprint,
+    _feedback_replay_fingerprint,
+    _adjustment_replay_fingerprint,
+    _validate_replay_receipts,
+    _extend_replay_receipts,
+    _validate_complete_hybrid_trace_identity,
+):
+    _compat_function.__module__ = "pheroos.governance.collective"
 del _compat_function
 
-__all__ = ('_adjustment_replay_fingerprint', '_canonical_authority_value', '_canonical_replay_value', '_extend_replay_receipts', '_feedback_replay_fingerprint', '_hybrid_authority_snapshot', '_hybrid_step_bindings_match', '_issue_hybrid_collective_step', '_replay_receipts_match_processed_ids', '_trail_replay_fingerprint', '_validate_complete_hybrid_trace_identity', '_validate_replay_receipts', 'hybrid_collective_step_is_authoritative', 'hybrid_replay_state_is_authoritative', 'replay_state_from_hybrid_step')
+__all__ = (
+    "_adjustment_replay_fingerprint",
+    "_canonical_authority_value",
+    "_canonical_replay_value",
+    "_extend_replay_receipts",
+    "_feedback_replay_fingerprint",
+    "_hybrid_authority_snapshot",
+    "_hybrid_step_bindings_match",
+    "_issue_hybrid_collective_step",
+    "_replay_receipts_match_processed_ids",
+    "_trail_replay_fingerprint",
+    "_validate_complete_hybrid_trace_identity",
+    "_validate_replay_receipts",
+    "hybrid_collective_step_is_authoritative",
+    "hybrid_replay_state_is_authoritative",
+    "replay_state_from_hybrid_step",
+)

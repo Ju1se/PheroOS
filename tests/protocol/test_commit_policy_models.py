@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import replace
+from dataclasses import dataclass, replace
 
 import pytest
 
@@ -22,6 +22,11 @@ from pheroos.protocol import (
     TerminalOutcomePolicy,
     load_capability_manifest,
 )
+
+
+@dataclass
+class _MutableExtensionRecord:
+    values: list[str]
 
 
 def evidence_policy() -> EvidenceQualificationPolicy:
@@ -173,6 +178,7 @@ def policy() -> CollectiveCommitPolicy:
 
 def test_commit_policy_models_defensively_snapshot_nested_inputs() -> None:
     categories = ["independent_replication"]
+    extension_values = ["commit:original"]
     evidence = replace(
         evidence_policy(),
         required_challenge_categories=categories,
@@ -183,10 +189,14 @@ def test_commit_policy_models_defensively_snapshot_nested_inputs() -> None:
         policy(),
         evidence_qualification=evidence,
         risk_bands=bands,
+        extensions={
+            "x-commit": _MutableExtensionRecord(values=extension_values),
+        },
     )
 
     categories.append("late_mutation")
     bands["LOW"] = bands["CRITICAL"]
+    extension_values.append("commit:mutated")
 
     assert commit_policy.evidence_qualification.required_challenge_categories == (
         "independent_replication",
@@ -194,10 +204,9 @@ def test_commit_policy_models_defensively_snapshot_nested_inputs() -> None:
     assert commit_policy.evidence_qualification.extensions["x-observer"] == {
         "mode": "external"
     }
-    assert (
-        commit_policy.risk_bands["LOW"].minimum_positive_evidence
-        == 2_000_000
-    )
+    assert type(commit_policy.risk_bands["LOW"]) is RiskBandPolicy
+    assert commit_policy.risk_bands["LOW"].minimum_positive_evidence == 2_000_000
+    assert commit_policy.extensions["x-commit"]["values"] == ("commit:original",)
 
 
 def test_distributed_policy_shape_is_available_without_affecting_legacy() -> None:
@@ -250,7 +259,9 @@ def test_commit_profile_precedes_legacy_swarm_and_hybrid_detection() -> None:
     assert profile_for_manifest(core).version == "pheroos-commit-integrity-v1"
     assert profile_for_manifest(hybrid).version == "pheroos-hybrid-commit-v1"
     assert "pheromone_behavior" in profile_for_manifest(hybrid).required_checks
-    assert "score_breakdown_contract" not in profile_for_manifest(hybrid).required_checks
+    assert (
+        "score_breakdown_contract" not in profile_for_manifest(hybrid).required_checks
+    )
     assert "hybrid_trace_contract" not in profile_for_manifest(hybrid).required_checks
     assert "commit_trace_contract" in profile_for_manifest(hybrid).required_checks
 

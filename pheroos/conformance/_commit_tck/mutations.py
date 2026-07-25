@@ -1,6 +1,6 @@
-from __future__ import annotations
-
 """Validation and isolated application of TCK mutations/permutations."""
+
+from __future__ import annotations
 
 from collections.abc import Mapping
 from copy import deepcopy

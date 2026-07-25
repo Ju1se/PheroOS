@@ -15,7 +15,7 @@ from dataclasses import replace
 import json
 from pathlib import Path
 import sys
-from typing import Any
+from typing import Any, Callable
 
 from pheroos.conformance.commit_tck import (
     COMMIT_TCK_VERSION,
@@ -79,9 +79,7 @@ def _load(path: str) -> dict[str, Any]:
 
 
 def _profile(manifest: dict[str, Any]) -> str:
-    return profile_for_manifest(
-        capability_manifest_from_dict(manifest)
-    ).version
+    return profile_for_manifest(capability_manifest_from_dict(manifest)).version
 
 
 def _empty_result() -> dict[str, Any]:
@@ -129,6 +127,41 @@ def _permutation(
 
 
 def _seed_vectors() -> list[CommitTckVector]:
+    manifests = _seed_manifests()
+    hybrid = manifests["hybrid"]
+    terminal_variants = _terminal_variants(
+        hybrid,
+        manifests["advisory"],
+    )
+    vectors: list[CommitTckVector] = []
+    for matrix_case, title in enumerate(TITLES, start=1):
+        manifest = _manifest_for_case(matrix_case, manifests)
+        inputs, mutations, permutations = _case_variants(
+            matrix_case,
+            terminal_variants,
+        )
+        vectors.append(
+            CommitTckVector(
+                id=f"commit-integrity-v1-case-{matrix_case:02d}",
+                tck_version=COMMIT_TCK_VERSION,
+                matrix_case=matrix_case,
+                title=title,
+                manifest=deepcopy(manifest),
+                profile=_profile(hybrid) if matrix_case == 36 else _profile(manifest),
+                prior_authoritative_state={
+                    "kind": "declared-empty-authority-head",
+                    "revision": 0,
+                },
+                inputs=inputs,
+                expected=_empty_result(),
+                mutations=tuple(mutations),
+                permutations=tuple(permutations),
+            )
+        )
+    return vectors
+
+
+def _seed_manifests() -> dict[str, dict[str, Any]]:
     hybrid = _load("examples/hybrid-commit-protocol/capability.json")
     distributed = _load("examples/distributed-commit-protocol/capability.json")
     legacy = _load("examples/toy-protocol/capability.json")
@@ -143,9 +176,9 @@ def _seed_vectors() -> list[CommitTckVector]:
     )
 
     non_monotonic = deepcopy(hybrid)
-    non_monotonic["protocol"]["collective_commit_policy"]["risk_bands"][
-        "MODERATE"
-    ]["minimum_positive_evidence"] = 1
+    non_monotonic["protocol"]["collective_commit_policy"]["risk_bands"]["MODERATE"][
+        "minimum_positive_evidence"
+    ] = 1
 
     unknown_critical = deepcopy(hybrid)
     unknown_critical["protocol"]["collective_commit_policy"][
@@ -156,8 +189,22 @@ def _seed_vectors() -> list[CommitTckVector]:
     advisory["protocol"]["collective_commit_policy"]["terminal_outcome"][
         "deadline_outcome"
     ] = "advisory"
+    return {
+        "advisory": advisory,
+        "certified": certified,
+        "distributed": distributed,
+        "hybrid": hybrid,
+        "legacy": legacy,
+        "non_monotonic": non_monotonic,
+        "unknown_critical": unknown_critical,
+    }
 
-    terminal_variants = {
+
+def _terminal_variants(
+    hybrid: dict[str, Any],
+    advisory: dict[str, Any],
+) -> dict[str, dict[str, Any]]:
+    variants = {
         key: {"manifest": deepcopy(hybrid), "profile": _profile(hybrid)}
         for key in (
             "evidence_commit",
@@ -168,150 +215,207 @@ def _seed_vectors() -> list[CommitTckVector]:
             "finality_unavailable",
         )
     }
-    terminal_variants["advisory"] = {
+    variants["advisory"] = {
         "manifest": advisory,
         "profile": _profile(advisory),
     }
+    return variants
 
-    vectors: list[CommitTckVector] = []
-    for matrix_case, title in enumerate(TITLES, start=1):
-        if 27 <= matrix_case <= 31:
-            manifest = distributed
-        elif matrix_case in {25, 26}:
-            manifest = certified
-        elif matrix_case == 9:
-            manifest = non_monotonic
-        elif matrix_case == 36:
-            manifest = unknown_critical
-        elif matrix_case == 37:
-            manifest = legacy
-        else:
-            manifest = hybrid
 
-        inputs: dict[str, Any] = {"operation": "matrix_case"}
-        mutations: list[dict[str, Any]] = []
-        permutations: list[dict[str, Any]] = []
-        if matrix_case == 9:
-            mutations.append(
-                _mutation(
-                    "restore-monotonic-moderate-threshold",
-                    [
-                        "manifest",
-                        "protocol",
-                        "collective_commit_policy",
-                        "risk_bands",
-                        "MODERATE",
-                        "minimum_positive_evidence",
-                    ],
-                    2_500_000,
-                )
-            )
-        elif matrix_case == 11:
-            inputs["attention_candidate"] = "candidate:beta"
-            mutations.append(
-                _mutation(
-                    "redirect-attention-to-commit-leader",
-                    ["inputs", "attention_candidate"],
-                    "candidate:alpha",
-                    authority_namespace="shared",
-                )
-            )
-        elif matrix_case == 17:
-            inputs["candidate_order"] = [0, 1]
-            permutations.append(
-                _permutation(
-                    "reverse-candidate-order",
-                    ["inputs", "candidate_order"],
-                    "reverse",
-                )
-            )
-        elif matrix_case == 20:
-            mutations.append(
-                _mutation(
-                    "declared-advisory-deadline",
-                    [
-                        "manifest",
-                        "protocol",
-                        "collective_commit_policy",
-                        "terminal_outcome",
-                        "deadline_outcome",
-                    ],
-                    "advisory",
-                )
-            )
-        elif matrix_case == 25:
-            inputs.update(
-                certificate_mutation_path=[],
-                trace_mutation_path=[],
-            )
-            mutations.extend(
-                (
-                    _mutation(
-                        "mutate-certificate-candidate-leaf",
-                        ["inputs", "certificate_mutation_path"],
-                        ["candidate_id"],
-                    ),
-                    _mutation(
-                        "mutate-trace-record-root-leaf",
-                        ["inputs", "trace_mutation_path"],
-                        ["record_ref"],
-                    ),
-                )
-            )
-        elif matrix_case == 33:
-            inputs["terminal_variants"] = terminal_variants
-        elif matrix_case == 34:
-            inputs["evaluation_mutation_field"] = ""
-            mutations.append(
-                _mutation(
-                    "mutate-embedded-evaluation-root",
-                    ["inputs", "evaluation_mutation_field"],
-                    "evaluation_root",
-                    authority_namespace="shared",
-                )
-            )
-        elif matrix_case == 36:
-            mutations.append(
-                _mutation(
-                    "unknown-commit-policy-version",
-                    [
-                        "manifest",
-                        "protocol",
-                        "collective_commit_policy",
-                        "policy_version",
-                    ],
-                    "pheroos-collective-commit-policy-v999",
-                )
-            )
-        elif matrix_case == 37:
-            inputs.update(
-                candidate_id="candidate:accept",
-                source_id="agent:tck:legacy",
-            )
+def _manifest_for_case(
+    matrix_case: int,
+    manifests: dict[str, dict[str, Any]],
+) -> dict[str, Any]:
+    if 27 <= matrix_case <= 31:
+        return manifests["distributed"]
+    if matrix_case in {25, 26}:
+        return manifests["certified"]
+    if matrix_case == 9:
+        return manifests["non_monotonic"]
+    if matrix_case == 36:
+        return manifests["unknown_critical"]
+    if matrix_case == 37:
+        return manifests["legacy"]
+    return manifests["hybrid"]
 
-        vectors.append(
-            CommitTckVector(
-                id=f"commit-integrity-v1-case-{matrix_case:02d}",
-                tck_version=COMMIT_TCK_VERSION,
-                matrix_case=matrix_case,
-                title=title,
-                manifest=deepcopy(manifest),
-                profile=(
-                    _profile(hybrid)
-                    if matrix_case == 36
-                    else _profile(manifest)
-                ),
-                prior_authoritative_state={
-                    "kind": "declared-empty-authority-head",
-                    "revision": 0,
-                },
-                inputs=inputs,
-                expected=_empty_result(),
-                mutations=tuple(mutations),
-                permutations=tuple(permutations),
-            )
+
+_CaseCustomizer = Callable[
+    [dict[str, Any], list[dict[str, Any]], list[dict[str, Any]], dict[str, Any]],
+    None,
+]
+
+
+def _case_variants(
+    matrix_case: int,
+    terminal_variants: dict[str, Any],
+) -> tuple[dict[str, Any], list[dict[str, Any]], list[dict[str, Any]]]:
+    inputs: dict[str, Any] = {"operation": "matrix_case"}
+    mutations: list[dict[str, Any]] = []
+    permutations: list[dict[str, Any]] = []
+    customizer = _CASE_CUSTOMIZERS.get(matrix_case)
+    if customizer is not None:
+        customizer(inputs, mutations, permutations, terminal_variants)
+    return inputs, mutations, permutations
+
+
+def _customize_case_09(
+    inputs: dict[str, Any],
+    mutations: list[dict[str, Any]],
+    permutations: list[dict[str, Any]],
+    terminal_variants: dict[str, Any],
+) -> None:
+    mutations.append(
+        _mutation(
+            "restore-monotonic-moderate-threshold",
+            [
+                "manifest",
+                "protocol",
+                "collective_commit_policy",
+                "risk_bands",
+                "MODERATE",
+                "minimum_positive_evidence",
+            ],
+            2_500_000,
         )
-    return vectors
+    )
+
+
+def _customize_case_11(
+    inputs: dict[str, Any],
+    mutations: list[dict[str, Any]],
+    permutations: list[dict[str, Any]],
+    terminal_variants: dict[str, Any],
+) -> None:
+    inputs["attention_candidate"] = "candidate:beta"
+    mutations.append(
+        _mutation(
+            "redirect-attention-to-commit-leader",
+            ["inputs", "attention_candidate"],
+            "candidate:alpha",
+            authority_namespace="shared",
+        )
+    )
+
+
+def _customize_case_17(
+    inputs: dict[str, Any],
+    mutations: list[dict[str, Any]],
+    permutations: list[dict[str, Any]],
+    terminal_variants: dict[str, Any],
+) -> None:
+    inputs["candidate_order"] = [0, 1]
+    permutations.append(
+        _permutation(
+            "reverse-candidate-order", ["inputs", "candidate_order"], "reverse"
+        )
+    )
+
+
+def _customize_case_20(
+    inputs: dict[str, Any],
+    mutations: list[dict[str, Any]],
+    permutations: list[dict[str, Any]],
+    terminal_variants: dict[str, Any],
+) -> None:
+    mutations.append(
+        _mutation(
+            "declared-advisory-deadline",
+            [
+                "manifest",
+                "protocol",
+                "collective_commit_policy",
+                "terminal_outcome",
+                "deadline_outcome",
+            ],
+            "advisory",
+        )
+    )
+
+
+def _customize_case_25(
+    inputs: dict[str, Any],
+    mutations: list[dict[str, Any]],
+    permutations: list[dict[str, Any]],
+    terminal_variants: dict[str, Any],
+) -> None:
+    inputs.update(certificate_mutation_path=[], trace_mutation_path=[])
+    mutations.extend(
+        (
+            _mutation(
+                "mutate-certificate-candidate-leaf",
+                ["inputs", "certificate_mutation_path"],
+                ["candidate_id"],
+            ),
+            _mutation(
+                "mutate-trace-record-root-leaf",
+                ["inputs", "trace_mutation_path"],
+                ["record_ref"],
+            ),
+        )
+    )
+
+
+def _customize_case_33(
+    inputs: dict[str, Any],
+    mutations: list[dict[str, Any]],
+    permutations: list[dict[str, Any]],
+    terminal_variants: dict[str, Any],
+) -> None:
+    inputs["terminal_variants"] = terminal_variants
+
+
+def _customize_case_34(
+    inputs: dict[str, Any],
+    mutations: list[dict[str, Any]],
+    permutations: list[dict[str, Any]],
+    terminal_variants: dict[str, Any],
+) -> None:
+    inputs["evaluation_mutation_field"] = ""
+    mutations.append(
+        _mutation(
+            "mutate-embedded-evaluation-root",
+            ["inputs", "evaluation_mutation_field"],
+            "evaluation_root",
+            authority_namespace="shared",
+        )
+    )
+
+
+def _customize_case_36(
+    inputs: dict[str, Any],
+    mutations: list[dict[str, Any]],
+    permutations: list[dict[str, Any]],
+    terminal_variants: dict[str, Any],
+) -> None:
+    mutations.append(
+        _mutation(
+            "unknown-commit-policy-version",
+            ["manifest", "protocol", "collective_commit_policy", "policy_version"],
+            "pheroos-collective-commit-policy-v999",
+        )
+    )
+
+
+def _customize_case_37(
+    inputs: dict[str, Any],
+    mutations: list[dict[str, Any]],
+    permutations: list[dict[str, Any]],
+    terminal_variants: dict[str, Any],
+) -> None:
+    inputs.update(candidate_id="candidate:accept", source_id="agent:tck:legacy")
+
+
+_CASE_CUSTOMIZERS: dict[int, _CaseCustomizer] = {
+    9: _customize_case_09,
+    11: _customize_case_11,
+    17: _customize_case_17,
+    20: _customize_case_20,
+    25: _customize_case_25,
+    33: _customize_case_33,
+    34: _customize_case_34,
+    36: _customize_case_36,
+    37: _customize_case_37,
+}
 
 
 def _evaluate_exact(
@@ -384,12 +488,15 @@ def _artifact_payload(vectors: list[CommitTckVector]) -> dict[str, Any]:
 
 
 def _render(value: Any) -> str:
-    return json.dumps(
-        value,
-        ensure_ascii=False,
-        indent=2,
-        sort_keys=False,
-    ) + "\n"
+    return (
+        json.dumps(
+            value,
+            ensure_ascii=False,
+            indent=2,
+            sort_keys=False,
+        )
+        + "\n"
+    )
 
 
 def _write_outputs(vectors: list[CommitTckVector]) -> None:
@@ -412,9 +519,7 @@ def _write_outputs(vectors: list[CommitTckVector]) -> None:
 def _checked_outputs_match(vectors: list[CommitTckVector]) -> bool:
     if not ARTIFACT.is_file():
         return False
-    if ARTIFACT.read_text(encoding="utf-8") != _render(
-        _artifact_payload(vectors)
-    ):
+    if ARTIFACT.read_text(encoding="utf-8") != _render(_artifact_payload(vectors)):
         return False
     expected_names = {f"case-{case:02d}.json" for case in range(1, 39)}
     observed_names = {item.name for item in SPLIT_DIRECTORY.glob("case-*.json")}

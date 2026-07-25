@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
+from typing import TYPE_CHECKING, Protocol
 
 from pheroos.governance._commit_validation import (
     require_commit_fingerprint,
@@ -15,8 +16,56 @@ from pheroos.protocol.commit_models import (
 )
 
 
+if TYPE_CHECKING:
+
+    class _QuorumWitnessView(Protocol):
+        @property
+        def witness_version(self) -> str: ...
+
+        @property
+        def profile(self) -> str: ...
+
+        @property
+        def assurance(self) -> CommitAssurance: ...
+
+        @property
+        def epoch(self) -> int: ...
+
+        @property
+        def witnessed_at_step(self) -> int: ...
+
+        @property
+        def expires_at_step(self) -> int: ...
+
+        @property
+        def membership_root(self) -> str: ...
+
+        @property
+        def commit_value_root(self) -> str: ...
+
+        @property
+        def proposal_digest(self) -> str: ...
+
+    class _DistributedProposalView(Protocol):
+        @property
+        def membership_root(self) -> str: ...
+
+        @property
+        def commit_value_root(self) -> str: ...
+
+        @property
+        def proposal_digest(self) -> str: ...
+else:
+
+    class _QuorumWitnessView(Protocol):
+        pass
+
+    class _DistributedProposalView(Protocol):
+        pass
+
+
 def validate_quorum_witness(
-    witness: object,
+    witness: _QuorumWitnessView,
     *,
     witness_version: str,
 ) -> None:
@@ -64,8 +113,8 @@ def validate_quorum_witness(
 
 
 def _validate_witness_proposal_binding(
-    witness: object,
-    proposal: object,
+    witness: _QuorumWitnessView,
+    proposal: _DistributedProposalView,
 ) -> None:
     for name in (
         "profile",

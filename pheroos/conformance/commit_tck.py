@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from importlib import import_module as _import_module, resources
 from threading import RLock as _RLock
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any as Any
 
 from pheroos.conformance._commit_tck.artifacts import (
     commit_tck_artifact_root,

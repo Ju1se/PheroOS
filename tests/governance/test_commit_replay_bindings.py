@@ -24,7 +24,6 @@ from pheroos.governance.observation import (
     ObservationPolarity,
     counterevidence_disposition_is_authoritative,
     issue_counterevidence_disposition,
-    verified_observation_fingerprint,
     verified_observation_is_authoritative,
     verify_observation_attestation,
 )
@@ -147,8 +146,12 @@ def _observation(
         payload_fingerprint=PAYLOAD_ROOT,
         reported_quality_ppm=900_000,
         reported_relevance_ppm=900_000,
-        reported_materiality_ppm=(900_000 if polarity is ObservationPolarity.CONTRADICT else 0),
-        reported_criticality_ppm=(900_000 if polarity is ObservationPolarity.CONTRADICT else 0),
+        reported_materiality_ppm=(
+            900_000 if polarity is ObservationPolarity.CONTRADICT else 0
+        ),
+        reported_criticality_ppm=(
+            900_000 if polarity is ObservationPolarity.CONTRADICT else 0
+        ),
         provenance=f"urn:test:observation:{suffix}",
         nonce=nonce,
         observed_at_step=1,
@@ -196,9 +199,12 @@ def _challenge(
     principal_id: str,
 ):
     suffix = challenge_id.split(":")[-1]
-    execution_fingerprint = "sha256:" + hashlib.sha256(
-        f"execution:{run_id}:{challenge_id}".encode("utf-8")
-    ).hexdigest()
+    execution_fingerprint = (
+        "sha256:"
+        + hashlib.sha256(
+            f"execution:{run_id}:{challenge_id}".encode("utf-8")
+        ).hexdigest()
+    )
     attestation = ChallengeAttestation(
         challenge_id=challenge_id,
         target=TARGET,

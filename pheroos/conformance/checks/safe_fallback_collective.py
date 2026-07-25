@@ -15,4 +15,8 @@ def check(manifest: CapabilityManifest) -> CheckResult:
         and fallback.safe_fallback
         and fallback.target == manifest.protocol.quorum_policy.target
     )
-    return CheckResult("safe_fallback_collective", ok, "" if ok else "collective fallback must be declared and safe")
+    return CheckResult(
+        "safe_fallback_collective",
+        ok,
+        "" if ok else "collective fallback must be declared and safe",
+    )

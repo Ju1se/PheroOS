@@ -1,8 +1,10 @@
-from __future__ import annotations
-
 """Sole diagnostic-total Hybrid Commit evaluation pipeline."""
 
-from collections.abc import Mapping, Sequence
+from __future__ import annotations
+
+from collections.abc import Callable, Mapping, Sequence
+from dataclasses import replace
+from typing import cast
 
 from pheroos.governance._certificate.local import (
     LocalCommitReceipt,
@@ -20,7 +22,10 @@ from pheroos.governance._hybrid.attention import (
     _bind_attention_channel,
     _with_exact_attention_channel_diagnostic,
 )
-from pheroos.governance._hybrid.binding import hybrid_commit_step_fingerprint
+from pheroos.governance._hybrid.binding import (
+    HybridCommitStep,
+    hybrid_commit_step_fingerprint,
+)
 from pheroos.governance._hybrid.commit import (
     _advance_window_if_required,
     hybrid_commit_evaluation_is_authoritative,
@@ -58,6 +63,8 @@ from pheroos.governance._hybrid.request import (
 )
 from pheroos.governance._hybrid.trace import _build_evaluation_trace
 from pheroos.governance.attention import (
+    AttentionBreakdown,
+    ExplorationDirective,
     attention_breakdown_fingerprint,
     exploration_directive_fingerprint,
 )
@@ -97,6 +104,8 @@ from pheroos.governance.output import (
     commit_output_authorization_fingerprint,
     deliver_terminal_outcome,
 )
+from pheroos.governance.permission import ActionPermission
+from pheroos.governance.stop_signal import StopResolutionVerification
 from pheroos.protocol.commit_models import COMMIT_PROFILES_BY_ASSURANCE
 from pheroos.trace import TraceEvent
 
@@ -104,8 +113,8 @@ from pheroos.trace import TraceEvent
 def evaluate_hybrid_commit_step(
     *,
     request: object,
-    _trace_builder=_build_evaluation_trace,
-):
+    _trace_builder: Callable[..., tuple[TraceEvent, ...]] = _build_evaluation_trace,
+) -> HybridCommitEvaluation:
     """Evaluate one logical step as a diagnostic total function.
 
     A canonical request with a usable governance authority envelope always
@@ -144,6 +153,12 @@ def evaluate_hybrid_commit_step(
     window_state = authority["window_state"]
     replay_state = authority["replay_state"]
     policy = authority["commit_policy"]
+    risk_chain_state = authority["risk_chain_state"]
+    risk_assessment = authority["risk_assessment"]
+    threshold_snapshot = authority["threshold_snapshot"]
+    membership_snapshot = authority["membership_snapshot"]
+    membership_epoch_state = authority["membership_epoch_state"]
+    support_replay_state = authority["support_replay_state"]
     diagnostics: list[HybridCommitDiagnostic] = []
     binding_step: object | None = None
     prior_trace: tuple[TraceEvent, ...] = ()
@@ -211,6 +226,12 @@ def evaluate_hybrid_commit_step(
                 window_state=window_state,
                 replay_state=replay_state,
                 commit_policy=policy,
+                risk_chain_state=risk_chain_state,
+                risk_assessment=risk_assessment,
+                threshold_snapshot=threshold_snapshot,
+                membership_snapshot=membership_snapshot,
+                membership_epoch_state=membership_epoch_state,
+                support_replay_state=support_replay_state,
             )
             next_required.update(finality_required)
         except Exception as exc:
@@ -231,12 +252,12 @@ def evaluate_hybrid_commit_step(
             window_state,
             assessment=assessment,
             replay_state=replay_state,
-            risk_chain_state=request.risk_chain_state,
-            risk_assessment=request.risk_assessment,
-            threshold_snapshot=request.threshold_snapshot,
-            membership_snapshot=request.membership_snapshot,
-            membership_epoch_state=request.membership_epoch_state,
-            support_replay_state=request.support_replay_state,
+            risk_chain_state=risk_chain_state,
+            risk_assessment=risk_assessment,
+            threshold_snapshot=threshold_snapshot,
+            membership_snapshot=membership_snapshot,
+            membership_epoch_state=membership_epoch_state,
+            support_replay_state=support_replay_state,
             commit_policy=policy,
             previous_progress=(
                 request.previous_progress
@@ -282,9 +303,8 @@ def evaluate_hybrid_commit_step(
     execute: CommitOutputAuthorization | None = None
 
     if outcome is not None:
-        if (
-            outcome.kind is not DecisionOutcomeKind.EVIDENCE_COMMIT
-            and (prior_trace or not _has_fatal(diagnostics))
+        if outcome.kind is not DecisionOutcomeKind.EVIDENCE_COMMIT and (
+            prior_trace or not _has_fatal(diagnostics)
         ):
             try:
                 outcome_certificate = _resolve_outcome_certificate(
@@ -318,11 +338,20 @@ def evaluate_hybrid_commit_step(
         publish = authorize_terminal_publication(
             outcome,
             commit_policy=policy,
-            threshold_snapshot=request.threshold_snapshot,
-            certificate=action_certificate,  # type: ignore[arg-type]
+            threshold_snapshot=threshold_snapshot,
+            certificate=cast(
+                LocalCommitReceipt
+                | EvidenceCommitCertificate
+                | OutcomeCertificate
+                | DistributedCommitCertificate,
+                action_certificate,
+            ),
             output_payload_fingerprint=request.output_payload_fingerprint,
-            stop_resolution=request.publish_stop_resolution,  # type: ignore[arg-type]
-            permission=request.publish_permission,  # type: ignore[arg-type]
+            stop_resolution=cast(
+                StopResolutionVerification,
+                request.publish_stop_resolution,
+            ),
+            permission=cast(ActionPermission, request.publish_permission),
             current_step=request.current_step,
             trusted_issuer_attestations=request.trusted_issuer_attestations,
             distributed_state=distributed_state,
@@ -332,11 +361,20 @@ def evaluate_hybrid_commit_step(
         execute = authorize_terminal_execution(
             outcome,
             commit_policy=policy,
-            threshold_snapshot=request.threshold_snapshot,
-            certificate=action_certificate,  # type: ignore[arg-type]
+            threshold_snapshot=threshold_snapshot,
+            certificate=cast(
+                LocalCommitReceipt
+                | EvidenceCommitCertificate
+                | OutcomeCertificate
+                | DistributedCommitCertificate,
+                action_certificate,
+            ),
             output_payload_fingerprint=request.output_payload_fingerprint,
-            stop_resolution=request.execute_stop_resolution,  # type: ignore[arg-type]
-            permission=request.execute_permission,  # type: ignore[arg-type]
+            stop_resolution=cast(
+                StopResolutionVerification,
+                request.execute_stop_resolution,
+            ),
+            permission=cast(ActionPermission, request.execute_permission),
             current_step=request.current_step,
             trusted_issuer_attestations=request.trusted_issuer_attestations,
             distributed_state=distributed_state,
@@ -462,10 +500,11 @@ def evaluate_hybrid_commit_step(
         )
     return issued
 
+
 def _issue_evaluation(
     request: HybridCommitEvaluationRequest,
     *,
-    binding_step: object | None,
+    binding_step: HybridCommitStep | None,
     assessment: CommitAssessment,
     context: CommitEvaluationContext,
     window_state: CommitWindowState,
@@ -499,9 +538,21 @@ def _issue_evaluation(
     else:
         status = HybridCommitEvaluationStatus.OUTCOME
         terminal = True
+    attention = (
+        cast(AttentionBreakdown, request.attention)
+        if binding_step is not None
+        else None
+    )
+    directive = (
+        cast(ExplorationDirective, request.exploration_directive)
+        if binding_step is not None
+        else None
+    )
     provisional = HybridCommitEvaluation(
         evaluation_version=HYBRID_COMMIT_EVALUATION_VERSION,
-        request_ref=_issued_request_ref(request, diagnostics, profile=assessment.profile),
+        request_ref=_issued_request_ref(
+            request, diagnostics, profile=assessment.profile
+        ),
         status=status,
         authoritative=True,
         terminal=terminal,
@@ -519,16 +570,16 @@ def _issue_evaluation(
             else HybridCommitAttentionStatus.UNAVAILABLE
         ),
         binding_step_ref=(
-            hybrid_commit_step_fingerprint(binding_step) if binding_step is not None else ""
-        ),
-        attention_ref=(
-            attention_breakdown_fingerprint(request.attention)
+            hybrid_commit_step_fingerprint(binding_step)
             if binding_step is not None
             else ""
         ),
+        attention_ref=(
+            attention_breakdown_fingerprint(attention) if attention is not None else ""
+        ),
         exploration_directive_ref=(
-            exploration_directive_fingerprint(request.exploration_directive)
-            if binding_step is not None
+            exploration_directive_fingerprint(directive)
+            if directive is not None
             else ""
         ),
         assessment_ref=commit_assessment_fingerprint(assessment),
@@ -581,16 +632,8 @@ def _issue_evaluation(
         diagnostics=diagnostics,
         evaluation_root=_ZERO_ROOT,
         binding_step=binding_step,
-        attention=(
-            request.attention
-            if binding_step is not None
-            else None
-        ),
-        exploration_directive=(
-            request.exploration_directive
-            if binding_step is not None
-            else None
-        ),
+        attention=attention,
+        exploration_directive=directive,
         commit_assessment=assessment,
         commit_window_state=window_state,
         commit_replay_state=replay_state,
@@ -623,17 +666,13 @@ def _issue_evaluation(
     )
     return result
 
+
 def _replace_evaluation_root(
     evaluation: HybridCommitEvaluation,
     root: str,
 ) -> HybridCommitEvaluation:
-    return HybridCommitEvaluation(
-        **{
-            name: (root if name == "evaluation_root" else getattr(evaluation, name))
-            for name, definition in evaluation.__dataclass_fields__.items()
-            if definition.init
-        }
-    )
+    return replace(evaluation, evaluation_root=root)
+
 
 def _non_authoritative_invalid(
     request: object,
@@ -679,9 +718,7 @@ def _non_authoritative_invalid(
     )
     epoch = _safe_diagnostic_step(getattr(identity_source, "epoch", None))
     current_step = _safe_diagnostic_step(
-        request.current_step
-        if type(request) is HybridCommitEvaluationRequest
-        else None
+        request.current_step if type(request) is HybridCommitEvaluationRequest else None
     )
     diagnostic_values = tuple(diagnostics) or (
         _diagnostic(
@@ -738,13 +775,9 @@ def _non_authoritative_invalid(
             if type(context) is CommitEvaluationContext
             else ""
         ),
-        window_state_ref=(
-            commit_window_state_fingerprint(window) if window else ""
-        ),
+        window_state_ref=(commit_window_state_fingerprint(window) if window else ""),
         window_root=(window.window_root if window else ""),
-        replay_state_ref=(
-            commit_replay_state_fingerprint(replay) if replay else ""
-        ),
+        replay_state_ref=(commit_replay_state_fingerprint(replay) if replay else ""),
         replay_root=(replay.receipt_root if replay else ""),
         progress_ref="",
         outcome_ref="",
@@ -776,8 +809,10 @@ def _non_authoritative_invalid(
     )
     return _replace_evaluation_root(provisional, root)
 
+
 def _has_fatal(diagnostics: Sequence[HybridCommitDiagnostic]) -> bool:
     return any(item.fatal for item in diagnostics)
+
 
 def _exception_references(
     request: HybridCommitEvaluationRequest,
@@ -794,7 +829,6 @@ def _exception_references(
         ),
     )
     return tuple(item for item in values if item)
-
 
 
 __all__ = ["evaluate_hybrid_commit_step"]

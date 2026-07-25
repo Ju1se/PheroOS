@@ -143,11 +143,40 @@ def _evaluate_store_contract(
 ) -> None:
     ledger_scope = _scope("ledger")
     other_scope = _scope("other")
+    _evaluate_opaque_scope_shape(store, problems)
+    winner = _exercise_commit_and_identity_contract(store, ledger_scope, problems)
+    _exercise_scope_isolation(store, ledger_scope, other_scope, problems)
+    if not _exercise_checkpoint_restore(adapter, store, ledger_scope, problems):
+        return
+    _exercise_failure_atomicity(adapter, problems)
+    _evaluate_retry_concurrency(adapter, problems)
+    _evaluate_conflict_concurrency(adapter, problems)
+    _exercise_retirement_and_snapshot_restore(
+        adapter,
+        store,
+        winner,
+        ledger_scope,
+        other_scope,
+        problems,
+    )
+
+
+def _evaluate_opaque_scope_shape(
+    store: GovernanceStateStore,
+    problems: list[str],
+) -> None:
     if not _rejects(
         lambda: store.load_head("tenant-or-run-identifier", "commit"),
         "canonical SHA-256 digest",
     ):
         problems.append("opaque_scope_shape")
+
+
+def _exercise_commit_and_identity_contract(
+    store: GovernanceStateStore,
+    ledger_scope: str,
+    problems: list[str],
+) -> GovernanceCommitBatch:
     winner = _batch(store, ledger_scope, "transition:winner", 1)
     stale = _batch(store, ledger_scope, "transition:stale", 2)
     receipt = store.atomic_commit(winner)
@@ -178,17 +207,32 @@ def _evaluate_store_contract(
         "governance_identity_conflict",
     ):
         problems.append("claim_conflict")
+    return winner
 
+
+def _exercise_scope_isolation(
+    store: GovernanceStateStore,
+    ledger_scope: str,
+    other_scope: str,
+    problems: list[str],
+) -> None:
     isolated = _batch(store, other_scope, "transition:winner", 3)
     store.atomic_commit(isolated)
     if store.load_state(ledger_scope, "commit")["state"]["value"] != 1:
         problems.append("cross_scope_pollution")
 
+
+def _exercise_checkpoint_restore(
+    adapter: GovernanceStateStoreConformanceAdapter,
+    store: GovernanceStateStore,
+    ledger_scope: str,
+    problems: list[str],
+) -> bool:
     checkpoint = store.checkpoint(ledger_scope)
     restarted = adapter.restore_checkpoint(checkpoint)
     if not isinstance(restarted, GovernanceStateStore):
         problems.append("checkpoint_store_protocol")
-        return
+        return False
     if restarted.checkpoint(ledger_scope) != checkpoint:
         problems.append("checkpoint_rehydrate")
     if restarted.load_head(ledger_scope, "commit") != store.load_head(
@@ -201,7 +245,13 @@ def _evaluate_store_contract(
         "commit",
     ):
         problems.append("checkpoint_trace")
+    return True
 
+
+def _exercise_failure_atomicity(
+    adapter: GovernanceStateStoreConformanceAdapter,
+    problems: list[str],
+) -> None:
     for stage in GOVERNANCE_STATE_STORE_FAILURE_STAGES:
         failing = adapter.create_failure_injected_store(stage)
         if not isinstance(failing, GovernanceStateStore):
@@ -223,9 +273,15 @@ def _evaluate_store_contract(
         ):
             problems.append(f"partial_publish:{stage}")
 
-    _evaluate_retry_concurrency(adapter, problems)
-    _evaluate_conflict_concurrency(adapter, problems)
 
+def _exercise_retirement_and_snapshot_restore(
+    adapter: GovernanceStateStoreConformanceAdapter,
+    store: GovernanceStateStore,
+    winner: GovernanceCommitBatch,
+    ledger_scope: str,
+    other_scope: str,
+    problems: list[str],
+) -> None:
     tombstone = store.retire(ledger_scope)
     if store.retire(ledger_scope) != tombstone:
         problems.append("retire_retry")
@@ -263,9 +319,7 @@ def _evaluate_retry_concurrency(
     scope_ref = _scope("concurrent-retry")
     batch = _batch(store, scope_ref, "transition:shared", 1)
     try:
-        with ThreadPoolExecutor(
-            max_workers=_CONCURRENCY_WORKERS
-        ) as executor:
+        with ThreadPoolExecutor(max_workers=_CONCURRENCY_WORKERS) as executor:
             receipts = tuple(
                 executor.map(
                     lambda _index: store.atomic_commit(batch),
@@ -310,9 +364,7 @@ def _evaluate_conflict_concurrency(
             return f"unexpected:{type(exc).__name__}:{exc}"
         return "committed"
 
-    with ThreadPoolExecutor(
-        max_workers=_CONCURRENCY_WORKERS
-    ) as executor:
+    with ThreadPoolExecutor(max_workers=_CONCURRENCY_WORKERS) as executor:
         outcomes = tuple(executor.map(attempt, batches))
     if outcomes.count("committed") != 1 or outcomes.count("conflict") != (
         _CONCURRENCY_WORKERS - 1

@@ -178,7 +178,9 @@ def _commit_policy() -> CollectiveCommitPolicy:
             evidence_reference_required=True,
             cluster_verification_required=True,
         ),
-        risk_bands={name: _risk_band() for name in ("LOW", "MODERATE", "HIGH", "CRITICAL")},
+        risk_bands={
+            name: _risk_band() for name in ("LOW", "MODERATE", "HIGH", "CRITICAL")
+        },
         commit_window=CommitWindowPolicy(
             minimum_stability_steps=2,
             deliberation_deadline_steps=8,
@@ -885,11 +887,7 @@ def _distributed_request(
     portable = bundle.portable
     stable = portable.stable
     scenario = stable.scenario
-    step = (
-        stable.window.last_evaluated_step
-        if current_step is None
-        else current_step
-    )
+    step = stable.window.last_evaluated_step if current_step is None else current_step
     attention, directive = _attention(
         scenario,
         step=stable.window.last_evaluated_step,
@@ -1062,7 +1060,9 @@ def test_deprecated_total_entry_is_only_a_warning_alias() -> None:
     )
 
 
-def test_total_entry_returns_authoritative_progress_without_assurance_downgrade() -> None:
+def test_total_entry_returns_authoritative_progress_without_assurance_downgrade() -> (
+    None
+):
     request = _total_request(stable=False)
     result = evaluate_hybrid_commit_step(request=request)
 
@@ -1172,7 +1172,9 @@ def test_total_entry_issues_local_commit_delivers_and_denies_unscoped_actions() 
     assert replay.event_types[-1] == "output_decided"
 
 
-def test_noncanonical_request_returns_explicit_non_authoritative_invalid_envelope() -> None:
+def test_noncanonical_request_returns_explicit_non_authoritative_invalid_envelope() -> (
+    None
+):
     result = evaluate_hybrid_commit_step(request={"malformed": True})
     assert result.status is HybridCommitEvaluationStatus.INVALID
     assert result.terminal and not result.authoritative
@@ -1181,7 +1183,9 @@ def test_noncanonical_request_returns_explicit_non_authoritative_invalid_envelop
     assert hybrid_commit_evaluation_payload(result)["evaluation_root"]
 
 
-def test_malformed_runtime_record_with_valid_authority_issues_invalid_and_delivers() -> None:
+def test_malformed_runtime_record_with_valid_authority_issues_invalid_and_delivers() -> (
+    None
+):
     request = replace(
         _total_request(stable=True),
         evidence_certificate=object(),
@@ -1482,9 +1486,7 @@ def test_certified_late_finality_ignores_unavailable_attention() -> None:
 
 def test_attention_status_shape_rejects_missing_diagnostic_and_injected_refs() -> None:
     request = _total_request(stable=False)
-    unavailable = evaluate_hybrid_commit_step(
-        request=replace(request, attention=None)
-    )
+    unavailable = evaluate_hybrid_commit_step(request=replace(request, attention=None))
 
     with pytest.raises(
         GovernanceError,
@@ -1498,9 +1500,7 @@ def test_attention_status_shape_rejects_missing_diagnostic_and_injected_refs() -
 def test_forged_missing_attention_binding_is_not_authoritative() -> None:
     request = _total_request(stable=False)
     verified = evaluate_hybrid_commit_step(request=request)
-    unavailable = evaluate_hybrid_commit_step(
-        request=replace(request, attention=None)
-    )
+    unavailable = evaluate_hybrid_commit_step(request=replace(request, attention=None))
     channel_diagnostic = next(
         item
         for item in unavailable.diagnostics
@@ -1560,8 +1560,7 @@ def test_trace_generation_fault_returns_explicit_non_authoritative_invalid(
     assert result.terminal and not result.authoritative
     assert result.decision_outcome is None
     assert any(
-        item.code == "commit_trace_generation_failed"
-        for item in result.diagnostics
+        item.code == "commit_trace_generation_failed" for item in result.diagnostics
     )
     assert not hybrid_commit_evaluation_is_authoritative(result)
 
@@ -1658,7 +1657,9 @@ def test_embedded_runtime_substitution_breaks_evaluation_authority(
     field_name: str,
 ) -> None:
     result = evaluate_hybrid_commit_step(request=_total_request(stable=True))
-    object.__setattr__(result, field_name, () if field_name == "trace_events" else object())
+    object.__setattr__(
+        result, field_name, () if field_name == "trace_events" else object()
+    )
     assert not hybrid_commit_evaluation_is_authoritative(result)
 
 
@@ -1715,9 +1716,7 @@ def test_gate_failure_reset_trace_has_unique_complete_predecessors() -> None:
         exploration_directive=directive,
         commit_assessment=assessment,
         current_step=6,
-        prior_trace_events=tuple(
-            (*prior.trace_events, stop_event, permission_event)
-        ),
+        prior_trace_events=tuple((*prior.trace_events, stop_event, permission_event)),
     )
 
     result = evaluate_hybrid_commit_step(request=reset_request)
@@ -1735,7 +1734,9 @@ def test_gate_failure_reset_trace_has_unique_complete_predecessors() -> None:
     replay_commit_trace(result.trace_events, require_complete=True)
 
 
-def test_exact_publish_action_facts_are_certificate_bound_and_trace_replayable() -> None:
+def test_exact_publish_action_facts_are_certificate_bound_and_trace_replayable() -> (
+    None
+):
     request = _total_request(stable=True)
     base = evaluate_hybrid_commit_step(request=request)
     stop, permission = _action_facts(
@@ -1769,9 +1770,10 @@ def test_exact_publish_action_facts_are_certificate_bound_and_trace_replayable()
         and item.lineage["record_ref"] == permission_ref
     )
     output_event = published.trace_events[-1]
-    assert {stop_event.lineage["event_id"], permission_event.lineage["event_id"]}.issubset(
-        output_event.lineage["previous_event_ids"]
-    )
+    assert {
+        stop_event.lineage["event_id"],
+        permission_event.lineage["event_id"],
+    }.issubset(output_event.lineage["previous_event_ids"])
     assert output_event.lineage["publish"] is True
     assert hybrid_commit_evaluation_is_authoritative(published)
     replay_commit_trace(published.trace_events, require_complete=True)
@@ -1852,8 +1854,9 @@ def test_distributed_zero_witness_state_is_provisional_with_portable_lineage() -
     )
     assert provisional.lineage["witness_count"] == 0
     assert "proposal_digest" not in provisional.lineage
-    assert provisional.lineage["portable_certificate_ref"] == (
-        portable.lineage["certificate_ref"]
+    assert (
+        provisional.lineage["portable_certificate_ref"]
+        == (portable.lineage["certificate_ref"])
     )
     assert tuple(provisional.lineage["previous_event_ids"]) == (
         portable.lineage["event_id"],
@@ -1938,14 +1941,17 @@ def test_distributed_quorum_returns_terminal_commit_with_closed_lineage() -> Non
     outcome_event = next(
         item for item in result.trace_events if item.event_type == "decision_outcome"
     )
-    assert distributed_event.lineage["event_id"] in (
-        outcome_event.lineage["previous_event_ids"]
+    assert (
+        distributed_event.lineage["event_id"]
+        in (outcome_event.lineage["previous_event_ids"])
     )
     assert hybrid_commit_evaluation_is_authoritative(result)
     replay_commit_trace(result.trace_events, require_complete=True)
 
 
-def test_historical_distributed_evaluation_stays_verifiable_but_stale_state_cannot_publish() -> None:
+def test_historical_distributed_evaluation_stays_verifiable_but_stale_state_cannot_publish() -> (
+    None
+):
     bundle = _distributed_fixture(witness_count=3, variant="historical-final")
     stable = bundle.portable.stable
     scenario = stable.scenario
@@ -2001,7 +2007,9 @@ def test_historical_distributed_evaluation_stays_verifiable_but_stale_state_cann
     assert publication.gates["certificate_valid"] is False
 
 
-def test_same_value_distributed_retry_never_freezes_or_combines_proposal_quorums() -> None:
+def test_same_value_distributed_retry_never_freezes_or_combines_proposal_quorums() -> (
+    None
+):
     bundle = _distributed_fixture(witness_count=3, variant="same-value-first")
     portable = bundle.portable
     stable = portable.stable
@@ -2091,12 +2099,13 @@ def test_same_value_distributed_retry_never_freezes_or_combines_proposal_quorums
     )
     assert result.status is HybridCommitEvaluationStatus.PROGRESS
     assert result.authoritative and not result.terminal
-    assert {
-        item.lineage["proposal_digest"] for item in witness_events
-    } == {first.proposal_digest, retry_certificate.proposal_digest}
-    assert {
-        item.lineage["commit_value_root"] for item in witness_events
-    } == {first.commit_value_root}
+    assert {item.lineage["proposal_digest"] for item in witness_events} == {
+        first.proposal_digest,
+        retry_certificate.proposal_digest,
+    }
+    assert {item.lineage["commit_value_root"] for item in witness_events} == {
+        first.commit_value_root
+    }
     assert not any(
         item.event_type == "certificate_conflict" for item in result.trace_events
     )
@@ -2104,7 +2113,9 @@ def test_same_value_distributed_retry_never_freezes_or_combines_proposal_quorums
     replay_commit_trace(result.trace_events, require_complete=False)
 
 
-def test_distributed_conflict_freezes_commit_and_closes_both_certificate_lineages() -> None:
+def test_distributed_conflict_freezes_commit_and_closes_both_certificate_lineages() -> (
+    None
+):
     bundle = _distributed_fixture(witness_count=3, variant="conflict-first")
     portable = bundle.portable
     stable = portable.stable
@@ -2189,9 +2200,7 @@ def test_distributed_conflict_freezes_commit_and_closes_both_certificate_lineage
         window_event=window_event,
         witness_events=first_witness_events,
     )
-    conflict_prior = tuple(
-        (*prior, first_event, *second_witness_events, second_event)
-    )
+    conflict_prior = tuple((*prior, first_event, *second_witness_events, second_event))
     replay_commit_trace(conflict_prior, require_complete=False)
 
     result = evaluate_hybrid_commit_step(
@@ -2219,9 +2228,14 @@ def test_distributed_conflict_freezes_commit_and_closes_both_certificate_lineage
     assert not result.publish_authorization.authorized
     assert not result.execute_authorization.authorized
     conflict = next(
-        item for item in result.trace_events if item.event_type == "certificate_conflict"
+        item
+        for item in result.trace_events
+        if item.event_type == "certificate_conflict"
     )
-    assert {conflict.lineage["left_certificate_ref"], conflict.lineage["right_certificate_ref"]} == {
+    assert {
+        conflict.lineage["left_certificate_ref"],
+        conflict.lineage["right_certificate_ref"],
+    } == {
         first_ref,
         second_ref,
     }
@@ -2382,7 +2396,5 @@ def test_total_evaluation_payload_round_trips_strict_commit_wire_and_roots(
     assert validate_commit_wire_record(trace_mutation)
 
     evaluation_mutation = deepcopy(record)
-    evaluation_mutation["payload"]["evaluation_root"] = _root(
-        "mutated-evaluation-root"
-    )
+    evaluation_mutation["payload"]["evaluation_root"] = _root("mutated-evaluation-root")
     assert validate_commit_wire_record(evaluation_mutation)

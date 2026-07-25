@@ -47,8 +47,14 @@ class ScopedTraceEvent:
             ("transition_id", self.transition_id),
             ("trace_id", self.trace_id),
         ):
-            if not isinstance(value, str) or not value.strip() or value != value.strip():
-                raise ValueError(f"scoped trace event {name} must be canonical nonblank text")
+            if (
+                not isinstance(value, str)
+                or not value.strip()
+                or value != value.strip()
+            ):
+                raise ValueError(
+                    f"scoped trace event {name} must be canonical nonblank text"
+                )
         if not isinstance(self.event, TraceEvent):
             raise TypeError("scoped trace event requires a canonical TraceEvent")
         event = deepcopy(self.event)

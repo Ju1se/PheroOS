@@ -85,9 +85,7 @@ def _strongly_connected_components(
 def test_governance_private_import_graph_has_no_cycles() -> None:
     cycles = [
         component
-        for component in _strongly_connected_components(
-            _governance_import_graph()
-        )
+        for component in _strongly_connected_components(_governance_import_graph())
         if len(component) > 1
     ]
 
@@ -123,7 +121,9 @@ def test_private_engines_have_no_module_global_lock_or_install_registry() -> Non
             continue
         tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
         for node in tree.body:
-            value = node.value if isinstance(node, (ast.Assign, ast.AnnAssign)) else None
+            value = (
+                node.value if isinstance(node, (ast.Assign, ast.AnnAssign)) else None
+            )
             if isinstance(value, ast.Call) and isinstance(value.func, ast.Name):
                 if value.func.id in {"Lock", "RLock"}:
                     offenders.append(f"{relative}:global-{value.func.id}")

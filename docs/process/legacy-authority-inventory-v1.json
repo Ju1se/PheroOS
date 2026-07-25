@@ -1,0 +1,318 @@
+{
+  "counts": {
+    "cursor_types": 6,
+    "legacy_namespaces": 14,
+    "registry_importers": 14,
+    "sentinel_only_issuance_candidates": 40,
+    "store_rehydratable_opaque_tokens": 5
+  },
+  "inventory": {
+    "cursor_types": [
+      {
+        "path": "pheroos/governance/_commit_state/records.py",
+        "type": "_CommitReplayCursor"
+      },
+      {
+        "path": "pheroos/governance/_commit_state/records.py",
+        "type": "_CommitWindowCursor"
+      },
+      {
+        "path": "pheroos/governance/_distributed/records.py",
+        "type": "_DistributedStateCursor"
+      },
+      {
+        "path": "pheroos/governance/_risk/chain.py",
+        "type": "_RiskAssessmentChainCursor"
+      },
+      {
+        "path": "pheroos/governance/_support/records.py",
+        "type": "_MembershipEpochCursor"
+      },
+      {
+        "path": "pheroos/governance/_support/records.py",
+        "type": "_SupportLeaseReplayCursor"
+      }
+    ],
+    "legacy_namespaces": [
+      {
+        "namespace": "legacy.certificate.identities",
+        "path": "pheroos/governance/_commit/certificate_contracts.py",
+        "symbol": "LEGACY_CERTIFICATE_IDENTITIES"
+      },
+      {
+        "namespace": "legacy.commit.context_claims",
+        "path": "pheroos/governance/_commit/context.py",
+        "symbol": "_LEGACY_COMMIT_CONTEXT_CLAIMS"
+      },
+      {
+        "namespace": "legacy.commit.contexts",
+        "path": "pheroos/governance/_commit/context.py",
+        "symbol": "_LEGACY_COMMIT_CONTEXTS"
+      },
+      {
+        "namespace": "legacy.commit.replay_cursors",
+        "path": "pheroos/governance/_commit_state/records.py",
+        "symbol": "_LEGACY_COMMIT_REPLAY_CURSORS"
+      },
+      {
+        "namespace": "legacy.commit.window_cursors",
+        "path": "pheroos/governance/_commit_state/records.py",
+        "symbol": "_LEGACY_COMMIT_WINDOW_CURSORS"
+      },
+      {
+        "namespace": "legacy.distributed.certificates_by_id",
+        "path": "pheroos/governance/_distributed/records.py",
+        "symbol": "_LEGACY_DISTRIBUTED_CERTIFICATES_BY_ID"
+      },
+      {
+        "namespace": "legacy.distributed.epoch_certificates_by_id",
+        "path": "pheroos/governance/_distributed/records.py",
+        "symbol": "_LEGACY_EPOCH_CERTIFICATES_BY_ID"
+      },
+      {
+        "namespace": "legacy.distributed.proposals_by_id",
+        "path": "pheroos/governance/_distributed/records.py",
+        "symbol": "_LEGACY_PROPOSALS_BY_ID"
+      },
+      {
+        "namespace": "legacy.distributed.state_cursors",
+        "path": "pheroos/governance/_distributed/records.py",
+        "symbol": "_LEGACY_DISTRIBUTED_STATE_CURSORS"
+      },
+      {
+        "namespace": "legacy.distributed.witness_by_id",
+        "path": "pheroos/governance/_distributed/records.py",
+        "symbol": "_LEGACY_WITNESS_VERIFICATIONS_BY_ID"
+      },
+      {
+        "namespace": "legacy.distributed.witness_by_nonce",
+        "path": "pheroos/governance/_distributed/records.py",
+        "symbol": "_LEGACY_WITNESS_VERIFICATIONS_BY_NONCE"
+      },
+      {
+        "namespace": "legacy.risk.chain_cursors",
+        "path": "pheroos/governance/_risk/chain.py",
+        "symbol": "_LEGACY_RISK_CHAIN_CURSORS"
+      },
+      {
+        "namespace": "legacy.support.membership_epoch_cursors",
+        "path": "pheroos/governance/_support/records.py",
+        "symbol": "_LEGACY_MEMBERSHIP_EPOCH_CURSORS"
+      },
+      {
+        "namespace": "legacy.support.replay_cursors",
+        "path": "pheroos/governance/_support/records.py",
+        "symbol": "_LEGACY_SUPPORT_REPLAY_CURSORS"
+      }
+    ],
+    "registry_importers": [
+      "pheroos/governance/_certificate/outcome.py",
+      "pheroos/governance/_certificate/portable.py",
+      "pheroos/governance/_commit/context.py",
+      "pheroos/governance/_commit/local_receipt.py",
+      "pheroos/governance/_commit_state/replay.py",
+      "pheroos/governance/_commit_state/window.py",
+      "pheroos/governance/_distributed/certificate.py",
+      "pheroos/governance/_distributed/epoch.py",
+      "pheroos/governance/_distributed/proposal.py",
+      "pheroos/governance/_distributed/state.py",
+      "pheroos/governance/_distributed/witness.py",
+      "pheroos/governance/_risk/chain.py",
+      "pheroos/governance/_support/membership.py",
+      "pheroos/governance/_support/replay.py"
+    ],
+    "sentinel_only_issuance_candidates": [
+      {
+        "path": "pheroos/governance/_certificate/outcome.py",
+        "symbol": "_OUTCOME_CERTIFICATE_ISSUANCE"
+      },
+      {
+        "path": "pheroos/governance/_commit/assessment.py",
+        "symbol": "_COMMIT_ASSESSMENT_ISSUANCE"
+      },
+      {
+        "path": "pheroos/governance/_commit/context.py",
+        "symbol": "_COMMIT_CONTEXT_ISSUANCE"
+      },
+      {
+        "path": "pheroos/governance/_commit/local_receipt.py",
+        "symbol": "_LOCAL_COMMIT_RECEIPT_ISSUANCE"
+      },
+      {
+        "path": "pheroos/governance/_commit_state/records.py",
+        "symbol": "_COMMIT_FINALITY_VERIFICATION_ISSUANCE"
+      },
+      {
+        "path": "pheroos/governance/_commit_state/records.py",
+        "symbol": "_COMMIT_LIVENESS_INPUT_ISSUANCE"
+      },
+      {
+        "path": "pheroos/governance/_commit_state/records.py",
+        "symbol": "_COMMIT_REPLAY_STATE_ISSUANCE"
+      },
+      {
+        "path": "pheroos/governance/_commit_state/records.py",
+        "symbol": "_COMMIT_WINDOW_SEAL_ISSUANCE"
+      },
+      {
+        "path": "pheroos/governance/_commit_state/records.py",
+        "symbol": "_COMMIT_WINDOW_STATE_ISSUANCE"
+      },
+      {
+        "path": "pheroos/governance/_commit_state/records.py",
+        "symbol": "_DECISION_OUTCOME_ISSUANCE"
+      },
+      {
+        "path": "pheroos/governance/_commit_state/records.py",
+        "symbol": "_DECISION_PROGRESS_ISSUANCE"
+      },
+      {
+        "path": "pheroos/governance/_distributed/records.py",
+        "symbol": "_DISTRIBUTED_STATE_ISSUANCE"
+      },
+      {
+        "path": "pheroos/governance/_distributed/records.py",
+        "symbol": "_FINALITY_DECISION_ISSUANCE"
+      },
+      {
+        "path": "pheroos/governance/_distributed/records.py",
+        "symbol": "_PROPOSAL_ISSUANCE"
+      },
+      {
+        "path": "pheroos/governance/_distributed/records.py",
+        "symbol": "_WITNESS_VERIFICATION_ISSUANCE"
+      },
+      {
+        "path": "pheroos/governance/_hybrid/binding.py",
+        "symbol": "_HYBRID_COMMIT_STEP_ISSUANCE"
+      },
+      {
+        "path": "pheroos/governance/_hybrid/evaluation_records.py",
+        "symbol": "_HYBRID_COMMIT_EVALUATION_ISSUANCE"
+      },
+      {
+        "path": "pheroos/governance/_risk/chain.py",
+        "symbol": "_RISK_ASSESSMENT_CHAIN_STATE_ISSUANCE"
+      },
+      {
+        "path": "pheroos/governance/_risk/chain.py",
+        "symbol": "_RISK_ASSESSMENT_ISSUANCE"
+      },
+      {
+        "path": "pheroos/governance/_risk/thresholds.py",
+        "symbol": "_COMMIT_THRESHOLD_ISSUANCE"
+      },
+      {
+        "path": "pheroos/governance/_support/records.py",
+        "symbol": "_MEMBERSHIP_EPOCH_STATE_ISSUANCE"
+      },
+      {
+        "path": "pheroos/governance/_support/records.py",
+        "symbol": "_MEMBERSHIP_SNAPSHOT_ISSUANCE"
+      },
+      {
+        "path": "pheroos/governance/_support/records.py",
+        "symbol": "_SUPPORT_LEASE_ISSUANCE"
+      },
+      {
+        "path": "pheroos/governance/_support/records.py",
+        "symbol": "_SUPPORT_LEASE_REPLAY_STATE_ISSUANCE"
+      },
+      {
+        "path": "pheroos/governance/_support/records.py",
+        "symbol": "_SUPPORT_REVOCATION_ISSUANCE"
+      },
+      {
+        "path": "pheroos/governance/_swarm/records.py",
+        "symbol": "_HYBRID_REPLAY_STATE_ISSUANCE"
+      },
+      {
+        "path": "pheroos/governance/_swarm/records.py",
+        "symbol": "_HYBRID_STEP_ISSUANCE"
+      },
+      {
+        "path": "pheroos/governance/attention.py",
+        "symbol": "_ATTENTION_BREAKDOWN_ISSUANCE"
+      },
+      {
+        "path": "pheroos/governance/attention.py",
+        "symbol": "_EXPLORATION_DIRECTIVE_ISSUANCE"
+      },
+      {
+        "path": "pheroos/governance/challenge.py",
+        "symbol": "_VERIFIED_CHALLENGE_ISSUANCE"
+      },
+      {
+        "path": "pheroos/governance/evidence_binding.py",
+        "symbol": "_EVIDENCE_BINDING_ISSUANCE"
+      },
+      {
+        "path": "pheroos/governance/observation.py",
+        "symbol": "_COUNTEREVIDENCE_DISPOSITION_ISSUANCE"
+      },
+      {
+        "path": "pheroos/governance/observation.py",
+        "symbol": "_VERIFIED_OBSERVATION_ISSUANCE"
+      },
+      {
+        "path": "pheroos/governance/output.py",
+        "symbol": "_COMMIT_OUTPUT_AUTHORIZATION_ISSUANCE"
+      },
+      {
+        "path": "pheroos/governance/permission.py",
+        "symbol": "_ACTION_PERMISSION_ISSUANCE"
+      },
+      {
+        "path": "pheroos/governance/policy_adjustment.py",
+        "symbol": "_RUN_SCOPED_OVERLAY_ISSUANCE"
+      },
+      {
+        "path": "pheroos/governance/principal.py",
+        "symbol": "_PRINCIPAL_VERIFICATION_ISSUANCE"
+      },
+      {
+        "path": "pheroos/governance/quorum.py",
+        "symbol": "_QUORUM_DECISION_ISSUANCE"
+      },
+      {
+        "path": "pheroos/governance/signal.py",
+        "symbol": "_SIGNAL_VERIFICATION_ISSUANCE"
+      },
+      {
+        "path": "pheroos/governance/stop_signal.py",
+        "symbol": "_STOP_RESOLUTION_VERIFICATION_ISSUANCE"
+      }
+    ],
+    "store_rehydratable_opaque_tokens": [
+      {
+        "path": "pheroos/governance/_authority_session_v2/contracts.py",
+        "symbol": "_CAPABILITY_TOKEN"
+      },
+      {
+        "path": "pheroos/governance/_authority_session_v2/contracts.py",
+        "symbol": "_SESSION_TOKEN"
+      },
+      {
+        "path": "pheroos/governance/_commit_decision_v2/source_proof.py",
+        "symbol": "_SOURCE_TOKEN_V2"
+      },
+      {
+        "path": "pheroos/governance/_commit_finality_v2.py",
+        "symbol": "_FINALITY_INPUT_TOKEN_V2"
+      },
+      {
+        "path": "pheroos/governance/_distributed_v2/source.py",
+        "symbol": "_SOURCE_TOKEN_V2"
+      }
+    ]
+  },
+  "policy": {
+    "direction": "shrink-only",
+    "governance_root": "pheroos/governance",
+    "registry_module": "pheroos.governance._legacy.authority_registry",
+    "registry_rule": "direct, re-exported, relative, and literal dynamic imports are importers",
+    "sentinel_candidate_rule": "every module-scope *_ISSUANCE binding and every other bare object() assignment except the reviewed store-rehydratable opaque tokens",
+    "v2_opaque_token_rule": "local handle identity is not portable authority; StateStore inclusion, currentness, scope, and grant bounds must be reverified before reissuance"
+  },
+  "version": "pheroos-legacy-authority-inventory-v1"
+}

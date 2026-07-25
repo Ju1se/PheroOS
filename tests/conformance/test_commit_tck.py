@@ -4,9 +4,11 @@ from collections import Counter
 from copy import deepcopy
 from dataclasses import replace
 import json
+import os
 from pathlib import Path
 import subprocess
 import sys
+import venv
 
 import pytest
 
@@ -189,9 +191,7 @@ def test_tck_adapter_receives_only_a_fresh_input_request() -> None:
     assert len(adapter.requests) == 2
     assert adapter.requests[0] is not adapter.requests[1]
     assert item.inputs["values"] == [{"id": "b"}, {"id": "a"}]
-    assert item.expected["outcome"] == {
-        "canonical_values": [{"id": "a"}, {"id": "b"}]
-    }
+    assert item.expected["outcome"] == {"canonical_values": [{"id": "a"}, {"id": "b"}]}
 
 
 def test_tck_rejects_an_adapter_that_echoes_harness_expected() -> None:
@@ -215,8 +215,8 @@ def test_tck_rejects_an_adapter_that_echoes_harness_expected() -> None:
 
     assert report.ok is False
     assert report.results[0].variant_failures == ("base",)
-    assert report.results[0].actual["failure_code"].startswith(
-        "exception:AttributeError:"
+    assert (
+        report.results[0].actual["failure_code"].startswith("exception:AttributeError:")
     )
 
 
@@ -253,9 +253,7 @@ def test_tck_rejects_a_constant_base_pass_for_a_mutated_request() -> None:
 
     assert report.ok is False
     assert report.results[0].actual == base.expected
-    assert report.results[0].variant_failures == (
-        "mutation:change-right-operand",
-    )
+    assert report.results[0].variant_failures == ("mutation:change-right-operand",)
 
 
 def test_tck_executes_declared_mutations_and_permutations_exactly() -> None:
@@ -286,9 +284,7 @@ def test_tck_executes_declared_mutations_and_permutations_exactly() -> None:
                     roots={
                         "fingerprint": "sha256:f24f6734acfcf494ee979671b37b62389e1b27a4f78e860b7ac4295260890f0d"
                     },
-                    outcome={
-                        "canonical_values": [{"id": "a"}, {"id": "c"}]
-                    },
+                    outcome={"canonical_values": [{"id": "a"}, {"id": "c"}]},
                 ),
             },
         ),
@@ -428,9 +424,7 @@ def test_checked_commit_tck_is_complete_split_and_uses_real_variants() -> None:
     vectors = load_commit_tck_vectors()
     split = [
         json.loads(
-            (SPLIT_DIRECTORY / f"case-{case:02d}.json").read_text(
-                encoding="utf-8"
-            )
+            (SPLIT_DIRECTORY / f"case-{case:02d}.json").read_text(encoding="utf-8")
         )
         for case in range(1, 39)
     ]
@@ -471,24 +465,24 @@ def test_checked_commit_tck_locks_no_downgrade_adversarial_semantics() -> None:
         "commit_lease_root",
     )
     attention_mutation = vectors[11].mutations[0]["expected"]
-    assert {
-        key: vectors[11].expected["roots"][key] for key in commit_roots
-    } == {key: attention_mutation["roots"][key] for key in commit_roots}
+    assert {key: vectors[11].expected["roots"][key] for key in commit_roots} == {
+        key: attention_mutation["roots"][key] for key in commit_roots
+    }
     assert vectors[17].permutations[0]["expected"] == vectors[17].expected
     assert all(
         mutation["expected"]["outcome"]["certificate_valid"] is False
         or mutation["expected"]["outcome"]["trace_valid"] is False
         for mutation in vectors[25].mutations
     )
-    assert vectors[34].mutations[0]["expected"]["certificate"][
-        "verified_authoritative"
-    ] is False
-    assert vectors[34].mutations[0]["expected"]["certificate"][
-        "assurance_downgraded"
-    ] is False
-    assert vectors[36].expected["failure_code"] == (
-        "commit_unknown_critical_extension"
+    assert (
+        vectors[34].mutations[0]["expected"]["certificate"]["verified_authoritative"]
+        is False
     )
+    assert (
+        vectors[34].mutations[0]["expected"]["certificate"]["assurance_downgraded"]
+        is False
+    )
+    assert vectors[36].expected["failure_code"] == ("commit_unknown_critical_extension")
     assert vectors[36].mutations[0]["expected"]["failure_code"] is not None
 
 
@@ -501,6 +495,40 @@ def test_checked_commit_tck_runs_twice_in_one_process_exactly() -> None:
     assert first.ok is True
     assert second == first
     assert all(item.variant_failures == () for item in first.results)
+
+
+def test_case_38_is_source_only_and_external_cwd_independent(
+    tmp_path: Path,
+) -> None:
+    script = """
+from pheroos.conformance.commit_tck import (
+    ReferenceCommitTckAdapter,
+    load_commit_tck_vectors,
+)
+vector = next(item for item in load_commit_tck_vectors() if item.matrix_case == 38)
+actual = ReferenceCommitTckAdapter().evaluate(vector)
+if actual != vector.expected:
+    raise SystemExit(repr(actual))
+"""
+    environment = os.environ.copy()
+    environment["PYTHONPATH"] = str(ROOT)
+    clean_environment = tmp_path / "clean-environment"
+    venv.EnvBuilder(with_pip=False).create(clean_environment)
+    clean_python = clean_environment / (
+        "Scripts/python.exe" if os.name == "nt" else "bin/python"
+    )
+
+    completed = subprocess.run(
+        [str(clean_python), "-S", "-P", "-c", script],
+        cwd=tmp_path,
+        env=environment,
+        check=False,
+        capture_output=True,
+        text=True,
+        timeout=60,
+    )
+
+    assert completed.returncode == 0, completed.stderr or completed.stdout
 
 
 def test_commit_tck_generator_check_is_reproducible() -> None:

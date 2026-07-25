@@ -15,12 +15,15 @@ def test_schema_export_matches_checked_in_surface_artifacts(capsys: Any) -> None
         "capability": "schemas/capability.schema.json",
         "capability-v1": "schemas/capability.schema.json",
         "capability-v2": "schemas/capability-v2.schema.json",
+        "capability-v3": "schemas/capability-v3.schema.json",
         "protocol": "schemas/protocol.schema.json",
         "protocol-v1": "schemas/protocol.schema.json",
         "protocol-v2": "schemas/protocol-v2.schema.json",
+        "protocol-v3": "schemas/protocol-v3.schema.json",
         "kernel": "schemas/kernel.schema.json",
         "kernel-v1": "schemas/kernel.schema.json",
         "kernel-v2": "schemas/kernel-v2.schema.json",
+        "runtime-scope-v1": "schemas/runtime-scope-v1.schema.json",
         "driver": "schemas/driver.schema.json",
         "driver-v1": "schemas/driver.schema.json",
         "driver-v2": "schemas/driver-v2.schema.json",
@@ -28,6 +31,8 @@ def test_schema_export_matches_checked_in_surface_artifacts(capsys: Any) -> None
         "commit": "schemas/commit.schema.json",
         "conformance-report": "schemas/conformance-report-v2.schema.json",
         "scoped-trace": "schemas/scoped-trace-event-v1.schema.json",
+        "authority-v2": "schemas/authority-v2.schema.json",
+        "scoped-authority-tck-v2": "schemas/scoped-authority-tck-v2.schema.json",
         "commit-tck-v1": "schemas/commit-tck.schema.json",
         "commit-tck-v2": "schemas/commit-tck-v2.schema.json",
         "commit-tck-request-v2": "schemas/commit-tck-request-v2.schema.json",
@@ -48,13 +53,33 @@ def test_schema_export_capability_exposes_full_manifest_shape(capsys: Any) -> No
     assert schema["$id"] == "https://pheroos.dev/schemas/capability.schema.json"
     assert schema["required"] == ["id", "name", "version", "protocol"]
     assert properties["drivers"]["items"]["required"] == ["id", "kind", "version"]
-    assert protocol_properties["recovery_protocols"]["items"]["required"] == ["id", "trigger_targets"]
-    assert protocol_properties["evidence_policy"]["properties"]["require_provenance"]["type"] == "boolean"
+    assert protocol_properties["recovery_protocols"]["items"]["required"] == [
+        "id",
+        "trigger_targets",
+    ]
+    assert (
+        protocol_properties["evidence_policy"]["properties"]["require_provenance"][
+            "type"
+        ]
+        == "boolean"
+    )
     output_properties = protocol_properties["output_policy"]["properties"]
-    assert output_properties["requires_committed_candidate"] == {"type": "boolean", "const": True}
-    assert output_properties["requires_evidence_contract"] == {"type": "boolean", "const": True}
-    assert output_properties["requires_stop_resolution"] == {"type": "boolean", "const": True}
-    assert output_properties["requires_publication_permission"] == {"type": "boolean", "const": True}
+    assert output_properties["requires_committed_candidate"] == {
+        "type": "boolean",
+        "const": True,
+    }
+    assert output_properties["requires_evidence_contract"] == {
+        "type": "boolean",
+        "const": True,
+    }
+    assert output_properties["requires_stop_resolution"] == {
+        "type": "boolean",
+        "const": True,
+    }
+    assert output_properties["requires_publication_permission"] == {
+        "type": "boolean",
+        "const": True,
+    }
     assert schema["additionalProperties"] is False
     assert "^(x-|ext\\.).+" in schema["patternProperties"]
 
@@ -78,45 +103,109 @@ def test_schema_export_protocol_exposes_collective_policy_shape(capsys: Any) -> 
     # Strict supported-version validation is exposed as ``protocol-v2``.
     assert properties["protocol_version"] == {"type": "string"}
     assert properties["targets"]["items"]["required"] == ["id"]
-    assert properties["targets"]["items"]["properties"]["extensions"]["type"] == "object"
+    assert (
+        properties["targets"]["items"]["properties"]["extensions"]["type"] == "object"
+    )
     assert properties["candidates"]["items"]["required"] == ["id", "target"]
-    assert properties["candidates"]["items"]["properties"]["extensions"]["type"] == "object"
-    assert properties["signals"]["items"]["properties"]["extensions"]["type"] == "object"
+    assert (
+        properties["candidates"]["items"]["properties"]["extensions"]["type"]
+        == "object"
+    )
+    assert (
+        properties["signals"]["items"]["properties"]["extensions"]["type"] == "object"
+    )
     assert properties["quorum_policy"]["properties"]["extensions"]["type"] == "object"
-    assert collective_properties["mode"]["enum"] == ["quorum", "bee_swarm", "ant_colony", "hybrid"]
+    assert collective_properties["mode"]["enum"] == [
+        "quorum",
+        "bee_swarm",
+        "ant_colony",
+        "hybrid",
+    ]
     assert collective_properties["min_independent_scouts"]["minimum"] == 1
     assert collective_properties["quorum_threshold"]["minimum"] == 1
     assert collective_properties["pheromone_evaporation_rate"]["maximum"] == 1
-    assert collective_properties["pheromone_decay_model"]["enum"] == ["linear", "exponential", "step"]
+    assert collective_properties["pheromone_decay_model"]["enum"] == [
+        "linear",
+        "exponential",
+        "step",
+    ]
     assert collective_properties["pheromone_positive_weight"]["minimum"] == 0
     assert collective_properties["pheromone_negative_weight"]["minimum"] == 0
     assert collective_properties["pheromone_cautionary_weight"]["minimum"] == 0
-    assert collective_properties["pheromone_cautionary_override_threshold"]["minimum"] == 0
+    assert (
+        collective_properties["pheromone_cautionary_override_threshold"]["minimum"] == 0
+    )
     assert collective_properties["pheromone_novelty_weight"]["minimum"] == 0
     assert collective_properties["pheromone_per_source_cap"]["minimum"] == 0
     assert collective_properties["pheromone_per_round_deposit_cap"]["minimum"] == 0
     assert collective_properties["pheromone_min_source_diversity"]["minimum"] == 1
     assert collective_properties["pheromone_require_provenance"]["type"] == "boolean"
     assert collective_properties["pheromone_require_trace"]["type"] == "boolean"
-    assert collective_properties["pheromone_scored_subject_types"]["items"]["type"] == "string"
-    assert collective_properties["pheromone_kind_profiles"]["additionalProperties"] is False
-    kind_profile_schemas = collective_properties["pheromone_kind_profiles"]["patternProperties"]
-    assert next(value for key, value in kind_profile_schemas.items() if "positive" in key)["properties"]["weight"]["minimum"] == 0
+    assert (
+        collective_properties["pheromone_scored_subject_types"]["items"]["type"]
+        == "string"
+    )
+    assert (
+        collective_properties["pheromone_kind_profiles"]["additionalProperties"]
+        is False
+    )
+    kind_profile_schemas = collective_properties["pheromone_kind_profiles"][
+        "patternProperties"
+    ]
+    assert (
+        next(value for key, value in kind_profile_schemas.items() if "positive" in key)[
+            "properties"
+        ]["weight"]["minimum"]
+        == 0
+    )
     assert collective_properties["pheromone_response_model"]["enum"] == [
         "linear",
         "saturating",
         "threshold",
         "competitive",
     ]
-    assert collective_properties["pheromone_competition_mode"]["enum"] == ["none", "normalize"]
+    assert collective_properties["pheromone_competition_mode"]["enum"] == [
+        "none",
+        "normalize",
+    ]
     assert collective_properties["pheromone_diffusion_attenuation"]["maximum"] == 1
     assert collective_properties["pheromone_feedback_enabled"]["type"] == "boolean"
-    assert next(iter(collective_properties["layer_weight_bounds"]["patternProperties"].values()))["oneOf"][0]["maxItems"] == 2
-    assert next(iter(collective_properties["layer_confidence_thresholds"]["patternProperties"].values()))["maximum"] == 1
-    assert collective_properties["policy_adjustment_bounds"]["additionalProperties"] is False
-    adjustment_patterns = collective_properties["policy_adjustment_bounds"]["patternProperties"]
-    assert adjustment_patterns["^pheromone_response_model$"]["properties"]["allowed_values"]["type"] == "array"
-    assert all("layer_reactive_weight" not in pattern for pattern in adjustment_patterns)
+    assert (
+        next(
+            iter(
+                collective_properties["layer_weight_bounds"][
+                    "patternProperties"
+                ].values()
+            )
+        )["oneOf"][0]["maxItems"]
+        == 2
+    )
+    assert (
+        next(
+            iter(
+                collective_properties["layer_confidence_thresholds"][
+                    "patternProperties"
+                ].values()
+            )
+        )["maximum"]
+        == 1
+    )
+    assert (
+        collective_properties["policy_adjustment_bounds"]["additionalProperties"]
+        is False
+    )
+    adjustment_patterns = collective_properties["policy_adjustment_bounds"][
+        "patternProperties"
+    ]
+    assert (
+        adjustment_patterns["^pheromone_response_model$"]["properties"][
+            "allowed_values"
+        ]["type"]
+        == "array"
+    )
+    assert all(
+        "layer_reactive_weight" not in pattern for pattern in adjustment_patterns
+    )
     assert collective_properties["extensions"]["type"] == "object"
     assert properties["extensions"]["type"] == "object"
     assert schema["additionalProperties"] is False
@@ -132,16 +221,12 @@ def test_schema_export_v2_protocol_documents_are_strict_without_changing_payload
     assert capability["$id"] == (
         "https://pheroos.dev/schemas/capability-v2.schema.json"
     )
-    assert protocol["$id"] == (
-        "https://pheroos.dev/schemas/protocol-v2.schema.json"
-    )
+    assert protocol["$id"] == ("https://pheroos.dev/schemas/protocol-v2.schema.json")
     assert protocol["properties"]["protocol_version"] == {
         "type": "string",
         "enum": ["pheroos.protocol.v1"],
     }
-    assert capability["properties"]["protocol"]["properties"][
-        "protocol_version"
-    ] == {
+    assert capability["properties"]["protocol"]["properties"]["protocol_version"] == {
         "type": "string",
         "enum": ["pheroos.protocol.v1"],
     }
@@ -151,9 +236,7 @@ def test_schema_export_commit_is_strict_and_versioned(capsys: Any) -> None:
     schema = exported_schema("commit", capsys)
 
     assert schema["$id"] == "https://pheroos.dev/schemas/commit.schema.json"
-    schemas = {
-        branch["properties"]["schema"]["const"] for branch in schema["oneOf"]
-    }
+    schemas = {branch["properties"]["schema"]["const"] for branch in schema["oneOf"]}
     expected_schemas = {
         "pheroos-principal-attestation-v1",
         "pheroos-principal-verification-v1",
@@ -237,9 +320,7 @@ def test_schema_export_driver_exposes_provider_neutral_driver_spec(capsys: Any) 
     properties = schema["properties"]
 
     assert schema["$id"] == "https://pheroos.dev/schemas/driver-v2.schema.json"
-    assert properties["descriptor_version"] == {
-        "const": "pheroos-driver-descriptor-v2"
-    }
+    assert properties["descriptor_version"] == {"const": "pheroos-driver-descriptor-v2"}
     assert properties["permissions"]["items"]["type"] == "string"
     assert properties["permissions"]["items"]["minLength"] == 1
     assert properties["permissions"]["uniqueItems"] is True
@@ -279,9 +360,18 @@ def test_schema_export_kernel_exposes_strict_runtime_context_shape(capsys: Any) 
         "type": "string",
         "pattern": "^sha256:[0-9a-f]{64}$",
     }
-    assert properties["capability_resolutions"]["items"]["required"] == ["capability_id", "available"]
-    assert properties["permission_grants"]["items"]["required"] == ["capability_id", "permission"]
-    assert properties["connection_requirements"]["items"]["required"] == ["capability_id", "connection"]
+    assert properties["capability_resolutions"]["items"]["required"] == [
+        "capability_id",
+        "available",
+    ]
+    assert properties["permission_grants"]["items"]["required"] == [
+        "capability_id",
+        "permission",
+    ]
+    assert properties["connection_requirements"]["items"]["required"] == [
+        "capability_id",
+        "connection",
+    ]
     assert properties["connection_readiness"]["items"]["required"] == [
         "connection",
         "available",
@@ -292,12 +382,18 @@ def test_schema_export_kernel_exposes_strict_runtime_context_shape(capsys: Any) 
         "version",
         "capabilities",
     ]
-    assert properties["driver_exposures"]["items"]["required"] == ["driver_id", "capability_id"]
-    assert (
-        properties["driver_exposures"]["items"]["properties"]["capabilities"]
-        == {"type": "array", "items": {"type": "string"}}
-    )
-    assert properties["tool_exposures"]["items"]["required"] == ["tool_id", "capability_id"]
+    assert properties["driver_exposures"]["items"]["required"] == [
+        "driver_id",
+        "capability_id",
+    ]
+    assert properties["driver_exposures"]["items"]["properties"]["capabilities"] == {
+        "type": "array",
+        "items": {"type": "string"},
+    }
+    assert properties["tool_exposures"]["items"]["required"] == [
+        "tool_id",
+        "capability_id",
+    ]
     assert properties["diagnostics"]["items"]["required"] == ["code", "message"]
 
 
@@ -309,10 +405,14 @@ def test_schema_export_trace_documents_namespaced_extension_events(capsys: Any) 
     assert schema["additionalProperties"] is False
 
 
-def test_schema_export_trace_exposes_event_specific_lineage_contracts(capsys: Any) -> None:
+def test_schema_export_trace_exposes_event_specific_lineage_contracts(
+    capsys: Any,
+) -> None:
     schema = exported_schema("trace", capsys)
     conditions = {
-        item["if"]["properties"]["event_type"]["const"]: item["then"]["properties"]["lineage"]
+        item["if"]["properties"]["event_type"]["const"]: item["then"]["properties"][
+            "lineage"
+        ]
         for item in schema["allOf"]
     }
 
@@ -328,7 +428,9 @@ def test_schema_export_trace_exposes_event_specific_lineage_contracts(capsys: An
     assert conditions["recruit"]["properties"]["strength"]["minimum"] == 0
     clip = conditions["pheromone_clip"]
     assert clip["properties"]["applied_strength"]["minimum"] == 0
-    assert clip["properties"]["causal_fingerprint"]["pattern"] == "^sha256:[0-9a-f]{64}$"
+    assert (
+        clip["properties"]["causal_fingerprint"]["pattern"] == "^sha256:[0-9a-f]{64}$"
+    )
     assert {
         branch["properties"]["lifecycle"]["const"]
         for branch in clip["properties"]["causal_payload"]["oneOf"]
@@ -363,9 +465,12 @@ def test_schema_export_trace_exposes_event_specific_lineage_contracts(capsys: An
     assert coordination["confidences"]["properties"]["learned"]["maximum"] == 1
     assert coordination["confidences"]["additionalProperties"] is False
     assert coordination["weights"]["properties"]["reactive"]["minimum"] == 0
-    assert coordination["snapshots"]["properties"]["learned"]["properties"][
-        "trace_coverage"
-    ]["maximum"] == 1
+    assert (
+        coordination["snapshots"]["properties"]["learned"]["properties"][
+            "trace_coverage"
+        ]["maximum"]
+        == 1
+    )
     assert coordination["proposal_lineage"].get("minItems") is None
     assert conditions["policy_adjustment"]["required"] == [
         "declared_bounds",
@@ -376,7 +481,10 @@ def test_schema_export_trace_exposes_event_specific_lineage_contracts(capsys: An
         "source_id",
         "source_trace_event_id",
     ]
-    assert conditions["candidate_score"]["properties"]["score_breakdown"]["minProperties"] == 1
+    assert (
+        conditions["candidate_score"]["properties"]["score_breakdown"]["minProperties"]
+        == 1
+    )
     assert conditions["commit"]["required"] == [
         "candidate_id",
         "decision_reason",

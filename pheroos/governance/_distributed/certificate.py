@@ -5,6 +5,7 @@ from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 
 from enum import StrEnum
+from typing import cast
 
 from pheroos.governance._distributed._certificate_contract import (
     _validate_certificate_proposal_binding,
@@ -15,8 +16,10 @@ from pheroos.governance._distributed._certificate_contract import (
 from pheroos.governance._distributed.invariants import (
     _coerce_assurance,
     _coerce_authority,
+    _construct_dataclass,
     _public_dataclass_payload,
     _quorum_intersection_is_safe,
+    _require_mapping,
     _require_sequence,
     _strict_dataclass_payload,
     _validate_distributed_policy,
@@ -353,11 +356,9 @@ def issue_distributed_commit_certificate(
         schema="pheroos-distributed-commit-certificate-envelope-v1",
         profile=state.profile,
     )
-    certificate = DistributedCommitCertificate(
-        **body,
-        certificate_body_root=body_root,
-        certificate_root=certificate_root,
-    )
+    body["certificate_body_root"] = body_root
+    body["certificate_root"] = certificate_root
+    certificate = _construct_dataclass(DistributedCommitCertificate, body)
     return _register_distributed_certificate_identity(certificate)
 
 
@@ -384,12 +385,13 @@ def assemble_portable_distributed_commit_certificate(
     result in the strong local state before using it as current authority.
     """
 
-    canonical_proposal = (
-        proposal
-        if type(proposal) is DistributedCommitProposal
-        else distributed_commit_proposal_from_payload(proposal)
-    )
-    assert type(canonical_proposal) is DistributedCommitProposal
+    if type(proposal) is DistributedCommitProposal:
+        assert isinstance(proposal, DistributedCommitProposal)
+        canonical_proposal = proposal
+    else:
+        canonical_proposal = distributed_commit_proposal_from_payload(
+            _require_mapping(proposal, "portable distributed proposal payload")
+        )
     if type(authority) is not AuthorityLevel or not can_verify(authority):
         raise GovernanceError(
             "portable distributed certificate requires governance issuer metadata"
@@ -417,7 +419,9 @@ def assemble_portable_distributed_commit_certificate(
     parsed = tuple(
         item
         if type(item) is WitnessVerification
-        else witness_verification_from_payload(item)
+        else witness_verification_from_payload(
+            _require_mapping(item, "portable witness verification payload")
+        )
         for item in verifications
     )
     canonical = _canonical_witness_verifications(parsed)
@@ -524,11 +528,9 @@ def assemble_portable_distributed_commit_certificate(
         schema="pheroos-distributed-commit-certificate-envelope-v1",
         profile=canonical_proposal.profile,
     )
-    certificate = DistributedCommitCertificate(
-        **body,
-        certificate_body_root=body_root,
-        certificate_root=root,
-    )
+    body["certificate_body_root"] = body_root
+    body["certificate_root"] = root
+    certificate = _construct_dataclass(DistributedCommitCertificate, body)
     return _register_distributed_certificate_identity(certificate)
 
 
@@ -570,12 +572,19 @@ def distributed_commit_certificate_from_payload(
     values["status"] = _coerce_certificate_status(values["status"])
     values["assurance"] = _coerce_assurance(values["assurance"])
     values["authority"] = _coerce_authority(values["authority"])
-    values["proposal"] = distributed_commit_proposal_from_payload(values["proposal"])
+    values["proposal"] = distributed_commit_proposal_from_payload(
+        _require_mapping(values["proposal"], "distributed certificate proposal")
+    )
     values["membership_snapshot"] = portable_membership_snapshot_from_payload(
-        values["membership_snapshot"]
+        _require_mapping(
+            values["membership_snapshot"],
+            "distributed certificate membership snapshot",
+        )
     )
     values["witnesses"] = tuple(
-        witness_verification_from_payload(item)
+        witness_verification_from_payload(
+            _require_mapping(item, "distributed certificate witness")
+        )
         for item in _require_sequence(
             values["witnesses"],
             "distributed certificate witnesses",
@@ -588,7 +597,7 @@ def distributed_commit_certificate_from_payload(
         )
     )
     try:
-        return DistributedCommitCertificate(**values)
+        return _construct_dataclass(DistributedCommitCertificate, values)
     except (TypeError, ValueError, GovernanceError) as exc:
         raise GovernanceError(
             f"distributed certificate payload is invalid: {exc}"
@@ -612,12 +621,16 @@ def verify_distributed_commit_certificate(
     try:
         if type(require_final) is not bool:
             return False
-        certificate = (
-            certificate_or_payload
-            if type(certificate_or_payload) is DistributedCommitCertificate
-            else distributed_commit_certificate_from_payload(certificate_or_payload)
-        )
-        assert type(certificate) is DistributedCommitCertificate
+        if type(certificate_or_payload) is DistributedCommitCertificate:
+            assert isinstance(certificate_or_payload, DistributedCommitCertificate)
+            certificate = certificate_or_payload
+        else:
+            certificate = distributed_commit_certificate_from_payload(
+                _require_mapping(
+                    certificate_or_payload,
+                    "distributed certificate payload",
+                )
+            )
         distributed = _validate_distributed_policy(
             commit_policy,
             profile=certificate.profile,
@@ -809,7 +822,12 @@ def record_distributed_commit_certificate(
         if cursor.current_state_fingerprint != parent_ref:
             prior = cursor.transitions.get(parent_ref)
             if prior is not None and prior[0] == request_ref:
-                return prior[1]
+                prior_state = prior[1]
+                if type(prior_state) is not DistributedCommitState:
+                    raise GovernanceError(
+                        "distributed certificate replay state is invalid"
+                    )
+                return prior_state
             raise GovernanceError(
                 "distributed certificate state is stale or would fork"
             )
@@ -858,7 +876,9 @@ def distributed_commit_certificate_is_current_final(
         return False
 
 
-def verify_distributed_commit_finality(
+# The missing runtime return annotation is frozen in the Draft public shape;
+# the precise ignore preserves that ABI while the implementation stays typed.
+def verify_distributed_commit_finality(  # type: ignore[no-untyped-def]
     certificate: DistributedCommitCertificate,
     state: DistributedCommitState,
     receipt: LocalCommitReceipt,
@@ -1159,7 +1179,7 @@ def _register_distributed_certificate_identity(
                 raise GovernanceError(
                     "distributed certificate id replay has a different body"
                 )
-            return existing
+            return cast(DistributedCommitCertificate, existing)
         registry.set(_LEGACY_DISTRIBUTED_CERTIFICATES_BY_ID, key, certificate)
         return certificate
 
@@ -1167,10 +1187,10 @@ def _register_distributed_certificate_identity(
 def _coerce_certificate_status(value: object) -> DistributedCertificateStatus:
     if type(value) is DistributedCertificateStatus:
         return value
-    try:
-        return DistributedCertificateStatus(value)
-    except (TypeError, ValueError) as exc:
-        raise GovernanceError("distributed certificate status is invalid") from exc
+    for status in DistributedCertificateStatus:
+        if value == status.value:
+            return status
+    raise GovernanceError("distributed certificate status is invalid")
 
 
 for _name in (

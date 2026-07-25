@@ -198,9 +198,7 @@ def os_plan_v1_from_dict(payload: Mapping[str, Any]) -> LegacyOSPlan:
     return LegacyOSPlan(
         tenant_id=_text(value, "tenant_id"),
         request_id=_text(value, "request_id"),
-        capability_resolutions=_capability_resolutions(
-            value["capability_resolutions"]
-        ),
+        capability_resolutions=_capability_resolutions(value["capability_resolutions"]),
         permission_grants=_permission_grants(value["permission_grants"]),
         connection_requirements=_connection_requirements(
             value["connection_requirements"]
@@ -242,9 +240,7 @@ def os_plan_from_dict(payload: Mapping[str, Any]) -> OSPlanDocument:
         request_id=_text(value, "request_id"),
         run_id=_text(value, "run_id"),
         scope_ref=_text(value, "scope_ref"),
-        capability_resolutions=_capability_resolutions(
-            value["capability_resolutions"]
-        ),
+        capability_resolutions=_capability_resolutions(value["capability_resolutions"]),
         permission_grants=_permission_grants(value["permission_grants"]),
         connection_requirements=_connection_requirements(
             value["connection_requirements"]
@@ -353,7 +349,7 @@ def upgrade_os_plan_v1(
         connection_requirements=legacy.connection_requirements,
         connection_readiness=tuple(readiness.values()),
         driver_probe_snapshots=tuple(probes.values()),
-        driver_exposures=exposures,
+        driver_exposures=tuple(exposures),
         tool_exposures=legacy.tool_exposures,
         diagnostics=legacy.diagnostics,
         runtime_ready=legacy.runtime_ready,
@@ -459,9 +455,7 @@ def _driver_exposures(
             capability_id=_text(item, "capability_id"),
             permissions=_text_array(item, "permissions", default=()),
             capabilities=(
-                _text_array(item, "capabilities", default=())
-                if versioned
-                else ()
+                _text_array(item, "capabilities", default=()) if versioned else ()
             ),
         )
         for item in _object_array(value, "driver_exposures")
@@ -515,7 +509,9 @@ def _exact_object(
 
 
 def _object_array(value: Any, label: str) -> tuple[Mapping[str, Any], ...]:
-    if not isinstance(value, list) or any(not isinstance(item, Mapping) for item in value):
+    if not isinstance(value, list) or any(
+        not isinstance(item, Mapping) for item in value
+    ):
         raise KernelPlanVersionError(
             "kernel_plan_fields_invalid",
             f"kernel plan {label} must be an object array",

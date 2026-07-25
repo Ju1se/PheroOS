@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from typing import Any
 
 from pheroos.governance.attention import (
@@ -128,9 +128,7 @@ def bind_hybrid_commit_channels(
         commit_assessment.leader_candidate_id
         and commit_assessment.leader_candidate_id not in attention_candidates
     ):
-        raise GovernanceError(
-            "Hybrid attention does not cover the assessed leader"
-        )
+        raise GovernanceError("Hybrid attention does not cover the assessed leader")
 
     assessment_root = commit_assessment_fingerprint(commit_assessment)
     metrics_root = _commit_metrics_root(commit_assessment)
@@ -152,9 +150,7 @@ def bind_hybrid_commit_channels(
         leader_candidate_id=commit_assessment.leader_candidate_id,
         unique_leader=commit_assessment.unique_leader,
         leader_margin=commit_assessment.leader_margin,
-        leader_ready_for_stability=(
-            commit_assessment.leader_ready_for_stability
-        ),
+        leader_ready_for_stability=(commit_assessment.leader_ready_for_stability),
         commit_assessment_fingerprint=assessment_root,
         commit_truth_root=assessment_root,
         commit_metrics_root=metrics_root,
@@ -256,9 +252,7 @@ def hybrid_attention_projection(step: HybridCommitStep) -> dict[str, Any]:
         "attention_authority_scope": step.attention_authority_scope,
         "attention_commit_authority": step.attention_commit_authority,
         "attention_fingerprint": step.attention_fingerprint,
-        "exploration_directive_fingerprint": (
-            step.exploration_directive_fingerprint
-        ),
+        "exploration_directive_fingerprint": (step.exploration_directive_fingerprint),
         "attention_memory_root": step.attention_memory_root,
         "attention_replay_root": step.attention_replay_root,
         "attention_trace_root": step.attention_trace_root,
@@ -325,13 +319,7 @@ def _replace_composition_root(
     step: HybridCommitStep,
     root: str,
 ) -> HybridCommitStep:
-    return HybridCommitStep(
-        **{
-            name: (root if name == "composition_root" else getattr(step, name))
-            for name, definition in step.__dataclass_fields__.items()
-            if definition.init
-        }
-    )
+    return replace(step, composition_root=root)
 
 
 def _commit_metrics_root(assessment: CommitAssessment) -> str:
@@ -374,9 +362,7 @@ def _validate_hybrid_commit_step_shape(step: HybridCommitStep) -> None:
     if type(step.unique_leader) is not bool:
         raise GovernanceError("Hybrid Commit unique_leader is invalid")
     if type(step.leader_ready_for_stability) is not bool:
-        raise GovernanceError(
-            "Hybrid Commit leader_ready_for_stability is invalid"
-        )
+        raise GovernanceError("Hybrid Commit leader_ready_for_stability is invalid")
     if step.unique_leader:
         if (
             not isinstance(step.leader_candidate_id, str)
@@ -425,15 +411,12 @@ def _hybrid_fields_match_sources(step: HybridCommitStep) -> bool:
         and step.run_id == assessment.run_id
         and step.target == assessment.target == attention.target
         and step.epoch == assessment.epoch
-        and step.current_step
-        == assessment.evaluated_at_step
-        == attention.current_step
+        and step.current_step == assessment.evaluated_at_step == attention.current_step
         and step.assessment_status == assessment.status
         and step.leader_candidate_id == assessment.leader_candidate_id
         and step.unique_leader == assessment.unique_leader
         and step.leader_margin == assessment.leader_margin
-        and step.leader_ready_for_stability
-        == assessment.leader_ready_for_stability
+        and step.leader_ready_for_stability == assessment.leader_ready_for_stability
         and step.commit_assessment_fingerprint
         == commit_assessment_fingerprint(assessment)
         and step.commit_truth_root == commit_assessment_fingerprint(assessment)
@@ -442,8 +425,7 @@ def _hybrid_fields_match_sources(step: HybridCommitStep) -> bool:
         and step.commit_evidence_root == assessment.collective_evidence_root
         and step.commit_challenge_root == assessment.collective_challenge_root
         and step.commit_lease_root == assessment.collective_lease_root
-        and step.attention_fingerprint
-        == attention_breakdown_fingerprint(attention)
+        and step.attention_fingerprint == attention_breakdown_fingerprint(attention)
         and step.exploration_directive_fingerprint
         == exploration_directive_fingerprint(directive)
         and step.attention_memory_root == attention.memory_root

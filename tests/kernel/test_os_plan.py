@@ -17,7 +17,11 @@ from pheroos.protocol import (
 
 def test_os_kernel_outputs_plan_without_domain_conclusion() -> None:
     capability = load_capability_manifest("examples/toy-protocol/capability.json")
-    envelope = InputEnvelope(request="review this packet", tenant_id="tenant-a", metadata={"request_id": "req-1"})
+    envelope = InputEnvelope(
+        request="review this packet",
+        tenant_id="tenant-a",
+        metadata={"request_id": "req-1"},
+    )
 
     plan = OSKernel().plan(envelope, [capability])
 
@@ -29,7 +33,11 @@ def test_os_kernel_outputs_plan_without_domain_conclusion() -> None:
 
 def test_os_kernel_uses_provider_neutral_driver_specs_for_exposure() -> None:
     capability = load_capability_manifest("examples/e2e-protocol/capability.json")
-    envelope = InputEnvelope(request="review this packet", tenant_id="tenant-a", metadata={"request_id": "req-1"})
+    envelope = InputEnvelope(
+        request="review this packet",
+        tenant_id="tenant-a",
+        metadata={"request_id": "req-1"},
+    )
 
     plan = OSKernel().plan(
         envelope,
@@ -136,7 +144,9 @@ def test_os_kernel_requires_connection_readiness_snapshot() -> None:
     assert ready.connection_readiness[0].connection == "connection:evidence"
 
 
-def test_os_kernel_does_not_fallback_from_driver_permissions_to_capability_permissions() -> None:
+def test_os_kernel_does_not_fallback_from_driver_permissions_to_capability_permissions() -> (
+    None
+):
     capability = CapabilityManifest(
         id="capability:runtime",
         name="Runtime Capability",
@@ -155,18 +165,30 @@ def test_os_kernel_does_not_fallback_from_driver_permissions_to_capability_permi
             protocol_version="pheroos.protocol.v1",
             id="runtime.protocol",
             targets=[TargetSpec(id="decision:review")],
-            candidates=[CandidateSpec(id="candidate:fallback", target="decision:review", safe_fallback=True)],
-            quorum_policy=QuorumPolicy(target="decision:review", fallback_candidate="candidate:fallback"),
+            candidates=[
+                CandidateSpec(
+                    id="candidate:fallback",
+                    target="decision:review",
+                    safe_fallback=True,
+                )
+            ],
+            quorum_policy=QuorumPolicy(
+                target="decision:review", fallback_candidate="candidate:fallback"
+            ),
             output_policy=OutputPolicy(),
             trace_policy=TracePolicy(),
         ),
     )
-    envelope = InputEnvelope(request="review", tenant_id="tenant-a", metadata={"request_id": "req-1"})
+    envelope = InputEnvelope(
+        request="review", tenant_id="tenant-a", metadata={"request_id": "req-1"}
+    )
 
     plan = OSKernel().plan(envelope, [capability])
 
     assert plan.driver_exposures == ()
-    assert {diagnostic.code for diagnostic in plan.diagnostics} == {"driver_permissions_missing"}
+    assert {diagnostic.code for diagnostic in plan.diagnostics} == {
+        "driver_permissions_missing"
+    }
 
 
 def test_input_envelope_recursively_snapshots_metadata() -> None:

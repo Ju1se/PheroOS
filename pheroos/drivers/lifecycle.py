@@ -42,8 +42,7 @@ def validate(descriptor: object) -> bool:
     if descriptor.config_ref and not descriptor.config_ref.strip():
         return False
     return isinstance(descriptor.extensions, Mapping) and all(
-        isinstance(key, str) and bool(key.strip())
-        for key in descriptor.extensions
+        isinstance(key, str) and bool(key.strip()) for key in descriptor.extensions
     )
 
 
@@ -87,7 +86,7 @@ def probe(registration: DriverRegistration) -> DriverProbeResult:
         driver_id=registration.descriptor.id,
         available=registration.registered,
         version=registration.descriptor.version,
-        capabilities=registration.descriptor.capabilities,
+        capabilities=tuple(registration.descriptor.capabilities),
     )
 
 
@@ -98,10 +97,14 @@ def bind(
     permissions: Sequence[str],
     run_id: str = "legacy",
 ) -> DriverBinding:
-    if not isinstance(registration, DriverRegistration) or not validate(registration.descriptor):
+    if not isinstance(registration, DriverRegistration) or not validate(
+        registration.descriptor
+    ):
         raise DriverError("driver registration is invalid")
     if registration.registered is not True:
-        raise DriverError(f"driver registration is not active: {registration.descriptor.id}")
+        raise DriverError(
+            f"driver registration is not active: {registration.descriptor.id}"
+        )
     if not _is_nonblank_text(tenant_id):
         raise DriverError("tenant id is required")
     if not _is_nonblank_text(run_id):
@@ -116,14 +119,16 @@ def bind(
         run_id=run_id,
         scope_ref=runtime_scope_ref(tenant_id, run_id),
         permissions=tuple(permissions),
-        capabilities=registration.descriptor.capabilities,
+        capabilities=tuple(registration.descriptor.capabilities),
     )
 
 
 def expose(binding: DriverBinding) -> DriverHandle:
     _validate_binding(binding)
     if not binding.permissions:
-        raise DriverError(f"driver binding has no granted permissions: {binding.driver_id}")
+        raise DriverError(
+            f"driver binding has no granted permissions: {binding.driver_id}"
+        )
     return DriverHandle(binding=binding, exposed=True)
 
 
@@ -188,20 +193,23 @@ def _validate_binding(binding: object) -> None:
         raise DriverError("driver binding is missing tenant id")
     if not _is_nonblank_text(binding.run_id):
         raise DriverError("driver binding is missing run id")
-    try:
-        expected_scope = runtime_scope_ref(binding.tenant_id, binding.run_id)
-    except ValueError as exc:
-        raise DriverError(str(exc)) from exc
+    # The exact nonblank text checks above are the complete preconditions of
+    # runtime_scope_ref, so its ValueError boundary is structurally dominated.
+    expected_scope = runtime_scope_ref(binding.tenant_id, binding.run_id)
     if binding.scope_ref != expected_scope:
         raise DriverError("driver binding scope_ref does not match tenant and run")
     if not isinstance(binding.permissions, tuple) or not all(
         _is_nonblank_text(permission) for permission in binding.permissions
     ):
-        raise DriverError("driver binding permissions must be immutable nonblank strings")
+        raise DriverError(
+            "driver binding permissions must be immutable nonblank strings"
+        )
     if not isinstance(binding.capabilities, tuple) or not all(
         _is_nonblank_text(capability) for capability in binding.capabilities
     ):
-        raise DriverError("driver binding capabilities must be immutable nonblank strings")
+        raise DriverError(
+            "driver binding capabilities must be immutable nonblank strings"
+        )
 
 
 def _is_nonblank_text(value: object) -> bool:

@@ -9,7 +9,9 @@ from typing import Any
 
 
 CONFORMANCE_REPORT_VERSION = "pheroos-conformance-report-v2"
-CONFORMANCE_REPORT_SCHEMA_ID = "https://pheroos.dev/schemas/conformance-report-v2.schema.json"
+CONFORMANCE_REPORT_SCHEMA_ID = (
+    "https://pheroos.dev/schemas/conformance-report-v2.schema.json"
+)
 PHEROOS_IMPLEMENTATION_ID = "pheroos.protocol-core"
 _DIGEST_PATTERN = re.compile(r"^sha256:[0-9a-f]{64}$")
 
@@ -64,7 +66,10 @@ class ConformanceReport:
         except (TypeError, ValueError) as exc:
             raise ValueError("unsupported conformance report subject kind") from exc
         object.__setattr__(self, "subject_kind", subject_kind)
-        if not isinstance(self.implementation_identity, str) or not self.implementation_identity.strip():
+        if (
+            not isinstance(self.implementation_identity, str)
+            or not self.implementation_identity.strip()
+        ):
             raise ValueError("conformance implementation identity must be nonblank")
         if not isinstance(self.profile, str) or not self.profile.strip():
             raise ValueError("conformance profile must be nonblank")
@@ -73,7 +78,9 @@ class ConformanceReport:
         ):
             raise ValueError("conformance artifact digest must be canonical sha256")
         if any(not isinstance(check, CheckResult) for check in checks):
-            raise TypeError("conformance report checks must be canonical CheckResult values")
+            raise TypeError(
+                "conformance report checks must be canonical CheckResult values"
+            )
         names = tuple(check.name for check in checks)
         if len(names) != len(set(names)):
             raise ValueError("conformance report check names must be unique")

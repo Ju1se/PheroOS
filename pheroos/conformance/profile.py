@@ -3,13 +3,14 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from pheroos.protocol.commit_models import (
-    CERTIFIED_COMMIT_PROFILE_VERSION,
+    CERTIFIED_COMMIT_PROFILE_VERSION as CERTIFIED_COMMIT_PROFILE_VERSION,
+    COMMIT_INTEGRITY_PROFILE_VERSION as COMMIT_INTEGRITY_PROFILE_VERSION,
     COMMIT_MODEL,
-    COMMIT_INTEGRITY_PROFILE_VERSION,
     COMMIT_POLICY_VERSION,
-    DISTRIBUTED_COMMIT_PROFILE_VERSION,
-    HYBRID_COMMIT_PROFILE_VERSION,
+    DISTRIBUTED_COMMIT_PROFILE_VERSION as DISTRIBUTED_COMMIT_PROFILE_VERSION,
+    HYBRID_COMMIT_PROFILE_VERSION as HYBRID_COMMIT_PROFILE_VERSION,
     SUPPORTED_COMMIT_ASSURANCES,
+    CollectiveCommitPolicy,
 )
 from pheroos.protocol.models import (
     SUPPORTED_PROTOCOL_VERSIONS,
@@ -17,7 +18,6 @@ from pheroos.protocol.models import (
     has_hybrid_pheromone_features,
     is_swarm_policy,
 )
-
 
 CORE_PROFILE_VERSION = "pheroos-core-v1"
 SWARM_PROFILE_VERSION = "pheroos-swarm-v1"
@@ -196,40 +196,53 @@ def profile_for_manifest(manifest: CapabilityManifest) -> ConformanceProfile:
         raise ValueError("protocol version is unsupported")
     commit_policy = manifest.protocol.collective_commit_policy
     if commit_policy is not None:
-        if commit_policy.policy_version != COMMIT_POLICY_VERSION:
-            raise ValueError("collective commit policy version is unsupported")
-        if commit_policy.model != COMMIT_MODEL:
-            raise ValueError("collective commit model is unsupported")
-        if commit_policy.assurance not in SUPPORTED_COMMIT_ASSURANCES:
-            raise ValueError("collective commit assurance is unsupported")
-        hybrid_attention = has_hybrid_pheromone_features(
-            manifest.protocol.collective_decision_policy
-        )
-        if commit_policy.assurance == "distributed":
-            profile = DISTRIBUTED_COMMIT_PROFILE
-        elif commit_policy.assurance == "certified":
-            profile = CERTIFIED_COMMIT_PROFILE
-        elif commit_policy.assurance == "evidence_bound" and hybrid_attention:
-            return HYBRID_COMMIT_PROFILE
-        else:
-            profile = COMMIT_INTEGRITY_PROFILE
-        if hybrid_attention:
-            return ConformanceProfile(
-                name=profile.name,
-                version=profile.version,
-                required_checks=(
-                    *profile.required_checks,
-                    *(
-                        check
-                        for check in HYBRID_ATTENTION_CHECKS
-                        if check not in profile.required_checks
-                    ),
-                    "commit_channel_separation",
-                ),
-            )
-        return profile
+        return _commit_profile(manifest, commit_policy)
     if has_hybrid_pheromone_features(manifest.protocol.collective_decision_policy):
         return HYBRID_SWARM_PROFILE
     if is_swarm_policy(manifest.protocol.collective_decision_policy):
         return SWARM_PROFILE
     return CORE_PROFILE
+
+
+def _commit_profile(
+    manifest: CapabilityManifest,
+    commit_policy: CollectiveCommitPolicy,
+) -> ConformanceProfile:
+    if commit_policy.policy_version != COMMIT_POLICY_VERSION:
+        raise ValueError("collective commit policy version is unsupported")
+    if commit_policy.model != COMMIT_MODEL:
+        raise ValueError("collective commit model is unsupported")
+    if commit_policy.assurance not in SUPPORTED_COMMIT_ASSURANCES:
+        raise ValueError("collective commit assurance is unsupported")
+    hybrid_attention = has_hybrid_pheromone_features(
+        manifest.protocol.collective_decision_policy
+    )
+    profile = _base_commit_profile(commit_policy.assurance, hybrid_attention)
+    if not hybrid_attention or profile is HYBRID_COMMIT_PROFILE:
+        return profile
+    return ConformanceProfile(
+        name=profile.name,
+        version=profile.version,
+        required_checks=(
+            *profile.required_checks,
+            *(
+                check
+                for check in HYBRID_ATTENTION_CHECKS
+                if check not in profile.required_checks
+            ),
+            "commit_channel_separation",
+        ),
+    )
+
+
+def _base_commit_profile(
+    assurance: str,
+    hybrid_attention: bool,
+) -> ConformanceProfile:
+    if assurance == "distributed":
+        return DISTRIBUTED_COMMIT_PROFILE
+    if assurance == "certified":
+        return CERTIFIED_COMMIT_PROFILE
+    if assurance == "evidence_bound" and hybrid_attention:
+        return HYBRID_COMMIT_PROFILE
+    return COMMIT_INTEGRITY_PROFILE

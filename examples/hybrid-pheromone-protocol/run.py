@@ -24,12 +24,18 @@ from pheroos.governance import (
     evaluate_output_authorization,
     verify_signal_input,
 )
-from pheroos.protocol import collective_fallback_id, load_capability_manifest, validate_capability_manifest
+from pheroos.protocol import (
+    collective_fallback_id,
+    load_capability_manifest,
+    validate_capability_manifest,
+)
 
 
 def run_example(repo_root: Path | None = None) -> dict[str, Any]:
     root = repo_root or Path(__file__).resolve().parents[2]
-    manifest = load_capability_manifest(root / "examples/hybrid-pheromone-protocol/capability.json")
+    manifest = load_capability_manifest(
+        root / "examples/hybrid-pheromone-protocol/capability.json"
+    )
     diagnostics = validate_capability_manifest(manifest)
     if diagnostics:
         raise ValueError([diagnostic.to_dict() for diagnostic in diagnostics])
@@ -39,7 +45,10 @@ def run_example(repo_root: Path | None = None) -> dict[str, Any]:
         raise ValueError("Hybrid example requires a collective policy")
     target = protocol.quorum_policy.target
     candidates = CandidateSet(
-        [Candidate(item.id, item.target, item.safe_fallback) for item in protocol.candidates]
+        [
+            Candidate(item.id, item.target, item.safe_fallback)
+            for item in protocol.candidates
+        ]
     )
     scouts = [
         verified_scout("scout:alpha:a", "candidate:alpha", target),
@@ -71,9 +80,15 @@ def run_example(repo_root: Path | None = None) -> dict[str, Any]:
         topology=PheromoneNeighborhood(
             subjects=[
                 PheromoneSubject("route", "route:alpha", "candidate:alpha", target),
-                PheromoneSubject("candidate", "candidate:alpha", "candidate:alpha", target),
+                PheromoneSubject(
+                    "candidate", "candidate:alpha", "candidate:alpha", target
+                ),
             ],
-            edges=[PheromoneEdge("route", "route:alpha", "candidate", "candidate:alpha", 1.0)],
+            edges=[
+                PheromoneEdge(
+                    "route", "route:alpha", "candidate", "candidate:alpha", 1.0
+                )
+            ],
         ),
         feedback=[
             PheromoneFeedback(
@@ -136,7 +151,10 @@ def run_example(repo_root: Path | None = None) -> dict[str, Any]:
         ),
         step.decision,
         EvidenceGraph(
-            [EvidenceNode(item.evidence_id, item.candidate_id, item.provenance) for item in scouts]
+            [
+                EvidenceNode(item.evidence_id, item.candidate_id, item.provenance)
+                for item in scouts
+            ]
         ),
         [StopResolution(target, "publish", blocked=False)],
         publication_permission=True,
@@ -152,7 +170,9 @@ def run_example(repo_root: Path | None = None) -> dict[str, Any]:
         "authorized": output.authorized,
         "scores": dict(step.state.scores),
         "adjustment_overlay": dict(step.adjustment_overlay),
-        "trace_events": [event.event_type for event in (*step.trace_events, output.trace_event)],
+        "trace_events": [
+            event.event_type for event in (*step.trace_events, output.trace_event)
+        ],
     }
 
 

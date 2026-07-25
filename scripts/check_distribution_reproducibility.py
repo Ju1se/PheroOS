@@ -12,8 +12,7 @@ def distribution_hashes(directory: Path) -> dict[str, str]:
     artifacts = sorted(
         path
         for path in directory.iterdir()
-        if path.is_file()
-        and (path.suffix == ".whl" or path.name.endswith(".tar.gz"))
+        if path.is_file() and (path.suffix == ".whl" or path.name.endswith(".tar.gz"))
     )
     kinds = {
         "wheel": [path for path in artifacts if path.suffix == ".whl"],
@@ -24,10 +23,7 @@ def distribution_hashes(directory: Path) -> dict[str, str]:
             raise ValueError(
                 f"expected exactly one {kind} in {directory}, found {len(paths)}"
             )
-    return {
-        path.name: sha256(path.read_bytes()).hexdigest()
-        for path in artifacts
-    }
+    return {path.name: sha256(path.read_bytes()).hexdigest() for path in artifacts}
 
 
 def compare_distribution_directories(first: Path, second: Path) -> dict[str, str]:
@@ -41,7 +37,9 @@ def compare_distribution_directories(first: Path, second: Path) -> dict[str, str
             for name in names
             if first_hashes.get(name) != second_hashes.get(name)
         ]
-        raise ValueError("distribution bytes are not reproducible: " + "; ".join(differences))
+        raise ValueError(
+            "distribution bytes are not reproducible: " + "; ".join(differences)
+        )
     return first_hashes
 
 

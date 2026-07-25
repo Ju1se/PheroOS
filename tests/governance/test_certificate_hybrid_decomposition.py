@@ -6,7 +6,13 @@ from pathlib import Path
 
 from pheroos.governance import certificate, hybrid_commit
 from pheroos.governance import hybrid_commit_evaluation as evaluation_facade
-from pheroos.governance._certificate import invariants, local, outcome, portable, records
+from pheroos.governance._certificate import (
+    invariants,
+    local,
+    outcome,
+    portable,
+    records,
+)
 from pheroos.governance._hybrid import commit, evaluation_records, request
 
 
@@ -43,10 +49,11 @@ def _private_edges(package: str) -> dict[str, set[str]]:
 def test_certificate_private_modules_have_one_way_static_ownership() -> None:
     assert _private_edges("_certificate") == {
         "__init__": set(),
+        "historical": {"invariants", "records"},
         "invariants": set(),
         "local": {"invariants"},
         "outcome": {"invariants", "records"},
-        "portable": {"invariants", "local", "records"},
+        "portable": {"historical", "invariants", "local", "records"},
         "records": {"invariants"},
     }
 
@@ -168,18 +175,16 @@ def test_hybrid_pipeline_contains_the_only_total_algorithm() -> None:
     assert len(public_entry.body) == 2
     assert isinstance(public_entry.body[-1], ast.Return)
 
-    deprecated = inspect.getsource(
-        evaluation_facade.evaluate_hybrid_commit_evaluation
-    )
+    deprecated = inspect.getsource(evaluation_facade.evaluate_hybrid_commit_evaluation)
     assert "DeprecationWarning" in deprecated
     assert "_evaluate_hybrid_commit_step(request)" in deprecated
 
 
 def test_certificate_and_evaluation_facades_are_thin() -> None:
     certificate_source = (GOVERNANCE / "certificate.py").read_text(encoding="utf-8")
-    evaluation_source = (
-        GOVERNANCE / "hybrid_commit_evaluation.py"
-    ).read_text(encoding="utf-8")
+    evaluation_source = (GOVERNANCE / "hybrid_commit_evaluation.py").read_text(
+        encoding="utf-8"
+    )
 
     assert len(certificate_source.splitlines()) < 160
     assert len(evaluation_source.splitlines()) < 140

@@ -64,20 +64,32 @@ def protocol_manifest_from_dict(payload: dict[str, Any]) -> ProtocolManifest:
         protocol_version=required_text(payload, "protocol_version"),
         id=required_text(payload, "id"),
         targets=[target_from_dict(item) for item in payload.get("targets", [])],
-        candidates=[candidate_from_dict(item) for item in payload.get("candidates", [])],
+        candidates=[
+            candidate_from_dict(item) for item in payload.get("candidates", [])
+        ],
         quorum_policy=QuorumPolicy(
             target=required_text(quorum_payload, "target"),
             fallback_candidate=required_text(quorum_payload, "fallback_candidate"),
-            commit_threshold=positive_int(quorum_payload.get("commit_threshold"), default=1),
+            commit_threshold=positive_int(
+                quorum_payload.get("commit_threshold"), default=1
+            ),
         ),
         recovery_protocols=[
             recovery_from_dict(item) for item in payload.get("recovery_protocols", [])
         ],
-        output_policy=output_policy_from_dict(object_payload(payload.get("output_policy"), default={})),
-        trace_policy=trace_policy_from_dict(object_payload(payload.get("trace_policy"), default={})),
-        evidence_policy=evidence_policy_from_dict(object_payload(payload.get("evidence_policy"), default={})),
+        output_policy=output_policy_from_dict(
+            object_payload(payload.get("output_policy"), default={})
+        ),
+        trace_policy=trace_policy_from_dict(
+            object_payload(payload.get("trace_policy"), default={})
+        ),
+        evidence_policy=evidence_policy_from_dict(
+            object_payload(payload.get("evidence_policy"), default={})
+        ),
         signals=[signal_from_dict(item) for item in payload.get("signals", [])],
-        collective_decision_policy=collective_decision_policy_from_dict(payload.get("collective_decision_policy")),
+        collective_decision_policy=collective_decision_policy_from_dict(
+            payload.get("collective_decision_policy")
+        ),
         collective_commit_policy=collective_commit_policy_from_dict(
             payload.get("collective_commit_policy")
         ),
@@ -107,7 +119,9 @@ def signal_from_dict(payload: dict[str, Any]) -> SignalSpec:
     return SignalSpec(
         type=required_text(payload, "type"),
         target=required_text(payload, "target"),
-        authority_required=optional_text(payload, "authority_required", default="governance"),
+        authority_required=optional_text(
+            payload, "authority_required", default="governance"
+        ),
         extensions=collect_extensions(payload),
     )
 
@@ -118,57 +132,121 @@ def collective_decision_policy_from_dict(value: Any) -> CollectiveDecisionPolicy
     payload = object_payload(value)
     return CollectiveDecisionPolicy(
         mode=optional_text(payload, "mode", default="quorum"),
-        min_independent_scouts=positive_int_field(payload, "min_independent_scouts", default=1),
+        min_independent_scouts=positive_int_field(
+            payload, "min_independent_scouts", default=1
+        ),
         quorum_threshold=positive_int_field(payload, "quorum_threshold", default=1),
         recruitment_enabled=bool_field(payload, "recruitment_enabled", default=False),
         inhibition_enabled=bool_field(payload, "inhibition_enabled", default=False),
         pheromone_enabled=bool_field(payload, "pheromone_enabled", default=False),
-        pheromone_evaporation_rate=float_field(payload, "pheromone_evaporation_rate", default=0.0),
-        pheromone_decay_model=optional_text(payload, "pheromone_decay_model", default="exponential"),
-        pheromone_min_strength=float_field(payload, "pheromone_min_strength", default=0.0),
-        pheromone_max_strength=float_field(payload, "pheromone_max_strength", default=10.0),
-        pheromone_positive_weight=float_field(payload, "pheromone_positive_weight", default=1.0),
-        pheromone_negative_weight=float_field(payload, "pheromone_negative_weight", default=1.0),
-        pheromone_cautionary_weight=float_field(payload, "pheromone_cautionary_weight", default=1.0),
-        pheromone_cautionary_override_threshold=float_field(payload, "pheromone_cautionary_override_threshold", default=1.0),
-        pheromone_novelty_weight=float_field(payload, "pheromone_novelty_weight", default=0.5),
-        pheromone_per_source_cap=float_field(payload, "pheromone_per_source_cap", default=3.0),
-        pheromone_per_round_deposit_cap=float_field(payload, "pheromone_per_round_deposit_cap", default=5.0),
-        pheromone_min_source_diversity=positive_int_field(payload, "pheromone_min_source_diversity", default=1),
-        pheromone_require_provenance=bool_field(payload, "pheromone_require_provenance", default=True),
-        pheromone_require_trace=bool_field(payload, "pheromone_require_trace", default=True),
+        pheromone_evaporation_rate=float_field(
+            payload, "pheromone_evaporation_rate", default=0.0
+        ),
+        pheromone_decay_model=optional_text(
+            payload, "pheromone_decay_model", default="exponential"
+        ),
+        pheromone_min_strength=float_field(
+            payload, "pheromone_min_strength", default=0.0
+        ),
+        pheromone_max_strength=float_field(
+            payload, "pheromone_max_strength", default=10.0
+        ),
+        pheromone_positive_weight=float_field(
+            payload, "pheromone_positive_weight", default=1.0
+        ),
+        pheromone_negative_weight=float_field(
+            payload, "pheromone_negative_weight", default=1.0
+        ),
+        pheromone_cautionary_weight=float_field(
+            payload, "pheromone_cautionary_weight", default=1.0
+        ),
+        pheromone_cautionary_override_threshold=float_field(
+            payload, "pheromone_cautionary_override_threshold", default=1.0
+        ),
+        pheromone_novelty_weight=float_field(
+            payload, "pheromone_novelty_weight", default=0.5
+        ),
+        pheromone_per_source_cap=float_field(
+            payload, "pheromone_per_source_cap", default=3.0
+        ),
+        pheromone_per_round_deposit_cap=float_field(
+            payload, "pheromone_per_round_deposit_cap", default=5.0
+        ),
+        pheromone_min_source_diversity=positive_int_field(
+            payload, "pheromone_min_source_diversity", default=1
+        ),
+        pheromone_require_provenance=bool_field(
+            payload, "pheromone_require_provenance", default=True
+        ),
+        pheromone_require_trace=bool_field(
+            payload, "pheromone_require_trace", default=True
+        ),
         pheromone_scored_subject_types=(
             text_list(payload["pheromone_scored_subject_types"])
             if "pheromone_scored_subject_types" in payload
             else ["candidate"]
         ),
-        pheromone_kind_profiles=pheromone_kind_profiles_from_dict(payload.get("pheromone_kind_profiles")),
-        pheromone_response_model=optional_text(payload, "pheromone_response_model", default="linear"),
-        pheromone_activation_threshold=float_field(payload, "pheromone_activation_threshold", default=0.0),
-        pheromone_saturation_threshold=float_field(payload, "pheromone_saturation_threshold", default=10.0),
-        pheromone_competition_mode=optional_text(payload, "pheromone_competition_mode", default="none"),
-        pheromone_exploration_floor=float_field(payload, "pheromone_exploration_floor", default=0.0),
-        pheromone_diffusion_enabled=bool_field(payload, "pheromone_diffusion_enabled", default=False),
-        pheromone_diffusion_max_hops=non_negative_int_field(payload, "pheromone_diffusion_max_hops", default=0),
-        pheromone_diffusion_attenuation=float_field(payload, "pheromone_diffusion_attenuation", default=0.0),
-        pheromone_feedback_enabled=bool_field(payload, "pheromone_feedback_enabled", default=False),
+        pheromone_kind_profiles=pheromone_kind_profiles_from_dict(
+            payload.get("pheromone_kind_profiles")
+        ),
+        pheromone_response_model=optional_text(
+            payload, "pheromone_response_model", default="linear"
+        ),
+        pheromone_activation_threshold=float_field(
+            payload, "pheromone_activation_threshold", default=0.0
+        ),
+        pheromone_saturation_threshold=float_field(
+            payload, "pheromone_saturation_threshold", default=10.0
+        ),
+        pheromone_competition_mode=optional_text(
+            payload, "pheromone_competition_mode", default="none"
+        ),
+        pheromone_exploration_floor=float_field(
+            payload, "pheromone_exploration_floor", default=0.0
+        ),
+        pheromone_diffusion_enabled=bool_field(
+            payload, "pheromone_diffusion_enabled", default=False
+        ),
+        pheromone_diffusion_max_hops=non_negative_int_field(
+            payload, "pheromone_diffusion_max_hops", default=0
+        ),
+        pheromone_diffusion_attenuation=float_field(
+            payload, "pheromone_diffusion_attenuation", default=0.0
+        ),
+        pheromone_feedback_enabled=bool_field(
+            payload, "pheromone_feedback_enabled", default=False
+        ),
         exploration_enabled=bool_field(payload, "exploration_enabled", default=False),
         exploration_floor=float_field(payload, "exploration_floor", default=0.0),
         novelty_decay_rate=float_field(payload, "novelty_decay_rate", default=0.0),
-        stale_route_reopen_threshold=float_field(payload, "stale_route_reopen_threshold", default=0.0),
-        layer_coordination_enabled=bool_field(payload, "layer_coordination_enabled", default=False),
+        stale_route_reopen_threshold=float_field(
+            payload, "stale_route_reopen_threshold", default=0.0
+        ),
+        layer_coordination_enabled=bool_field(
+            payload, "layer_coordination_enabled", default=False
+        ),
         layer_weight_bounds=float_bounds_map(payload.get("layer_weight_bounds")),
         layer_default_weights=float_map(payload.get("layer_default_weights")),
-        layer_confidence_thresholds=float_map(payload.get("layer_confidence_thresholds")),
-        layer_conflict_threshold=float_field(payload, "layer_conflict_threshold", default=0.0),
-        layer_emergency_override_threshold=float_field(payload, "layer_emergency_override_threshold", default=0.0),
-        layer_min_provenance=positive_int_field(payload, "layer_min_provenance", default=1),
+        layer_confidence_thresholds=float_map(
+            payload.get("layer_confidence_thresholds")
+        ),
+        layer_conflict_threshold=float_field(
+            payload, "layer_conflict_threshold", default=0.0
+        ),
+        layer_emergency_override_threshold=float_field(
+            payload, "layer_emergency_override_threshold", default=0.0
+        ),
+        layer_min_provenance=positive_int_field(
+            payload, "layer_min_provenance", default=1
+        ),
         layer_fallback_on_unresolved_conflict=bool_field(
             payload,
             "layer_fallback_on_unresolved_conflict",
             default=True,
         ),
-        policy_adjustment_bounds=object_payload(payload.get("policy_adjustment_bounds"), default={}),
+        policy_adjustment_bounds=object_payload(
+            payload.get("policy_adjustment_bounds"), default={}
+        ),
         fallback_candidate=optional_text(payload, "fallback_candidate"),
         extensions=collect_extensions(payload),
     )
@@ -356,9 +434,7 @@ def distributed_commit_policy_from_value(value: Any) -> DistributedCommitPolicy 
         fault_model=strict_text_field(payload, "fault_model"),
         membership_mode=strict_text_field(payload, "membership_mode"),
         membership_size=strict_integer_field(payload, "membership_size"),
-        max_byzantine_faults=strict_integer_field(
-            payload, "max_byzantine_faults"
-        ),
+        max_byzantine_faults=strict_integer_field(payload, "max_byzantine_faults"),
         witness_quorum=strict_integer_field(payload, "witness_quorum"),
         witness_ttl_steps=strict_integer_field(payload, "witness_ttl_steps"),
         minimum_failure_domain_diversity=strict_integer_field(
@@ -381,10 +457,16 @@ def pheromone_kind_profiles_from_dict(value: Any) -> dict[str, PheromoneKindProf
             weight=float_field(profile_payload, "weight", default=1.0),
             evaporation_rate=optional_float_field(profile_payload, "evaporation_rate"),
             ttl_steps=optional_non_negative_int_field(profile_payload, "ttl_steps"),
-            response_model=optional_text(profile_payload, "response_model", default="linear"),
+            response_model=optional_text(
+                profile_payload, "response_model", default="linear"
+            ),
             priority=non_negative_int_field(profile_payload, "priority", default=0),
-            can_suppress_positive=bool_field(profile_payload, "can_suppress_positive", default=False),
-            scored_subject_types=text_list(profile_payload.get("scored_subject_types", [])),
+            can_suppress_positive=bool_field(
+                profile_payload, "can_suppress_positive", default=False
+            ),
+            scored_subject_types=text_list(
+                profile_payload.get("scored_subject_types", [])
+            ),
             extensions=collect_extensions(profile_payload),
         )
     return profiles
@@ -427,11 +509,21 @@ def recovery_from_dict(payload: dict[str, Any]) -> RecoveryProtocol:
 
 def output_policy_from_dict(payload: dict[str, Any]) -> OutputPolicy:
     return OutputPolicy(
-        writer_may_create_facts=bool_field(payload, "writer_may_create_facts", default=False),
-        requires_committed_candidate=bool_field(payload, "requires_committed_candidate", default=True),
-        requires_evidence_contract=bool_field(payload, "requires_evidence_contract", default=True),
-        requires_stop_resolution=bool_field(payload, "requires_stop_resolution", default=True),
-        requires_publication_permission=bool_field(payload, "requires_publication_permission", default=True),
+        writer_may_create_facts=bool_field(
+            payload, "writer_may_create_facts", default=False
+        ),
+        requires_committed_candidate=bool_field(
+            payload, "requires_committed_candidate", default=True
+        ),
+        requires_evidence_contract=bool_field(
+            payload, "requires_evidence_contract", default=True
+        ),
+        requires_stop_resolution=bool_field(
+            payload, "requires_stop_resolution", default=True
+        ),
+        requires_publication_permission=bool_field(
+            payload, "requires_publication_permission", default=True
+        ),
         extensions=collect_extensions(payload),
     )
 
@@ -439,15 +531,18 @@ def output_policy_from_dict(payload: dict[str, Any]) -> OutputPolicy:
 def evidence_policy_from_dict(payload: dict[str, Any]) -> EvidencePolicy:
     return EvidencePolicy(
         require_provenance=bool_field(payload, "require_provenance", default=True),
-        allow_agent_fact_creation=bool_field(payload, "allow_agent_fact_creation", default=False),
+        allow_agent_fact_creation=bool_field(
+            payload, "allow_agent_fact_creation", default=False
+        ),
         extensions=collect_extensions(payload),
     )
 
 
 def strict_object_field(payload: dict[str, Any], key: str) -> dict[str, Any]:
-    if key not in payload or not isinstance(payload[key], dict):
+    value = payload.get(key)
+    if not isinstance(value, dict):
         raise ValueError(f"commit policy field must be an object: {key}")
-    return payload[key]
+    return value
 
 
 def required_commit_field(payload: dict[str, Any], key: str) -> Any:
@@ -466,7 +561,9 @@ def strict_text_field(payload: dict[str, Any], key: str) -> str:
         or value != value.strip()
         or value != unicodedata.normalize("NFC", value)
     ):
-        raise ValueError(f"commit policy field must be a canonical non-blank string: {key}")
+        raise ValueError(
+            f"commit policy field must be a canonical non-blank string: {key}"
+        )
     return value
 
 
@@ -499,9 +596,10 @@ def strict_integer_field(payload: dict[str, Any], key: str) -> int:
 
 
 def strict_bool_field(payload: dict[str, Any], key: str) -> bool:
-    if key not in payload or type(payload[key]) is not bool:
+    value = payload.get(key)
+    if type(value) is not bool:
         raise ValueError(f"commit policy field must be a boolean: {key}")
-    return payload[key]
+    return value
 
 
 def required_text(payload: dict[str, Any], key: str) -> str:
@@ -514,7 +612,9 @@ def required_text(payload: dict[str, Any], key: str) -> str:
     return value
 
 
-def object_payload(value: Any, *, default: dict[str, Any] | None = None) -> dict[str, Any]:
+def object_payload(
+    value: Any, *, default: dict[str, Any] | None = None
+) -> dict[str, Any]:
     if isinstance(value, dict):
         return value
     if default is not None:
@@ -585,7 +685,10 @@ def float_map(value: Any) -> dict[str, float]:
     if value is None:
         return {}
     payload = object_payload(value)
-    return {str(key): float_value(raw_value, key=str(key)) for key, raw_value in payload.items()}
+    return {
+        str(key): float_value(raw_value, key=str(key))
+        for key, raw_value in payload.items()
+    }
 
 
 def float_bounds_map(value: Any) -> dict[str, tuple[float, float]]:

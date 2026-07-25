@@ -3,7 +3,6 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 
 from pheroos.governance._commit.certificate_contracts import (
-    CERTIFICATE_HASH_ALGORITHM,
     LEGACY_CERTIFICATE_IDENTITIES,
     LOCAL_COMMIT_RECEIPT_DISCRIMINATOR,
     LOCAL_COMMIT_RECEIPT_VERSION,
@@ -149,9 +148,8 @@ def bind_local_commit_receipt_authority(
         existing = registry.get(LEGACY_CERTIFICATE_IDENTITIES, key)
         if existing is not None:
             existing_ref, existing_record = existing
-            if (
-                existing_ref == receipt_ref
-                and local_commit_receipt_is_authoritative(existing_record)
+            if existing_ref == receipt_ref and local_commit_receipt_is_authoritative(
+                existing_record
             ):
                 assert type(existing_record) is LocalCommitReceipt
                 return existing_record

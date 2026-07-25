@@ -618,9 +618,7 @@ def support_replay_records(
         principal_id=lease.principal_id,
         principal_cluster_id=lease.principal_cluster_id,
         membership_root=lease.membership_root,
-        membership_epoch_state_fingerprint=(
-            lease.membership_epoch_state_fingerprint
-        ),
+        membership_epoch_state_fingerprint=(lease.membership_epoch_state_fingerprint),
         issued_at_step=lease.issued_at_step,
         expires_at_step=lease.expires_at_step,
     )
@@ -724,9 +722,7 @@ def support_evaluation_payload() -> dict[str, object]:
     finding = equivocation_record()
     membership = membership_record()
     membership_epoch = membership_epoch_record(membership)
-    membership_epoch_state_fingerprint = membership_epoch_fingerprint(
-        membership_epoch
-    )
+    membership_epoch_state_fingerprint = membership_epoch_fingerprint(membership_epoch)
     support_replay_scope_root = commit_payload_fingerprint(
         {"receipts": ()},
         schema="pheroos-support-lease-scope-replay-root-v1",
@@ -746,9 +742,7 @@ def support_evaluation_payload() -> dict[str, object]:
             "excluded_lease_fingerprints": excluded,
             "included_lease_fingerprints": included,
             "membership_root": membership.membership_root,
-            "membership_epoch_state_fingerprint": (
-                membership_epoch_state_fingerprint
-            ),
+            "membership_epoch_state_fingerprint": (membership_epoch_state_fingerprint),
             "run_id": RUN_ID,
             "support_replay_scope_root": support_replay_scope_root,
             "target": TARGET,
@@ -1055,8 +1049,7 @@ def test_wp_cd_wire_rejects_noncanonical_sets_and_mutated_roots() -> None:
         mutated = deepcopy(records[schema_name])
         mutated["payload"][field_name] = "sha256:" + ("0" * 64)
         assert any(
-            "mismatch" in error
-            for error in validate_commit_wire_record(mutated)
+            "mismatch" in error for error in validate_commit_wire_record(mutated)
         )
 
 
@@ -1104,6 +1097,5 @@ def test_support_replay_wire_rejects_cross_profile_and_receipt_key_collision() -
     collision["payload"]["receipts"].append(conflicting)
     collision["payload"]["revision"] = 2
     assert any(
-        "duplicate nonce" in error
-        for error in validate_commit_wire_record(collision)
+        "duplicate nonce" in error for error in validate_commit_wire_record(collision)
     )

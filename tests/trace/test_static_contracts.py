@@ -32,7 +32,7 @@ def _trace_module(path: Path) -> str:
 def _trace_import_graph() -> tuple[dict[str, set[str]], list[str]]:
     paths = sorted((ROOT / "pheroos" / "trace").rglob("*.py"))
     modules = {_trace_module(path) for path in paths}
-    graph = {module: set() for module in modules}
+    graph: dict[str, set[str]] = {module: set() for module in modules}
     aggregate_imports: list[str] = []
     for path in paths:
         source = _trace_module(path)
@@ -69,42 +69,64 @@ def _trace_import_graph() -> tuple[dict[str, set[str]], list[str]]:
 
 
 def _cyclic_components(graph: dict[str, set[str]]) -> list[tuple[str, ...]]:
-    index = 0
     indexes: dict[str, int] = {}
     lowlinks: dict[str, int] = {}
     stack: list[str] = []
     stacked: set[str] = set()
     cycles: list[tuple[str, ...]] = []
-
-    def visit(module: str) -> None:
-        nonlocal index
-        indexes[module] = index
-        lowlinks[module] = index
-        index += 1
-        stack.append(module)
-        stacked.add(module)
-        for dependency in sorted(graph[module]):
-            if dependency not in indexes:
-                visit(dependency)
-                lowlinks[module] = min(lowlinks[module], lowlinks[dependency])
-            elif dependency in stacked:
-                lowlinks[module] = min(lowlinks[module], indexes[dependency])
-        if lowlinks[module] != indexes[module]:
-            return
-        component: list[str] = []
-        while True:
-            dependency = stack.pop()
-            stacked.remove(dependency)
-            component.append(dependency)
-            if dependency == module:
-                break
-        if len(component) > 1 or module in graph[module]:
-            cycles.append(tuple(sorted(component)))
-
     for module in sorted(graph):
         if module not in indexes:
-            visit(module)
+            _visit_component(
+                module,
+                graph=graph,
+                indexes=indexes,
+                lowlinks=lowlinks,
+                stack=stack,
+                stacked=stacked,
+                cycles=cycles,
+            )
     return cycles
+
+
+def _visit_component(
+    module: str,
+    *,
+    graph: dict[str, set[str]],
+    indexes: dict[str, int],
+    lowlinks: dict[str, int],
+    stack: list[str],
+    stacked: set[str],
+    cycles: list[tuple[str, ...]],
+) -> None:
+    indexes[module] = len(indexes)
+    lowlinks[module] = indexes[module]
+    stack.append(module)
+    stacked.add(module)
+    for dependency in sorted(graph[module]):
+        if dependency not in indexes:
+            _visit_component(
+                dependency,
+                graph=graph,
+                indexes=indexes,
+                lowlinks=lowlinks,
+                stack=stack,
+                stacked=stacked,
+                cycles=cycles,
+            )
+            lowlinks[module] = min(lowlinks[module], lowlinks[dependency])
+        elif dependency in stacked:
+            lowlinks[module] = min(lowlinks[module], indexes[dependency])
+    if lowlinks[module] != indexes[module]:
+        return
+    component: list[str] = []
+    while True:
+        dependency = stack.pop()
+        stacked.remove(dependency)
+        component.append(dependency)
+        if dependency == module:
+            break
+    if len(component) > 1 or module in graph[module]:
+        cycles.append(tuple(sorted(component)))
 
 
 def test_static_contracts_cover_every_builtin_exactly_once() -> None:
@@ -265,9 +287,9 @@ def test_authority_event_leaf_mutation_is_rejected(
 def test_trace_schema_bytes_remain_v1_canonical() -> None:
     from pheroos.trace.schema import trace_schema
 
-    generated = (
-        json.dumps(trace_schema(), indent=2, sort_keys=True) + "\n"
-    ).encode("utf-8")
+    generated = (json.dumps(trace_schema(), indent=2, sort_keys=True) + "\n").encode(
+        "utf-8"
+    )
     assert generated == (ROOT / "schemas" / "trace.schema.json").read_bytes()
 
 
@@ -283,7 +305,9 @@ def test_modular_facade_preserves_pickle_from_star_dir_and_signatures() -> None:
         event.make_commit_trace_event
     )
     assert typing.get_type_hints(trace.TraceEvent)["lineage"] == dict[str, typing.Any]
-    assert typing.get_type_hints(trace.validate_event_lineage)["event"] is trace.TraceEvent
+    assert (
+        typing.get_type_hints(trace.validate_event_lineage)["event"] is trace.TraceEvent
+    )
 
     event_value = trace.TraceEvent("plan", "protocol:test", "decision:test", "plan")
     trace_store = trace.InMemoryTraceStore()

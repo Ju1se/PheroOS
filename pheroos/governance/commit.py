@@ -1,6 +1,6 @@
-from __future__ import annotations
+"""Public Draft facade for optimal-commit governance evaluation."""
 
-"""Stable public facade for optimal-commit governance evaluation."""
+from __future__ import annotations
 
 from pheroos.governance._commit.assessment import (
     CandidateCommitMetrics,

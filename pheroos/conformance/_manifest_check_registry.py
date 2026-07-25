@@ -81,9 +81,7 @@ def project_active_manifest_checks(
     )
     missing = tuple(sorted(set(required) - set(registered)))
     skipped_or_na = tuple(
-        name
-        for name in registered
-        if name.lower().startswith(("skip", "n/a", "na:"))
+        name for name in registered if name.lower().startswith(("skip", "n/a", "na:"))
     )
     return ActiveManifestCheckProjection(
         required=required,

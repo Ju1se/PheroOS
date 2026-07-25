@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
+from typing import cast
 
 from dataclasses import dataclass
 
@@ -11,7 +12,9 @@ from pheroos.governance._distributed._epoch_contract import _require_action_gate
 from pheroos.governance._distributed.invariants import (
     _coerce_assurance,
     _coerce_authority,
+    _construct_dataclass,
     _public_dataclass_payload,
+    _require_mapping,
     _require_sequence,
     _strict_dataclass_payload,
     _validate_distributed_policy,
@@ -293,12 +296,10 @@ def issue_epoch_transition_certificate(
         schema="pheroos-epoch-transition-certificate-envelope-v1",
         profile=state.profile,
     )
-    certificate = EpochTransitionCertificate(
-        **body,
-        issuer_attestation_refs=attestations,
-        certificate_body_root=body_root,
-        certificate_root=certificate_root,
-    )
+    body["issuer_attestation_refs"] = attestations
+    body["certificate_body_root"] = body_root
+    body["certificate_root"] = certificate_root
+    certificate = _construct_dataclass(EpochTransitionCertificate, body)
     return _register_epoch_transition_certificate_identity(certificate)
 
 
@@ -338,7 +339,10 @@ def epoch_transition_certificate_from_payload(
     values["assurance"] = _coerce_assurance(values["assurance"])
     values["authority"] = _coerce_authority(values["authority"])
     values["new_membership_snapshot"] = portable_membership_snapshot_from_payload(
-        values["new_membership_snapshot"]
+        _require_mapping(
+            values["new_membership_snapshot"],
+            "epoch transition membership snapshot",
+        )
     )
     values["issuer_attestation_refs"] = tuple(
         _require_sequence(
@@ -347,7 +351,7 @@ def epoch_transition_certificate_from_payload(
         )
     )
     try:
-        return EpochTransitionCertificate(**values)
+        return _construct_dataclass(EpochTransitionCertificate, values)
     except (TypeError, ValueError, GovernanceError) as exc:
         raise GovernanceError(
             f"epoch transition certificate payload is invalid: {exc}"
@@ -362,12 +366,16 @@ def verify_epoch_transition_certificate(
     expected_certificate_ref: str = "",
 ) -> bool:
     try:
-        certificate = (
-            certificate_or_payload
-            if type(certificate_or_payload) is EpochTransitionCertificate
-            else epoch_transition_certificate_from_payload(certificate_or_payload)
-        )
-        assert type(certificate) is EpochTransitionCertificate
+        if type(certificate_or_payload) is EpochTransitionCertificate:
+            assert isinstance(certificate_or_payload, EpochTransitionCertificate)
+            certificate = certificate_or_payload
+        else:
+            certificate = epoch_transition_certificate_from_payload(
+                _require_mapping(
+                    certificate_or_payload,
+                    "epoch transition certificate payload",
+                )
+            )
         distributed = _validate_distributed_policy(
             commit_policy,
             profile=certificate.profile,
@@ -449,7 +457,10 @@ def transition_distributed_commit_epoch(
         if cursor.current_state_fingerprint != parent_ref:
             prior = cursor.transitions.get(parent_ref)
             if prior is not None and prior[0] == request_ref:
-                transitioned = prior[1]
+                prior_state = prior[1]
+                if type(prior_state) is not DistributedCommitState:
+                    raise GovernanceError("distributed epoch replay state is invalid")
+                transitioned = prior_state
             else:
                 raise GovernanceError("distributed epoch state is stale or would fork")
         else:
@@ -647,7 +658,7 @@ def _register_epoch_transition_certificate_identity(
                 raise GovernanceError(
                     "epoch transition certificate id replay has a different body"
                 )
-            return existing
+            return cast(EpochTransitionCertificate, existing)
         registry.set(_LEGACY_EPOCH_CERTIFICATES_BY_ID, key, certificate)
         return certificate
 

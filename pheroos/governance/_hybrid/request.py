@@ -1,8 +1,8 @@
-from __future__ import annotations
-
 """Hybrid Commit request record, canonical projection, and safe diagnostics."""
 
-from collections.abc import Mapping, Sequence
+from __future__ import annotations
+
+from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass, field
 from types import MappingProxyType
 
@@ -23,6 +23,7 @@ from pheroos.governance._hybrid.evaluation_records import (
     HybridCommitDiagnostic,
 )
 from pheroos.governance.attention import (
+    AttentionBreakdown,
     attention_breakdown_fingerprint,
     attention_breakdown_is_authoritative,
     exploration_directive_fingerprint,
@@ -148,7 +149,9 @@ class HybridCommitEvaluationRequest:
         ):
             mapping = getattr(self, name)
             if not isinstance(mapping, Mapping):
-                raise GovernanceError(f"Hybrid Commit evaluation {name} must be a mapping")
+                raise GovernanceError(
+                    f"Hybrid Commit evaluation {name} must be a mapping"
+                )
             normalized: dict[str, str] = {}
             for key, value in mapping.items():
                 normalized[require_commit_text(key, f"{name} key")] = (
@@ -170,6 +173,7 @@ class HybridCommitEvaluationRequest:
                 event.lineage.get("event_id"),
                 "Hybrid Commit prior trace event_id",
             )
+
 
 def hybrid_commit_evaluation_request_payload(
     request: HybridCommitEvaluationRequest,
@@ -321,6 +325,7 @@ def hybrid_commit_evaluation_request_payload(
         ),
     }
 
+
 def hybrid_commit_evaluation_request_fingerprint(
     request: HybridCommitEvaluationRequest,
 ) -> str:
@@ -330,12 +335,14 @@ def hybrid_commit_evaluation_request_fingerprint(
         profile=_request_profile(request),
     )
 
+
 def _attention_input_status(value: object) -> str:
     if value is None:
         return "missing"
     if attention_breakdown_is_authoritative(value):
         return "authoritative"
     return "provided_invalid"
+
 
 def _exploration_directive_input_status(
     value: object,
@@ -344,15 +351,27 @@ def _exploration_directive_input_status(
 ) -> str:
     if value is None:
         return "missing"
-    if exploration_directive_is_authoritative(value, attention=attention):
+    canonical_attention: AttentionBreakdown | None
+    if attention is None:
+        canonical_attention = None
+    elif type(attention) is AttentionBreakdown:
+        canonical_attention = attention
+    else:
+        return "provided_invalid"
+    if exploration_directive_is_authoritative(
+        value,
+        attention=canonical_attention,
+    ):
         return "authoritative"
     return "provided_invalid"
 
-def _safe_fingerprint(value: object, fingerprint) -> str:
+
+def _safe_fingerprint(value: object, fingerprint: Callable[..., str]) -> str:
     try:
         return fingerprint(value)
     except Exception:
         return ""
+
 
 def _issued_request_ref(
     request: HybridCommitEvaluationRequest,
@@ -553,9 +572,11 @@ def _issued_request_ref(
         profile=profile,
     )
 
+
 def _runtime_type_label(value: object) -> str:
     value_type = type(value)
     return f"{value_type.__module__}.{value_type.__qualname__}"
+
 
 def _strict_trace_event_id(value: object) -> str:
     if type(value) is not TraceEvent:
@@ -565,6 +586,7 @@ def _strict_trace_event_id(value: object) -> str:
         value.lineage.get("event_id"),
         "Hybrid Commit prior trace event id",
     )
+
 
 def _request_profile(request: HybridCommitEvaluationRequest) -> str:
     assessment = request.commit_assessment
@@ -577,6 +599,7 @@ def _request_profile(request: HybridCommitEvaluationRequest) -> str:
         except GovernanceError:
             pass
     return "pheroos-commit-integrity-v1"
+
 
 def _safe_declared_assurance(
     policy: object,
@@ -591,10 +614,14 @@ def _safe_declared_assurance(
         else None,
     ):
         try:
-            return CommitAssurance(candidate)
+            if type(candidate) is CommitAssurance:
+                return candidate
+            if isinstance(candidate, str):
+                return CommitAssurance(candidate)
         except (TypeError, ValueError):
             continue
     return CommitAssurance.ADVISORY
+
 
 def _safe_diagnostic_profile(
     source: object,
@@ -610,11 +637,13 @@ def _safe_diagnostic_profile(
         pass
     return sorted(COMMIT_PROFILES_BY_ASSURANCE[assurance.value])[0]
 
+
 def _safe_diagnostic_text(value: object, fallback: str) -> str:
     try:
         return require_commit_text(value, "diagnostic identity")
     except (GovernanceError, TypeError, ValueError):
         return fallback
+
 
 def _safe_diagnostic_step(value: object) -> int:
     try:

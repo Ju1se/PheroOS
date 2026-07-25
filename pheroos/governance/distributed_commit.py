@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+# ruff: noqa: E402 -- ABI constants must precede lifecycle-owner imports to break cycles.
+
 from collections.abc import Mapping
 
 from pheroos.governance.certificate import EvidenceCommitCertificate

@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
-from dataclasses import fields
+from dataclasses import fields, is_dataclass
+from typing import TypeVar
 
 from pheroos.governance._commit_validation import (
     require_commit_fingerprint,
@@ -16,6 +17,9 @@ from pheroos.protocol.commit_models import (
 )
 from pheroos.protocol.commit_wire import commit_policy_fingerprint
 from pheroos.protocol.validation import validate_distributed_commit_policy
+
+
+_DataclassT = TypeVar("_DataclassT")
 
 
 def _validate_distributed_policy(
@@ -82,6 +86,8 @@ def _canonical_fingerprints(
 
 
 def _public_dataclass_payload(value: object) -> dict[str, object]:
+    if not is_dataclass(value) or isinstance(value, type):
+        raise GovernanceError("distributed payload source must be a dataclass instance")
     return {
         item.name: getattr(value, item.name)
         for item in fields(value)
@@ -90,14 +96,39 @@ def _public_dataclass_payload(value: object) -> dict[str, object]:
 
 
 def _strict_dataclass_payload(
-    payload: Mapping[str, object],
-    cls: type,
+    payload: object,
+    cls: type[object],
     field_name: str,
 ) -> dict[str, object]:
+    if not is_dataclass(cls):
+        raise GovernanceError(f"{field_name} target must be a dataclass type")
     names = {
         item.name for item in fields(cls) if item.init and not item.name.startswith("_")
     }
     return _strict_mapping(payload, names, field_name)
+
+
+def _construct_dataclass(
+    cls: type[_DataclassT],
+    payload: Mapping[str, object],
+) -> _DataclassT:
+    """Construct a known dataclass at the validated payload/reflection boundary."""
+
+    return cls(**payload)
+
+
+def _require_mapping(
+    value: object,
+    field_name: str,
+) -> Mapping[str, object]:
+    if not isinstance(value, Mapping):
+        raise GovernanceError(f"{field_name} must be a mapping")
+    normalized: dict[str, object] = {}
+    for key, item in value.items():
+        if not isinstance(key, str):
+            raise GovernanceError(f"{field_name} keys must be strings")
+        normalized[key] = item
+    return normalized
 
 
 def _strict_mapping(
@@ -105,18 +136,15 @@ def _strict_mapping(
     expected_keys: set[str],
     field_name: str,
 ) -> dict[str, object]:
-    if not isinstance(payload, Mapping):
-        raise GovernanceError(f"{field_name} must be a mapping")
-    if any(not isinstance(key, str) for key in payload):
-        raise GovernanceError(f"{field_name} keys must be strings")
-    actual = set(payload)
+    normalized = _require_mapping(payload, field_name)
+    actual = set(normalized)
     if actual != expected_keys:
         missing = sorted(expected_keys - actual)
         unknown = sorted(actual - expected_keys)
         raise GovernanceError(
             f"{field_name} fields mismatch; missing={missing}, unknown={unknown}"
         )
-    return dict(payload)
+    return dict(normalized)
 
 
 def _require_sequence(value: object, field_name: str) -> tuple[object, ...]:
@@ -131,10 +159,10 @@ def _require_sequence(value: object, field_name: str) -> tuple[object, ...]:
 def _coerce_assurance(value: object) -> CommitAssurance:
     if type(value) is CommitAssurance:
         return value
-    try:
-        return CommitAssurance(value)
-    except (TypeError, ValueError) as exc:
-        raise GovernanceError("distributed assurance is invalid") from exc
+    for assurance in CommitAssurance:
+        if value == assurance.value:
+            return assurance
+    raise GovernanceError("distributed assurance is invalid")
 
 
 def _coerce_authority(value: object) -> AuthorityLevel:
@@ -142,7 +170,7 @@ def _coerce_authority(value: object) -> AuthorityLevel:
         return value
     if isinstance(value, bool):
         raise GovernanceError("distributed authority is invalid")
-    try:
-        return AuthorityLevel(value)
-    except (TypeError, ValueError) as exc:
-        raise GovernanceError("distributed authority is invalid") from exc
+    for authority in AuthorityLevel:
+        if value == authority.value:
+            return authority
+    raise GovernanceError("distributed authority is invalid")

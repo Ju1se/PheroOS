@@ -1,0 +1,65 @@
+{
+  "artifact_version": "pheroos-schema-parity-corpus-v1",
+  "cases": [
+    {
+      "id": "duplicate-json-key",
+      "surface": "runtime-scope-v1",
+      "expected_layer": "strict_loader",
+      "accepted": false
+    },
+    {
+      "id": "raw-nonfinite-number",
+      "surface": "runtime-scope-v1",
+      "expected_layer": "strict_loader",
+      "accepted": false
+    },
+    {
+      "id": "required-field-removal",
+      "surface": "capability-v3",
+      "expected_layer": "typed_reader",
+      "accepted": false
+    },
+    {
+      "id": "unknown-critical-field",
+      "surface": "capability-v3",
+      "expected_layer": "typed_reader",
+      "accepted": false
+    },
+    {
+      "id": "wrong-discriminator",
+      "surface": "capability-v3",
+      "expected_layer": "typed_reader",
+      "accepted": false
+    },
+    {
+      "id": "wrong-container-type",
+      "surface": "capability-v3",
+      "expected_layer": "typed_reader",
+      "accepted": false
+    },
+    {
+      "id": "bool-as-integer",
+      "surface": "capability-v3",
+      "expected_layer": "typed_reader",
+      "accepted": false
+    },
+    {
+      "id": "fingerprint-mutation",
+      "surface": "commit",
+      "expected_layer": "semantic_validator",
+      "accepted": false
+    },
+    {
+      "id": "critical-extension",
+      "surface": "commit",
+      "expected_layer": "semantic_validator",
+      "accepted": false
+    },
+    {
+      "id": "noncritical-extension",
+      "surface": "commit",
+      "expected_layer": "semantic_validator",
+      "accepted": true
+    }
+  ]
+}

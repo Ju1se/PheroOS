@@ -1,6 +1,6 @@
-from __future__ import annotations
+"""Public Draft facade for certificate authority records and engines."""
 
-"""Stable public facade for certificate authority records and engines."""
+from __future__ import annotations
 
 from pheroos.governance._certificate.invariants import output_payload_fingerprint
 from pheroos.governance._certificate.local import (
@@ -41,9 +41,7 @@ from pheroos.governance._commit.certificate_contracts import (
 
 # These direct declarations preserve the frozen public owner in ABI inventory.
 LOCAL_COMMIT_RECEIPT_VERSION = "pheroos-local-commit-receipt-v1"
-EVIDENCE_COMMIT_CERTIFICATE_VERSION = (
-    "pheroos-evidence-commit-certificate-v1"
-)
+EVIDENCE_COMMIT_CERTIFICATE_VERSION = "pheroos-evidence-commit-certificate-v1"
 OUTCOME_CERTIFICATE_VERSION = "pheroos-outcome-certificate-v1"
 LOCAL_COMMIT_RECEIPT_DISCRIMINATOR = "local_commit_receipt"
 EVIDENCE_COMMIT_CERTIFICATE_DISCRIMINATOR = "evidence_commit_certificate"
@@ -52,8 +50,7 @@ CERTIFICATE_HASH_ALGORITHM = "sha256"
 
 if (
     LOCAL_COMMIT_RECEIPT_VERSION != _ENGINE_LOCAL_RECEIPT_VERSION
-    or LOCAL_COMMIT_RECEIPT_DISCRIMINATOR
-    != _ENGINE_LOCAL_RECEIPT_DISCRIMINATOR
+    or LOCAL_COMMIT_RECEIPT_DISCRIMINATOR != _ENGINE_LOCAL_RECEIPT_DISCRIMINATOR
     or CERTIFICATE_HASH_ALGORITHM != _ENGINE_CERTIFICATE_HASH_ALGORITHM
 ):
     raise RuntimeError("certificate facade constants do not match private contracts")

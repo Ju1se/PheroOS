@@ -1,35 +1,34 @@
-from __future__ import annotations
-
 """Portable evidence certificate issuance and verification."""
+
+from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
 
 from pheroos.governance._certificate.invariants import (
-    _attestations_match,
     _certificate_body_root,
     _certificate_envelope_root,
-    _coerce_assurance,
-    _coerce_authority,
-    _coerce_authority_scope,
-    _dataclass_public_payload,
     _issue_typed_finality_verification,
     _require_attestation_bindings,
-    _require_sequence,
-    _strict_payload_values,
     _validate_policy_binding,
 )
+from pheroos.governance._certificate.historical import (
+    evidence_commit_certificate_fingerprint,
+    evidence_commit_certificate_from_payload,
+    evidence_commit_certificate_payload,
+    verify_evidence_commit_certificate,
+)
 from pheroos.governance._certificate.local import (
+    _StableCommitLeaves,
     _current_authority_heads_match_receipt,
+    _stable_commit_leaves_from_receipt,
     local_commit_receipt_matches,
 )
 from pheroos.governance._certificate.records import (
     EVIDENCE_COMMIT_CERTIFICATE_DISCRIMINATOR,
     EVIDENCE_COMMIT_CERTIFICATE_VERSION,
     EvidenceCommitCertificate,
-    _validate_evidence_commit_certificate,
 )
 from pheroos.governance._commit_validation import (
-    require_commit_fingerprint,
     require_commit_step,
     require_commit_text,
 )
@@ -46,7 +45,6 @@ from pheroos.governance._commit.local_receipt import (
 from pheroos.governance._legacy.authority_registry import LEGACY_AUTHORITY_REGISTRY
 from pheroos.governance.authority import AuthorityLevel, can_verify
 from pheroos.governance.commit import CommitAssessment, CommitEvaluationContext
-from pheroos.governance.commit_numeric import commit_payload_fingerprint
 from pheroos.governance.commit_state import (
     AuthorityScope,
     CommitFinalityVerification,
@@ -66,6 +64,22 @@ from pheroos.governance.support_lease import (
     SupportLeaseReplayState,
 )
 from pheroos.protocol.commit_models import CollectiveCommitPolicy, CommitAssurance
+
+
+class _EvidenceCertificateBody(_StableCommitLeaves):
+    schema_discriminator: str
+    certificate_version: str
+    wire_version: str
+    canonicalization: str
+    hash_algorithm: str
+    certificate_id: str
+    authority_scope: AuthorityScope
+    local_receipt_ref: str
+    issuer_id: str
+    authority: AuthorityLevel
+    issued_at_step: int
+    provenance: str
+    trace_event_id: str
 
 
 def evidence_commit_certificate_body_root(
@@ -92,6 +106,7 @@ def evidence_commit_certificate_body_root(
         schema="pheroos-evidence-commit-certificate-body-v1",
         profile=receipt.profile,
     )
+
 
 def issue_evidence_commit_certificate(
     receipt: LocalCommitReceipt,
@@ -126,9 +141,7 @@ def issue_evidence_commit_certificate(
     )
     certificate_policy = commit_policy.certificate
     expected_mode = (
-        "portable"
-        if receipt.assurance is CommitAssurance.CERTIFIED
-        else "distributed"
+        "portable" if receipt.assurance is CommitAssurance.CERTIFIED else "distributed"
     )
     if (
         certificate_policy.mode != expected_mode
@@ -172,99 +185,6 @@ def issue_evidence_commit_certificate(
     )
     return _register_portable_evidence_certificate(certificate)
 
-def evidence_commit_certificate_payload(
-    certificate: EvidenceCommitCertificate,
-) -> dict[str, object]:
-    if type(certificate) is not EvidenceCommitCertificate:
-        raise GovernanceError(
-            "evidence commit certificate must use the canonical record"
-        )
-    _validate_evidence_commit_certificate(certificate)
-    return _dataclass_public_payload(certificate)
-
-def evidence_commit_certificate_fingerprint(
-    certificate: EvidenceCommitCertificate,
-) -> str:
-    return commit_payload_fingerprint(
-        evidence_commit_certificate_payload(certificate),
-        schema=EVIDENCE_COMMIT_CERTIFICATE_VERSION,
-        profile=certificate.profile,
-    )
-
-def evidence_commit_certificate_from_payload(
-    payload: Mapping[str, object],
-) -> EvidenceCommitCertificate:
-    values = _strict_payload_values(
-        payload,
-        EvidenceCommitCertificate,
-        field_name="evidence commit certificate payload",
-    )
-    values["assurance"] = _coerce_assurance(values["assurance"])
-    values["authority_scope"] = _coerce_authority_scope(
-        values["authority_scope"]
-    )
-    values["authority"] = _coerce_authority(values["authority"])
-    values["issuer_attestation_refs"] = tuple(
-        _require_sequence(values["issuer_attestation_refs"], "issuer attestations")
-    )
-    try:
-        return EvidenceCommitCertificate(**values)
-    except (TypeError, ValueError, GovernanceError) as exc:
-        raise GovernanceError(
-            f"evidence commit certificate payload is invalid: {exc}"
-        ) from exc
-
-def verify_evidence_commit_certificate(
-    certificate_or_payload: EvidenceCommitCertificate | Mapping[str, object],
-    *,
-    trusted_issuer_attestations: Mapping[str, str],
-    expected_certificate_ref: str = "",
-    expected_claim_fingerprint: str = "",
-    expected_output_payload_fingerprint: str = "",
-) -> bool:
-    """Independently rebuild and verify every portable certificate leaf."""
-
-    try:
-        certificate = (
-            certificate_or_payload
-            if type(certificate_or_payload) is EvidenceCommitCertificate
-            else evidence_commit_certificate_from_payload(certificate_or_payload)
-        )
-        assert type(certificate) is EvidenceCommitCertificate
-        _validate_evidence_commit_certificate(certificate)
-        if not _attestations_match(
-            certificate.issuer_attestation_refs,
-            trusted_issuer_attestations,
-            body_root=certificate.certificate_body_root,
-        ):
-            return False
-        if expected_certificate_ref and (
-            evidence_commit_certificate_fingerprint(certificate)
-            != require_commit_fingerprint(
-                expected_certificate_ref,
-                "expected evidence certificate ref",
-            )
-        ):
-            return False
-        if expected_claim_fingerprint and (
-            certificate.claim_fingerprint
-            != require_commit_fingerprint(
-                expected_claim_fingerprint,
-                "expected evidence certificate claim",
-            )
-        ):
-            return False
-        if expected_output_payload_fingerprint and (
-            certificate.output_payload_fingerprint
-            != require_commit_fingerprint(
-                expected_output_payload_fingerprint,
-                "expected evidence certificate output",
-            )
-        ):
-            return False
-        return True
-    except (AssertionError, TypeError, ValueError, GovernanceError):
-        return False
 
 def verify_evidence_commit_finality(
     certificate: EvidenceCommitCertificate,
@@ -300,11 +220,12 @@ def verify_evidence_commit_finality(
         trusted_issuer_attestations=trusted_issuer_attestations,
         expected_certificate_ref=certificate_ref,
     ):
-        raise GovernanceError("portable evidence certificate is not independently valid")
+        raise GovernanceError(
+            "portable evidence certificate is not independently valid"
+        )
     if (
         not local_commit_receipt_is_authoritative(receipt)
-        or certificate.local_receipt_ref
-        != local_commit_receipt_fingerprint(receipt)
+        or certificate.local_receipt_ref != local_commit_receipt_fingerprint(receipt)
         or certificate.issued_at_step < receipt.issued_at_step
     ):
         raise GovernanceError("portable certificate local receipt lineage is invalid")
@@ -326,9 +247,7 @@ def verify_evidence_commit_finality(
         replay_state=replay_state,
         support_replay_state=support_replay_state,
         current_step=receipt.issued_at_step,
-        expected_output_payload_fingerprint=(
-            certificate.output_payload_fingerprint
-        ),
+        expected_output_payload_fingerprint=(certificate.output_payload_fingerprint),
     ):
         raise GovernanceError("portable certificate sealed receipt does not rebuild")
     receipt_leaves = local_commit_receipt_payload(receipt)
@@ -380,6 +299,7 @@ def verify_evidence_commit_finality(
         trace_event_id=trace_event_id,
     )
 
+
 def _register_portable_evidence_certificate(
     certificate: EvidenceCommitCertificate,
 ) -> EvidenceCommitCertificate:
@@ -406,6 +326,7 @@ def _register_portable_evidence_certificate(
         )
         return certificate
 
+
 def _evidence_certificate_body_from_receipt(
     receipt: LocalCommitReceipt,
     *,
@@ -415,7 +336,7 @@ def _evidence_certificate_body_from_receipt(
     issued_at_step: int,
     provenance: str,
     trace_event_id: str,
-) -> dict[str, object]:
+) -> _EvidenceCertificateBody:
     if not local_commit_receipt_is_authoritative(receipt):
         raise GovernanceError(
             "evidence certificate body requires authoritative local receipt"
@@ -429,19 +350,7 @@ def _evidence_certificate_body_from_receipt(
         )
     if type(authority) is not AuthorityLevel or not can_verify(authority):
         raise GovernanceError("evidence certificate issuer lacks governance authority")
-    payload = local_commit_receipt_payload(receipt)
-    for name in (
-        "schema_discriminator",
-        "receipt_version",
-        "receipt_id",
-        "authority_scope",
-        "issuer_id",
-        "authority",
-        "issued_at_step",
-        "provenance",
-        "trace_event_id",
-    ):
-        payload.pop(name)
+    payload = _stable_commit_leaves_from_receipt(receipt)
     issued = require_commit_step(
         issued_at_step,
         "evidence certificate issued_at_step",
@@ -453,6 +362,9 @@ def _evidence_certificate_body_from_receipt(
     return {
         "schema_discriminator": EVIDENCE_COMMIT_CERTIFICATE_DISCRIMINATOR,
         "certificate_version": EVIDENCE_COMMIT_CERTIFICATE_VERSION,
+        "wire_version": receipt.wire_version,
+        "canonicalization": receipt.canonicalization,
+        "hash_algorithm": receipt.hash_algorithm,
         "certificate_id": require_commit_text(
             certificate_id,
             "evidence certificate certificate_id",

@@ -21,7 +21,13 @@ from pheroos.governance import (
     commit_candidate,
     output_authorized,
 )
-from pheroos.kernel import DriverInvokeRequest, InputEnvelope, KernelSyscalls, OSKernel, RuntimeMaterializer
+from pheroos.kernel import (
+    DriverInvokeRequest,
+    InputEnvelope,
+    KernelSyscalls,
+    OSKernel,
+    RuntimeMaterializer,
+)
 from pheroos.protocol import load_capability_manifest, validate_capability_manifest
 from pheroos.trace import InMemoryTraceStore, TraceEvent
 
@@ -73,7 +79,9 @@ def test_provider_free_governed_vertical_slice() -> None:
             protocol_id=protocol.id,
             target=target,
             reason="kernel granted declared permissions",
-            lineage={"permissions": [grant.permission for grant in plan.permission_grants]},
+            lineage={
+                "permissions": [grant.permission for grant in plan.permission_grants]
+            },
         )
     )
     trace.append(
@@ -82,7 +90,9 @@ def test_provider_free_governed_vertical_slice() -> None:
             protocol_id=protocol.id,
             target=target,
             reason="kernel exposed declared driver",
-            lineage={"drivers": [exposure.driver_id for exposure in plan.driver_exposures]},
+            lineage={
+                "drivers": [exposure.driver_id for exposure in plan.driver_exposures]
+            },
         )
     )
 
@@ -213,13 +223,20 @@ def test_provider_free_governed_vertical_slice() -> None:
             protocol_id=protocol.id,
             target=target,
             reason="stop resolution permits target action",
-            lineage={"blocked": stop_resolution.blocked, "action": stop_resolution.action},
+            lineage={
+                "blocked": stop_resolution.blocked,
+                "action": stop_resolution.action,
+            },
         )
     )
 
     candidates = CandidateSet(
         [
-            Candidate(id=candidate.id, target=candidate.target, safe_fallback=candidate.safe_fallback)
+            Candidate(
+                id=candidate.id,
+                target=candidate.target,
+                safe_fallback=candidate.safe_fallback,
+            )
             for candidate in protocol.candidates
         ]
     )
@@ -266,7 +283,8 @@ def test_provider_free_governed_vertical_slice() -> None:
             reason="output authorized by contract",
             lineage={
                 "committed_candidate": decision.committed,
-                "evidence_provenance": evidence.has_evidence() and evidence.has_provenance(),
+                "evidence_provenance": evidence.has_evidence()
+                and evidence.has_provenance(),
                 "stop_resolution": not stop_resolution.blocked,
                 "publication_permission": True,
                 "authorized": authorized,

@@ -1,10 +1,13 @@
-from __future__ import annotations
-
 """Non-authoritative attention channel binding and diagnostics."""
+
+from __future__ import annotations
 
 from collections.abc import Sequence
 
-from pheroos.governance._hybrid.binding import bind_hybrid_commit_channels
+from pheroos.governance._hybrid.binding import (
+    HybridCommitStep,
+    bind_hybrid_commit_channels,
+)
 from pheroos.governance._hybrid.evaluation_records import (
     _ATTENTION_CHANNEL_DIAGNOSTIC_CODE as _RECORD_ATTENTION_DIAGNOSTIC_CODE,
     _ATTENTION_CHANNEL_MESSAGES,
@@ -16,6 +19,8 @@ from pheroos.governance._hybrid.request import (
     _safe_fingerprint,
 )
 from pheroos.governance.attention import (
+    AttentionBreakdown,
+    ExplorationDirective,
     attention_breakdown_fingerprint,
     attention_breakdown_is_authoritative,
     exploration_directive_fingerprint,
@@ -61,19 +66,29 @@ def _attention_channel_diagnostic(
         references=tuple(references),
     )
 
+
 def _bind_attention_channel(
     request: HybridCommitEvaluationRequest,
     *,
     assessment: CommitAssessment,
-) -> tuple[object | None, HybridCommitDiagnostic | None]:
+) -> tuple[HybridCommitStep | None, HybridCommitDiagnostic | None]:
     """Bind advisory attention, quarantining every channel-local failure."""
 
-    if not attention_breakdown_is_authoritative(request.attention):
+    attention = request.attention
+    if not attention_breakdown_is_authoritative(attention):
         return None, _attention_channel_diagnostic("attention", request=request)
+    if type(attention) is not AttentionBreakdown:
+        return None, _attention_channel_diagnostic("attention", request=request)
+    directive = request.exploration_directive
     if not exploration_directive_is_authoritative(
-        request.exploration_directive,
-        attention=request.attention,
+        directive,
+        attention=attention,
     ):
+        return None, _attention_channel_diagnostic(
+            "exploration_directive",
+            request=request,
+        )
+    if type(directive) is not ExplorationDirective:
         return None, _attention_channel_diagnostic(
             "exploration_directive",
             request=request,
@@ -81,8 +96,8 @@ def _bind_attention_channel(
     try:
         return (
             bind_hybrid_commit_channels(
-                attention=request.attention,
-                exploration_directive=request.exploration_directive,
+                attention=attention,
+                exploration_directive=directive,
                 commit_assessment=assessment,
             ),
             None,
@@ -96,22 +111,25 @@ def _bind_attention_channel(
             request=request,
         )
 
+
 def _with_exact_attention_channel_diagnostic(
     diagnostics: Sequence[HybridCommitDiagnostic],
     *,
     request: object,
 ) -> tuple[HybridCommitDiagnostic, ...]:
     retained = tuple(
-        item
-        for item in diagnostics
-        if item.code != _ATTENTION_CHANNEL_DIAGNOSTIC_CODE
+        item for item in diagnostics if item.code != _ATTENTION_CHANNEL_DIAGNOSTIC_CODE
     )
     if type(request) is HybridCommitEvaluationRequest:
-        if not attention_breakdown_is_authoritative(request.attention):
+        attention = request.attention
+        directive = request.exploration_directive
+        if not attention_breakdown_is_authoritative(attention):
+            stage = "attention"
+        elif type(attention) is not AttentionBreakdown:
             stage = "attention"
         elif not exploration_directive_is_authoritative(
-            request.exploration_directive,
-            attention=request.attention,
+            directive,
+            attention=attention,
         ):
             stage = "exploration_directive"
         else:
@@ -124,7 +142,6 @@ def _with_exact_attention_channel_diagnostic(
             _attention_channel_diagnostic(stage, request=request),
         )
     )
-
 
 
 __all__: list[str] = []

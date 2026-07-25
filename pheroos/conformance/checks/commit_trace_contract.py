@@ -1,8 +1,13 @@
 from __future__ import annotations
 
+from collections.abc import Mapping
 from copy import deepcopy
+from typing import Any
 
-from pheroos.conformance.checks._commit_context import active_commit_context
+from pheroos.conformance.checks._commit_context import (
+    ActiveCommitContext,
+    active_commit_context,
+)
 from pheroos.conformance.report import CheckResult
 from pheroos.protocol import CapabilityManifest
 from pheroos.trace import (
@@ -53,6 +58,14 @@ def check(manifest: CapabilityManifest) -> CheckResult:
     if context is None:
         return CheckResult("commit_trace_contract", True)
     problems: list[str] = []
+    _append_registry_problems(problems)
+    _append_reference_replay_problems(context, problems)
+
+    unique = sorted(set(problems))
+    return CheckResult("commit_trace_contract", not unique, ", ".join(unique))
+
+
+def _append_registry_problems(problems: list[str]) -> None:
     if COMMIT_EVENT_TYPES != _NORMATIVE_COMMIT_EVENTS:
         problems.append("event_allowlist_mismatch")
     if not COMMIT_EVENT_TYPES.issubset(VALID_EVENT_TYPES):
@@ -67,6 +80,11 @@ def check(manifest: CapabilityManifest) -> CheckResult:
     for event_type in sorted(COMMIT_EVENT_TYPES - schema_conditions):
         problems.append(f"missing_conditional_schema:{event_type}")
 
+
+def _append_reference_replay_problems(
+    context: ActiveCommitContext,
+    problems: list[str],
+) -> None:
     try:
         outcome = _terminal_invalid_event(context)
         output = _terminal_output_event(context, outcome)
@@ -99,11 +117,12 @@ def check(manifest: CapabilityManifest) -> CheckResult:
     except Exception as exc:
         problems.append(f"reference_replay:{type(exc).__name__}:{exc}")
 
-    unique = sorted(set(problems))
-    return CheckResult("commit_trace_contract", not unique, ", ".join(unique))
 
-
-def _terminal_invalid_event(context: object, *, extensions: object = None) -> TraceEvent:
+def _terminal_invalid_event(
+    context: ActiveCommitContext,
+    *,
+    extensions: Mapping[str, Any] | None = None,
+) -> TraceEvent:
     details = {
         "kind": "invalid",
         "authoritative_commit": False,
@@ -145,7 +164,10 @@ def _terminal_invalid_event(context: object, *, extensions: object = None) -> Tr
     )
 
 
-def _terminal_output_event(context: object, outcome: TraceEvent) -> TraceEvent:
+def _terminal_output_event(
+    context: ActiveCommitContext,
+    outcome: TraceEvent,
+) -> TraceEvent:
     details = {
         "outcome_ref": outcome.lineage["outcome_ref"],
         "deliver": True,

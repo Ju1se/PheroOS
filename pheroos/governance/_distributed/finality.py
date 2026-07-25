@@ -18,6 +18,7 @@ from pheroos.governance._distributed._finality_contract import (
 
 from pheroos.governance._distributed.invariants import (
     _coerce_assurance,
+    _construct_dataclass,
     _public_dataclass_payload,
     _require_sequence,
     _strict_dataclass_payload,
@@ -316,7 +317,7 @@ def distributed_finality_decision_from_payload(
         )
     )
     try:
-        return DistributedFinalityDecision(**values)
+        return _construct_dataclass(DistributedFinalityDecision, values)
     except (TypeError, ValueError, GovernanceError) as exc:
         raise GovernanceError(
             f"distributed finality decision payload is invalid: {exc}"
@@ -421,10 +422,10 @@ def _validate_distributed_finality_decision(
 def _coerce_finality_kind(value: object) -> DistributedFinalityKind:
     if type(value) is DistributedFinalityKind:
         return value
-    try:
-        return DistributedFinalityKind(value)
-    except (TypeError, ValueError) as exc:
-        raise GovernanceError("distributed finality kind is invalid") from exc
+    for kind in DistributedFinalityKind:
+        if value == kind.value:
+            return kind
+    raise GovernanceError("distributed finality kind is invalid")
 
 
 for _name in (

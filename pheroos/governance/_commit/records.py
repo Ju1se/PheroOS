@@ -1,8 +1,9 @@
 from __future__ import annotations
 
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass, field
 from enum import StrEnum
+from typing import TypeVar
 
 from pheroos.governance._commit_validation import (
     require_commit_assurance,
@@ -32,9 +33,13 @@ from pheroos.protocol.commit_models import (
 )
 
 
+_RecordT = TypeVar("_RecordT")
+
+
 class CommitEvaluationFailureKind(StrEnum):
     INVALID = "invalid"
     SAFETY_FINDING = "safety_finding"
+
 
 class CommitReasonCode(StrEnum):
     INVALID_CONTEXT = "invalid_context"
@@ -64,9 +69,7 @@ class CommitReasonCode(StrEnum):
     POSITIVE_EVIDENCE_INSUFFICIENT = "positive_evidence_insufficient"
     COUNTEREVIDENCE_LIMIT_EXCEEDED = "counterevidence_limit_exceeded"
     COUNTEREVIDENCE_RATIO_EXCEEDED = "counterevidence_ratio_exceeded"
-    CRITICAL_COUNTEREVIDENCE_UNRESOLVED = (
-        "critical_counterevidence_unresolved"
-    )
+    CRITICAL_COUNTEREVIDENCE_UNRESOLVED = "critical_counterevidence_unresolved"
     CHALLENGE_COVERAGE_INCOMPLETE = "challenge_coverage_incomplete"
     SUPPORT_CLUSTERS_INSUFFICIENT = "support_clusters_insufficient"
     SUPPORT_RATIO_INSUFFICIENT = "support_ratio_insufficient"
@@ -75,6 +78,7 @@ class CommitReasonCode(StrEnum):
     NO_UNIQUE_LEADER = "no_unique_leader"
     NOT_LEADER = "not_leader"
     MARGIN_INSUFFICIENT = "margin_insufficient"
+
 
 class CommitEvaluationError(GovernanceError):
     """Typed fail-closed error for inputs that cannot produce an assessment."""
@@ -92,6 +96,7 @@ class CommitEvaluationError(GovernanceError):
         self.kind = kind
         self.references = tuple(references)
 
+
 @dataclass(frozen=True)
 class CandidateClaimBinding:
     candidate_id: str
@@ -105,6 +110,7 @@ class CandidateClaimBinding:
             "candidate claim claim_fingerprint",
         )
         require_commit_bool(self.safe_fallback, "candidate claim safe_fallback")
+
 
 @dataclass(frozen=True)
 class CommitEvaluationContext:
@@ -162,6 +168,7 @@ class CommitEvaluationContext:
             ),
         )
         _validate_commit_evaluation_context_shape(self)
+
 
 @dataclass(frozen=True)
 class CandidateCommitInput:
@@ -224,6 +231,7 @@ class CandidateCommitInput:
             ),
         )
 
+
 def _validate_commit_evaluation_context_shape(
     context: CommitEvaluationContext,
 ) -> None:
@@ -259,7 +267,9 @@ def _validate_commit_evaluation_context_shape(
     ):
         require_commit_fingerprint(getattr(context, name), f"commit context {name}")
     require_commit_step(context.epoch, "commit context epoch")
-    issued = require_commit_step(context.issued_at_step, "commit context issued_at_step")
+    issued = require_commit_step(
+        context.issued_at_step, "commit context issued_at_step"
+    )
     expires = require_commit_step(
         context.expires_at_step,
         "commit context expires_at_step",
@@ -294,6 +304,7 @@ def _validate_commit_evaluation_context_shape(
     if tuple(context.substantive_candidate_ids) != expected_substantive:
         raise GovernanceError("commit context substantive candidate set is invalid")
 
+
 def _canonical_candidate_claims(
     claims: Sequence[CandidateClaimBinding],
 ) -> tuple[CandidateClaimBinding, ...]:
@@ -306,16 +317,18 @@ def _canonical_candidate_claims(
         raise GovernanceError("commit context candidate claims contain duplicates")
     return normalized
 
+
 def _canonical_records(
-    values: Sequence[object],
-    expected_type: type,
-    fingerprint,
+    values: Sequence[_RecordT],
+    expected_type: type[_RecordT],
+    fingerprint: Callable[[_RecordT], str],
     label: str,
-) -> tuple[object, ...]:
+) -> tuple[_RecordT, ...]:
     records = tuple(values)
     if any(type(item) is not expected_type for item in records):
         raise GovernanceError(f"candidate commit input {label} is not canonical")
     return tuple(sorted(records, key=fingerprint))
+
 
 _PUBLIC_MODULE = "pheroos.governance.commit"
 for _public_object in (

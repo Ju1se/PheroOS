@@ -3,13 +3,23 @@ from __future__ import annotations
 from collections.abc import Callable
 
 from pheroos.conformance.report import CheckResult
-from pheroos.drivers.base import DriverBinding, DriverDescriptor
+from pheroos.drivers.base import DriverBinding, DriverDescriptor, DriverRegistration
 from pheroos.drivers.errors import DriverError
 from pheroos.drivers.lifecycle import bind, expose, invoke, register
 from pheroos.drivers.registry import DriverRegistry
 
 
 def check() -> CheckResult:
+    problems = _invalid_descriptor_problems()
+    registration, registry, descriptor_id = _snapshot_fixtures(problems)
+    _registry_view_problems(registry, descriptor_id, problems)
+    binding = _binding_snapshot_problems(registration, problems)
+    _invocation_snapshot_problems(binding, problems)
+    _invalid_binding_problems(registration, problems)
+    return CheckResult("driver_lifecycle_boundary", not problems, ", ".join(problems))
+
+
+def _invalid_descriptor_problems() -> list[str]:
     problems: list[str] = []
     invalid = (
         DriverDescriptor(id="", kind="tool", version="1"),
@@ -34,6 +44,12 @@ def check() -> CheckResult:
             problems.append(f"descriptor:{index}")
         if registry.descriptors:
             problems.append(f"partial_registration:{index}")
+    return problems
+
+
+def _snapshot_fixtures(
+    problems: list[str],
+) -> tuple[DriverRegistration, DriverRegistry, str]:
     capabilities = ["invoke"]
     descriptor = DriverDescriptor(
         id="driver:snapshot",
@@ -45,20 +61,27 @@ def check() -> CheckResult:
     registry = DriverRegistry()
     registry.register(descriptor)
     capabilities.append("mutated")
-    if registration.descriptor.capabilities != ("invoke",):
+    if tuple(registration.descriptor.capabilities) != ("invoke",):
         problems.append("registration_snapshot")
-    if registry.get(descriptor.id).capabilities != ("invoke",):
+    if tuple(registry.get(descriptor.id).capabilities) != ("invoke",):
         problems.append("registry_snapshot")
     descriptor_id = descriptor.id
     object.__setattr__(descriptor, "id", "driver:mutated")
     object.__setattr__(descriptor, "capabilities", ("admin",))
-    if (
-        registration.descriptor.id != descriptor_id
-        or registration.descriptor.capabilities != ("invoke",)
-    ):
+    if registration.descriptor.id != descriptor_id or tuple(
+        registration.descriptor.capabilities
+    ) != ("invoke",):
         problems.append("registration_object_snapshot")
-    if registry.get(descriptor_id).capabilities != ("invoke",):
+    if tuple(registry.get(descriptor_id).capabilities) != ("invoke",):
         problems.append("registry_object_snapshot")
+    return registration, registry, descriptor_id
+
+
+def _registry_view_problems(
+    registry: DriverRegistry,
+    descriptor_id: str,
+    problems: list[str],
+) -> None:
     descriptor_view = registry.descriptors
     try:
         descriptor_view["driver:forged"] = DriverDescriptor(  # type: ignore[index]
@@ -74,29 +97,48 @@ def check() -> CheckResult:
     object.__setattr__(inspected, "id", "driver:forged")
     if registry.get(descriptor_id).id != descriptor_id:
         problems.append("registry_view_alias")
+
+
+def _binding_snapshot_problems(
+    registration: DriverRegistration,
+    problems: list[str],
+) -> DriverBinding:
     permissions = ["driver:invoke"]
     binding = bind(registration, tenant_id="tenant:snapshot", permissions=permissions)
     permissions.append("driver:admin")
     if binding.permissions != ("driver:invoke",):
         problems.append("binding_permission_snapshot")
     forged = DriverBinding(
-        driver_id=descriptor.id,
+        driver_id=registration.descriptor.id,
         tenant_id="tenant:snapshot",
-        permissions=["driver:invoke"],
+        permissions=("driver:invoke",),
     )
     object.__setattr__(forged, "permissions", ["driver:invoke"])
     if not rejects(lambda: expose(forged)):
         problems.append("binding_mutability_bypass")
+    return binding
+
+
+def _invocation_snapshot_problems(
+    binding: DriverBinding,
+    problems: list[str],
+) -> None:
     payload = {"nested": {"values": ["original"]}}
     result = invoke(
         expose(binding),
         payload=payload,
-        provenance=descriptor.id,
+        provenance=binding.driver_id,
         capability="invoke",
     )
     payload["nested"]["values"].append("mutated")
     if result.payload["nested"]["values"] != ("original",):
         problems.append("result_payload_snapshot")
+
+
+def _invalid_binding_problems(
+    registration: DriverRegistration,
+    problems: list[str],
+) -> None:
     if not rejects(
         lambda: bind(
             registration,
@@ -113,7 +155,6 @@ def check() -> CheckResult:
         )
     ):
         problems.append("blank_permission_bind")
-    return CheckResult("driver_lifecycle_boundary", not problems, ", ".join(problems))
 
 
 def rejects(operation: Callable[[], object]) -> bool:

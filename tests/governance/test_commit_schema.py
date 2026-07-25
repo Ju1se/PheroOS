@@ -227,9 +227,7 @@ def test_commit_wire_rejects_unknown_critical_profile_and_numeric_coercion() -> 
         schema="pheroos-decision-outcome-v1",
     )
     mismatched["payload"]["profile"] = "pheroos-distributed-commit-v1"
-    assert any(
-        "profile" in error for error in validate_commit_wire_record(mismatched)
-    )
+    assert any("profile" in error for error in validate_commit_wire_record(mismatched))
 
     coerced = envelope(
         permission_payload(),
@@ -239,7 +237,9 @@ def test_commit_wire_rejects_unknown_critical_profile_and_numeric_coercion() -> 
     assert validate_commit_wire_record(coerced)
 
 
-def test_commit_wire_rejects_noncanonical_sets_and_missing_publish_certificate() -> None:
+def test_commit_wire_rejects_noncanonical_sets_and_missing_publish_certificate() -> (
+    None
+):
     noncanonical = envelope(
         permission_payload(),
         schema="pheroos-action-permission-v1",
@@ -248,8 +248,7 @@ def test_commit_wire_rejects_noncanonical_sets_and_missing_publish_certificate()
         reversed(noncanonical["payload"]["reason_codes"])
     )
     assert any(
-        "not canonical" in error
-        for error in validate_commit_wire_record(noncanonical)
+        "not canonical" in error for error in validate_commit_wire_record(noncanonical)
     )
 
     missing_certificate = envelope(
@@ -290,8 +289,7 @@ def test_commit_replay_wire_rejects_root_mutation_and_typed_receipt_collision() 
     mutated_root = json.loads(json.dumps(record))
     mutated_root["payload"]["receipt_root"] = "sha256:" + ("0" * 64)
     assert any(
-        "root mismatch" in error
-        for error in validate_commit_wire_record(mutated_root)
+        "root mismatch" in error for error in validate_commit_wire_record(mutated_root)
     )
 
     collision = json.loads(json.dumps(record))
@@ -300,6 +298,5 @@ def test_commit_replay_wire_rejects_root_mutation_and_typed_receipt_collision() 
     conflicting["payload_fingerprint"] = "sha256:" + ("9" * 64)
     collision["payload"]["receipts"].append(conflicting)
     assert any(
-        "safety collision" in error
-        for error in validate_commit_wire_record(collision)
+        "safety collision" in error for error in validate_commit_wire_record(collision)
     )

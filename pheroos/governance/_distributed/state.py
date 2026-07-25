@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
+from typing import cast
 
 from dataclasses import dataclass, field
 
@@ -9,8 +10,10 @@ from pheroos.governance._distributed.invariants import (
     _canonical_fingerprints,
     _coerce_assurance,
     _coerce_authority,
+    _construct_dataclass,
     _public_dataclass_payload,
     _quorum_intersection_is_safe,
+    _require_mapping,
     _require_sequence,
     _strict_dataclass_payload,
     _validate_distributed_policy,
@@ -365,7 +368,7 @@ def initialize_distributed_commit_state(
             if not distributed_commit_state_is_current(cursor.current_state):
                 raise GovernanceError("distributed state current head is unavailable")
             assert cursor.current_state is not None
-            return cursor.current_state
+            return cast(DistributedCommitState, cursor.current_state)
         cursor = _DistributedStateCursor(
             authority_key=authority_key,
             base_fingerprint=base_fingerprint,
@@ -521,7 +524,10 @@ def record_witness_verifications(
         if cursor.current_state_fingerprint != parent_ref:
             prior = cursor.transitions.get(parent_ref)
             if prior is not None and prior[0] == request_ref:
-                return prior[1]
+                prior_state = prior[1]
+                if type(prior_state) is not DistributedCommitState:
+                    raise GovernanceError("distributed witness replay state is invalid")
+                return prior_state
             raise GovernanceError("distributed witness state is stale or would fork")
         next_state = _replace_distributed_state(
             state,
@@ -589,10 +595,15 @@ def distributed_commit_state_from_payload(
     values["assurance"] = _coerce_assurance(values["assurance"])
     values["authority"] = _coerce_authority(values["authority"])
     values["membership_snapshot"] = portable_membership_snapshot_from_payload(
-        values["membership_snapshot"]
+        _require_mapping(
+            values["membership_snapshot"],
+            "distributed state membership snapshot",
+        )
     )
     values["witness_verifications"] = tuple(
-        witness_verification_from_payload(item)
+        witness_verification_from_payload(
+            _require_mapping(item, "distributed state witness verification")
+        )
         for item in _require_sequence(
             values["witness_verifications"],
             "distributed state witness verifications",
@@ -612,12 +623,13 @@ def distributed_commit_state_from_payload(
         )
     )
     values["final_registrations"] = tuple(
-        FinalCertificateRegistration(
-            **_strict_dataclass_payload(
+        _construct_dataclass(
+            FinalCertificateRegistration,
+            _strict_dataclass_payload(
                 item,
                 FinalCertificateRegistration,
                 "distributed final registration payload",
-            )
+            ),
         )
         for item in _require_sequence(
             values["final_registrations"],
@@ -632,7 +644,7 @@ def distributed_commit_state_from_payload(
         )
     )
     try:
-        return DistributedCommitState(**values)
+        return _construct_dataclass(DistributedCommitState, values)
     except (TypeError, ValueError, GovernanceError) as exc:
         raise GovernanceError(f"distributed state payload is invalid: {exc}") from exc
 
@@ -869,7 +881,7 @@ def _conflict_finding_from_payload(
         values[name] = tuple(
             _require_sequence(values[name], f"certificate conflict {name}")
         )
-    return CertificateConflictFinding(**values)
+    return _construct_dataclass(CertificateConflictFinding, values)
 
 
 for _name in (

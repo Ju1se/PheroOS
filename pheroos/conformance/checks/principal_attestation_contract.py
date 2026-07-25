@@ -43,6 +43,24 @@ def check(manifest: CapabilityManifest) -> CheckResult:
         current_step=_CURRENT_STEP,
         trace_event_id="trace:conformance:principal:issued",
     )
+    problems.extend(_issued_verification_problems(verification, context))
+    problems.extend(_scope_replay_problems(verification, context))
+    problems.extend(_tamper_problems(context, attestation))
+    problems.extend(_issuance_authority_problems(context, attestation))
+
+    unique = sorted(set(problems))
+    return CheckResult(
+        "principal_attestation_contract",
+        not unique,
+        ", ".join(unique),
+    )
+
+
+def _issued_verification_problems(
+    verification: PrincipalVerification,
+    context: ActiveCommitContext,
+) -> list[str]:
+    problems: list[str] = []
     if not principal_verification_is_authoritative(verification):
         problems.append("issued_verification_not_authoritative")
     if not _matches(verification, context, current_step=_CURRENT_STEP):
@@ -51,7 +69,14 @@ def check(manifest: CapabilityManifest) -> CheckResult:
     forged = replace(verification)
     if principal_verification_is_authoritative(forged):
         problems.append("direct_verification_forgery_accepted")
+    return problems
 
+
+def _scope_replay_problems(
+    verification: PrincipalVerification,
+    context: ActiveCommitContext,
+) -> list[str]:
+    problems: list[str] = []
     if _matches(
         verification,
         context,
@@ -82,7 +107,13 @@ def check(manifest: CapabilityManifest) -> CheckResult:
         problems.append("cross_cluster_replay_accepted")
     if _matches(verification, context, current_step=_EXPIRES_AT_STEP):
         problems.append("expired_verification_accepted")
+    return problems
 
+
+def _tamper_problems(
+    context: ActiveCommitContext,
+    attestation: PrincipalAttestation,
+) -> list[str]:
     tampered = _issue_verification(
         context,
         attestation,
@@ -92,8 +123,15 @@ def check(manifest: CapabilityManifest) -> CheckResult:
     )
     object.__setattr__(tampered, "cluster_id", "cluster:tampered")
     if principal_verification_is_authoritative(tampered):
-        problems.append("tampered_verification_accepted")
+        return ["tampered_verification_accepted"]
+    return []
 
+
+def _issuance_authority_problems(
+    context: ActiveCommitContext,
+    attestation: PrincipalAttestation,
+) -> list[str]:
+    problems: list[str] = []
     if not _issuance_rejected(
         context,
         attestation,
@@ -110,13 +148,7 @@ def check(manifest: CapabilityManifest) -> CheckResult:
         trace_event_id="trace:conformance:principal:expired",
     ):
         problems.append("expired_attestation_issuance_accepted")
-
-    unique = sorted(set(problems))
-    return CheckResult(
-        "principal_attestation_contract",
-        not unique,
-        ", ".join(unique),
-    )
+    return problems
 
 
 def _attestation() -> PrincipalAttestation:
@@ -171,19 +203,21 @@ def _matches(
     epoch: int | None = None,
     cluster_id: str = "cluster:conformance:alpha",
 ) -> bool:
-    return principal_verification_matches(
-        verification,
-        profile=context.profile,
-        assurance=context.assurance,
-        manifest_root=context.manifest_root,
-        commit_policy_root=context.commit_policy_root,
-        protocol_id=context.protocol_id,
-        run_id=context.run_id if run_id is None else run_id,
-        target=context.target if target is None else target,
-        epoch=context.epoch if epoch is None else epoch,
-        principal_id="principal:conformance:alpha",
-        cluster_id=cluster_id,
-        current_step=current_step,
+    return bool(
+        principal_verification_matches(
+            verification,
+            profile=context.profile,
+            assurance=context.assurance,
+            manifest_root=context.manifest_root,
+            commit_policy_root=context.commit_policy_root,
+            protocol_id=context.protocol_id,
+            run_id=context.run_id if run_id is None else run_id,
+            target=context.target if target is None else target,
+            epoch=context.epoch if epoch is None else epoch,
+            principal_id="principal:conformance:alpha",
+            cluster_id=cluster_id,
+            current_step=current_step,
+        )
     )
 
 

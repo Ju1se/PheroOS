@@ -44,10 +44,34 @@ from pheroos.governance import (
     verify_signal_input,
 )
 from pheroos.governance.errors import GovernanceError
+from pheroos.governance._pheromone.records import PheromoneLifecycleRecord
+from pheroos.governance._swarm.trace import _clip_causal_lineage
 from pheroos.protocol import CollectiveDecisionPolicy
 
 
 TARGET = "decision:collective"
+
+
+def test_clip_causal_lineage_rejects_corrupted_internal_json() -> None:
+    record = PheromoneLifecycleRecord(
+        action="clip",
+        target=TARGET,
+        candidate_id="candidate:alpha",
+        subject_type="candidate",
+        subject_id="candidate:alpha",
+        kind="positive",
+        source_kind="positive",
+        source_id="agent:one",
+        provenance="evidence:one",
+        source_trace_event_id="trace:source",
+        trace_event_id="trace:clip",
+        old_strength=1.0,
+        new_strength=1.0,
+        _causal_payload_json="{",
+    )
+
+    with pytest.raises(GovernanceError, match="not canonical JSON"):
+        _clip_causal_lineage(record)
 
 
 def verified_scout(
@@ -143,7 +167,9 @@ def test_consensus_falls_back_when_scout_threshold_is_not_met() -> None:
 def test_collective_decision_accepts_runtime_fallback_override() -> None:
     decision = evaluate_collective_decision(
         candidate_set=declared_candidates(),
-        policy=policy(fallback_candidate="", min_independent_scouts=2, quorum_threshold=1),
+        policy=policy(
+            fallback_candidate="", min_independent_scouts=2, quorum_threshold=1
+        ),
         target="decision:collective",
         scout_reports=[verified_scout("scout:a")],
         fallback_candidate_id="candidate:safe_fallback",
@@ -158,7 +184,9 @@ def test_collective_decision_rejects_invalid_runtime_fallback_override() -> None
         with pytest.raises(GovernanceError):
             evaluate_collective_decision(
                 candidate_set=declared_candidates(),
-                policy=policy(fallback_candidate="", min_independent_scouts=2, quorum_threshold=1),
+                policy=policy(
+                    fallback_candidate="", min_independent_scouts=2, quorum_threshold=1
+                ),
                 target="decision:collective",
                 scout_reports=[verified_scout("scout:a")],
                 fallback_candidate_id=fallback_candidate_id,
@@ -214,8 +242,12 @@ def test_collective_decision_rejects_fallback_override_of_declared_policy() -> N
     candidates = CandidateSet(
         [
             Candidate(id="candidate:alpha", target="decision:collective"),
-            Candidate(id="candidate:safe-a", target="decision:collective", safe_fallback=True),
-            Candidate(id="candidate:safe-b", target="decision:collective", safe_fallback=True),
+            Candidate(
+                id="candidate:safe-a", target="decision:collective", safe_fallback=True
+            ),
+            Candidate(
+                id="candidate:safe-b", target="decision:collective", safe_fallback=True
+            ),
         ]
     )
 
@@ -236,8 +268,12 @@ def test_collective_decision_rejects_ambiguous_compatibility_fallback() -> None:
     candidates = CandidateSet(
         [
             Candidate(id="candidate:alpha", target="decision:collective"),
-            Candidate(id="candidate:safe-a", target="decision:collective", safe_fallback=True),
-            Candidate(id="candidate:safe-b", target="decision:collective", safe_fallback=True),
+            Candidate(
+                id="candidate:safe-a", target="decision:collective", safe_fallback=True
+            ),
+            Candidate(
+                id="candidate:safe-b", target="decision:collective", safe_fallback=True
+            ),
         ]
     )
 
@@ -269,7 +305,9 @@ def test_recruitment_is_ignored_when_disabled() -> None:
         policy=policy(recruitment_enabled=False),
         target=TARGET,
         scout_reports=[verified_scout("scout:a")],
-        recruitment_signals=[RecruitmentSignal("signal:a", "candidate:alpha", strength=2)],
+        recruitment_signals=[
+            RecruitmentSignal("signal:a", "candidate:alpha", strength=2)
+        ],
     )
 
     assert state.scores["candidate:alpha"] == 1
@@ -293,7 +331,9 @@ def test_inhibition_is_ignored_when_disabled() -> None:
         policy=policy(inhibition_enabled=False, quorum_threshold=3),
         target=TARGET,
         scout_reports=[verified_scout("scout:a", support=3)],
-        inhibition_signals=[InhibitionSignal("signal:a", "candidate:alpha", strength=2)],
+        inhibition_signals=[
+            InhibitionSignal("signal:a", "candidate:alpha", strength=2)
+        ],
     )
 
     assert state.scores["candidate:alpha"] == 3
@@ -321,7 +361,13 @@ def test_pheromone_evaporation_reduces_all_kinds_deterministically() -> None:
         current_step=1,
     )
 
-    assert [trail.kind for trail in trails] == ["positive", "negative", "cautionary", "novelty", "stale"]
+    assert [trail.kind for trail in trails] == [
+        "positive",
+        "negative",
+        "cautionary",
+        "novelty",
+        "stale",
+    ]
     assert [trail.strength for trail in trails] == [6, 6, 6, 6, 6]
     assert [trail.updated_at_step for trail in trails] == [1, 1, 1, 1, 1]
 
@@ -392,7 +438,9 @@ def test_pheromone_deposit_is_clipped_to_per_round_cap() -> None:
 
 
 def test_candidate_subject_scores_declared_candidate() -> None:
-    trail = pheromone("", subject_type="candidate", subject_id="candidate:alpha", strength=2)
+    trail = pheromone(
+        "", subject_type="candidate", subject_id="candidate:alpha", strength=2
+    )
 
     scores = score_pheromone_trails(
         candidate_set=declared_candidates(),
@@ -414,7 +462,9 @@ def test_non_candidate_pheromone_subjects_validate_without_candidate_scoring() -
     ]
 
     for mark in marks:
-        validate_pheromone_trail(mark, pheromone_policy(), candidate_set=declared_candidates())
+        validate_pheromone_trail(
+            mark, pheromone_policy(), candidate_set=declared_candidates()
+        )
     scores = score_pheromone_trails(
         candidate_set=declared_candidates(),
         policy=pheromone_policy(),
@@ -436,7 +486,9 @@ def test_legacy_candidate_pheromone_form_remains_compatible() -> None:
         trace_event_id="trace:pheromone",
     )
 
-    validate_pheromone_trail(trail, pheromone_policy(), candidate_set=declared_candidates())
+    validate_pheromone_trail(
+        trail, pheromone_policy(), candidate_set=declared_candidates()
+    )
 
     assert pheromone_subject_type(trail) == "candidate"
     assert pheromone_subject_id(trail) == "candidate:alpha"
@@ -498,9 +550,24 @@ def test_per_source_cap_limits_total_scoring_contribution() -> None:
         candidate_set=declared_candidates(),
         policy=pheromone_policy(per_source_cap=4),
         trails=[
-            pheromone("candidate:alpha", strength=3, source_id="agent:a", provenance="driver:a"),
-            pheromone("candidate:alpha", strength=3, source_id="agent:a", provenance="driver:a"),
-            pheromone("candidate:alpha", strength=3, source_id="agent:b", provenance="driver:b"),
+            pheromone(
+                "candidate:alpha",
+                strength=3,
+                source_id="agent:a",
+                provenance="driver:a",
+            ),
+            pheromone(
+                "candidate:alpha",
+                strength=3,
+                source_id="agent:a",
+                provenance="driver:a",
+            ),
+            pheromone(
+                "candidate:alpha",
+                strength=3,
+                source_id="agent:b",
+                provenance="driver:b",
+            ),
         ],
     )
 
@@ -508,44 +575,71 @@ def test_per_source_cap_limits_total_scoring_contribution() -> None:
 
 
 def test_source_diversity_is_counted_and_can_gate_pheromone_scoring() -> None:
-    one_source = [pheromone("candidate:alpha", strength=2, source_id="agent:a", provenance="driver:a")]
-    two_sources = one_source + [pheromone("candidate:alpha", strength=2, source_id="agent:b", provenance="driver:b")]
+    one_source = [
+        pheromone(
+            "candidate:alpha", strength=2, source_id="agent:a", provenance="driver:a"
+        )
+    ]
+    two_sources = one_source + [
+        pheromone(
+            "candidate:alpha", strength=2, source_id="agent:b", provenance="driver:b"
+        )
+    ]
     policy = pheromone_policy(min_source_diversity=2, per_source_cap=100)
 
-    assert collect_pheromone_source_diversity(
-        candidate_set=declared_candidates(),
-        trails=two_sources,
-        policy=policy,
-    )["candidate:alpha"] == 2
-    assert score_pheromone_trails(
-        candidate_set=declared_candidates(),
-        policy=policy,
-        trails=one_source,
-    )["candidate:alpha"] == 0
-    assert score_pheromone_trails(
-        candidate_set=declared_candidates(),
-        policy=policy,
-        trails=two_sources,
-    )["candidate:alpha"] == 4
+    assert (
+        collect_pheromone_source_diversity(
+            candidate_set=declared_candidates(),
+            trails=two_sources,
+            policy=policy,
+        )["candidate:alpha"]
+        == 2
+    )
+    assert (
+        score_pheromone_trails(
+            candidate_set=declared_candidates(),
+            policy=policy,
+            trails=one_source,
+        )["candidate:alpha"]
+        == 0
+    )
+    assert (
+        score_pheromone_trails(
+            candidate_set=declared_candidates(),
+            policy=policy,
+            trails=two_sources,
+        )["candidate:alpha"]
+        == 4
+    )
 
 
 def test_zero_strength_trail_cannot_fabricate_source_diversity() -> None:
     trails = [
-        pheromone("candidate:alpha", strength=5, source_id="agent:a", provenance="driver:a"),
-        pheromone("candidate:alpha", strength=0, source_id="agent:b", provenance="driver:b"),
+        pheromone(
+            "candidate:alpha", strength=5, source_id="agent:a", provenance="driver:a"
+        ),
+        pheromone(
+            "candidate:alpha", strength=0, source_id="agent:b", provenance="driver:b"
+        ),
     ]
     policy = pheromone_policy(min_source_diversity=2, per_source_cap=100)
 
-    assert collect_pheromone_source_diversity(
-        candidate_set=declared_candidates(),
-        trails=trails,
-        policy=policy,
-    )["candidate:alpha"] == 1
-    assert score_pheromone_trails(
-        candidate_set=declared_candidates(),
-        trails=trails,
-        policy=policy,
-    )["candidate:alpha"] == 0
+    assert (
+        collect_pheromone_source_diversity(
+            candidate_set=declared_candidates(),
+            trails=trails,
+            policy=policy,
+        )["candidate:alpha"]
+        == 1
+    )
+    assert (
+        score_pheromone_trails(
+            candidate_set=declared_candidates(),
+            trails=trails,
+            policy=policy,
+        )["candidate:alpha"]
+        == 0
+    )
 
 
 def test_global_source_cap_is_applied_before_candidate_diversity_gate() -> None:
@@ -715,7 +809,9 @@ def test_namespaced_pheromone_values_validate_but_do_not_score_by_default() -> N
     )
 
     validate_pheromone_trail(custom_kind, policy, candidate_set=declared_candidates())
-    validate_pheromone_trail(custom_subject, policy, candidate_set=declared_candidates())
+    validate_pheromone_trail(
+        custom_subject, policy, candidate_set=declared_candidates()
+    )
     scores = score_pheromone_trails(
         candidate_set=declared_candidates(),
         policy=policy,
@@ -749,16 +845,22 @@ def test_namespaced_kind_profile_requires_its_own_scoring_subject_declaration() 
         },
     )
 
-    assert score_pheromone_trails(
-        candidate_set=declared_candidates(),
-        policy=metadata_policy,
-        trails=[custom],
-    )["candidate:alpha"] == 0
-    assert score_pheromone_trails(
-        candidate_set=declared_candidates(),
-        policy=explicit_policy,
-        trails=[custom],
-    )["candidate:alpha"] == 6
+    assert (
+        score_pheromone_trails(
+            candidate_set=declared_candidates(),
+            policy=metadata_policy,
+            trails=[custom],
+        )["candidate:alpha"]
+        == 0
+    )
+    assert (
+        score_pheromone_trails(
+            candidate_set=declared_candidates(),
+            policy=explicit_policy,
+            trails=[custom],
+        )["candidate:alpha"]
+        == 6
+    )
 
 
 @pytest.mark.parametrize(
@@ -807,7 +909,9 @@ def test_route_tool_and_agent_pheromone_score_only_when_declared_by_policy() -> 
     )
     route_scores, breakdown = score_pheromone_trails_with_breakdown(
         candidate_set=declared_candidates(),
-        policy=pheromone_policy(scored_subject_types=["candidate", "route"], per_source_cap=100),
+        policy=pheromone_policy(
+            scored_subject_types=["candidate", "route"], per_source_cap=100
+        ),
         trails=[route_trail],
     )
 
@@ -850,19 +954,34 @@ def test_pheromone_diffuses_only_across_declared_topology_and_hop_bound() -> Non
     topology = PheromoneNeighborhood(
         subjects=[
             PheromoneSubject("route", "route:alpha", candidate_id="candidate:alpha"),
-            PheromoneSubject("candidate", "candidate:alpha", candidate_id="candidate:alpha"),
+            PheromoneSubject(
+                "candidate", "candidate:alpha", candidate_id="candidate:alpha"
+            ),
             PheromoneSubject("tool", "tool:review", candidate_id="candidate:alpha"),
         ],
         edges=[
-            PheromoneEdge("route", "route:alpha", "candidate", "candidate:alpha", attenuation=0.5),
-            PheromoneEdge("candidate", "candidate:alpha", "tool", "tool:review", attenuation=0.5),
+            PheromoneEdge(
+                "route", "route:alpha", "candidate", "candidate:alpha", attenuation=0.5
+            ),
+            PheromoneEdge(
+                "candidate", "candidate:alpha", "tool", "tool:review", attenuation=0.5
+            ),
         ],
     )
 
     trails = diffuse_pheromone_trails(
-        [pheromone("candidate:alpha", subject_type="route", subject_id="route:alpha", strength=8)],
+        [
+            pheromone(
+                "candidate:alpha",
+                subject_type="route",
+                subject_id="route:alpha",
+                strength=8,
+            )
+        ],
         topology,
-        pheromone_policy(scored_subject_types=["candidate", "route"], per_source_cap=100),
+        pheromone_policy(
+            scored_subject_types=["candidate", "route"], per_source_cap=100
+        ),
         PheromoneDiffusionPolicy(enabled=True, max_hops=1, attenuation=0.5),
         candidate_set=declared_candidates(),
     )
@@ -943,10 +1062,15 @@ def test_pheromone_feedback_reinforces_outcomes_and_requires_lineage() -> None:
             target="decision:collective",
         )
 
-    assert {trail.kind: trail.strength for trail in reinforced} == {"positive": 1, "cautionary": 2}
+    assert {trail.kind: trail.strength for trail in reinforced} == {
+        "positive": 1,
+        "cautionary": 2,
+    }
 
 
-def test_pheromone_feedback_requires_source_candidate_binding_and_bounded_delta() -> None:
+def test_pheromone_feedback_requires_source_candidate_binding_and_bounded_delta() -> (
+    None
+):
     policy = pheromone_policy(feedback_enabled=True)
 
     for feedback in [
@@ -1000,26 +1124,41 @@ def test_pheromone_feedback_requires_source_candidate_binding_and_bounded_delta(
         ),
     ]:
         with pytest.raises(GovernanceError):
-            validate_pheromone_feedback(feedback, policy, candidate_set=declared_candidates(), target="decision:collective")
+            validate_pheromone_feedback(
+                feedback,
+                policy,
+                candidate_set=declared_candidates(),
+                target="decision:collective",
+            )
 
 
 def test_pheromone_response_models_are_deterministic() -> None:
     saturating = score_pheromone_trails(
         candidate_set=declared_candidates(),
-        policy=pheromone_policy(response_model="saturating", saturation_threshold=2, per_source_cap=100),
+        policy=pheromone_policy(
+            response_model="saturating", saturation_threshold=2, per_source_cap=100
+        ),
         trails=[pheromone("candidate:alpha", strength=6)],
     )
     threshold = score_pheromone_trails(
         candidate_set=declared_candidates(),
-        policy=pheromone_policy(response_model="threshold", activation_threshold=3, per_source_cap=100),
+        policy=pheromone_policy(
+            response_model="threshold", activation_threshold=3, per_source_cap=100
+        ),
         trails=[pheromone("candidate:alpha", strength=2)],
     )
     competitive = score_pheromone_trails(
         candidate_set=declared_candidates(),
-        policy=pheromone_policy(response_model="competitive", competition_mode="normalize", per_source_cap=100),
+        policy=pheromone_policy(
+            response_model="competitive",
+            competition_mode="normalize",
+            per_source_cap=100,
+        ),
         trails=[
             pheromone("candidate:alpha", strength=2, source_id="agent:a"),
-            pheromone("candidate:beta", strength=2, source_id="agent:b", provenance="driver:b"),
+            pheromone(
+                "candidate:beta", strength=2, source_id="agent:b", provenance="driver:b"
+            ),
         ],
     )
 
@@ -1044,8 +1183,20 @@ def test_layer_coordination_unresolved_conflict_forces_safe_fallback() -> None:
         ),
         fallback_candidate_id="candidate:safe_fallback",
         proposals=[
-            layer_proposal("learned", "candidate:alpha", confidence=0.9, support=10, provenance="runtime:learned"),
-            layer_proposal("reactive", "candidate:beta", confidence=0.85, support=10, provenance="runtime:reactive"),
+            layer_proposal(
+                "learned",
+                "candidate:alpha",
+                confidence=0.9,
+                support=10,
+                provenance="runtime:learned",
+            ),
+            layer_proposal(
+                "reactive",
+                "candidate:beta",
+                confidence=0.85,
+                support=10,
+                provenance="runtime:reactive",
+            ),
         ],
     )
     assert layer_state.fallback_used is True
@@ -1053,9 +1204,15 @@ def test_layer_coordination_unresolved_conflict_forces_safe_fallback() -> None:
     with pytest.raises(GovernanceError, match="not authoritative"):
         evaluate_collective_decision(
             candidate_set=declared_candidates(),
-            policy=policy(layer_coordination_enabled=True, min_independent_scouts=1, quorum_threshold=1),
+            policy=policy(
+                layer_coordination_enabled=True,
+                min_independent_scouts=1,
+                quorum_threshold=1,
+            ),
             target="decision:collective",
-            scout_reports=[ScoutReport("scout:a", "candidate:alpha", "evidence:a", "driver:a")],
+            scout_reports=[
+                ScoutReport("scout:a", "candidate:alpha", "evidence:a", "driver:a")
+            ],
             layer_coordination_state=layer_state,
         )
 
@@ -1073,7 +1230,10 @@ def test_policy_adjustments_are_bounded_and_cannot_be_reactive() -> None:
         PolicyAdjustmentProposal(
             layer_id="evolutionary",
             source_id="layer:evolutionary",
-            adjustments={"pheromone_evaporation_rate": 0.2, "pheromone_response_model": "saturating"},
+            adjustments={
+                "pheromone_evaporation_rate": 0.2,
+                "pheromone_response_model": "saturating",
+            },
             provenance="runtime:evolutionary",
             trace_event_id="trace:adjustment",
         ),
@@ -1103,7 +1263,10 @@ def test_policy_adjustments_are_bounded_and_cannot_be_reactive() -> None:
             coordination_policy,
         )
 
-    assert accepted == {"pheromone_evaporation_rate": 0.2, "pheromone_response_model": "saturating"}
+    assert accepted == {
+        "pheromone_evaporation_rate": 0.2,
+        "pheromone_response_model": "saturating",
+    }
 
 
 def test_collective_score_breakdown_reconstructs_scores() -> None:
@@ -1124,7 +1287,10 @@ def test_collective_score_breakdown_reconstructs_scores() -> None:
     )
 
     assert state.scores["candidate:alpha"] == 4.5
-    assert sum(state.score_breakdown["candidate:alpha"].values()) == state.scores["candidate:alpha"]
+    assert (
+        sum(state.score_breakdown["candidate:alpha"].values())
+        == state.scores["candidate:alpha"]
+    )
 
 
 def test_candidate_score_lineage_exposes_reconstructable_breakdown() -> None:
@@ -1139,7 +1305,10 @@ def test_candidate_score_lineage_exposes_reconstructable_breakdown() -> None:
     lineage = candidate_score_lineage(state, candidate_id="candidate:alpha")
 
     assert lineage["scores"] == {"candidate:alpha": 3.0}
-    assert sum(lineage["score_breakdown"]["candidate:alpha"].values()) == lineage["scores"]["candidate:alpha"]
+    assert (
+        sum(lineage["score_breakdown"]["candidate:alpha"].values())
+        == lineage["scores"]["candidate:alpha"]
+    )
     assert lineage["independent_scouts"]["candidate:alpha"] == ["scout:a"]
     assert lineage["pheromone_source_diversity"]["candidate:alpha"] == 1
 
@@ -1281,10 +1450,18 @@ def test_collective_decision_rejects_candidate_for_different_target() -> None:
             candidate_set=CandidateSet(
                 [
                     Candidate(id="candidate:alpha", target="decision:other"),
-                    Candidate(id="candidate:safe_fallback", target="decision:collective", safe_fallback=True),
+                    Candidate(
+                        id="candidate:safe_fallback",
+                        target="decision:collective",
+                        safe_fallback=True,
+                    ),
                 ]
             ),
-            policy=policy(fallback_candidate="candidate:safe_fallback", min_independent_scouts=1, quorum_threshold=1),
+            policy=policy(
+                fallback_candidate="candidate:safe_fallback",
+                min_independent_scouts=1,
+                quorum_threshold=1,
+            ),
             target="decision:collective",
             scout_reports=[verified_scout("scout:a")],
         )
@@ -1321,7 +1498,11 @@ def declared_candidates() -> CandidateSet:
         [
             Candidate(id="candidate:alpha", target="decision:collective"),
             Candidate(id="candidate:beta", target="decision:collective"),
-            Candidate(id="candidate:safe_fallback", target="decision:collective", safe_fallback=True),
+            Candidate(
+                id="candidate:safe_fallback",
+                target="decision:collective",
+                safe_fallback=True,
+            ),
         ]
     )
 

@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 from copy import deepcopy
 from dataclasses import dataclass, field
-from typing import Any, Iterable
+from typing import Any, Iterable, cast
 
 import pheroos.trace.validation as _validation
 from pheroos.trace.commit_contracts import build_commit_trace_lineage
@@ -98,7 +98,7 @@ make_commit_trace_event.__module__ = "pheroos.trace"
 # ``validate_event_lineage`` historically resolved this forward reference from
 # the package-root globals.  Bind the canonical class for equivalent
 # ``typing.get_type_hints`` behavior without making validation own the model.
-_validation.TraceEvent = TraceEvent
+_validation.TraceEvent = cast(Any, TraceEvent)
 
 
 __all__: tuple[str, ...] = ()

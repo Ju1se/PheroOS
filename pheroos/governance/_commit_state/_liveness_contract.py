@@ -5,10 +5,11 @@ from pheroos.governance._commit_validation import (
     require_commit_step,
 )
 from pheroos.governance.errors import GovernanceError
+from pheroos.governance._commit_state._record_views import LivenessRecordView
 
 
 def _validate_assessment_lineage_roots(
-    record: object,
+    record: LivenessRecordView,
     *,
     has_assessment: bool,
     field_name: str,
@@ -55,7 +56,7 @@ def _validate_assessment_lineage_roots(
 
 
 def _validate_sealed_heartbeat_lineage(
-    record: object,
+    record: LivenessRecordView,
     *,
     field_name: str,
 ) -> None:

@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 from dataclasses import dataclass, field
-from enum import StrEnum
 
 from pheroos.governance._commit_validation import (
     require_commit_fingerprint,
@@ -10,7 +9,12 @@ from pheroos.governance._commit_validation import (
     require_commit_step,
     require_commit_text,
 )
-from pheroos.governance._risk.invariants import (
+from pheroos.governance._risk_policy import (
+    _RISK_ORDER as _RISK_ORDER,
+)
+from pheroos.governance._risk_policy import (
+    _RISK_ORDER_BY_VALUE,
+    RiskBand as RiskBand,
     _risk_band_values,
     _validate_bound_record,
 )
@@ -21,17 +25,6 @@ from pheroos.protocol.commit_models import (
     CommitAssurance,
     RiskBandPolicy,
 )
-
-
-class RiskBand(StrEnum):
-    LOW = "LOW"
-    MODERATE = "MODERATE"
-    HIGH = "HIGH"
-    CRITICAL = "CRITICAL"
-
-
-_RISK_ORDER = {band: index for index, band in enumerate(RiskBand)}
-_RISK_ORDER_BY_VALUE = {band.value: index for band, index in _RISK_ORDER.items()}
 
 
 @dataclass(frozen=True)
@@ -72,6 +65,7 @@ class RiskAssessmentChainState:
 
     def __post_init__(self) -> None:
         _validate_risk_assessment_chain_state_shape(self)
+
 
 @dataclass(frozen=True)
 class RiskAssessment:
@@ -125,6 +119,7 @@ class RiskAssessment:
             ),
         )
         _validate_risk_assessment_shape(self)
+
 
 @dataclass(frozen=True)
 class CommitThresholdSnapshot:
@@ -197,8 +192,15 @@ class CommitThresholdSnapshot:
         )
         _validate_threshold_snapshot_shape(self)
 
+
 def _validate_risk_assessment_shape(assessment: RiskAssessment) -> None:
     _validate_bound_record(assessment, "risk assessment")
+    revision = _validate_risk_assessment_identity(assessment)
+    _validate_risk_assessment_lineage(assessment, revision=revision)
+    _validate_risk_assessment_authority_window(assessment)
+
+
+def _validate_risk_assessment_identity(assessment: RiskAssessment) -> int:
     for name in (
         "assessment_id",
         "assessment_method",
@@ -221,6 +223,14 @@ def _validate_risk_assessment_shape(assessment: RiskAssessment) -> None:
     )
     if revision <= 0:
         raise GovernanceError("risk assessment chain revision must be positive")
+    return revision
+
+
+def _validate_risk_assessment_lineage(
+    assessment: RiskAssessment,
+    *,
+    revision: int,
+) -> None:
     _canonical_fingerprints(
         assessment.risk_input_fingerprints,
         "risk assessment input fingerprints",
@@ -240,8 +250,14 @@ def _validate_risk_assessment_shape(assessment: RiskAssessment) -> None:
         raise GovernanceError("risk reassessment must name its predecessor")
     if type(assessment.window_reset_required) is not bool:
         raise GovernanceError("risk assessment reset flag must be boolean")
-    if not assessment.previous_assessment_fingerprint and assessment.window_reset_required:
+    if (
+        not assessment.previous_assessment_fingerprint
+        and assessment.window_reset_required
+    ):
         raise GovernanceError("initial risk assessment cannot require a risk reset")
+
+
+def _validate_risk_assessment_authority_window(assessment: RiskAssessment) -> None:
     if type(assessment.authority) is not AuthorityLevel or not can_verify(
         assessment.authority
     ):
@@ -256,6 +272,7 @@ def _validate_risk_assessment_shape(assessment: RiskAssessment) -> None:
     )
     if expires <= issued:
         raise GovernanceError("risk assessment expiry must be after issuance")
+
 
 def _validate_risk_assessment_chain_state_shape(
     state: RiskAssessmentChainState,
@@ -291,7 +308,9 @@ def _validate_risk_assessment_chain_state_shape(
         "risk assessment chain state expires_at_step",
     )
     if expires <= initialized:
-        raise GovernanceError("risk assessment chain expiry must be after initialization")
+        raise GovernanceError(
+            "risk assessment chain expiry must be after initialization"
+        )
     if not initialized <= last_issued < expires:
         raise GovernanceError("risk assessment chain issuance step is out of bounds")
     if type(state.authority) is not AuthorityLevel or not can_verify(state.authority):
@@ -304,7 +323,9 @@ def _validate_risk_assessment_chain_state_shape(
         ):
             raise GovernanceError("empty risk assessment chain has a forged head")
         if last_issued != initialized:
-            raise GovernanceError("empty risk assessment chain issuance step is invalid")
+            raise GovernanceError(
+                "empty risk assessment chain issuance step is invalid"
+            )
     else:
         require_commit_fingerprint(
             state.latest_assessment_fingerprint,
@@ -317,8 +338,16 @@ def _validate_risk_assessment_chain_state_shape(
         if state.latest_risk_band not in _RISK_ORDER_BY_VALUE:
             raise GovernanceError("risk assessment chain latest risk band is invalid")
 
+
 def _validate_threshold_snapshot_shape(snapshot: CommitThresholdSnapshot) -> None:
     _validate_bound_record(snapshot, "commit threshold")
+    _validate_threshold_identity(snapshot)
+    _validate_threshold_numeric_bounds(snapshot)
+    _validate_threshold_labels(snapshot)
+    _validate_threshold_authority_window(snapshot)
+
+
+def _validate_threshold_identity(snapshot: CommitThresholdSnapshot) -> None:
     for name in ("threshold_id", "issuer_id", "provenance", "trace_event_id"):
         require_commit_text(getattr(snapshot, name), f"commit threshold {name}")
     for name in (
@@ -328,15 +357,21 @@ def _validate_threshold_snapshot_shape(snapshot: CommitThresholdSnapshot) -> Non
         "risk_chain_state_fingerprint",
     ):
         require_commit_fingerprint(getattr(snapshot, name), f"commit threshold {name}")
-    if require_commit_step(
-        snapshot.risk_chain_revision,
-        "commit threshold risk_chain_revision",
-    ) <= 0:
+    if (
+        require_commit_step(
+            snapshot.risk_chain_revision,
+            "commit threshold risk_chain_revision",
+        )
+        <= 0
+    ):
         raise GovernanceError("commit threshold chain revision must be positive")
     if type(snapshot.risk_band) is not RiskBand:
         raise GovernanceError("commit threshold risk band is invalid")
     if type(snapshot.minimum_assurance) is not CommitAssurance:
         raise GovernanceError("commit threshold minimum assurance is invalid")
+
+
+def _validate_threshold_numeric_bounds(snapshot: CommitThresholdSnapshot) -> None:
     for name in (
         "minimum_positive_evidence",
         "maximum_counterevidence",
@@ -366,6 +401,9 @@ def _validate_threshold_snapshot_shape(snapshot: CommitThresholdSnapshot) -> Non
     )
     if ratio <= 0:
         raise GovernanceError("commit threshold support ratio must be positive")
+
+
+def _validate_threshold_labels(snapshot: CommitThresholdSnapshot) -> None:
     require_commit_labels(
         snapshot.required_challenge_categories,
         "commit threshold required challenge categories",
@@ -380,6 +418,9 @@ def _validate_threshold_snapshot_shape(snapshot: CommitThresholdSnapshot) -> Non
         "commit threshold executable outcomes",
         allow_empty=True,
     )
+
+
+def _validate_threshold_authority_window(snapshot: CommitThresholdSnapshot) -> None:
     if type(snapshot.authority) is not AuthorityLevel or not can_verify(
         snapshot.authority
     ):
@@ -395,6 +436,7 @@ def _validate_threshold_snapshot_shape(snapshot: CommitThresholdSnapshot) -> Non
     if expires <= issued:
         raise GovernanceError("commit threshold expiry must be after issuance")
 
+
 def _threshold_values(snapshot: CommitThresholdSnapshot) -> tuple[object, ...]:
     return _risk_band_values(
         RiskBandPolicy(
@@ -408,14 +450,13 @@ def _threshold_values(snapshot: CommitThresholdSnapshot) -> tuple[object, ...]:
             minimum_source_diversity=snapshot.minimum_source_diversity,
             minimum_margin=snapshot.minimum_margin,
             stability_steps=snapshot.stability_steps,
-            required_challenge_categories=list(
-                snapshot.required_challenge_categories
-            ),
+            required_challenge_categories=list(snapshot.required_challenge_categories),
             minimum_assurance=snapshot.minimum_assurance.value,
             publishable_outcomes=list(snapshot.publishable_outcomes),
             executable_outcomes=list(snapshot.executable_outcomes),
         )
     )
+
 
 def _canonical_fingerprints(
     values: Sequence[str],
@@ -429,6 +470,7 @@ def _canonical_fingerprints(
     if len(normalized) != len(set(normalized)):
         raise GovernanceError(f"{field_name} contains a duplicate")
     return tuple(sorted(normalized))
+
 
 _PUBLIC_MODULE = "pheroos.governance.risk"
 for _public_object in (

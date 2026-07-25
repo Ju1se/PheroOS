@@ -26,7 +26,9 @@ def check(core_root: Path) -> CheckResult:
             or not any(surface.glob("*.py"))
         ):
             missing.append(relative)
-    return CheckResult("source_surface", not missing, ", ".join(f"missing:{item}" for item in missing))
+    return CheckResult(
+        "source_surface", not missing, ", ".join(f"missing:{item}" for item in missing)
+    )
 
 
 __all__ = ["REQUIRED_SOURCE_SURFACES", "check"]

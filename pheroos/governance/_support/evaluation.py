@@ -14,75 +14,25 @@ from pheroos.governance.commit_numeric import (
     scaled_ratio,
 )
 from pheroos.governance.errors import GovernanceError
-from pheroos.protocol.commit_models import CollectiveCommitPolicy
+from pheroos.protocol.commit_models import CollectiveCommitPolicy, SupportLeasePolicy
 from pheroos.governance._support.invariants import (
     _canonical_fingerprints,
-    _eligible_cluster_payload,
     _equivocation_finding_id,
-    _membership_epoch_authority_key,
-    _membership_root,
-    _normalized_bindings,
-    _record_bindings_equal,
     _same_commit_scope,
-    _support_replay_authority_key,
-    _validate_bound_record,
     _validate_commit_policy_binding,
-    _validate_eligible_principal,
     _validate_support_policy,
 )
 from pheroos.governance._support.records import (
     EligibleMembershipEpochState,
-    EligiblePrincipal,
-    EligiblePrincipalCluster,
     EligiblePrincipalSnapshot,
     SupportEquivocationFinding,
     SupportLease,
     SupportLeaseEvaluation,
-    SupportLeaseExpiration,
-    SupportLeaseProposal,
     SupportLeaseReplayReceipt,
     SupportLeaseReplayState,
     SupportLeaseRevocation,
     SupportLeaseStatus,
-    SupportLeaseSwitch,
-    _LEGACY_MEMBERSHIP_EPOCH_CURSORS,
-    _LEGACY_SUPPORT_REPLAY_CURSORS,
-    _MEMBERSHIP_EPOCH_STATE_ISSUANCE,
-    _MEMBERSHIP_SNAPSHOT_ISSUANCE,
-    _MembershipEpochCursor,
-    _SUPPORT_LEASE_ISSUANCE,
-    _SUPPORT_LEASE_REPLAY_STATE_ISSUANCE,
-    _SUPPORT_REVOCATION_ISSUANCE,
-    _SupportLeaseReplayCursor,
-    _canonical_support_replay_receipts,
-    _membership_epoch_state_snapshot,
-    _membership_snapshot,
-    _support_lease_snapshot,
-    _support_replay_root,
-    _support_replay_state_snapshot,
-    _support_revocation_snapshot,
-    _validate_equivocation_finding,
-    _validate_membership_epoch_state_shape,
-    _validate_membership_snapshot_shape,
-    _validate_support_evaluation,
-    _validate_support_lease_shape,
-    _validate_support_proposal,
-    _validate_support_replay_receipt,
-    _validate_support_replay_state_shape,
-    _validate_support_revocation_shape,
-    eligible_membership_epoch_state_fingerprint,
-    eligible_membership_epoch_state_payload,
-    eligible_principal_snapshot_fingerprint,
-    eligible_principal_snapshot_payload,
     support_lease_fingerprint,
-    support_lease_payload,
-    support_lease_proposal_fingerprint,
-    support_lease_proposal_payload,
-    support_lease_replay_receipt_payload,
-    support_lease_replay_state_fingerprint,
-    support_lease_replay_state_payload,
-    support_lease_revocation_fingerprint,
-    support_lease_revocation_payload,
 )
 from pheroos.governance._support.lease import (
     support_lease_is_authoritative,
@@ -114,110 +64,36 @@ def evaluate_support_leases(
     claim_fingerprint: str,
     current_step: int,
 ) -> SupportLeaseEvaluation:
-    if type(membership_snapshot) is not EligiblePrincipalSnapshot:
-        raise GovernanceError("support evaluation requires a membership snapshot")
-    current = require_commit_step(current_step, "support evaluation current_step")
-    candidate = require_commit_text(candidate_id, "support evaluation candidate_id")
-    claim = require_commit_fingerprint(
-        claim_fingerprint,
-        "support evaluation claim_fingerprint",
-    )
-    if not eligible_principal_snapshot_matches(
-        membership_snapshot,
-        epoch_state=membership_epoch_state,
-        profile=membership_snapshot.profile,
-        assurance=membership_snapshot.assurance,
-        manifest_root=membership_snapshot.manifest_root,
-        commit_policy_root=membership_snapshot.commit_policy_root,
-        protocol_id=membership_snapshot.protocol_id,
-        run_id=membership_snapshot.run_id,
-        target=membership_snapshot.target,
-        epoch=membership_snapshot.epoch,
-        current_step=current,
-    ):
-        raise GovernanceError(
-            "support evaluation membership is forged, stale, or mismatched"
-        )
-    if not support_lease_replay_state_is_current(replay_state):
-        raise GovernanceError(
-            "support evaluation requires the authoritative current replay state"
-        )
-    if (
-        replay_state.profile != membership_snapshot.profile
-        or replay_state.protocol_id != membership_snapshot.protocol_id
-    ):
-        raise GovernanceError("support evaluation replay authority binding mismatch")
-    _validate_commit_policy_binding(commit_policy, membership_snapshot)
-    policy = commit_policy.support_lease
-    _validate_support_policy(policy)
-    eligible_count = len(membership_snapshot.eligible_clusters)
-    if eligible_count == 0:
-        raise GovernanceError(
-            "eligible membership is empty; support policy is incomplete"
-        )
-
-    normalized_leases = tuple(leases)
-    membership_state_fingerprint = eligible_membership_epoch_state_fingerprint(
-        membership_epoch_state
-    )
-    expected_receipts = tuple(
-        receipt
-        for receipt in replay_state.receipts
-        if _support_replay_receipt_matches_scope(
-            receipt,
-            membership_snapshot=membership_snapshot,
-            membership_epoch_state_fingerprint=membership_state_fingerprint,
-        )
-        and receipt.issued_at_step <= current
-    )
-    expected_lease_fingerprints = {
-        receipt.lease_fingerprint for receipt in expected_receipts
-    }
-    claims_by_candidate: dict[str, str] = {}
-    fingerprints: dict[str, SupportLease] = {}
-    lease_ids: set[str] = set()
-    nonces: set[str] = set()
-    for lease in normalized_leases:
-        if not support_lease_is_authoritative(lease):
-            raise GovernanceError("support evaluation contains a forged lease")
-        if not _same_commit_scope(lease, membership_snapshot):
-            raise GovernanceError("support evaluation lease binding mismatch")
-        if lease.membership_root != membership_snapshot.membership_root:
-            raise GovernanceError("support evaluation lease membership root mismatch")
-        if lease.membership_epoch_state_fingerprint != membership_state_fingerprint:
-            raise GovernanceError(
-                "support evaluation lease membership epoch state mismatch"
-            )
-        if lease.replay_authority_key != replay_state.authority_key:
-            raise GovernanceError("support evaluation lease replay authority mismatch")
-        existing_claim = claims_by_candidate.setdefault(
-            lease.candidate_id,
-            lease.claim_fingerprint,
-        )
-        if existing_claim != lease.claim_fingerprint:
-            raise GovernanceError(
-                "support evaluation detected one candidate bound to conflicting claims"
-            )
-        if not _membership_contains_principal(
+    current, candidate, claim, policy, eligible_count = (
+        _validate_support_evaluation_context(
             membership_snapshot,
-            principal_id=lease.principal_id,
-            cluster_id=lease.principal_cluster_id,
-            verification_fingerprint=lease.principal_verification_fingerprint,
-        ):
-            raise GovernanceError("support evaluation lease principal is not eligible")
-        fingerprint = support_lease_fingerprint(lease)
-        if fingerprint in fingerprints or lease.lease_id in lease_ids:
-            raise GovernanceError("support evaluation contains a duplicate lease")
-        replay_key = f"{lease.principal_cluster_id}\x00{lease.nonce}"
-        if replay_key in nonces:
-            raise GovernanceError("support evaluation contains a replayed lease nonce")
-        fingerprints[fingerprint] = lease
-        lease_ids.add(lease.lease_id)
-        nonces.add(replay_key)
-
+            membership_epoch_state=membership_epoch_state,
+            replay_state=replay_state,
+            commit_policy=commit_policy,
+            candidate_id=candidate_id,
+            claim_fingerprint=claim_fingerprint,
+            current_step=current_step,
+        )
+    )
+    normalized_leases = tuple(leases)
+    membership_state_fingerprint, expected_receipts, expected_lease_fingerprints = (
+        _expected_support_replay_receipts(
+            membership_snapshot,
+            membership_epoch_state=membership_epoch_state,
+            replay_state=replay_state,
+            current_step=current,
+        )
+    )
+    fingerprints = _validated_support_lease_map(
+        normalized_leases,
+        membership_snapshot=membership_snapshot,
+        membership_state_fingerprint=membership_state_fingerprint,
+        replay_state=replay_state,
+    )
     if set(fingerprints) != expected_lease_fingerprints:
         raise GovernanceError(
-            "support evaluation lease set is incomplete or absent from the authoritative replay state"
+            "support evaluation lease set is incomplete or absent from the "
+            "authoritative replay state"
         )
 
     revocations_by_lease = _validated_revocation_map(
@@ -234,28 +110,13 @@ def evaluate_support_leases(
         for finding in findings
         for fingerprint in finding.conflicting_lease_fingerprints
     }
-
-    active_by_cluster: dict[str, list[str]] = defaultdict(list)
-    excluded: set[str] = set()
-    for fingerprint, lease in fingerprints.items():
-        if lease.candidate_id != candidate or lease.claim_fingerprint != claim:
-            continue
-        status = support_lease_status(
-            lease,
-            current_step=current,
-            revocations=tuple(revocations),
-            equivocated_lease_fingerprints=tuple(equivocated),
-        )
-        if status is SupportLeaseStatus.ACTIVE:
-            active_by_cluster[lease.principal_cluster_id].append(fingerprint)
-        else:
-            excluded.add(fingerprint)
-
-    active_clusters = tuple(sorted(active_by_cluster))
-    included = tuple(
-        fingerprint
-        for cluster_id in active_clusters
-        for fingerprint in sorted(active_by_cluster[cluster_id])
+    active_clusters, included, excluded = _active_support_lease_fingerprints(
+        fingerprints,
+        candidate=candidate,
+        claim=claim,
+        current_step=current,
+        revocations=revocations,
+        equivocated=equivocated,
     )
     active_count = len(active_clusters)
     ratio_ppm = scaled_ratio(active_count, eligible_count, scale=WEIGHT_SCALE)
@@ -320,6 +181,190 @@ def evaluate_support_leases(
         equivocation_findings=findings,
         lease_root=lease_root,
     )
+
+
+def _validate_support_evaluation_context(
+    membership_snapshot: EligiblePrincipalSnapshot,
+    *,
+    membership_epoch_state: EligibleMembershipEpochState,
+    replay_state: SupportLeaseReplayState,
+    commit_policy: CollectiveCommitPolicy,
+    candidate_id: str,
+    claim_fingerprint: str,
+    current_step: int,
+) -> tuple[int, str, str, SupportLeasePolicy, int]:
+    if type(membership_snapshot) is not EligiblePrincipalSnapshot:
+        raise GovernanceError("support evaluation requires a membership snapshot")
+    current = require_commit_step(current_step, "support evaluation current_step")
+    candidate = require_commit_text(candidate_id, "support evaluation candidate_id")
+    claim = require_commit_fingerprint(
+        claim_fingerprint,
+        "support evaluation claim_fingerprint",
+    )
+    if not eligible_principal_snapshot_matches(
+        membership_snapshot,
+        epoch_state=membership_epoch_state,
+        profile=membership_snapshot.profile,
+        assurance=membership_snapshot.assurance,
+        manifest_root=membership_snapshot.manifest_root,
+        commit_policy_root=membership_snapshot.commit_policy_root,
+        protocol_id=membership_snapshot.protocol_id,
+        run_id=membership_snapshot.run_id,
+        target=membership_snapshot.target,
+        epoch=membership_snapshot.epoch,
+        current_step=current,
+    ):
+        raise GovernanceError(
+            "support evaluation membership is forged, stale, or mismatched"
+        )
+    if not support_lease_replay_state_is_current(replay_state):
+        raise GovernanceError(
+            "support evaluation requires the authoritative current replay state"
+        )
+    if (
+        replay_state.profile != membership_snapshot.profile
+        or replay_state.protocol_id != membership_snapshot.protocol_id
+    ):
+        raise GovernanceError("support evaluation replay authority binding mismatch")
+    _validate_commit_policy_binding(commit_policy, membership_snapshot)
+    policy = commit_policy.support_lease
+    _validate_support_policy(policy)
+    eligible_count = len(membership_snapshot.eligible_clusters)
+    if eligible_count == 0:
+        raise GovernanceError(
+            "eligible membership is empty; support policy is incomplete"
+        )
+    return current, candidate, claim, policy, eligible_count
+
+
+def _expected_support_replay_receipts(
+    membership_snapshot: EligiblePrincipalSnapshot,
+    *,
+    membership_epoch_state: EligibleMembershipEpochState,
+    replay_state: SupportLeaseReplayState,
+    current_step: int,
+) -> tuple[str, tuple[SupportLeaseReplayReceipt, ...], set[str]]:
+    membership_state_fingerprint = eligible_membership_epoch_state_fingerprint(
+        membership_epoch_state
+    )
+    expected_receipts = tuple(
+        receipt
+        for receipt in replay_state.receipts
+        if _support_replay_receipt_matches_scope(
+            receipt,
+            membership_snapshot=membership_snapshot,
+            membership_epoch_state_fingerprint=membership_state_fingerprint,
+        )
+        and receipt.issued_at_step <= current_step
+    )
+    expected_lease_fingerprints = {
+        receipt.lease_fingerprint for receipt in expected_receipts
+    }
+    return (
+        membership_state_fingerprint,
+        expected_receipts,
+        expected_lease_fingerprints,
+    )
+
+
+def _validated_support_lease_map(
+    leases: Sequence[SupportLease],
+    *,
+    membership_snapshot: EligiblePrincipalSnapshot,
+    membership_state_fingerprint: str,
+    replay_state: SupportLeaseReplayState,
+) -> dict[str, SupportLease]:
+    claims_by_candidate: dict[str, str] = {}
+    fingerprints: dict[str, SupportLease] = {}
+    lease_ids: set[str] = set()
+    nonces: set[str] = set()
+    for lease in leases:
+        _validate_support_lease_scope(
+            lease,
+            membership_snapshot=membership_snapshot,
+            membership_state_fingerprint=membership_state_fingerprint,
+            replay_state=replay_state,
+        )
+        existing_claim = claims_by_candidate.setdefault(
+            lease.candidate_id,
+            lease.claim_fingerprint,
+        )
+        if existing_claim != lease.claim_fingerprint:
+            raise GovernanceError(
+                "support evaluation detected one candidate bound to conflicting claims"
+            )
+        if not _membership_contains_principal(
+            membership_snapshot,
+            principal_id=lease.principal_id,
+            cluster_id=lease.principal_cluster_id,
+            verification_fingerprint=lease.principal_verification_fingerprint,
+        ):
+            raise GovernanceError("support evaluation lease principal is not eligible")
+        fingerprint = support_lease_fingerprint(lease)
+        if fingerprint in fingerprints or lease.lease_id in lease_ids:
+            raise GovernanceError("support evaluation contains a duplicate lease")
+        replay_key = f"{lease.principal_cluster_id}\x00{lease.nonce}"
+        if replay_key in nonces:
+            raise GovernanceError("support evaluation contains a replayed lease nonce")
+        fingerprints[fingerprint] = lease
+        lease_ids.add(lease.lease_id)
+        nonces.add(replay_key)
+    return fingerprints
+
+
+def _validate_support_lease_scope(
+    lease: SupportLease,
+    *,
+    membership_snapshot: EligiblePrincipalSnapshot,
+    membership_state_fingerprint: str,
+    replay_state: SupportLeaseReplayState,
+) -> None:
+    if not support_lease_is_authoritative(lease):
+        raise GovernanceError("support evaluation contains a forged lease")
+    if not _same_commit_scope(lease, membership_snapshot):
+        raise GovernanceError("support evaluation lease binding mismatch")
+    if lease.membership_root != membership_snapshot.membership_root:
+        raise GovernanceError("support evaluation lease membership root mismatch")
+    if lease.membership_epoch_state_fingerprint != membership_state_fingerprint:
+        raise GovernanceError(
+            "support evaluation lease membership epoch state mismatch"
+        )
+    if lease.replay_authority_key != replay_state.authority_key:
+        raise GovernanceError("support evaluation lease replay authority mismatch")
+
+
+def _active_support_lease_fingerprints(
+    fingerprints: dict[str, SupportLease],
+    *,
+    candidate: str,
+    claim: str,
+    current_step: int,
+    revocations: Sequence[SupportLeaseRevocation],
+    equivocated: set[str],
+) -> tuple[tuple[str, ...], tuple[str, ...], set[str]]:
+    active_by_cluster: dict[str, list[str]] = defaultdict(list)
+    excluded: set[str] = set()
+    for fingerprint, lease in fingerprints.items():
+        if lease.candidate_id != candidate or lease.claim_fingerprint != claim:
+            continue
+        status = support_lease_status(
+            lease,
+            current_step=current_step,
+            revocations=tuple(revocations),
+            equivocated_lease_fingerprints=tuple(equivocated),
+        )
+        if status is SupportLeaseStatus.ACTIVE:
+            active_by_cluster[lease.principal_cluster_id].append(fingerprint)
+        else:
+            excluded.add(fingerprint)
+
+    active_clusters = tuple(sorted(active_by_cluster))
+    included = tuple(
+        fingerprint
+        for cluster_id in active_clusters
+        for fingerprint in sorted(active_by_cluster[cluster_id])
+    )
+    return active_clusters, included, excluded
 
 
 def _validated_revocation_map(

@@ -94,9 +94,7 @@ def band(
         stability_steps=stability,
         required_challenge_categories=challenges,
         minimum_assurance=assurance,
-        publishable_outcomes=(
-            ["evidence_commit"] if publish is None else publish
-        ),
+        publishable_outcomes=(["evidence_commit"] if publish is None else publish),
         executable_outcomes=[],
     )
 
@@ -136,10 +134,54 @@ def policy(*, low_positive: int = 2_000_000) -> CollectiveCommitPolicy:
             cluster_verification_required=True,
         ),
         risk_bands={
-            "LOW": band(low_positive, 500_000, 200_000, 2, 500_000, 2, 250_000, 2, challenges, "evidence_bound"),
-            "MODERATE": band(max(low_positive, 2_500_000), 400_000, 150_000, 2, 600_000, 2, 300_000, 3, challenges, "evidence_bound"),
-            "HIGH": band(max(low_positive, 3_000_000), 300_000, 100_000, 3, 700_000, 3, 400_000, 4, [*challenges, "counter_search"], "certified"),
-            "CRITICAL": band(max(low_positive, 4_000_000), 200_000, 50_000, 4, 800_000, 4, 500_000, 5, [*challenges, "counter_search", "failure_domain_review"], "distributed"),
+            "LOW": band(
+                low_positive,
+                500_000,
+                200_000,
+                2,
+                500_000,
+                2,
+                250_000,
+                2,
+                challenges,
+                "evidence_bound",
+            ),
+            "MODERATE": band(
+                max(low_positive, 2_500_000),
+                400_000,
+                150_000,
+                2,
+                600_000,
+                2,
+                300_000,
+                3,
+                challenges,
+                "evidence_bound",
+            ),
+            "HIGH": band(
+                max(low_positive, 3_000_000),
+                300_000,
+                100_000,
+                3,
+                700_000,
+                3,
+                400_000,
+                4,
+                [*challenges, "counter_search"],
+                "certified",
+            ),
+            "CRITICAL": band(
+                max(low_positive, 4_000_000),
+                200_000,
+                50_000,
+                4,
+                800_000,
+                4,
+                500_000,
+                5,
+                [*challenges, "counter_search", "failure_domain_review"],
+                "distributed",
+            ),
         },
         commit_window=CommitWindowPolicy(
             minimum_stability_steps=2,
@@ -272,7 +314,9 @@ def threshold(
     )
 
 
-def test_risk_and_threshold_are_governance_issued_bound_fresh_and_tamper_evident() -> None:
+def test_risk_and_threshold_are_governance_issued_bound_fresh_and_tamper_evident() -> (
+    None
+):
     commit_policy = policy()
     assessment, chain_state = issue_assessment(commit_policy, RiskBand.LOW)
     snapshot = threshold(assessment, chain_state, commit_policy)
@@ -440,8 +484,7 @@ def test_high_risk_threshold_cannot_be_weaker_and_nonmonotonic_policy_fails() ->
     assert high.stability_steps >= low.stability_steps
     assert high.maximum_counterevidence <= low.maximum_counterevidence
     assert (
-        high.maximum_counterevidence_ratio_ppm
-        <= low.maximum_counterevidence_ratio_ppm
+        high.maximum_counterevidence_ratio_ppm <= low.maximum_counterevidence_ratio_ppm
     )
 
     invalid_bands = dict(commit_policy.risk_bands)
@@ -454,7 +497,9 @@ def test_high_risk_threshold_cannot_be_weaker_and_nonmonotonic_policy_fails() ->
         issue_assessment(invalid_policy, RiskBand.HIGH)
 
 
-def test_cross_policy_and_cross_root_reuse_fail_but_policy_change_resets_window() -> None:
+def test_cross_policy_and_cross_root_reuse_fail_but_policy_change_resets_window() -> (
+    None
+):
     first_policy = policy()
     first_assessment, first_state = issue_assessment(first_policy, RiskBand.LOW)
     first_threshold = threshold(first_assessment, first_state, first_policy)

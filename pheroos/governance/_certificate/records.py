@@ -1,6 +1,6 @@
-from __future__ import annotations
-
 """Canonical portable and terminal certificate records."""
+
+from __future__ import annotations
 
 from dataclasses import dataclass, field
 
@@ -20,8 +20,9 @@ from pheroos.governance._commit.certificate_contracts import (
     validate_commit_lineage as _validate_commit_lineage,
     validate_issuer_metadata as _validate_issuer_metadata,
 )
+from pheroos.governance._commit.common import AuthorityScope
+from pheroos.governance._commit_state.records import DecisionOutcomeKind
 from pheroos.governance.authority import AuthorityLevel
-from pheroos.governance.commit_state import AuthorityScope, DecisionOutcomeKind
 from pheroos.governance.errors import GovernanceError
 from pheroos.protocol.commit_models import (
     COMMIT_AUTHORITY_SCOPE_BY_ASSURANCE,
@@ -29,9 +30,7 @@ from pheroos.protocol.commit_models import (
 )
 
 
-EVIDENCE_COMMIT_CERTIFICATE_VERSION = (
-    "pheroos-evidence-commit-certificate-v1"
-)
+EVIDENCE_COMMIT_CERTIFICATE_VERSION = "pheroos-evidence-commit-certificate-v1"
 OUTCOME_CERTIFICATE_VERSION = "pheroos-outcome-certificate-v1"
 EVIDENCE_COMMIT_CERTIFICATE_DISCRIMINATOR = "evidence_commit_certificate"
 OUTCOME_CERTIFICATE_DISCRIMINATOR = "outcome_certificate"
@@ -107,6 +106,7 @@ class EvidenceCommitCertificate:
             ),
         )
         _validate_evidence_commit_certificate(self)
+
 
 @dataclass(frozen=True)
 class OutcomeCertificate:
@@ -185,6 +185,7 @@ class OutcomeCertificate:
         )
         _validate_outcome_certificate(self)
 
+
 def _validate_evidence_commit_certificate(
     certificate: EvidenceCommitCertificate,
 ) -> None:
@@ -230,6 +231,7 @@ def _validate_evidence_commit_certificate(
         envelope_schema="pheroos-evidence-commit-certificate-envelope-v1",
     )
 
+
 def _validate_outcome_certificate(certificate: OutcomeCertificate) -> None:
     _validate_certificate_header(
         discriminator=certificate.schema_discriminator,
@@ -250,47 +252,67 @@ def _validate_outcome_certificate(certificate: OutcomeCertificate) -> None:
     )
     for name in ("authoritative_commit", "epistemically_committed"):
         if type(getattr(certificate, name)) is not bool:
-            raise GovernanceError(
-                f"outcome certificate {name} must be a boolean"
-            )
-    require_commit_fingerprint(certificate.outcome_ref, "outcome certificate outcome_ref")
+            raise GovernanceError(f"outcome certificate {name} must be a boolean")
+    require_commit_fingerprint(
+        certificate.outcome_ref, "outcome certificate outcome_ref"
+    )
     _validate_outcome_lineage(certificate)
     _validate_issuer_metadata(certificate, field_name="outcome certificate")
+    _validate_outcome_authority(certificate)
+    _validate_outcome_attestations(certificate)
+    _validate_certificate_roots(
+        certificate,
+        body_schema="pheroos-outcome-certificate-body-v1",
+        envelope_schema="pheroos-outcome-certificate-envelope-v1",
+    )
+
+
+def _validate_outcome_authority(certificate: OutcomeCertificate) -> None:
     if certificate.outcome_kind is DecisionOutcomeKind.EVIDENCE_COMMIT:
-        if not certificate.authoritative_commit or not certificate.epistemically_committed:
-            raise GovernanceError("evidence outcome certificate authority is invalid")
-        if certificate.assurance is CommitAssurance.ADVISORY:
-            raise GovernanceError(
-                "advisory outcome certificate cannot claim an evidence commit"
-            )
-        expected_scope = COMMIT_AUTHORITY_SCOPE_BY_ASSURANCE[
-            certificate.assurance.value
-        ]
-        if certificate.authority_scope.value != expected_scope:
-            raise GovernanceError(
-                "evidence outcome certificate authority scope is invalid"
-            )
-        if not certificate.commit_certificate_ref:
-            raise GovernanceError("evidence outcome lacks its typed commit proof")
-    else:
-        if certificate.authoritative_commit or certificate.epistemically_committed:
-            raise GovernanceError("non-commit outcome certificate cannot claim commit")
-        if certificate.commit_certificate_ref:
-            raise GovernanceError(
-                "non-commit outcome certificate cannot carry a commit proof"
-            )
-        expected_scope = (
-            AuthorityScope.DENIAL
-            if certificate.outcome_kind is DecisionOutcomeKind.BLOCKED
-            else AuthorityScope.NONE
+        _validate_commit_outcome_authority(certificate)
+        return
+    _validate_non_commit_outcome_authority(certificate)
+
+
+def _validate_commit_outcome_authority(certificate: OutcomeCertificate) -> None:
+    if not certificate.authoritative_commit or not certificate.epistemically_committed:
+        raise GovernanceError("evidence outcome certificate authority is invalid")
+    if certificate.assurance is CommitAssurance.ADVISORY:
+        raise GovernanceError(
+            "advisory outcome certificate cannot claim an evidence commit"
         )
-        if certificate.authority_scope is not expected_scope:
-            raise GovernanceError(
-                "non-commit outcome certificate authority scope is invalid"
-            )
-        if certificate.outcome_kind is DecisionOutcomeKind.SAFE_FALLBACK:
-            if not certificate.candidate_id or not certificate.claim_fingerprint:
-                raise GovernanceError("safe fallback certificate requires claim binding")
+    expected_scope = COMMIT_AUTHORITY_SCOPE_BY_ASSURANCE[certificate.assurance.value]
+    if certificate.authority_scope.value != expected_scope:
+        raise GovernanceError("evidence outcome certificate authority scope is invalid")
+    if not certificate.commit_certificate_ref:
+        raise GovernanceError("evidence outcome lacks its typed commit proof")
+
+
+def _validate_non_commit_outcome_authority(
+    certificate: OutcomeCertificate,
+) -> None:
+    if certificate.authoritative_commit or certificate.epistemically_committed:
+        raise GovernanceError("non-commit outcome certificate cannot claim commit")
+    if certificate.commit_certificate_ref:
+        raise GovernanceError(
+            "non-commit outcome certificate cannot carry a commit proof"
+        )
+    expected_scope = (
+        AuthorityScope.DENIAL
+        if certificate.outcome_kind is DecisionOutcomeKind.BLOCKED
+        else AuthorityScope.NONE
+    )
+    if certificate.authority_scope is not expected_scope:
+        raise GovernanceError(
+            "non-commit outcome certificate authority scope is invalid"
+        )
+    if certificate.outcome_kind is DecisionOutcomeKind.SAFE_FALLBACK and (
+        not certificate.candidate_id or not certificate.claim_fingerprint
+    ):
+        raise GovernanceError("safe fallback certificate requires claim binding")
+
+
+def _validate_outcome_attestations(certificate: OutcomeCertificate) -> None:
     if certificate.assurance in {
         CommitAssurance.CERTIFIED,
         CommitAssurance.DISTRIBUTED,
@@ -303,11 +325,7 @@ def _validate_outcome_certificate(certificate: OutcomeCertificate) -> None:
         raise GovernanceError(
             "local outcome certificate cannot claim portable attestations"
         )
-    _validate_certificate_roots(
-        certificate,
-        body_schema="pheroos-outcome-certificate-body-v1",
-        envelope_schema="pheroos-outcome-certificate-envelope-v1",
-    )
+
 
 def _validate_outcome_lineage(certificate: OutcomeCertificate) -> None:
     for name in ("protocol_id", "run_id", "target"):
@@ -317,7 +335,9 @@ def _validate_outcome_lineage(certificate: OutcomeCertificate) -> None:
         )
     require_commit_step(certificate.epoch, "outcome certificate epoch")
     if certificate.candidate_id:
-        require_commit_text(certificate.candidate_id, "outcome certificate candidate_id")
+        require_commit_text(
+            certificate.candidate_id, "outcome certificate candidate_id"
+        )
         require_commit_fingerprint(
             certificate.claim_fingerprint,
             "outcome certificate claim_fingerprint",
@@ -362,6 +382,7 @@ def _validate_outcome_lineage(certificate: OutcomeCertificate) -> None:
         raw = getattr(certificate, name)
         if raw:
             require_commit_fingerprint(raw, f"outcome certificate {name}")
+
 
 def _validate_certificate_roots(
     certificate: EvidenceCommitCertificate | OutcomeCertificate,

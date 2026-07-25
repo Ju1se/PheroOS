@@ -1,0 +1,2346 @@
+{
+  "$defs": {
+    "artifact": {
+      "additionalProperties": false,
+      "properties": {
+        "authority_session_conformance_version": {
+          "const": "pheroos-governance-authority-session-conformance-v2"
+        },
+        "baseline_output_conformance_version": {
+          "const": "pheroos-baseline-output-conformance-v2"
+        },
+        "cases": {
+          "items": false,
+          "maxItems": 33,
+          "minItems": 33,
+          "prefixItems": [
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/case"
+                },
+                {
+                  "properties": {
+                    "id": {
+                      "const": "state_store:closed_registries"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/case"
+                },
+                {
+                  "properties": {
+                    "id": {
+                      "const": "state_store:fresh_store"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/case"
+                },
+                {
+                  "properties": {
+                    "id": {
+                      "const": "state_store:unknown_scope"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/case"
+                },
+                {
+                  "properties": {
+                    "id": {
+                      "const": "state_store:identity_and_history"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/case"
+                },
+                {
+                  "properties": {
+                    "id": {
+                      "const": "state_store:multi_read_atomicity"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/case"
+                },
+                {
+                  "properties": {
+                    "id": {
+                      "const": "state_store:concurrency"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/case"
+                },
+                {
+                  "properties": {
+                    "id": {
+                      "const": "state_store:failure_boundaries"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/case"
+                },
+                {
+                  "properties": {
+                    "id": {
+                      "const": "state_store:total_views"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/case"
+                },
+                {
+                  "properties": {
+                    "id": {
+                      "const": "state_store:seal"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/case"
+                },
+                {
+                  "properties": {
+                    "id": {
+                      "const": "state_store:seal_race"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/case"
+                },
+                {
+                  "properties": {
+                    "id": {
+                      "const": "state_store:stream_bound"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/case"
+                },
+                {
+                  "properties": {
+                    "id": {
+                      "const": "state_store:restart"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/case"
+                },
+                {
+                  "properties": {
+                    "id": {
+                      "const": "state_store:authenticated_restart"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/case"
+                },
+                {
+                  "properties": {
+                    "id": {
+                      "const": "state_store:persisted_artifact_mutations"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/case"
+                },
+                {
+                  "properties": {
+                    "id": {
+                      "const": "authority_session:local_vertical_slice"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/case"
+                },
+                {
+                  "properties": {
+                    "id": {
+                      "const": "authority_session:immutable_mapping_reads"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/case"
+                },
+                {
+                  "properties": {
+                    "id": {
+                      "const": "authority_session:store_version_boundary"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/case"
+                },
+                {
+                  "properties": {
+                    "id": {
+                      "const": "authority_session:handle_and_request_boundaries"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/case"
+                },
+                {
+                  "properties": {
+                    "id": {
+                      "const": "authority_session:revocation_after_session"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/case"
+                },
+                {
+                  "properties": {
+                    "id": {
+                      "const": "authority_session:lifecycle_seal_race"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/case"
+                },
+                {
+                  "properties": {
+                    "id": {
+                      "const": "authority_session:retirement_closure_and_history"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/case"
+                },
+                {
+                  "properties": {
+                    "id": {
+                      "const": "authority_session:authenticated_verifier_boundary"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/case"
+                },
+                {
+                  "properties": {
+                    "id": {
+                      "const": "baseline_output:protocol_v3_opt_in"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/case"
+                },
+                {
+                  "properties": {
+                    "id": {
+                      "const": "baseline_output:quorum"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/case"
+                },
+                {
+                  "properties": {
+                    "id": {
+                      "const": "baseline_output:direct"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/case"
+                },
+                {
+                  "properties": {
+                    "id": {
+                      "const": "baseline_output:direct-zero-evidence"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/case"
+                },
+                {
+                  "properties": {
+                    "id": {
+                      "const": "baseline_output:fallback-zero-evidence"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/case"
+                },
+                {
+                  "properties": {
+                    "id": {
+                      "const": "baseline_output:fallback"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/case"
+                },
+                {
+                  "properties": {
+                    "id": {
+                      "const": "baseline_output:blocked"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/case"
+                },
+                {
+                  "properties": {
+                    "id": {
+                      "const": "baseline_output:signal_binding_substitutions"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/case"
+                },
+                {
+                  "properties": {
+                    "id": {
+                      "const": "baseline_output:required_permission_operations"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/case"
+                },
+                {
+                  "properties": {
+                    "id": {
+                      "const": "baseline_output:restart_retry_and_currentness"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/case"
+                },
+                {
+                  "properties": {
+                    "id": {
+                      "const": "baseline_output:permission_issuer_revocation"
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "type": "array"
+        },
+        "state_store_conformance_version": {
+          "const": "pheroos-governance-state-store-conformance-v2"
+        },
+        "tck_version": {
+          "const": "pheroos-scoped-authority-tck-v2"
+        }
+      },
+      "required": [
+        "tck_version",
+        "state_store_conformance_version",
+        "authority_session_conformance_version",
+        "baseline_output_conformance_version",
+        "cases"
+      ],
+      "type": "object"
+    },
+    "case": {
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "oneOf": [
+            {
+              "properties": {
+                "id": {
+                  "const": "state_store:closed_registries"
+                },
+                "request": {
+                  "properties": {
+                    "case_id": {
+                      "const": "state_store:closed_registries"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "state_store:fresh_store"
+                },
+                "request": {
+                  "properties": {
+                    "case_id": {
+                      "const": "state_store:fresh_store"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "state_store:unknown_scope"
+                },
+                "request": {
+                  "properties": {
+                    "case_id": {
+                      "const": "state_store:unknown_scope"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "state_store:identity_and_history"
+                },
+                "request": {
+                  "properties": {
+                    "case_id": {
+                      "const": "state_store:identity_and_history"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "state_store:multi_read_atomicity"
+                },
+                "request": {
+                  "properties": {
+                    "case_id": {
+                      "const": "state_store:multi_read_atomicity"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "state_store:concurrency"
+                },
+                "request": {
+                  "properties": {
+                    "case_id": {
+                      "const": "state_store:concurrency"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "state_store:failure_boundaries"
+                },
+                "request": {
+                  "properties": {
+                    "case_id": {
+                      "const": "state_store:failure_boundaries"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "state_store:total_views"
+                },
+                "request": {
+                  "properties": {
+                    "case_id": {
+                      "const": "state_store:total_views"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "state_store:seal"
+                },
+                "request": {
+                  "properties": {
+                    "case_id": {
+                      "const": "state_store:seal"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "state_store:seal_race"
+                },
+                "request": {
+                  "properties": {
+                    "case_id": {
+                      "const": "state_store:seal_race"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "state_store:stream_bound"
+                },
+                "request": {
+                  "properties": {
+                    "case_id": {
+                      "const": "state_store:stream_bound"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "state_store:restart"
+                },
+                "request": {
+                  "properties": {
+                    "case_id": {
+                      "const": "state_store:restart"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "state_store:authenticated_restart"
+                },
+                "request": {
+                  "properties": {
+                    "case_id": {
+                      "const": "state_store:authenticated_restart"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "state_store:persisted_artifact_mutations"
+                },
+                "request": {
+                  "properties": {
+                    "case_id": {
+                      "const": "state_store:persisted_artifact_mutations"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "authority_session:local_vertical_slice"
+                },
+                "request": {
+                  "properties": {
+                    "case_id": {
+                      "const": "authority_session:local_vertical_slice"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "authority_session:immutable_mapping_reads"
+                },
+                "request": {
+                  "properties": {
+                    "case_id": {
+                      "const": "authority_session:immutable_mapping_reads"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "authority_session:store_version_boundary"
+                },
+                "request": {
+                  "properties": {
+                    "case_id": {
+                      "const": "authority_session:store_version_boundary"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "authority_session:handle_and_request_boundaries"
+                },
+                "request": {
+                  "properties": {
+                    "case_id": {
+                      "const": "authority_session:handle_and_request_boundaries"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "authority_session:revocation_after_session"
+                },
+                "request": {
+                  "properties": {
+                    "case_id": {
+                      "const": "authority_session:revocation_after_session"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "authority_session:lifecycle_seal_race"
+                },
+                "request": {
+                  "properties": {
+                    "case_id": {
+                      "const": "authority_session:lifecycle_seal_race"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "authority_session:retirement_closure_and_history"
+                },
+                "request": {
+                  "properties": {
+                    "case_id": {
+                      "const": "authority_session:retirement_closure_and_history"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "authority_session:authenticated_verifier_boundary"
+                },
+                "request": {
+                  "properties": {
+                    "case_id": {
+                      "const": "authority_session:authenticated_verifier_boundary"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "baseline_output:protocol_v3_opt_in"
+                },
+                "request": {
+                  "properties": {
+                    "case_id": {
+                      "const": "baseline_output:protocol_v3_opt_in"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "baseline_output:quorum"
+                },
+                "request": {
+                  "properties": {
+                    "case_id": {
+                      "const": "baseline_output:quorum"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "baseline_output:direct"
+                },
+                "request": {
+                  "properties": {
+                    "case_id": {
+                      "const": "baseline_output:direct"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "baseline_output:direct-zero-evidence"
+                },
+                "request": {
+                  "properties": {
+                    "case_id": {
+                      "const": "baseline_output:direct-zero-evidence"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "baseline_output:fallback-zero-evidence"
+                },
+                "request": {
+                  "properties": {
+                    "case_id": {
+                      "const": "baseline_output:fallback-zero-evidence"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "baseline_output:fallback"
+                },
+                "request": {
+                  "properties": {
+                    "case_id": {
+                      "const": "baseline_output:fallback"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "baseline_output:blocked"
+                },
+                "request": {
+                  "properties": {
+                    "case_id": {
+                      "const": "baseline_output:blocked"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "baseline_output:signal_binding_substitutions"
+                },
+                "request": {
+                  "properties": {
+                    "case_id": {
+                      "const": "baseline_output:signal_binding_substitutions"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "baseline_output:required_permission_operations"
+                },
+                "request": {
+                  "properties": {
+                    "case_id": {
+                      "const": "baseline_output:required_permission_operations"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "baseline_output:restart_retry_and_currentness"
+                },
+                "request": {
+                  "properties": {
+                    "case_id": {
+                      "const": "baseline_output:restart_retry_and_currentness"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "baseline_output:permission_issuer_revocation"
+                },
+                "request": {
+                  "properties": {
+                    "case_id": {
+                      "const": "baseline_output:permission_issuer_revocation"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "oneOf": [
+            {
+              "properties": {
+                "operation": {
+                  "const": "verify_signal"
+                },
+                "request": {
+                  "properties": {
+                    "operation": {
+                      "const": "verify_signal"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "operation": {
+                  "const": "evaluate_quorum"
+                },
+                "request": {
+                  "properties": {
+                    "operation": {
+                      "const": "evaluate_quorum"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "operation": {
+                  "const": "qualify_evidence"
+                },
+                "request": {
+                  "properties": {
+                    "operation": {
+                      "const": "qualify_evidence"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "operation": {
+                  "const": "resolve_stop"
+                },
+                "request": {
+                  "properties": {
+                    "operation": {
+                      "const": "resolve_stop"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "operation": {
+                  "const": "advance_replay"
+                },
+                "request": {
+                  "properties": {
+                    "operation": {
+                      "const": "advance_replay"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "operation": {
+                  "const": "issue_action_permission"
+                },
+                "request": {
+                  "properties": {
+                    "operation": {
+                      "const": "issue_action_permission"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "operation": {
+                  "const": "authorize_output"
+                },
+                "request": {
+                  "properties": {
+                    "operation": {
+                      "const": "authorize_output"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "operation": {
+                  "const": "retire_domain"
+                },
+                "request": {
+                  "properties": {
+                    "operation": {
+                      "const": "retire_domain"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "operation": {
+                  "const": "activate_governance_issuer_grant_v2"
+                },
+                "request": {
+                  "properties": {
+                    "operation": {
+                      "const": "activate_governance_issuer_grant_v2"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "operation": {
+                  "const": "atomic_commit_v2"
+                },
+                "request": {
+                  "properties": {
+                    "operation": {
+                      "const": "atomic_commit_v2"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "operation": {
+                  "const": "bind_governance_issuer_capability_v2"
+                },
+                "request": {
+                  "properties": {
+                    "operation": {
+                      "const": "bind_governance_issuer_capability_v2"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "operation": {
+                  "const": "commit_verified_signal_v2"
+                },
+                "request": {
+                  "properties": {
+                    "operation": {
+                      "const": "commit_verified_signal_v2"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "operation": {
+                  "const": "create_domain_v2"
+                },
+                "request": {
+                  "properties": {
+                    "operation": {
+                      "const": "create_domain_v2"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "operation": {
+                  "const": "create_failure_injected_store_v2"
+                },
+                "request": {
+                  "properties": {
+                    "operation": {
+                      "const": "create_failure_injected_store_v2"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "operation": {
+                  "const": "create_store_v2"
+                },
+                "request": {
+                  "properties": {
+                    "operation": {
+                      "const": "create_store_v2"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "operation": {
+                  "const": "evaluate_and_commit_baseline_output_v2"
+                },
+                "request": {
+                  "properties": {
+                    "operation": {
+                      "const": "evaluate_and_commit_baseline_output_v2"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "operation": {
+                  "const": "issue_action_permission_v2"
+                },
+                "request": {
+                  "properties": {
+                    "operation": {
+                      "const": "issue_action_permission_v2"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "operation": {
+                  "const": "load_commit_view_v2"
+                },
+                "request": {
+                  "properties": {
+                    "operation": {
+                      "const": "load_commit_view_v2"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "operation": {
+                  "const": "load_head_v2"
+                },
+                "request": {
+                  "properties": {
+                    "operation": {
+                      "const": "load_head_v2"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "operation": {
+                  "const": "load_state_v2"
+                },
+                "request": {
+                  "properties": {
+                    "operation": {
+                      "const": "load_state_v2"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "operation": {
+                  "const": "observe_store_v2"
+                },
+                "request": {
+                  "properties": {
+                    "operation": {
+                      "const": "observe_store_v2"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "operation": {
+                  "const": "open_baseline_output_authority_session_v2"
+                },
+                "request": {
+                  "properties": {
+                    "operation": {
+                      "const": "open_baseline_output_authority_session_v2"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "operation": {
+                  "const": "open_governance_authority_session_v2"
+                },
+                "request": {
+                  "properties": {
+                    "operation": {
+                      "const": "open_governance_authority_session_v2"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "operation": {
+                  "const": "restart_store_v2"
+                },
+                "request": {
+                  "properties": {
+                    "operation": {
+                      "const": "restart_store_v2"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "operation": {
+                  "const": "retire_governance_domain_v2"
+                },
+                "request": {
+                  "properties": {
+                    "operation": {
+                      "const": "retire_governance_domain_v2"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "operation": {
+                  "const": "revoke_governance_issuer_grant_v2"
+                },
+                "request": {
+                  "properties": {
+                    "operation": {
+                      "const": "revoke_governance_issuer_grant_v2"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "operation": {
+                  "const": "tamper_store_v2"
+                },
+                "request": {
+                  "properties": {
+                    "operation": {
+                      "const": "tamper_store_v2"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "oneOf": [
+            {
+              "properties": {
+                "profile": {
+                  "const": "pheroos-scoped-authority-local-v2"
+                },
+                "request": {
+                  "properties": {
+                    "profile": {
+                      "const": "pheroos-scoped-authority-local-v2"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "profile": {
+                  "const": "pheroos-scoped-authority-authenticated-v2"
+                },
+                "request": {
+                  "properties": {
+                    "profile": {
+                      "const": "pheroos-scoped-authority-authenticated-v2"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "failure_stage": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "enum": [
+                "before_validation",
+                "after_identity_reconciliation",
+                "after_read_set_validation",
+                "after_state_head_staging",
+                "after_trace_staging",
+                "after_receipt_inclusion_staging",
+                "after_atomic_publication",
+                "load_commit_view"
+              ]
+            }
+          ]
+        },
+        "id": {
+          "enum": [
+            "state_store:closed_registries",
+            "state_store:fresh_store",
+            "state_store:unknown_scope",
+            "state_store:identity_and_history",
+            "state_store:multi_read_atomicity",
+            "state_store:concurrency",
+            "state_store:failure_boundaries",
+            "state_store:total_views",
+            "state_store:seal",
+            "state_store:seal_race",
+            "state_store:stream_bound",
+            "state_store:restart",
+            "state_store:authenticated_restart",
+            "state_store:persisted_artifact_mutations",
+            "authority_session:local_vertical_slice",
+            "authority_session:immutable_mapping_reads",
+            "authority_session:store_version_boundary",
+            "authority_session:handle_and_request_boundaries",
+            "authority_session:revocation_after_session",
+            "authority_session:lifecycle_seal_race",
+            "authority_session:retirement_closure_and_history",
+            "authority_session:authenticated_verifier_boundary",
+            "baseline_output:protocol_v3_opt_in",
+            "baseline_output:quorum",
+            "baseline_output:direct",
+            "baseline_output:direct-zero-evidence",
+            "baseline_output:fallback-zero-evidence",
+            "baseline_output:fallback",
+            "baseline_output:blocked",
+            "baseline_output:signal_binding_substitutions",
+            "baseline_output:required_permission_operations",
+            "baseline_output:restart_retry_and_currentness",
+            "baseline_output:permission_issuer_revocation"
+          ]
+        },
+        "operation": {
+          "enum": [
+            "verify_signal",
+            "evaluate_quorum",
+            "qualify_evidence",
+            "resolve_stop",
+            "advance_replay",
+            "issue_action_permission",
+            "authorize_output",
+            "retire_domain",
+            "activate_governance_issuer_grant_v2",
+            "atomic_commit_v2",
+            "bind_governance_issuer_capability_v2",
+            "commit_verified_signal_v2",
+            "create_domain_v2",
+            "create_failure_injected_store_v2",
+            "create_store_v2",
+            "evaluate_and_commit_baseline_output_v2",
+            "issue_action_permission_v2",
+            "load_commit_view_v2",
+            "load_head_v2",
+            "load_state_v2",
+            "observe_store_v2",
+            "open_baseline_output_authority_session_v2",
+            "open_governance_authority_session_v2",
+            "restart_store_v2",
+            "retire_governance_domain_v2",
+            "revoke_governance_issuer_grant_v2",
+            "tamper_store_v2"
+          ]
+        },
+        "profile": {
+          "enum": [
+            "pheroos-scoped-authority-local-v2",
+            "pheroos-scoped-authority-authenticated-v2"
+          ]
+        },
+        "request": {
+          "$ref": "#/$defs/request"
+        },
+        "required_invariants": {
+          "items": {
+            "enum": [
+              "state_store:closed_registries",
+              "state_store:fresh_store",
+              "state_store:unknown_scope",
+              "state_store:identity_and_history",
+              "state_store:multi_read_atomicity",
+              "state_store:concurrency",
+              "state_store:failure_boundaries",
+              "state_store:total_views",
+              "state_store:seal",
+              "state_store:seal_race",
+              "state_store:stream_bound",
+              "state_store:restart",
+              "state_store:authenticated_restart",
+              "state_store:persisted_artifact_mutations",
+              "authority_session:local_vertical_slice",
+              "authority_session:immutable_mapping_reads",
+              "authority_session:store_version_boundary",
+              "authority_session:handle_and_request_boundaries",
+              "authority_session:revocation_after_session",
+              "authority_session:lifecycle_seal_race",
+              "authority_session:retirement_closure_and_history",
+              "authority_session:authenticated_verifier_boundary",
+              "baseline_output:protocol_v3_opt_in",
+              "baseline_output:quorum",
+              "baseline_output:direct",
+              "baseline_output:direct-zero-evidence",
+              "baseline_output:fallback-zero-evidence",
+              "baseline_output:fallback",
+              "baseline_output:blocked",
+              "baseline_output:signal_binding_substitutions",
+              "baseline_output:required_permission_operations",
+              "baseline_output:restart_retry_and_currentness",
+              "baseline_output:permission_issuer_revocation",
+              "state_store:failure_stage:before_validation",
+              "state_store:failure_stage:after_identity_reconciliation",
+              "state_store:failure_stage:after_read_set_validation",
+              "state_store:failure_stage:after_state_head_staging",
+              "state_store:failure_stage:after_trace_staging",
+              "state_store:failure_stage:after_receipt_inclusion_staging",
+              "state_store:failure_stage:after_atomic_publication",
+              "state_store:failure_stage:load_commit_view",
+              "state_store:tamper:batch_payload",
+              "state_store:tamper:batch_root",
+              "state_store:tamper:receipt_payload",
+              "state_store:tamper:receipt_root",
+              "state_store:tamper:inclusion_payload",
+              "state_store:tamper:inclusion_root",
+              "state_store:tamper:head_payload",
+              "state_store:tamper:head_root",
+              "state_store:tamper:state_payload",
+              "state_store:tamper:state_root",
+              "state_store:tamper:trace_payload",
+              "state_store:tamper:trace_root",
+              "state_store:tamper:scope_binding",
+              "state_store:tamper:stream_binding",
+              "state_store:tamper:revision_binding",
+              "state_store:tamper:seal_payload",
+              "state_store:tamper:seal_root",
+              "state_store:tamper:lifecycle_state",
+              "state_store:tamper:transition_index",
+              "state_store:tamper:seal_marker",
+              "state_store:tamper:projection_removal",
+              "state_store:tamper:sequence_binding",
+              "state_store:tamper:cross_stream_order",
+              "state_store:tamper:history_payload"
+            ]
+          },
+          "minItems": 1,
+          "type": "array",
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "id",
+        "operation",
+        "profile",
+        "request",
+        "required_invariants",
+        "failure_stage"
+      ],
+      "type": "object"
+    },
+    "caseReport": {
+      "additionalProperties": false,
+      "properties": {
+        "detail": {
+          "type": "string"
+        },
+        "diagnostic_code": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "enum": [
+                "authority_profile_unsupported",
+                "authority_session_required",
+                "authority_session_store_mismatch",
+                "authority_scope_mismatch",
+                "authority_operation_denied",
+                "authority_binding_mismatch",
+                "authority_grant_unverified",
+                "authority_grant_expired",
+                "authority_grant_revoked",
+                "governance_read_set_invalid",
+                "governance_read_set_stale",
+                "governance_transition_conflict",
+                "governance_domain_sealed",
+                "governance_finality_unavailable",
+                "governance_committed_transition_invalid",
+                "governance_action_not_authorized",
+                "governance_trace_lineage_invalid"
+              ]
+            }
+          ]
+        },
+        "failure_stage": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "enum": [
+                "before_validation",
+                "after_identity_reconciliation",
+                "after_read_set_validation",
+                "after_state_head_staging",
+                "after_trace_staging",
+                "after_receipt_inclusion_staging",
+                "after_atomic_publication",
+                "load_commit_view"
+              ]
+            }
+          ]
+        },
+        "id": {
+          "enum": [
+            "state_store:closed_registries",
+            "state_store:fresh_store",
+            "state_store:unknown_scope",
+            "state_store:identity_and_history",
+            "state_store:multi_read_atomicity",
+            "state_store:concurrency",
+            "state_store:failure_boundaries",
+            "state_store:total_views",
+            "state_store:seal",
+            "state_store:seal_race",
+            "state_store:stream_bound",
+            "state_store:restart",
+            "state_store:authenticated_restart",
+            "state_store:persisted_artifact_mutations",
+            "authority_session:local_vertical_slice",
+            "authority_session:immutable_mapping_reads",
+            "authority_session:store_version_boundary",
+            "authority_session:handle_and_request_boundaries",
+            "authority_session:revocation_after_session",
+            "authority_session:lifecycle_seal_race",
+            "authority_session:retirement_closure_and_history",
+            "authority_session:authenticated_verifier_boundary",
+            "baseline_output:protocol_v3_opt_in",
+            "baseline_output:quorum",
+            "baseline_output:direct",
+            "baseline_output:direct-zero-evidence",
+            "baseline_output:fallback-zero-evidence",
+            "baseline_output:fallback",
+            "baseline_output:blocked",
+            "baseline_output:signal_binding_substitutions",
+            "baseline_output:required_permission_operations",
+            "baseline_output:restart_retry_and_currentness",
+            "baseline_output:permission_issuer_revocation"
+          ]
+        },
+        "observed_invariants": {
+          "items": {
+            "enum": [
+              "state_store:closed_registries",
+              "state_store:fresh_store",
+              "state_store:unknown_scope",
+              "state_store:identity_and_history",
+              "state_store:multi_read_atomicity",
+              "state_store:concurrency",
+              "state_store:failure_boundaries",
+              "state_store:total_views",
+              "state_store:seal",
+              "state_store:seal_race",
+              "state_store:stream_bound",
+              "state_store:restart",
+              "state_store:authenticated_restart",
+              "state_store:persisted_artifact_mutations",
+              "authority_session:local_vertical_slice",
+              "authority_session:immutable_mapping_reads",
+              "authority_session:store_version_boundary",
+              "authority_session:handle_and_request_boundaries",
+              "authority_session:revocation_after_session",
+              "authority_session:lifecycle_seal_race",
+              "authority_session:retirement_closure_and_history",
+              "authority_session:authenticated_verifier_boundary",
+              "baseline_output:protocol_v3_opt_in",
+              "baseline_output:quorum",
+              "baseline_output:direct",
+              "baseline_output:direct-zero-evidence",
+              "baseline_output:fallback-zero-evidence",
+              "baseline_output:fallback",
+              "baseline_output:blocked",
+              "baseline_output:signal_binding_substitutions",
+              "baseline_output:required_permission_operations",
+              "baseline_output:restart_retry_and_currentness",
+              "baseline_output:permission_issuer_revocation",
+              "state_store:failure_stage:before_validation",
+              "state_store:failure_stage:after_identity_reconciliation",
+              "state_store:failure_stage:after_read_set_validation",
+              "state_store:failure_stage:after_state_head_staging",
+              "state_store:failure_stage:after_trace_staging",
+              "state_store:failure_stage:after_receipt_inclusion_staging",
+              "state_store:failure_stage:after_atomic_publication",
+              "state_store:failure_stage:load_commit_view",
+              "state_store:tamper:batch_payload",
+              "state_store:tamper:batch_root",
+              "state_store:tamper:receipt_payload",
+              "state_store:tamper:receipt_root",
+              "state_store:tamper:inclusion_payload",
+              "state_store:tamper:inclusion_root",
+              "state_store:tamper:head_payload",
+              "state_store:tamper:head_root",
+              "state_store:tamper:state_payload",
+              "state_store:tamper:state_root",
+              "state_store:tamper:trace_payload",
+              "state_store:tamper:trace_root",
+              "state_store:tamper:scope_binding",
+              "state_store:tamper:stream_binding",
+              "state_store:tamper:revision_binding",
+              "state_store:tamper:seal_payload",
+              "state_store:tamper:seal_root",
+              "state_store:tamper:lifecycle_state",
+              "state_store:tamper:transition_index",
+              "state_store:tamper:seal_marker",
+              "state_store:tamper:projection_removal",
+              "state_store:tamper:sequence_binding",
+              "state_store:tamper:cross_stream_order",
+              "state_store:tamper:history_payload"
+            ]
+          },
+          "type": "array",
+          "uniqueItems": true
+        },
+        "ok": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "id",
+        "ok",
+        "observed_invariants",
+        "diagnostic_code",
+        "failure_stage",
+        "detail"
+      ],
+      "type": "object"
+    },
+    "report": {
+      "additionalProperties": false,
+      "properties": {
+        "authority_session_conformance_version": {
+          "const": "pheroos-governance-authority-session-conformance-v2"
+        },
+        "baseline_output_conformance_version": {
+          "const": "pheroos-baseline-output-conformance-v2"
+        },
+        "implementation_id": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "results": {
+          "items": false,
+          "maxItems": 33,
+          "minItems": 33,
+          "prefixItems": [
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/caseReport"
+                },
+                {
+                  "properties": {
+                    "id": {
+                      "const": "state_store:closed_registries"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/caseReport"
+                },
+                {
+                  "properties": {
+                    "id": {
+                      "const": "state_store:fresh_store"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/caseReport"
+                },
+                {
+                  "properties": {
+                    "id": {
+                      "const": "state_store:unknown_scope"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/caseReport"
+                },
+                {
+                  "properties": {
+                    "id": {
+                      "const": "state_store:identity_and_history"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/caseReport"
+                },
+                {
+                  "properties": {
+                    "id": {
+                      "const": "state_store:multi_read_atomicity"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/caseReport"
+                },
+                {
+                  "properties": {
+                    "id": {
+                      "const": "state_store:concurrency"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/caseReport"
+                },
+                {
+                  "properties": {
+                    "id": {
+                      "const": "state_store:failure_boundaries"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/caseReport"
+                },
+                {
+                  "properties": {
+                    "id": {
+                      "const": "state_store:total_views"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/caseReport"
+                },
+                {
+                  "properties": {
+                    "id": {
+                      "const": "state_store:seal"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/caseReport"
+                },
+                {
+                  "properties": {
+                    "id": {
+                      "const": "state_store:seal_race"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/caseReport"
+                },
+                {
+                  "properties": {
+                    "id": {
+                      "const": "state_store:stream_bound"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/caseReport"
+                },
+                {
+                  "properties": {
+                    "id": {
+                      "const": "state_store:restart"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/caseReport"
+                },
+                {
+                  "properties": {
+                    "id": {
+                      "const": "state_store:authenticated_restart"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/caseReport"
+                },
+                {
+                  "properties": {
+                    "id": {
+                      "const": "state_store:persisted_artifact_mutations"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/caseReport"
+                },
+                {
+                  "properties": {
+                    "id": {
+                      "const": "authority_session:local_vertical_slice"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/caseReport"
+                },
+                {
+                  "properties": {
+                    "id": {
+                      "const": "authority_session:immutable_mapping_reads"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/caseReport"
+                },
+                {
+                  "properties": {
+                    "id": {
+                      "const": "authority_session:store_version_boundary"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/caseReport"
+                },
+                {
+                  "properties": {
+                    "id": {
+                      "const": "authority_session:handle_and_request_boundaries"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/caseReport"
+                },
+                {
+                  "properties": {
+                    "id": {
+                      "const": "authority_session:revocation_after_session"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/caseReport"
+                },
+                {
+                  "properties": {
+                    "id": {
+                      "const": "authority_session:lifecycle_seal_race"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/caseReport"
+                },
+                {
+                  "properties": {
+                    "id": {
+                      "const": "authority_session:retirement_closure_and_history"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/caseReport"
+                },
+                {
+                  "properties": {
+                    "id": {
+                      "const": "authority_session:authenticated_verifier_boundary"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/caseReport"
+                },
+                {
+                  "properties": {
+                    "id": {
+                      "const": "baseline_output:protocol_v3_opt_in"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/caseReport"
+                },
+                {
+                  "properties": {
+                    "id": {
+                      "const": "baseline_output:quorum"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/caseReport"
+                },
+                {
+                  "properties": {
+                    "id": {
+                      "const": "baseline_output:direct"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/caseReport"
+                },
+                {
+                  "properties": {
+                    "id": {
+                      "const": "baseline_output:direct-zero-evidence"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/caseReport"
+                },
+                {
+                  "properties": {
+                    "id": {
+                      "const": "baseline_output:fallback-zero-evidence"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/caseReport"
+                },
+                {
+                  "properties": {
+                    "id": {
+                      "const": "baseline_output:fallback"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/caseReport"
+                },
+                {
+                  "properties": {
+                    "id": {
+                      "const": "baseline_output:blocked"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/caseReport"
+                },
+                {
+                  "properties": {
+                    "id": {
+                      "const": "baseline_output:signal_binding_substitutions"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/caseReport"
+                },
+                {
+                  "properties": {
+                    "id": {
+                      "const": "baseline_output:required_permission_operations"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/caseReport"
+                },
+                {
+                  "properties": {
+                    "id": {
+                      "const": "baseline_output:restart_retry_and_currentness"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/caseReport"
+                },
+                {
+                  "properties": {
+                    "id": {
+                      "const": "baseline_output:permission_issuer_revocation"
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "type": "array"
+        },
+        "state_store_conformance_version": {
+          "const": "pheroos-governance-state-store-conformance-v2"
+        },
+        "tck_version": {
+          "const": "pheroos-scoped-authority-tck-v2"
+        }
+      },
+      "required": [
+        "tck_version",
+        "state_store_conformance_version",
+        "authority_session_conformance_version",
+        "baseline_output_conformance_version",
+        "implementation_id",
+        "results"
+      ],
+      "type": "object"
+    },
+    "request": {
+      "additionalProperties": false,
+      "properties": {
+        "case_id": {
+          "enum": [
+            "state_store:closed_registries",
+            "state_store:fresh_store",
+            "state_store:unknown_scope",
+            "state_store:identity_and_history",
+            "state_store:multi_read_atomicity",
+            "state_store:concurrency",
+            "state_store:failure_boundaries",
+            "state_store:total_views",
+            "state_store:seal",
+            "state_store:seal_race",
+            "state_store:stream_bound",
+            "state_store:restart",
+            "state_store:authenticated_restart",
+            "state_store:persisted_artifact_mutations",
+            "authority_session:local_vertical_slice",
+            "authority_session:immutable_mapping_reads",
+            "authority_session:store_version_boundary",
+            "authority_session:handle_and_request_boundaries",
+            "authority_session:revocation_after_session",
+            "authority_session:lifecycle_seal_race",
+            "authority_session:retirement_closure_and_history",
+            "authority_session:authenticated_verifier_boundary",
+            "baseline_output:protocol_v3_opt_in",
+            "baseline_output:quorum",
+            "baseline_output:direct",
+            "baseline_output:direct-zero-evidence",
+            "baseline_output:fallback-zero-evidence",
+            "baseline_output:fallback",
+            "baseline_output:blocked",
+            "baseline_output:signal_binding_substitutions",
+            "baseline_output:required_permission_operations",
+            "baseline_output:restart_retry_and_currentness",
+            "baseline_output:permission_issuer_revocation"
+          ]
+        },
+        "operation": {
+          "enum": [
+            "verify_signal",
+            "evaluate_quorum",
+            "qualify_evidence",
+            "resolve_stop",
+            "advance_replay",
+            "issue_action_permission",
+            "authorize_output",
+            "retire_domain",
+            "activate_governance_issuer_grant_v2",
+            "atomic_commit_v2",
+            "bind_governance_issuer_capability_v2",
+            "commit_verified_signal_v2",
+            "create_domain_v2",
+            "create_failure_injected_store_v2",
+            "create_store_v2",
+            "evaluate_and_commit_baseline_output_v2",
+            "issue_action_permission_v2",
+            "load_commit_view_v2",
+            "load_head_v2",
+            "load_state_v2",
+            "observe_store_v2",
+            "open_baseline_output_authority_session_v2",
+            "open_governance_authority_session_v2",
+            "restart_store_v2",
+            "retire_governance_domain_v2",
+            "revoke_governance_issuer_grant_v2",
+            "tamper_store_v2"
+          ]
+        },
+        "payload": {
+          "$ref": "https://pheroos.dev/schemas/authority-v2.schema.json"
+        },
+        "profile": {
+          "enum": [
+            "pheroos-scoped-authority-local-v2",
+            "pheroos-scoped-authority-authenticated-v2"
+          ]
+        },
+        "tck_version": {
+          "const": "pheroos-scoped-authority-tck-v2"
+        }
+      },
+      "required": [
+        "tck_version",
+        "case_id",
+        "operation",
+        "profile",
+        "payload"
+      ],
+      "type": "object"
+    }
+  },
+  "$id": "https://pheroos.dev/schemas/scoped-authority-tck-v2.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/artifact"
+    },
+    {
+      "$ref": "#/$defs/report"
+    }
+  ],
+  "title": "PheroOS Draft scoped-authority v2 TCK artifact or report"
+}

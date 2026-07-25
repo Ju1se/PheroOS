@@ -155,14 +155,10 @@ def _assessment(
     context = scenario.context if context is None else context
     replay_state = scenario.replay_state if replay_state is None else replay_state
     risk_chain_state = (
-        scenario.risk_chain_state
-        if risk_chain_state is None
-        else risk_chain_state
+        scenario.risk_chain_state if risk_chain_state is None else risk_chain_state
     )
     risk_assessment = (
-        scenario.risk_assessment
-        if risk_assessment is None
-        else risk_assessment
+        scenario.risk_assessment if risk_assessment is None else risk_assessment
     )
     threshold = scenario.threshold if threshold is None else threshold
     if stop_resolution is None or permission is None:
@@ -179,9 +175,7 @@ def _assessment(
         context,
         manifest=scenario.manifest,
         candidate_inputs=(
-            scenario.candidate_inputs
-            if candidate_inputs is None
-            else candidate_inputs
+            scenario.candidate_inputs if candidate_inputs is None else candidate_inputs
         ),
         leases=scenario.leases,
         revocations=(),
@@ -211,11 +205,7 @@ def _advance(
     assessment=None,
     threshold=None,
 ) -> CommitWindowState:
-    assessment = (
-        _assessment(scenario, step=step)
-        if assessment is None
-        else assessment
-    )
+    assessment = _assessment(scenario, step=step) if assessment is None else assessment
     return advance_commit_window_state(
         state,
         assessment=assessment,
@@ -410,12 +400,15 @@ def test_window_transition_is_exactly_idempotent_atomic_and_fork_free() -> None:
             )
         )
     assert all(item is results[0] for item in results)
-    assert _advance(
-        initial,
-        scenario,
-        step=5,
-        assessment=first_assessment,
-    ) is results[0]
+    assert (
+        _advance(
+            initial,
+            scenario,
+            step=5,
+            assessment=first_assessment,
+        )
+        is results[0]
+    )
     with pytest.raises(GovernanceError, match="stale or would fork"):
         _advance(
             initial,
@@ -489,26 +482,41 @@ def test_step_gap_gate_failure_and_all_authority_head_changes_reset() -> None:
         "threshold_root": fresh.threshold_root,
     }
     assert _window_reset_reason(fresh, **common) == "none"
-    assert _window_reset_reason(
-        fresh,
-        **{**common, "leader_candidate_id": "candidate:replacement"},
-    ) == "leader_change"
-    assert _window_reset_reason(
-        fresh,
-        **{**common, "commit_policy_root": _fingerprint("new-policy")},
-    ) == "policy_change"
-    assert _window_reset_reason(
-        fresh,
-        **{**common, "membership_root": _fingerprint("new-membership")},
-    ) == "membership_change"
-    assert _window_reset_reason(
-        fresh,
-        **{**common, "risk_assessment_root": _fingerprint("new-risk")},
-    ) == "risk_change"
-    assert _window_reset_reason(
-        fresh,
-        **{**common, "threshold_root": _fingerprint("new-threshold")},
-    ) == "threshold_change"
+    assert (
+        _window_reset_reason(
+            fresh,
+            **{**common, "leader_candidate_id": "candidate:replacement"},
+        )
+        == "leader_change"
+    )
+    assert (
+        _window_reset_reason(
+            fresh,
+            **{**common, "commit_policy_root": _fingerprint("new-policy")},
+        )
+        == "policy_change"
+    )
+    assert (
+        _window_reset_reason(
+            fresh,
+            **{**common, "membership_root": _fingerprint("new-membership")},
+        )
+        == "membership_change"
+    )
+    assert (
+        _window_reset_reason(
+            fresh,
+            **{**common, "risk_assessment_root": _fingerprint("new-risk")},
+        )
+        == "risk_change"
+    )
+    assert (
+        _window_reset_reason(
+            fresh,
+            **{**common, "threshold_root": _fingerprint("new-threshold")},
+        )
+        == "threshold_change"
+    )
 
 
 def test_assessment_root_changes_do_not_reset_same_ready_leader() -> None:
@@ -787,14 +795,17 @@ def test_epoch_restart_stays_on_one_run_chain_and_never_extends_deadlines() -> N
     assert restarted.absolute_deadline_step == first.absolute_deadline_step
     assert restarted.absolute_run_deadline_step == first.absolute_run_deadline_step
     assert restarted.minimum_stability_steps >= first.minimum_stability_steps
-    assert restart_commit_window_epoch(
-        first,
-        new_epoch=EPOCH + 1,
-        current_step=6,
-        commit_policy=scenario.policy,
-        threshold_snapshot=threshold,
-        membership_root=_fingerprint(f"membership:{scenario.run_id}:{EPOCH + 1}"),
-    ) is restarted
+    assert (
+        restart_commit_window_epoch(
+            first,
+            new_epoch=EPOCH + 1,
+            current_step=6,
+            commit_policy=scenario.policy,
+            threshold_snapshot=threshold,
+            membership_root=_fingerprint(f"membership:{scenario.run_id}:{EPOCH + 1}"),
+        )
+        is restarted
+    )
 
     with pytest.raises(GovernanceError, match="different base"):
         initialize_commit_window_state(
@@ -954,17 +965,23 @@ def test_replay_state_is_canonical_idempotent_linear_and_conflict_safe() -> None
         current_step=1,
         receipts=(lease, observation),
     )
-    assert record_commit_replay_receipts(
-        initial,
-        current_step=1,
-        receipts=(observation, lease),
-    ) is first
+    assert (
+        record_commit_replay_receipts(
+            initial,
+            current_step=1,
+            receipts=(observation, lease),
+        )
+        is first
+    )
     assert commit_replay_state_is_authoritative(first)
-    assert record_commit_replay_receipts(
-        first,
-        current_step=2,
-        receipts=(observation,),
-    ) is first
+    assert (
+        record_commit_replay_receipts(
+            first,
+            current_step=2,
+            receipts=(observation,),
+        )
+        is first
+    )
 
     conflicting = replace(
         observation,

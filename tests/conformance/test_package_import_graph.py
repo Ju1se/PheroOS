@@ -61,9 +61,7 @@ def _package_import_graph() -> dict[str, set[str]]:
                     continue
                 candidates.append(base)
                 candidates.extend(
-                    f"{base}.{alias.name}"
-                    for alias in node.names
-                    if alias.name != "*"
+                    f"{base}.{alias.name}" for alias in node.names if alias.name != "*"
                 )
         for candidate in candidates:
             dependency = owner(candidate)
@@ -121,15 +119,19 @@ def test_complete_pheroos_import_graph_has_no_strongly_connected_components() ->
     ]
 
     assert cycles == []
-    assert "pheroos.conformance.runner" not in graph[
-        "pheroos.conformance._commit_tck.reference_adapter"
-    ]
-    assert "pheroos.conformance.checks.commit_metrics_contract" in graph[
+    assert (
         "pheroos.conformance.runner"
-    ]
+        not in graph["pheroos.conformance._commit_tck.reference_adapter"]
+    )
+    assert (
+        "pheroos.conformance.checks.commit_metrics_contract"
+        in graph["pheroos.conformance.runner"]
+    )
 
 
-def test_leaf_manifest_check_projection_matches_runner_without_import_back_edge() -> None:
+def test_leaf_manifest_check_projection_matches_runner_without_import_back_edge() -> (
+    None
+):
     assert tuple(MANIFEST_CHECKS) == REGISTERED_MANIFEST_CHECK_NAMES
     projection = project_active_manifest_checks(
         ("manifest_schema", *REGISTERED_MANIFEST_CHECK_NAMES, "unknown_check")
