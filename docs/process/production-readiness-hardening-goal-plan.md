@@ -219,7 +219,7 @@ report URL/hash 和 compatibility result，完整 runtime evidence 由 runtime �
 | WP-07B 正式 Stable promotion | planned | 仅可在 WP-13 经 external runtime、final RC、protected-main PR 与明确远程授权完成；当前 Stable lifecycle 仍为 0 |
 | WP-08 Schema/validator catalog | completed | Evidence Ledger `WP-08`；21 个 schema artifact 唯一登记，generator/CLI/parity/frozen-root 门禁闭环 |
 | WP-09 复杂度与 Conformance 重构 | completed | Evidence Ledger `WP-09`；86 个静态 trust-path functions、8 个模块和 repository C901 目标均通过，独立 oracle 边界保留 |
-| WP-10 Static quality/coverage/mutation | completed | Evidence Ledger `WP-10`；Ruff/Mypy/PEP 561、12-shard branch coverage、changed-source、8-family P0 mutation、complexity、performance 与 Python 3.12–3.14 全量门禁通过 |
+| WP-10 Static quality/coverage/mutation | completed | Evidence Ledger `WP-10`；Ruff/Mypy/PEP 561、15-shard branch coverage、changed-source、8-family P0 mutation、complexity、performance 与 Python 3.12–3.14 全量门禁通过 |
 | WP-11 RC dry-run、workflow 与供应链 | completed | exact `v0.1.0` local pre-promotion rehearsal 绑定 clean candidate `88a117b` / tree `521b367`；staging rebuild-free verify、subject/comparison byte identity、source/wheel/sdist transcript、SBOM 与 SHA-256 manifest 全部通过；`publication_allowed=false` |
 | WP-12 独立 reference runtime | planned | 等待独立 runtime 仓 owner/license/package 授权；消费 WP-11 candidate `88a117b` 的 exact wheel/sdist，不得在 protocol-core 内实现 |
 | WP-13 Final audit / GA / merge | planned | 等待 WP-11、WP-12 与明确远程授权 |

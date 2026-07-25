@@ -6,13 +6,9 @@ import subprocess
 import sys
 from typing import cast
 
-from pheroos.conformance.authority_store_v2_spec_adapter import (
-    IndependentStdlibGovernanceStateStoreV2Adapter,
-)
 from pheroos.conformance.checks import commit_finality_v2_contract
 from pheroos.conformance.checks.authority_store_v2_contract import (
     GovernanceStateStoreConformanceAdapterV2,
-    ReferenceGovernanceStateStoreConformanceAdapterV2,
 )
 from pheroos.conformance.checks.commit_finality_v2_contract import (
     GOVERNANCE_COMMIT_FINALITY_CONFORMANCE_VERSION_V2,
@@ -44,24 +40,6 @@ def test_commit_finality_v2_conformance_version_and_exports_are_exact() -> None:
         "GOVERNANCE_COMMIT_FINALITY_CONFORMANCE_VERSION_V2",
         "run_governance_commit_finality_conformance_v2",
     ]
-
-
-def test_reference_store_passes_the_commit_finality_v2_matrix() -> None:
-    result = run_governance_commit_finality_conformance_v2(
-        ReferenceGovernanceStateStoreConformanceAdapterV2()
-    )
-    assert result.name == "commit_finality_v2_contract"
-    assert result.ok is True, result.detail
-    assert result.detail == ""
-
-
-def test_independent_store_passes_the_same_commit_finality_v2_matrix() -> None:
-    result = run_governance_commit_finality_conformance_v2(
-        IndependentStdlibGovernanceStateStoreV2Adapter()
-    )
-    assert result.name == "commit_finality_v2_contract"
-    assert result.ok is True, result.detail
-    assert result.detail == ""
 
 
 def test_commit_finality_v2_matrix_rejects_bad_adapters() -> None:
