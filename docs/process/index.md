@@ -25,6 +25,15 @@ database, dashboard, or application deployment workflows.
   is the active, non-normative Goal execution plan for authority trust roots,
   durable replay/finality, a Stable Core ABI, engineering quality gates,
   release governance, and an external reference runtime.
+- [receptor-ligand-field-comparative-study-plan.md](receptor-ligand-field-comparative-study-plan.md)
+  is the preregistration draft for comparing a receiver-gated ligand field
+  against full, sparse, blackboard, retrieval-routing, learned-pruning, and
+  current scalar-pheromone controls without changing Commit truth or importing
+  an experiment runtime into protocol-core.
+- [receptor-ligand-field-experiment-profile-v0.1.md](receptor-ligand-field-experiment-profile-v0.1.md)
+  freezes the first executable G0-G3 controller equations, budgets, synthetic
+  splits, provider canary rules, and claim limits before the external research
+  harness is implemented.
 - [stable-core-consumer.md](../protocol/stable-core-consumer.md) defines the
   public-facade, strict-typing, aggregate-journey, and external-adapter boundary
   for the Draft Stable promotion candidate without claiming formal stability.
