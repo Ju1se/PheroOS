@@ -38,9 +38,15 @@ database, dashboard, or application deployment workflows.
   qualification run found executable-fidelity and public-label leakage
   blockers without reading sealed outcomes.
 - [receptor-ligand-field-experiment-profile-v0.3.md](receptor-ligand-field-experiment-profile-v0.3.md)
-  is the active G1-G3 amendment: it freezes manifest-declared topology,
+  is the preserved G1-G3 qualification amendment: it freezes manifest-declared topology,
   a ground-truth label firewall, typed logs and diagnostics, strong-baseline
-  qualification, complete-cost requirements, and corrected provider canaries.
+  qualification, complete-cost requirements, and corrected provider canaries;
+  it was superseded before outcome-bearing execution when dynamic topology
+  epochs required a separate frozen contract.
+- [receptor-ligand-field-experiment-profile-v0.4.md](receptor-ligand-field-experiment-profile-v0.4.md)
+  is the active topology-epoch qualification amendment. It freezes canonical,
+  prefix-causal eight-ligand epochs and an exact T4 graph-shift fixture while
+  explicitly leaving the unsimulated T4 scheduler environment blocked.
 - [receptor-ligand-field-g0-g3-qualification-report.md](receptor-ligand-field-g0-g3-qualification-report.md)
   records the first external qualification result: G0 passed, G1-G3 remained
   blocked, no provider network request was made, and no H1-H6 conclusion was
