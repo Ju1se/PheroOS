@@ -1,99 +1,153 @@
 # Receptor-Gated Ligand Field G0-G3 Qualification Report
 
-状态：G0 通过；G1-G3 阻断；仅工程资格验证，不构成 H1-H6 结果
+状态：G0、G1 通过；G2、G3 阻断；仅工程资格验证，不构成 H1-H6 结果
 
-日期：2026-07-26
+日期：2026-07-27
 
 ## 1. 结论
 
 本轮验证不支持 receptor-gated ligand field（RG-LF）优于 full
 communication、static sparse、blackboard、BM25 retrieval、learned graph
-pruning 或当前 scalar PheroOS。RG-LF 仍是理论动机较强、值得继续检验的候选架构。
+pruning 或当前 scalar PheroOS。RG-LF 仍是理论动机较强、需要继续检验的候选架构。
 
-G0 的预注册和协议边界已经通过。G1-G3 尚未通过，因此 full smoke、provider
-canary、pilot 和任何 H1-H6 outcome claim 均未获授权。验证过程没有读取 sealed
-outcome sidecar，没有发起 provider 网络请求，`hypothesis_conclusions` 为空。
+G0 的预注册和 protocol-core 边界通过；G1 的 typed research log、oracle/random
+diagnostics、deterministic replay 和 zero-authority 自检通过。G2 的 T4 完整环境与
+7,252-intent matrix 尚未实现；G3 的 P durable replay 和实际 per-run cost ledger
+尚未通过。因此 full smoke、provider canary、pilot 和任何 H1-H6 outcome claim
+均未获授权。
+
+资格验证中的 oracle diagnostic 按声明读取了 sealed sidecar，且明确排除在 hypothesis
+claim 之外；普通 F/P/S/B/Q/G/R controller 没有读取 sidecar。本轮没有读取或保存
+provider credential，没有发起网络请求，`hypothesis_conclusions` 为空。
 
 ## 2. 冻结身份与可复现证据
 
 - Protocol-core branch：`codex/receptor-ligand-field-experiments`
 - Protocol baseline：`e447d2c96c40b69bb7f98613e23556be7bbe3d76`
+- Active profile：`receptor-ligand-field-experiment-profile-v0.5.md`
 - Active preregistration commit：
-  `fe05d8fa888b4a8fb771f14b58d812bff437d579`
+  `01b9253bb06000282e25a991e0892897e3fbe6bb`
 - External lab branch：`codex/receptor-ligand-field-lab`
-- External lab commit：`ef7c4213836f521d5df0085bacde18ea0329b370`
-- External lab source-tree root：
-  `sha256:17ec5b3269f11cbef655a50ffea5a80204d3331445d598c77ff939622bc7fb54`
+- External lab commit：
+  `6ac6902e13b6eb15e39e945bcd4b56e97bbff7f9`
+- External source-tree root：
+  `sha256:10f5cd353e22a848f67147fae0ce8cfd37be32309f4ed02f1074539afd44e4a0`
+- Strict preregistration verification root：
+  `sha256:3428ce761472923d1d1535132ca67fb64d0c8576cca5d80b61ab0a9bd0e65a19`
+- Qualification artifact-set root：
+  `sha256:7a46a02a9f43a12c0ff6088ae4bddc713bddc0480170d18f4326e790dd20ae55`
+- Baseline qualification manifest root：
+  `sha256:0744ab29d122bfb9e3865d9e0d6bcbb93f936252eb07583349eeb92936adc3b1`
 - Qualification root：
-  `sha256:87bda0681e041c2768ac1d683d65cc403d9799105ae2b7fba2893777e3cbdf6d`
+  `sha256:61e08609af77f98d01b1b7a0dab922191461467d814d9a4af678ac99df59e777`
 - Qualification trace head：
-  `sha256:17b09c3933bb57d13d45c1069096ccefda1cfbba9e3609848f41eb460af3ae2e`
-- Fresh-process deterministic replay root：
-  `sha256:d83bef27e423816f1d5cb7289af94b2c78872aa78001c47f09a159d878898093`
+  `sha256:18a969e3d48163a503cce4b6515ee954a4773ef0b162736c12f12ab89f250009`
+- Fresh-process deterministic fingerprint root：
+  `sha256:41fa9b05c6f63aa7453b5c836009502ae2dc4d0e10ffe2f4b87d4dfb5cd4819d`
+- Provider-contract report root：
+  `sha256:da822627dbcb138e9e9e108f1dea5b93627e0d8eea0ad1974fe306dfa5a5662d`
 
-Active plan、v0.2 profile、TCK v1/v2 和 Hybrid Replay manifest 的冻结摘要均被
-preregistration verifier 逐项核对。外部 lab 的 23 项单元测试通过，Python
-compile check 通过；同一冻结输入在全新进程中得到完全相同的 replay root。
-Provider contract 检查通过，但只检查 endpoint、model、参数、无内联 secret 和
-fail-closed 行为；`network_used=false`，不能据此推断模型可用性或实验效果。
+Strict verifier 核对了 branch、ancestor、clean worktree、plan/profile/TCK/Hybrid
+Replay hashes、external source root、四个 frozen qualification files、manifest
+links 和 artifact-set root。外部 lab 的 99 项单元测试通过，compile check 通过；
+两个 fresh Python process 对相同 qualification input 产生完全相同的 fingerprint。
+
+本地 trace 位于 external lab 的
+`runs/g0-g3-v05-g1-checkpoint-6ac6902/trace.ndjson`。它有两条 canonical
+hash-chained records，内部验证 head 与上列值一致。该目录不是 WORM archive；长期
+留存仍需独立保存 head root 并复制到 content-addressed 或 write-once storage。
 
 ## 3. Gate 结果
 
-| Gate | 状态 | 本轮证据或阻断原因 |
+| Gate | 状态 | 可执行证据或阻断原因 |
 | --- | --- | --- |
-| G0 Boundary/Prereg | 通过 | 研究分支、祖先提交、冻结 artifact hash、core 边界和 clean worktree 均通过 |
-| G1 Controller Contract | 阻断 | 完整版本化研究日志 schema、oracle diagnostic 和 random diagnostic 尚未实现 |
-| G2 Deterministic Simulator | 阻断 | T4-T6 环境语义不完整；完整 scale/attack counterfactual matrix 尚未资格化 |
-| G3 Baseline Qualification | 阻断 | P/S/Q/G/R 仍有保真度缺口；完整冻结成本核算尚未实现 |
+| G0 Boundary/Prereg | 通过 | core 仅 docs 改动；两个 worktree clean；全部冻结 hash、ancestor、source/artifact roots 和 manifest links 通过 |
+| G1 Controller Contract | 通过 | closed typed log、diagnostic-only oracle、seeded random、zero authority、ordinary-controller sidecar firewall 和 exact replay 通过 |
+| G2 Deterministic Simulator | 阻断 | v0.5 已预注册 7,252 intents；T4 scheduler/resource/failure/congestion/evaluator 和完整 matrix 尚未实现/资格化 |
+| G3 Baseline Qualification | 阻断 | P durable multistep replay 失败；59-field cost contract 已闭合，但各 arm 的 natural/iso/sweep 实际 ledger 尚未接入 |
 
-`F` 和 `B` 只获得 engineering-qualified：它们通过 exact replay、可见分区和
-zero-authority 等不变量。这不是与 RG-LF 的性能比较，也不是科学基线充分性的
-证明。所有 controller 的现有 smoke 同样只证明没有跨 tenant canary 泄露、输出
-分区成立且 controller 不能创造 authority。
+`full_smoke_authorized=false`。当前 report 的 `qualify-baselines` 退出码为 `2`，
+这是预期的 gate refusal，不是实验失败或 RG-LF outcome。
 
-## 4. Baseline 与 RG-LF 阻断项
+## 4. Baseline 与 RG-LF 的精确资格范围
 
-- `P`：v0.2 指定的 v2-to-legacy pressure 调用对 tokenless source 不可执行；
-  长生命周期 route-to-candidate diffusion 在第二步触发 receipt payload replay
-  mismatch；拓扑和 candidate universe 还不是与内容无关的预注册量，存在 prefix
-  causality 风险。
-- `S`：尚未用 dev-only、matched-density 程序冻结 static sparse 图。
-- `Q`：尚未冻结独立实现的 BM25 golden fixture，不能只用自身实现证明自身。
-- `G`：Decimal-34 train/dev grid、选择规则和 checkpoint 尚未冻结。
-- `R`：当前 `EpisodeManifest` 不能精确表达 v0.2 声明的八种 ligand topology；
-  已通过的 mass conservation、clone invariance、ACL-partitioned receptor state
-  和 zero authority 只是局部工程不变量。
-- 成本：尚缺完整的 logical clock、CPU、消息、字节、token 和失败/timeout 统一核算。
+所有 controller 都保持：
 
-因此本轮正确动作是拒绝 full smoke，而不是把一个不完整的对照实验运行起来。
+```text
+authority_scope = none
+commit_authority = false
+controller_qualified_for_G3 = false
+g3_complete = false
+```
 
-## 5. API Key 与 provider 实验边界
+- `F`、`B`：provider-free deterministic mechanics 通过；实际 cost ledger 和完整 T4
+  fidelity 未通过。
+- `Q`：独立 BM25 golden fixture 已冻结并验证；artifact root 为
+  `sha256:8bb33c9fa95aaca4a2d19dbd54944d9cbe969838aa8a85bed2cf597810d56582`。
+- `S`：dev-only matched-density graph 已冻结；artifact root 为
+  `sha256:6f5a714cf5652d78c2783ec29ff718cb9f47d8aef64ace47b2673ab42d0ff2f6`；
+  T4 只包含 baseline mechanics。
+- `G`：每个 T1-T7 task 的 54-point Decimal-34 train/dev grid、30 train seeds、30 dev
+  seeds 和 checkpoint 已冻结；artifact root 为
+  `sha256:145a321380f207bf88688211692915493119335dd24e96a0b2da88a3b7cbf85d`；
+  T4 只包含 baseline mechanics。
+- `R`：八 ligand、两个 topology epochs、prefix causality、partition isolation、
+  restart/canonical roots 和 mass conservation 的 mechanics 通过；T4
+  `environment_qualified=false`。
+- `P`：numeric projection 和 prefix-causal declared universe 已修复；one-step durable
+  fixture 通过。但 decayed long-lived root 在第二步仍触发
+  `P-G3-DIFFUSION-REPLAY`。在不修改冻结 PheroOS ABI 的本研究范围内，没有用 zero
+  decay、删除 diffusion、改 ID、downgrade 或外部替代品伪装成 P。
+- 成本：closed schema 明确区分 measured zero、`not_applicable` 和 missing；
+  deterministic replay tests 通过。它仍只是 contract qualification，不是实际
+  F/P/S/B/Q/G/R cost coverage。
 
-API Key 不是开始科学实验的充分条件。Provider 调用还要求：
+因此，“mechanics qualified”不能改写成“G3 complete”，更不能改写成相对性能结论。
 
-1. G1-G3 全部通过；
-2. model ID、endpoint、tokenizer/API snapshot、prompt、roster、预算和 timeout
-   均冻结；
-3. 使用新轮换的凭据，并只通过
-   `PHEROOS_MINIMAX_API_KEY`、`PHEROOS_ZHIPU_API_KEY` 环境变量注入；
-4. 先运行单请求 canary，再运行 dev-only pilot；canary 和 pilot 都不能支持
-   H1-H6；
-5. 不把 secret、原始 Authorization header 或可逆凭据写入 trace、Git 或报告。
+## 5. G2 v0.5 冻结与失败记录
 
-任何曾粘贴到对话中的 key 都应视为已暴露，必须在 provider 控制台撤销并轮换。
-本轮没有保存或使用这些 key。
+v0.5 在任何 G2 implementation、full smoke 或 provider request 之前冻结：
 
-## 6. 下一冻结点
+- T4 job/worker/failure/recovery/partial-work/deadline state machine；
+- sealed future schedule 与 prefix-causal controller view；
+- zero-authority no-op diagnostic，使 G2 simulator 与 G3 baseline fidelity 可独立判定；
+- compact eligibility descriptor，禁止显式 materialize 最大
+  `1024 * 100000 = 102400000` receiver-event pairs；
+- 每 budget layer 的 784 个 smoke/attack intents，共 6,272；
+- 上位计划五个 scale tiers 的 980 个 capability-only intents；
+- 总计 7,252 个不重复 arm-budget intents，以及 fresh-process exact replay gate。
 
-在执行 provider canary 之前，需要以 v0.3 amendment 明确并冻结：
+历史 `1232` 计数混用了 manifest/arm/budget 单位；早期 v0.5 草案的 `6664` 又遗漏三个
+scale tiers，二者均在实现前更正，未接触 outcome。此前一次 strong-baseline 开发回归为
+7/8：测试错误地修改 episode identity 却仍要求 declaration root 不变。该失败被保留、
+测试被收紧，冻结工件随后从 fresh process 全量重建；没有删除或重标任何 outcome。
 
-1. `P` 的 Hybrid Replay v2 pressure projection，以及内容无关、prefix-causal 的
-   topology/candidate universe；
-2. `R` 的八 ligand 显式图合同；
-3. `S` 的 matched-density dev selection、`Q` 的独立 BM25 golden、`G` 的
-   Decimal-34 training/checkpoint；
-4. T4-T6 环境语义、完整 scale/attack matrix、oracle/random diagnostics；
-5. 版本化日志和完整成本账本。
+## 6. API Key 与 provider 边界
 
-这些修改属于实验规范与外部 harness 的资格化工作；在形成足够证据前，不修改
-PheroOS protocol-core 的生产算法，也不提前改变 H1-H6、estimand 或 claim gate。
+API key 不是开始实验的充分条件。CLI 只有在 G0-G3 全部通过后才会调用 provider
+adapter 或读取对应环境变量。本轮实际执行：
+
+- MiniMax `provider-canary`：退出 `2`，`provider_accessed=false`，
+  `credential_read=false`；
+- Zhipu `pilot`：退出 `2`，`provider_accessed=false`，
+  `credential_read=false`；
+- provider contract verification：MiniMax `MiniMax-M3` 与 Zhipu `glm-5.2`
+  request contracts 通过，`network_used=false`。
+
+任何曾粘贴到聊天、issue、terminal history 或 log 的 key 都视为已暴露，必须撤销。
+未来仅可使用在 recorded conversation 外新生成的 key，并只通过
+`PHEROOS_MINIMAX_API_KEY`、`PHEROOS_ZHIPU_API_KEY` 继承；不得写入 Git、Trace、
+command argument、report 或 `.env`。
+
+## 7. 下一执行点
+
+下一步按 gate 顺序只实现 provider-free G2：
+
+1. external lab 中实现 v0.5 T4 environment 与 prefix firewall；
+2. 生成完整 7,252 intent ledger，并用两个 fresh process 对 matrix roots 做 exact replay；
+3. 验证 compact sharding、ACL/capacity/authority violation 为零；
+4. 在 G2 通过后再接入各 controller 的实际 natural/iso/sweep cost ledger；
+5. 保留 P durable replay blocker，除非形成独立、版本化且不违反当前研究边界的解决路径。
+
+在 G2、G3 全部通过之前，不运行真实 provider canary/pilot，不修改 PheroOS production
+algorithm，不提前改变 H1-H6、estimand、MESI 或 claim gate。

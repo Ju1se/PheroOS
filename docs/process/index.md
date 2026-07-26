@@ -54,8 +54,9 @@ database, dashboard, or application deployment workflows.
   eligibility, exact smoke/attack/budget/scale counts, and fresh-process replay
   while keeping all experiment runtime outside protocol-core.
 - [receptor-ligand-field-g0-g3-qualification-report.md](receptor-ligand-field-g0-g3-qualification-report.md)
-  records the first external qualification result: G0 passed, G1-G3 remained
-  blocked, no provider network request was made, and no H1-H6 conclusion was
+  records the current external qualification checkpoint: G0/G1 passed,
+  G2/G3 remain blocked by the full simulator matrix, P durable replay, and
+  actual cost ledgers; no provider network request or H1-H6 conclusion was
   authorized.
 - [stable-core-consumer.md](../protocol/stable-core-consumer.md) defines the
   public-facade, strict-typing, aggregate-journey, and external-adapter boundary
