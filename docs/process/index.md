@@ -37,6 +37,10 @@ database, dashboard, or application deployment workflows.
   is the active G0-G3 freeze: it specifies the eight-ligand field, conserving
   diffusion, strong retrieval/sparse baselines, exact budgets, RNG, cost clocks,
   provider canary rules, and claim limits for the external research harness.
+- [receptor-ligand-field-g0-g3-qualification-report.md](receptor-ligand-field-g0-g3-qualification-report.md)
+  records the first external qualification result: G0 passed, G1-G3 remained
+  blocked, no provider network request was made, and no H1-H6 conclusion was
+  authorized.
 - [stable-core-consumer.md](../protocol/stable-core-consumer.md) defines the
   public-facade, strict-typing, aggregate-journey, and external-adapter boundary
   for the Draft Stable promotion candidate without claiming formal stability.
