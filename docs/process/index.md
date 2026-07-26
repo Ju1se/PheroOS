@@ -49,10 +49,16 @@ database, dashboard, or application deployment workflows.
   superseded before outcome-bearing execution by the complete G2 environment
   and intent-matrix freeze.
 - [receptor-ligand-field-experiment-profile-v0.5.md](receptor-ligand-field-experiment-profile-v0.5.md)
-  is the active G2 deterministic-environment and intent-matrix amendment. It
-  freezes the T4 scheduler state machine, sealed prefix boundary, compact scale
-  eligibility, exact smoke/attack/budget/scale counts, and fresh-process replay
-  while keeping all experiment runtime outside protocol-core.
+  is the preserved G2 deterministic-environment and intent-matrix amendment. It
+  froze the T4 scheduler state machine, sealed prefix boundary, compact scale
+  eligibility, exact smoke/attack/budget/scale counts, and fresh-process replay,
+  and was superseded before G2 qualification when attack-label ambiguity was
+  found.
+- [receptor-ligand-field-experiment-profile-v0.6.md](receptor-ligand-field-experiment-profile-v0.6.md)
+  is the active G2 attack-label firewall amendment. It separates
+  variable-severity injection, task-intrinsic challenge, mandatory probes, and
+  T4 environment stress without changing the 7,252-intent matrix or any
+  protocol-core ABI.
 - [receptor-ligand-field-g0-g3-qualification-report.md](receptor-ligand-field-g0-g3-qualification-report.md)
   records the current external qualification checkpoint: G0/G1 passed,
   G2/G3 remain blocked by the full simulator matrix, P durable replay, and
