@@ -6,8 +6,9 @@
 
 研究分支：`codex/receptor-ligand-field-experiments`
 
-第一轮可执行冻结：
-[Experiment Profile v0.1](receptor-ligand-field-experiment-profile-v0.1.md)
+当前可执行冻结：
+[Experiment Profile v0.2](receptor-ligand-field-experiment-profile-v0.2.md)。
+v0.1 在任何 arm execution 前经独立 G0 审计被取代并保留为历史记录。
 
 适用范围：PheroOS protocol-core 的非权威 attention/communication plane，以及位于
 protocol-core 之外的独立研究 harness

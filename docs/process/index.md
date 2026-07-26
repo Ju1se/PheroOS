@@ -31,9 +31,12 @@ database, dashboard, or application deployment workflows.
   current scalar-pheromone controls without changing Commit truth or importing
   an experiment runtime into protocol-core.
 - [receptor-ligand-field-experiment-profile-v0.1.md](receptor-ligand-field-experiment-profile-v0.1.md)
-  freezes the first executable G0-G3 controller equations, budgets, synthetic
-  splits, provider canary rules, and claim limits before the external research
-  harness is implemented.
+  is the preserved first G0 draft, superseded before any arm execution after an
+  independent design audit found baseline and mass-conservation ambiguities.
+- [receptor-ligand-field-experiment-profile-v0.2.md](receptor-ligand-field-experiment-profile-v0.2.md)
+  is the active G0-G3 freeze: it specifies the eight-ligand field, conserving
+  diffusion, strong retrieval/sparse baselines, exact budgets, RNG, cost clocks,
+  provider canary rules, and claim limits for the external research harness.
 - [stable-core-consumer.md](../protocol/stable-core-consumer.md) defines the
   public-facade, strict-typing, aggregate-journey, and external-adapter boundary
   for the Draft Stable promotion candidate without claiming formal stability.
