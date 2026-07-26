@@ -44,9 +44,15 @@ database, dashboard, or application deployment workflows.
   it was superseded before outcome-bearing execution when dynamic topology
   epochs required a separate frozen contract.
 - [receptor-ligand-field-experiment-profile-v0.4.md](receptor-ligand-field-experiment-profile-v0.4.md)
-  is the active topology-epoch qualification amendment. It freezes canonical,
-  prefix-causal eight-ligand epochs and an exact T4 graph-shift fixture while
-  explicitly leaving the unsimulated T4 scheduler environment blocked.
+  is the preserved topology-epoch qualification amendment. It froze canonical,
+  prefix-causal eight-ligand epochs and an exact T4 graph-shift fixture, and was
+  superseded before outcome-bearing execution by the complete G2 environment
+  and intent-matrix freeze.
+- [receptor-ligand-field-experiment-profile-v0.5.md](receptor-ligand-field-experiment-profile-v0.5.md)
+  is the active G2 deterministic-environment and intent-matrix amendment. It
+  freezes the T4 scheduler state machine, sealed prefix boundary, compact scale
+  eligibility, exact smoke/attack/budget/scale counts, and fresh-process replay
+  while keeping all experiment runtime outside protocol-core.
 - [receptor-ligand-field-g0-g3-qualification-report.md](receptor-ligand-field-g0-g3-qualification-report.md)
   records the first external qualification result: G0 passed, G1-G3 remained
   blocked, no provider network request was made, and no H1-H6 conclusion was
