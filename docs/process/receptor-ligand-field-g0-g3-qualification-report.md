@@ -170,12 +170,12 @@ network_used = false
 `v0.7` 用于设计完整 scale state、独立 verifier、negative fixtures、resource
 supervision 和 A/B materialization contract。它当前只有设计 inventory：
 
-- profile bytes：107,312
+- profile bytes：116,230
 - profile SHA-256：
-  `f7c0759cabe10ff206039f41923a1cbab70d04e895cfa03f11f425faca52f2c1`
-- companion bytes：61,669
+  `8d7dbc32abe7f97142e21570a79e1a0ee64a4e20b66f1fd2b8d36538f2feb8c3`
+- companion bytes：62,097
 - companion SHA-256：
-  `20fb0c9796b7acc1724957e5481bbad6fec80ac468dabdafa523bf50b96c7906`
+  `322365b8eb50d5479329fde2a734901e8bd96ce48bcfe1afa177588d38788360`
 - fixture inputs：12；
 - positive fixtures：3；
 - negative fixtures：56；
@@ -184,9 +184,9 @@ supervision 和 A/B materialization contract。它当前只有设计 inventory�
 - positive fixture set root：
   `sha256:2a0e9ff10b6e2d5e2e42bebe77dd9c32f871a48638ad4d41a796995d1ce1613e`
 - negative fixture set root：
-  `sha256:1d2a8d1986bbcfbc3917adcd6564d9bd293e9c04a547ff2ff4ff56745cfd54b7`
+  `sha256:ae57ce3f050c4f1560026ecb198cb274adfee6ffcf49282fb4520ecf6e12f4e5`
 - semantic manifest root：
-  `sha256:673ab4138ff29e5906686213736cb6e25eff4785724e504f6705003dbaed3d54`
+  `sha256:dfbb83daea99bedc25e91c07f10aa301f42fba93808d57d9e6aaf395ae33feca`
 
 Companion 明确冻结：
 
@@ -197,16 +197,32 @@ runner_implemented = false
 receipt_artifact_bytes_present = false
 ```
 
-独立二审保留以下 activation blockers：
+原独立二审发现的 2×P1 与 2×P2 已在 design specification 层关闭：五个
+`duplicate` 已成为 literal total transforms；cross-variant code precedence、
+base-artifact total order、schema/geometry/resource predicate domains 和 process
+measurement constructor 均已冻结。第二位审阅者使用独立 canonical encoder 重算
+全部 roots、3 个 positive inputs、11 个 expected receipts、3 个 positive
+commitments 和六组受影响 operation/recipe roots，最终严重度为：
 
-1. **P1**：`duplicate` operation 对五个 fixtures 不是 total transform；
-2. **P1**：task/variant expected code 与 schema-field-set precedence 冲突；
-3. **P2**：`base_artifacts` array order 尚无命名规则；
-4. **P2**：OOM/crash 与 sequence/coverage validation predicates 仍可能重叠。
+```text
+P0 = 0
+P1 = 0
+P2 = 0
+P3 = 0
+```
 
-在四项解决、全部 literal operations materialize、positive/negative receipts 独立复算
-且 profile/companion 全部 roots 重封之前，禁止把 `activation_ready` 改为 true，
-禁止 lock migration、v0.7 runner/reducer 实现或借此宣称 G2 通过。
+这只说明当前 design specification 没有已知的 P0-P3 歧义，不是 materialization
+evidence。唯一保留的 activation blocker 是尚未执行的独立 materialization：
+
+1. 从 12 个 constructors 实际生成 base views；
+2. 由互不共享 reducer 的 producer/verifier 执行 3 个 positive 和 56 个 negative
+   transactions；
+3. 保存并复算全部 preconditions、observed codes、receipts、source roots 与
+   content-addressed artifacts；
+4. 证明 zero authority、zero outcome read、zero network 和 source independence。
+
+在该二审完成以前，禁止把 `activation_ready` 改为 true，禁止 lock migration、
+v0.7 runner/reducer 实现或借此宣称 G2 通过。
 
 ## 6. G3 客观审计
 
@@ -302,10 +318,10 @@ Key 不得写入 Git、`.env`、Trace、report、command argument 或 fixture。
 
 后续仍只做 provider-free gate work：
 
-1. 修复 v0.7 的 2×P1 和 2×P2，重新生成 companion roots，并完成独立
-   materialization review；
-2. 只有 v0.7 activation blockers 全部关闭后，才进行明确的 profile activation 与
-   prereg lock migration；
+1. 按已通过 design 二审的 v0.7 specification 独立 materialize 12 个 base views、
+   3 个 positive 和 56 个 negative transactions，并生成可检索 receipts；
+2. 只有 materialization、source-independence 和全部 root 二审通过后，才形成新的
+   activation candidate；profile activation 与 prereg lock migration 仍需单独审阅；
 3. 在 external lab 实现 v0.7 producer/verifier/resource-supervisor，并完成 140 个
    scale task-state replays、980 intents 和全部 7,252 intents 的隔离 A/B；
 4. G2 总 gate 通过后，先冻结 G3 amendment：非零 sweep schedule、S/G scale policy、

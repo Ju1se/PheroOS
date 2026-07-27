@@ -683,7 +683,7 @@ Activation-candidate commit 中的 exact Git blobs 按下列固定顺序形成 d
 | 4 | `docs/process/receptor-ligand-field-experiment-profile-v0.5.md` | `52bee02d20e33ef95b71339ad66c246dbdda3c79d21457f139121379bf8d470b` |
 | 5 | `docs/process/receptor-ligand-field-experiment-profile-v0.6.md` | `b1a7aa84664baacdf683af406aa4e88b118ef45b001986e7f438c5d31715a979` |
 | 6 | `docs/process/receptor-ligand-field-experiment-profile-v0.7.md` | `V07_SHA256` |
-| 7 | `docs/process/receptor-ligand-field-experiment-profile-v0.7-fixtures.json` | `20fb0c9796b7acc1724957e5481bbad6fec80ac468dabdafa523bf50b96c7906` |
+| 7 | `docs/process/receptor-ligand-field-experiment-profile-v0.7-fixtures.json` | `322365b8eb50d5479329fde2a734901e8bd96ce48bcfe1afa177588d38788360` |
 
 `V07_SHA256` 是公式中的 metavariable，不写回或替换本文件 bytes；activation tool 将它
 解析为 `lowercase_hex(SHA256(exact activation-candidate blob bytes))`，并只把实际值
@@ -710,17 +710,17 @@ External lock 必须逐字段保存 `V07_SHA256`、activation-candidate commit�
 ```text
 fixture_companion_path =
   "docs/process/receptor-ligand-field-experiment-profile-v0.7-fixtures.json"
-fixture_companion_byte_count = 61669
+fixture_companion_byte_count = 62097
 fixture_companion_raw_root =
-  "sha256:20fb0c9796b7acc1724957e5481bbad6fec80ac468dabdafa523bf50b96c7906"
+  "sha256:322365b8eb50d5479329fde2a734901e8bd96ce48bcfe1afa177588d38788360"
 fixture_input_set_root =
   "sha256:0227f38c34f9d50b81b257675065e73ab1c18e02fff684ca851603b3d963aed8"
 positive_fixture_set_root =
   "sha256:2a0e9ff10b6e2d5e2e42bebe77dd9c32f871a48638ad4d41a796995d1ce1613e"
 negative_fixture_set_root =
-  "sha256:1d2a8d1986bbcfbc3917adcd6564d9bd293e9c04a547ff2ff4ff56745cfd54b7"
+  "sha256:ae57ce3f050c4f1560026ecb198cb274adfee6ffcf49282fb4520ecf6e12f4e5"
 fixture_semantic_manifest_root =
-  "sha256:673ab4138ff29e5906686213736cb6e25eff4785724e504f6705003dbaed3d54"
+  "sha256:dfbb83daea99bedc25e91c07f10aa301f42fba93808d57d9e6aaf395ae33feca"
 ```
 
 Companion exact bytes 必须是 `C(parsed_json)||LF`。Fresh verifier 按以下公式重算并逐项
@@ -741,6 +741,7 @@ fixture_semantic_manifest_root =
   H("g2-v07-fixture-semantic-manifest-v1", {
     "activation_ready": false,
     "artifact_bytes_compiled": false,
+    "base_artifact_order": "g2-v07-constructor-rank-then-base-id-v1",
     "fixture_input_set_root": fixture_input_set_root,
     "negative_fixture_set_root": negative_fixture_set_root,
     "positive_fixture_set_root": positive_fixture_set_root,
@@ -2066,6 +2067,7 @@ outcome_read_count=0
 network_used=false
 fixture_input_count=12
 fixture_input_set_root
+base_artifact_order="g2-v07-constructor-rank-then-base-id-v1"
 base_artifacts
 positive_fixture_count=3
 positive_fixture_set_root
@@ -2087,6 +2089,38 @@ g2-v07-three-way-label-fixture-base-v1
 g2-v07-source-auditor-base-v1
 g2-v07-process-transcript-base-v1
 ```
+
+`base_artifact_order="g2-v07-constructor-rank-then-base-id-v1"` 固定一个 total
+array order：先按上述 closed constructor list 的出现顺序取 constructor rank，再在同一
+constructor 内按 NFC 后 `base_artifact_id` 的 Unicode scalar-value sequence 升序。
+`base_artifact_id` 必须 unique。Verifier 必须验证 companion literal array 已满足该顺序，
+不能先排序、重排或忽略 unknown constructor 后再接受；任一违反使用
+`E-FIXTURE-MANIFEST-BINDING`。当前 12 项 literal array 已满足该规则，修订没有移动或
+改变任一 base record；该 order literal 同时进入第 12.2 节 semantic-manifest preimage。
+
+`g2-v07-process-transcript-base-v1` 不使用隐式 default。它从
+`base:process:success` 的 literal parameters 生成 resource-stage measurement preimage，
+exact mapping 是：
+
+```text
+rss_unit                 = parameters.ready_unit
+child_ready_rss_raw      = parameters.child_ready_rss_raw
+supervisor_ready_rss_raw = parameters.child_ready_rss_raw
+sampled_peak_rss_raw     = parameters.sampled_peak_rss_bytes
+child_rusage_raw         = parameters.sampled_peak_rss_bytes
+wait4_rusage_raw         = parameters.sampled_peak_rss_bytes
+wait4_receipt_present    = parameters.wait4_receipt_present
+```
+
+Parameter 名 `sampled_peak_rss_bytes` 是本 review inventory 已冻结的 literal；在 base
+的 `ready_unit=0` 下其数值同时是 raw byte value。`ready_unit` 被 fixture 改为 unknown
+值时，raw literals 仍保留但不能 normalized。上述任一 source parameter 缺失或类型不
+符时使用 `E-FIXTURE-PRECONDITION` 阻断整个 fixture component，不能补零或从 host
+measurement 猜测。按第 16.3 节公式，未修改 base 的 baseline/peak/delta 唯一为
+`1,048,576 / 2,097,152 / 1,048,576` bytes；因此 base 本身不满足任何 resource
+failure predicate。`N-RSS-EXCEED` 修改 `sampled_peak_rss_bytes` 后会一致传播到三个
+peak raw inputs；`N-RSS-UNMEASURABLE` 只使 unit guard 失败。Crash、OOM、timeout 和
+partial-segment recipes 保留这组完整、valid RSS preimage。
 
 Scale environment constructor 使用 companion literal parameters 和第 13-16 节生成
 canonical artifact，然后形成只供 fixture mutation 的 normalized derived view。该 view
@@ -2143,11 +2177,45 @@ replace, replace-copy, replace-source,
 swap, truncate-bytes
 ```
 
-`canonical-json` value 直接作为 C(value)；`copy` value 必须恰为
-`base_artifact_id/path` locator；`utf8/base64` value 必须由 `value_raw_sha256` 复核；
-`none` 只允许 value=null。Byte index 是零基 insertion offset；`truncate-bytes`
-唯一允许 index=`-1`，意为删除 final byte。`swap` 必须有 second_path；其他 op 的
-second_path=null。
+除下述 `duplicate` mode 外，`canonical-json` value 直接作为 C(value)；`copy` value
+必须恰为 `base_artifact_id/path` locator；`utf8/base64` value 必须由
+`value_raw_sha256` 复核；`none` 只允许 value=null。Byte index 是零基 insertion
+offset；`truncate-bytes` 唯一允许 index=`-1`，意为删除 final byte。`swap` 和
+`duplicate` 必须有 second_path；其他 op 的 second_path=null。
+
+`duplicate` 是 total transform，`value_encoding` 固定 `canonical-json`，value 是
+下列 closed mode 之一：
+
+```text
+object-member-at-decimal-index-v1
+array-element-before-index-v1
+```
+
+两种 mode 都先在当前 transaction state 中按 literal `path` 解析 source；不允许搜索、
+重选或改写 source 内部 ID：
+
+1. `object-member-at-decimal-index-v1` 要求 `second_path` 解析为 object、source 是该
+   object 的直接 member、index 是非负 Count。Destination key 唯一等于无前导零的
+   `decimal(index)` 且必须 absent；transform 在该 key 插入 source canonical value 的
+   exact copy。它不能生成 duplicate JSON key。
+2. `array-element-before-index-v1` 要求 `second_path` 解析为 array、source 是该 array
+   的直接 element 且 `0 <= index <= len(array)`；transform 在 pre-operation
+   `index` 的 element 前插入 source exact copy，`index=len(array)` 时 append。
+
+任一 source/container 类型、直接亲子关系、index bound 或 destination absence 条件
+不成立都唯一使用 `E-FIXTURE-PRECONDITION`。五项 duplicate recipe 的 literal
+container/index 是：
+
+```text
+N-EVENT-DUPLICATE  /events/by_sequence                 100
+N-JOB-DUPLICATE    /jobs/by_ordinal                    100
+N-INTENT-DUPLICATE /intent_bindings/by_ordinal         980
+N-T2-CLONE-WEIGHT  .../candidate_cluster_support/.../unit_roots             1
+N-T6-CLONE-WEIGHT  .../candidate_independent_cluster_support/.../unit_roots 1
+```
+
+前三项复制到新的 object key，但 copied record 内部 sequence/ordinal 保持原值；后两项
+在 array position 1 插入 ordinal 0 unit root 的 copy。因此结果唯一且不依赖实现选择。
 
 Precondition exact keys 是 `kind/path/value/value_root`。Closed kind set 恰为 companion
 中出现的：
@@ -2221,8 +2289,8 @@ cost:        E-COST-INCOMPLETE
 source:      E-SOURCE-IDENTITY,E-SOURCE-IMPORT,
              E-SOURCE-LABEL-DEPENDENCE,E-SOURCE-SIDECAR-READ,
              E-ALLOC-NESTED-COMPREHENSION,E-ALLOC-PAIR-RECORD
-resource:    E-TIMEOUT,E-RSS-LIMIT,E-RSS-UNIT,E-CHILD-CRASH,
-             E-CHILD-OOM,E-PARTIAL-SEGMENT
+resource:    E-TIMEOUT,E-RSS-LIMIT,E-RSS-UNIT,E-CHILD-OOM,
+             E-CHILD-CRASH,E-PARTIAL-SEGMENT
 fixture:     E-FIXTURE-MANIFEST-BINDING,E-FIXTURE-PRECONDITION
 ```
 
@@ -2231,7 +2299,71 @@ rejection receipt，而是阻断整个 fixture component。其余 judge 只执�
 stage；同一 stage 内按上表从左到右检查并在首个 failure code 后停止，因此
 multi-operation process transaction 仍只有一个 observed code。
 同一 literal 在两个 stages 出现时以 companion recipe 的 judge 和 validation_stage
-决定；expected_code 是唯一 observed code。`NegativeFixtureReceiptV07` exact keys：
+决定；expected_code 是唯一 observed code。
+
+Schema stage 的 predicates 和 precedence 是 total 且不含 fixture-ID 特例：
+
+1. `E-SCHEMA` 检查 schema literal 是否属于 declared closed schema set；
+2. `E-SCHEMA-FIELD-SET` 检查 normalized view 中每个 declared exact-schema object 的
+   closed field set；适用域包括 state envelope、task_payload、`ControllerPrefixV07`
+   和本文件声明 exact keys 的其他 object。任一 required field 缺失或 extra field
+   出现时该 predicate 为 true；
+3. 只有前两项均为 false，`E-TASK-VARIANT` 才对 state envelope/task_payload 检查
+   schema、task_id 和 recognized payload variant 的一致性。非 state object 不在
+   task-variant predicate 的适用域。
+
+因此 exact T2 payload 替换 declared T1 payload 时先且只得到
+`E-SCHEMA-FIELD-SET`；不能因为 payload 可被识别为 T2 而跳过 T1 closed-field check。
+同理，在 `ControllerPrefixV07` 增加 `sidecar_root` 或 `attack_group_root` 时先且只得到
+`E-SCHEMA-FIELD-SET`；实现不能因该 object 不是 state payload 而跳过 closed-field
+validation。
+
+Geometry stage 把三个 predicates 的适用域冻结为：
+
+1. `E-CANONICAL-ORDER` 只检查 semantic set/map preimage arrays；不检查
+   `/receivers/order`、`/steps/order` 或其他 structural order arrays。
+2. `E-COVERAGE` 只检查 receiver、event、job 和 intent-binding inventories 的 embedded
+   stable-ID multiset 是否精确等于其 declared inventory；step ledger 不在 coverage
+   domain。
+3. `E-SEQUENCE` 对 step ledger 检查 exact `0..49` key set、`steps/order` 和每项 embedded
+   step；对 receiver/event/job/intent inventory，只有其 coverage predicate 为 false
+   时才检查 storage key、embedded ordinal/sequence 和 structural order alignment。
+
+所以 missing step 只满足 `E-SEQUENCE`；missing/duplicate receiver、event、job 或 intent
+只满足 `E-COVERAGE`；coverage failure 通过 guard 使同一 inventory 的 sequence
+predicate 为 false。Structural reorder 只满足 `E-SEQUENCE`。
+
+Resource stage 的 RSS predicates 使用下列 applicability guard：
+
+1. `E-RSS-LIMIT` 只在所有 required raw samples、READY-complete supervisor sample 和
+   wait4 receipt 均存在，所有 unit 都属于 `{0,1}`，且 checked normalization、
+   baseline/peak/delta arithmetic 成功时适用；在此前提下，任一第 9 节冻结的
+   baseline、peak 或 delta limit 被超过时该 predicate 为 true。Measurement formation
+   使用第 16.3 节的 exact mechanics。
+2. `E-RSS-UNIT` 在 required measurement 缺失、任一 unit 不属于 `{0,1}`、checked
+   multiplication overflow、peak 小于 baseline 或其他原因使 normalized measurement
+   无法形成时为 true。此时 `E-RSS-LIMIT` 由 applicability guard 固定为 false。
+
+因此 `N-RSS-EXCEED` 在 valid byte unit 下唯一得到 `E-RSS-LIMIT`；
+`N-RSS-UNMEASURABLE` 的 unit 2 使 limit predicate 不适用并唯一得到
+`E-RSS-UNIT`。实现不能把 unknown unit 当作 bytes 后先触发 limit。
+
+Resource stage 随后使用以下互斥 terminal predicates：
+
+```text
+E-CHILD-OOM iff
+  exit_kind == "oom_kill" and exit_code is null and signal_number == 9
+
+E-CHILD-CRASH iff
+  exit_kind == "crash" and exit_code is a non-zero integer
+  and signal_number is null
+```
+
+两者按上表先 OOM 后 crash，并由 exit_kind 与 nullability 互斥。其他多重 resource
+failure 仍按上表从左到右取唯一 code；实现不得把 generic non-clean exit 先归为 crash
+再检查 OOM classification。
+
+`NegativeFixtureReceiptV07` exact keys：
 
 ```text
 schema="pheroos-rglf-negative-fixture-receipt-v0.7"
@@ -2248,22 +2380,22 @@ operation roots 必须由 companion literal record 重算；不接受 producer �
 
 | fixture ID | base and one canonical mutation | judge | expected code |
 | --- | --- | --- | --- |
-| `N-SCHEMA-TASK-VARIANT` | `B(T1)` replace first state payload with exact T2 payload | independent_verifier | `E-TASK-VARIANT` |
+| `N-SCHEMA-TASK-VARIANT` | `B(T1)` replace first state payload with exact T2 payload; reject at the declared T1 closed field set | independent_verifier | `E-SCHEMA-FIELD-SET` |
 | `N-SCHEMA-UNKNOWN` | `B(T1)` replace state schema with `unknown` | producer_validator | `E-SCHEMA` |
 | `N-SCHEMA-MISSING` | `B(T1)` delete `/task_payload/active_evidence_set_root` | producer_validator | `E-SCHEMA-FIELD-SET` |
 | `N-SCHEMA-EXTRA` | `B(T1)` insert `/task_payload/extension=null` | producer_validator | `E-SCHEMA-FIELD-SET` |
 | `N-CANONICAL-ORDER` | `B(T1)` swap first two non-equal set items | independent_verifier | `E-CANONICAL-ORDER` |
 | `N-EVENT-MISSING` | `B(T1)` delete event sequence 50 | independent_verifier | `E-COVERAGE` |
-| `N-EVENT-DUPLICATE` | `B(T1)` duplicate event sequence 50 | independent_verifier | `E-COVERAGE` |
+| `N-EVENT-DUPLICATE` | `B(T1)` copy event sequence 50 under literal object key 100 without rewriting its sequence | independent_verifier | `E-COVERAGE` |
 | `N-EVENT-MUTATION` | `B(T1)` replace event 50 payload_digest with 64 zero hex root | independent_verifier | `E-ROOT-MISMATCH` |
 | `N-RECEIVER-MISSING` | `B(T1)` delete receiver ordinal 3 | independent_verifier | `E-COVERAGE` |
 | `N-RECEIVER-REORDER` | `B(T1)` swap receiver ordinals 1 and 2 | independent_verifier | `E-SEQUENCE` |
 | `N-JOB-MISSING` | `B(T4)` delete job sequence 50 | independent_verifier | `E-COVERAGE` |
-| `N-JOB-DUPLICATE` | `B(T4)` duplicate job sequence 50 | independent_verifier | `E-COVERAGE` |
+| `N-JOB-DUPLICATE` | `B(T4)` copy job ordinal 50 under literal object key 100 without rewriting its ordinal | independent_verifier | `E-COVERAGE` |
 | `N-STEP-MISSING` | `B(T1)` delete step 25 | independent_verifier | `E-SEQUENCE` |
 | `N-STEP-REORDER` | `B(T1)` swap steps 24 and 25 | independent_verifier | `E-SEQUENCE` |
 | `N-INTENT-MISSING` | `B_SUITE` delete canonical intent ordinal 979 | independent_verifier | `E-COVERAGE` |
-| `N-INTENT-DUPLICATE` | `B_SUITE` duplicate canonical intent ordinal 979 | independent_verifier | `E-COVERAGE` |
+| `N-INTENT-DUPLICATE` | `B_SUITE` copy intent ordinal 979 under literal object key 980 without rewriting its ordinal | independent_verifier | `E-COVERAGE` |
 | `N-STATE-PREVIOUS` | `B(T1)` replace step 1 previous_state_root with zero root | independent_verifier | `E-CHAIN` |
 | `N-TRACE-PREVIOUS` | `B(T1)` replace step 1 previous_trace_root with zero root | independent_verifier | `E-CHAIN` |
 | `N-NDJSON-NONCANONICAL` | `B(T1)` insert one ASCII space after first `{` byte | independent_verifier | `E-CANONICAL-JSON` |
@@ -2276,13 +2408,13 @@ operation roots 必须由 companion literal record 重算；不接受 producer �
 | `N-ATTACK-ROOT-PREFIX` | `B(T7)` insert `/attack_group_root` into step 0 prefix | producer_validator | `E-SCHEMA-FIELD-SET` |
 | `N-T1-BAD-SUPERSEDES` | `B(T1)` replace first supersedes ref with undeclared ID | independent_verifier | `E-T1-SUPERSEDES` |
 | `N-T1-SILENT-CONFLICT` | `B(T1)` replace one step record with a resealed record whose maximum group has two payload digests while conflict/abstention preimages omit the subject | independent_verifier | `E-T1-CONFLICT` |
-| `N-T2-CLONE-WEIGHT` | `B(T2)` add clone unit twice to candidate support preimage | independent_verifier | `E-T2-CLONE-WEIGHT` |
+| `N-T2-CLONE-WEIGHT` | `B(T2)` insert an exact copy of unit-root element 0 at literal array position 1 | independent_verifier | `E-T2-CLONE-WEIGHT` |
 | `N-T3-SIDECAR-READ` | `B_SOURCE` add producer import/read of sealed T3 identity path | source_auditor | `E-SOURCE-SIDECAR-READ` |
 | `N-T3-DEADLINE-ORDER` | `B(T3)` move expiry before same-step mitigation | independent_verifier | `E-T3-DEADLINE-ORDER` |
 | `N-T5-EARLY-PARENT` | `B(T5)` mark unrevealed-parent edge revealed | independent_verifier | `E-T5-PARENT-ORDER` |
 | `N-T5-DROP-HISTORY` | `B(T5)` remove superseded ref after knowledge update | independent_verifier | `E-T5-KNOWLEDGE-UPDATE` |
 | `N-T6-NAME-CORRECTNESS` | `B_SOURCE` add branch accepting candidate by literal `minority` name | source_auditor | `E-SOURCE-LABEL-DEPENDENCE` |
-| `N-T6-CLONE-WEIGHT` | `B(T6)` duplicate a unit in candidate support preimage | independent_verifier | `E-T6-CLONE-WEIGHT` |
+| `N-T6-CLONE-WEIGHT` | `B(T6)` insert an exact copy of unit-root element 0 at literal array position 1 | independent_verifier | `E-T6-CLONE-WEIGHT` |
 | `N-T7-CROSS-TENANT-STATE` | `B(T7)` insert rejected canary in admitted tenant chain | independent_verifier | `E-T7-ACL` |
 | `N-T7-PROBE-AS-ATTACK` | `B_LABEL(T7)` insert mandatory event ID in variable attack sidecar set | independent_verifier | `E-ATTACK-GROUP-DISJOINT` |
 | `N-T4-FIXTURE-IN-QUALIFICATION` | `B(T4)` replace config fixture_mode false with true | producer_validator | `E-T4-FIXTURE-IN-QUALIFICATION` |
@@ -2360,32 +2492,46 @@ negative fixture/receipt set roots。两个 manifests、两个 artifacts 和 com
 flush、fsync、close 后由 independent verifier 复读；任一缺失、额外、root mismatch、
 source collision 或 count mismatch 都保持 G2 blocked。
 
-## 18. 独立二审保留的 activation blockers
+## 18. 原子规范修订后保留的 materialization blocker
 
-本 review draft 的 companion roots、`12/3/56` inventory、positive expected receipt
-roots 和可读索引已经独立重算一致；这只允许保存 review checkpoint。2026-07-26 至
-2026-07-27 的独立 materialization 二审仍保留下列开放项：
+2026-07-27 的 profile/companion 原子修订在 design 层关闭了此前的两个 P1 和两个 P2：
 
-1. **P1 — `duplicate` operation 不是 total transform。**
-   `N-EVENT-DUPLICATE`、`N-JOB-DUPLICATE`、`N-INTENT-DUPLICATE`、
-   `N-T2-CLONE-WEIGHT` 和 `N-T6-CLONE-WEIGHT` 的当前 records 没有冻结目标
-   container、literal insertion position 或新的 stable key。对 `by_sequence/50`
-   这类 map path，重复 canonical object key 非法；实现也不能自行选择另一个 key。
-2. **P1 — task/variant error precedence 与 expected code 冲突。**
-   `N-SCHEMA-TASK-VARIANT` 把 T1 payload 替换为 exact T2 payload。按第 17.1 节当前
-   `E-SCHEMA-FIELD-SET` 先于 `E-TASK-VARIANT`，因此不能唯一得到 companion 声明的
-   `E-TASK-VARIANT`，除非 activation candidate 冻结一个不依赖特例的判定顺序或修改
-   recipe/expected code。
-3. **P2 — `base_artifacts` array order 规则未命名。**
-   当前 exact companion bytes 和 root 已锁定其语义分组顺序，但该顺序不是 Unicode
-   `base_artifact_id` 顺序。Activation candidate 必须明确采用 literal companion order、
-   constructor order 或 ID order，且 verifier 不得自行排序。
-4. **P2 — 部分 validation predicates 仍可能重叠。**
-   `N-OOM` 需要冻结 `E-CHILD-OOM` 与先列的 `E-CHILD-CRASH` 的互斥谓词；
-   `N-STEP-MISSING` 需要冻结 `E-SEQUENCE` 与先列的 `E-COVERAGE` 的适用对象和优先级。
-   同一 input 在两个 predicates 下均为 true 时不得由实现自行选择 failure code。
+1. 五个 `duplicate` records 现在绑定 closed container mode、literal destination
+   container 和 literal index；object copy 使用新的 absent key，不能产生 duplicate
+   JSON key，array copy 的 insertion position 唯一。
+2. `N-SCHEMA-TASK-VARIANT` 保留 exact cross-variant mutation，但 expected code 改为
+   closed-field precedence 唯一产生的 `E-SCHEMA-FIELD-SET`。
+3. `base_artifact_order` 绑定 constructor-rank-then-base-ID total order；当前 12 个
+   base records 不移动。
+4. Schema、geometry 和 resource predicates 的适用域、guard 和 precedence 已在第
+   17.1 节冻结；OOM/crash 与 coverage/sequence 不再由实现选择。
 
-这些问题不否定 design inventory 的 content roots，但阻止 literal materialization、
-把 `activation_ready` 改为 true、lock migration、v0.7 reducer/runner 实现和
-`G2-FULL-SCALE-TASK-STATE` qualification。未来修订必须原子更新 profile 与 companion，
-重算全部 file/semantic roots，并再次通过独立二审；runtime 或 lock 不能覆盖本节。
+受影响 recipe 的 exact derived roots 是：
+
+| fixture ID | operation transaction root | recipe root |
+| --- | --- | --- |
+| `N-EVENT-DUPLICATE` | `sha256:7923b1aece659c26bf137aaae23182c043ca86e39a5226832f6b7d1febe15f76` | `sha256:d8bd6d063e8a2cd0cd01f3b50827e559d2b59681bd510e3e5966c614ac16a2c4` |
+| `N-INTENT-DUPLICATE` | `sha256:a36307f0aa6359fb611a80a2ef09b195f923996f747e7964285045d32d210af2` | `sha256:cd5baa0967712c5e7291602e598da00f5e9a93ae1ec63563207590a7ac52c703` |
+| `N-JOB-DUPLICATE` | `sha256:9308bdb95a33c257608b8554cdbe3d7bcf08f9529f0651686676cb333052cbb7` | `sha256:b23f7553b1f936453e66c1d746447e86c792c864c26fc27096fd574059eed992` |
+| `N-SCHEMA-TASK-VARIANT` | `sha256:3e653e4c5ee9ddd4e50582746b30b112a54c7870e9a6652ad11c9580d0392e25` | `sha256:d983396ac292409e2dfccf9faa08061c3cf2f815e39f394979d84a266c113d3a` |
+| `N-T2-CLONE-WEIGHT` | `sha256:27749bc227b4acde02522d0d5f54120d70e5c94551165924a9701a6c8b637e1a` | `sha256:d606c11fbe327eb01520c8114319527ca74885b9425efeba060e5d4376422608` |
+| `N-T6-CLONE-WEIGHT` | `sha256:3e922647160d87f772069f97e4724d2574907350cfc08a21ce2c8887ab77cfb5` | `sha256:db3e2b7b5d4b673f5f5e825a4ec3dfb957a39286ca68a82a7696907daf856a67` |
+
+这些 root 和第 12.2 节 companion bindings 只是 canonical design inventory，不是
+materialization evidence。新的独立 materialization 二审仍必须：
+
+1. 从 12 个 constructors 生成 base views，并逐项证明五个 duplicate source/container、
+   destination absence、array bound 和 unchanged embedded ID；
+2. 用独立实现执行 exact 3 个 positive 与 56 个 negative transactions，保存全部
+   precondition、observed-code 和 receipt evidence，并逐项证明 expected code 唯一；
+3. 复读 canonical companion、重算全部 operation/recipe/set/semantic roots，并证明
+   producer/verifier source independence；
+4. 证明 outcome read count 为零、network 未使用且没有 authority 或 active-profile
+   migration。
+
+在该二审完成并形成新的原子 activation candidate 前，companion 必须继续保持
+`activation_ready=false`、`artifact_bytes_compiled=false`、
+`runner_implemented=false` 和 `receipt_artifact_bytes_present=false`；v0.6 仍是唯一
+active profile。当前修订不允许 lock migration、v0.7 reducer/runner 实现或
+`G2-FULL-SCALE-TASK-STATE` qualification claim。任一 materialized pointer、code 或
+root 不一致都必须再次原子修订 profile 与 companion；runtime 或 lock 不能覆盖本节。
