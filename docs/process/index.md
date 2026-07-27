@@ -73,6 +73,16 @@ database, dashboard, or application deployment workflows.
   their semantic set roots. It remains a design inventory with
   `activation_ready=false`; it is not independently active and cannot be
   changed or locked separately from the reviewed v0.7 profile bytes.
+- [receptor-ligand-field-v0.7-materialization-plan.md](receptor-ligand-field-v0.7-materialization-plan.md)
+  is the review-only, provider-free plan for two disposable, source-independent
+  audit compilers to materialize and cross-check the exact v0.7 `12/3/56`
+  inventory before any activation decision. It does not implement a runner,
+  migrate a lock, or make v0.7 active.
+- [receptor-ligand-field-g3-methodological-amendment-v0.1.md](receptor-ligand-field-g3-methodological-amendment-v0.1.md)
+  is an inactive G3 review draft for common budget schedules, complete
+  pre-cap ranking, size-qualified S/G artifacts, and Cost Ledger v2. It grants
+  no implementation or lock-migration authority, leaves P and aggregate G3
+  blocked, and contains no H1-H6 result.
 - [receptor-ligand-field-g0-g3-qualification-report.md](receptor-ligand-field-g0-g3-qualification-report.md)
   records the current external qualification checkpoint: G0/G1 passed,
   G2/G3 remain blocked by the full simulator matrix, P durable replay, and

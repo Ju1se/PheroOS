@@ -20,8 +20,9 @@ blackboard（`B`）、BM25 retrieval（`Q`）或 learned graph pruning（`G`）�
 - G1 的 zero-authority controller contract 与确定性重放通过；
 - G2 已形成可持久化、内容寻址的局部证据，但完整 scale task-state replay 和全部
   intent 的外部隔离 A/B 尚未完成，因此 G2 总 gate 阻断；
-- G3 除 G2 前置条件外，还存在 sweep budget、S/G scale fairness、`P` durable
-  lifecycle 和 actual cost ledger 阻断；
+- G3 除 G2 前置条件外，还存在 `P` durable lifecycle、尚未 materialize/激活的
+  methodology descriptors 与 actual cost ledger 阻断；inactive G3 draft 已选择
+  sweep budget 和 S/G size policy，但尚无 implementation、receipt 或 gate effect；
 - `full_smoke_authorized=false`，provider canary、pilot 和 confirmatory LLM run
   均未获授权；
 - `hypothesis_conclusions={}`，`comparative_superiority_conclusion=null`；
@@ -108,7 +109,7 @@ replay、provider effects、hypothesis outcome 或 comparative superiority。
 | G0 Boundary/Prereg | 通过 | branch、ancestor、immutable Git blobs、active v0.6 profile、prereg lock、core boundary、external source tree 和 refrozen baseline artifacts 通过严格验证 |
 | G1 Controller Contract | 通过 | typed closed log、diagnostic-only oracle/random、zero authority、sidecar firewall、deterministic replay 和 secret-free subprocess environment 通过 |
 | G2 Deterministic Simulator | 阻断 | 5/7 components 在其明确限定的 scope 内资格化；full scale T1-T7 task state 为 0/980 intents，全部 7,252 intents 的外部隔离 A/B 为 0/7,252 |
-| G3 Baseline Qualification | 阻断 | G2 前置未通过；`P` durable diffusion replay 失败；actual natural/iso/sweep ledger 未接入；另有未冻结的 sweep 与 S/G scale fairness 问题 |
+| G3 Baseline Qualification | 阻断 | G2 前置未通过；`P` durable diffusion replay 失败；inactive amendment 尚未 materialize descriptor set 或激活；actual natural/iso/sweep ledger 未接入 |
 
 `qualify-baselines` 的退出码为 `2`，这是预期的 fail-closed gate refusal，不是 `R`
 的 outcome failure，也不能解释为任一 arm 的优劣。
@@ -237,6 +238,11 @@ v0.7 runner/reducer 实现或借此宣称 G2 通过。
 formal experiment 将无效。必须先冻结每个 task/size/regime 的非零、可复算、跨 arm
 一致的 budget mapping 与拒绝规则。
 
+Inactive `receptor-ligand-field-g3-methodological-amendment-v0.1.md` 已拟定 exact
+natural/iso/六档 sweep schedule、full pre-cap ranking 和 common reducer；它的
+implementation/lock/descriptor controls 仍为 false/null。因此该设计选择消除了“该选
+哪种方法”的歧义，但没有消除 active gate blocker。
+
 ### 6.2 S/G scale policy 尚不公平
 
 `S` 的冻结图只在 4-agent corpus 上选择；用于 16-agent cell 时，12/16 agents 会被
@@ -248,6 +254,10 @@ formal experiment 将无效。必须先冻结每个 task/size/regime 的非零�
 - 或明确定义可跨 size 外推且对所有 arm 公平的 graph construction。
 
 在此之前，不能把 `S/G` 的 scale 结果当作架构效应。
+
+同一 inactive amendment 选择 N=4/N=16 size-specific qualification，N>=64 只允许
+OOD cost mechanics 且 `outcome_qualified=false`。在 exact S/G artifacts、migration
+receipts、source lock 和完整 replay materialize 以前，该选择仍不是资格证据。
 
 ### 6.3 `P` durable lifecycle 仍不闭合
 
@@ -265,7 +275,10 @@ lineage。这会涉及 schema/migration/Trace/Conformance/TCK；当前研究 bra
 ### 6.4 Cost contract 尚未成为 actual ledger
 
 59-field closed schema 的 self-check 已通过，但 natural/iso/sweep 的 per-run actual
-ledger 尚未接入。当前还缺：
+ledger 尚未接入。Inactive amendment 已提出 expected slots、attempt/occurrence、
+physical ownership、complete membership、allocation conservation、observation profile
+和 independent verifier contracts；这些 contracts 尚未 machine-materialize 或执行。
+当前实际证据仍缺：
 
 - controller 与 shared cost 的唯一归属及防重复记账；
 - observation provenance 与 completeness binding；
@@ -326,13 +339,21 @@ Key 不得写入 Git、`.env`、Trace、report、command argument 或 fixture。
    3 个 positive 和 56 个 negative transactions，并生成可检索 receipts；
 2. 只有 materialization、source-independence 和全部 root 二审通过后，才形成新的
    activation candidate；profile activation 与 prereg lock migration 仍需单独审阅；
-3. 在 external lab 实现 v0.7 producer/verifier/resource-supervisor，并完成 140 个
-   scale task-state replays、980 intents 和全部 7,252 intents 的隔离 A/B；
-4. G2 总 gate 通过后，先冻结 G3 amendment：非零 sweep schedule、S/G scale policy、
-   `P` lifecycle decision 和 cost-ledger v2；
-5. 用 sealed T1 的 `F` + shared generator/common eligibility 作为最小 G3 vertical
+3. 在不含 executable source 的独立 methodology candidate 中 materialize G3 meta
+   schema、完整 descriptor set、guarded dependency SCC graph 和
+   source-independent qualification receipt；只有 exact review/activation 通过后才
+   产生 implementation authority；
+4. 在 external lab 的隔离 implementation commit 中实现 v0.7
+   producer/verifier/resource-supervisor 与已激活的 G3 contracts，并重建 N=4/N=16 S/G
+   artifacts；随后单独审阅 source-lock migration；
+5. 在最终 locked source 上依次重跑 G0、G1 和完整 G2：140 个 scale task-state
+   replays、980 intents，以及全部 7,252 intents 的隔离 A/B；不得复用旧 source 的
+   G2 receipt；
+6. G2 aggregate 通过后，用 sealed T1 的 `F` + shared
+   generator/common eligibility 作为最小 G3 vertical
    slice，执行 natural、iso 和预注册的 6 个 sweep cells，生成 canonical actual
    ledger 与独立 verifier receipt；
-6. 再扩展到 `P/S/B/Q/G/R`，保留任何 failure、null 或 negative result；
-7. G0-G3 全部通过以前，不读取 API key，不运行 provider canary、pilot 或
+7. 再扩展到 `P/S/B/Q/G/R`；`P` 在当前 authority 下继续 blocked，除非另行批准
+   versioned Hybrid Replay change；保留任何 failure、null 或 negative result；
+8. G0-G3 全部通过以前，不读取 API key，不运行 provider canary、pilot 或
    confirmatory LLM experiment。
