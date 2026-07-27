@@ -59,6 +59,20 @@ database, dashboard, or application deployment workflows.
   variable-severity injection, task-intrinsic challenge, mandatory probes, and
   T4 environment stress without changing the 7,252-intent matrix or any
   protocol-core ABI.
+- [receptor-ligand-field-experiment-profile-v0.7.md](receptor-ligand-field-experiment-profile-v0.7.md)
+  is a draft for review, not an active profile. It proposes the G2 full-scale
+  typed generator/reducer, six-root replay, streaming artifact,
+  independent-verifier, supervisor, negative-fixture, timeout, and RSS
+  contracts and normatively binds the v0.7 fixture companion below. Its current
+  review bytes cannot be activated; v0.6 remains active until reviewed profile
+  and companion activation-candidate bytes are committed, hashed, and migrated
+  together into the external lock.
+- [receptor-ligand-field-experiment-profile-v0.7-fixtures.json](receptor-ligand-field-experiment-profile-v0.7-fixtures.json)
+  is the canonical draft companion for v0.7. It freezes 12 literal input
+  constructors, three positive T4 branch recipes, 56 negative recipes, and
+  their semantic set roots. It remains a design inventory with
+  `activation_ready=false`; it is not independently active and cannot be
+  changed or locked separately from the reviewed v0.7 profile bytes.
 - [receptor-ligand-field-g0-g3-qualification-report.md](receptor-ligand-field-g0-g3-qualification-report.md)
   records the current external qualification checkpoint: G0/G1 passed,
   G2/G3 remain blocked by the full simulator matrix, P durable replay, and
