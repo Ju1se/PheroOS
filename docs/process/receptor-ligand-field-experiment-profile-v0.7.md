@@ -65,17 +65,81 @@ pheromone。
    profile-chain root；
 5. fresh process 从 immutable Git object 按第 12 节重算 document、dependency 和
    profile-chain roots；
-6. qualification log 记录在 freeze 前没有实现本文件定义的 task reducer、
-   full-scale runner 或 independent verifier，也没有读取 sealed outcome；
+6. qualification log 记录在 freeze 前没有实现可复用或 active 的 task reducer、
+   full-scale runner 或 independent qualification verifier，也没有读取 sealed
+   outcome；唯一例外是第 1.2 节严格限定的 `ReviewAuditCompilerV1`；
 7. 独立二审证明每个 literal operation transaction 在 normalized view 上只有一个合法
    materialization，并形成把 `activation_ready` 改为 true 的新 profile/companion
    activation candidate；当前 false 值不能被 lock 或 runtime override；
-8. source lock migration 完成后，才可开始实现。
+8. source lock migration 完成后，才可开始实现 active runtime。
 
 现存的 compact eligibility record program 和 v0.5 T4 mechanics 不等于本 amendment
 定义的 full-scale task-state replay。它们可以作为只读设计输入，但不能被追溯标记为
 v0.7 qualification evidence。若在上述 freeze 和 lock migration 前实现任一 v0.7
 task reducer，该实现不得用于 G2 qualification，G2 保持 blocked。
+
+### 1.2 Pre-activation `ReviewAuditCompilerV1`
+
+第 18 节要求在 activation candidate 形成前实际 materialize literal design inventory。
+为避免“必须先 materialize”与“activation 前不得实现 runtime”形成循环，本 profile
+只许可两个 source-independent、review-lifecycle-only 且 disposable 的
+`ReviewAuditCompilerV1`。它们是 audit
+compilers，不是 active task reducer、full-scale runner、controller、evaluator 或
+independent qualification verifier。
+
+其 closed executable scope 只有：
+
+1. companion 的 exact 12 个 base constructors；其中七个 normalized environment
+   views 只使用 literal `A4/N100/S9000/R0/steps50/T1..T7`，suite constructor 可生成
+   companion 冻结的 980-item declaration inventory，但不能执行 140 个 full-scale
+   task states；
+2. exact 3 个 positive T4 fixture transactions 和其 branch receipts；
+3. exact 56 个 negative transactions、declared validation stages、expected-code
+   classification 和 review receipts；
+4. canonical bytes、roots、source/import evidence、resource observations、tamper
+   refusals 和 A/B comparison。
+
+Audit compiler 必须位于 active external worktree 之外的 isolated candidate commit，
+使用两个互不导入且不共享 semantic helper 的 source namespaces；supervisor 只能启动、
+限制、hash 和比较，不能实现 materialization semantics。它们固定：
+
+```text
+authority_scope = none
+commit_authority = false
+output_authority = false
+publication_authority = false
+outcome_authorized = false
+controller_executed = false
+sealed_evaluator_enabled = false
+provider_request_count = 0
+outcome_read_count = 0
+network_used = false
+```
+
+Audit compiler 不得生成或读取 T1-T7 outcome，不得调用 arm、provider、active runner、
+sealed evaluator 或 PheroOS authority。其 source、generated source、helper、cache、
+bytecode 和 intermediate object 永久不得 merge、copy、import、vendor 或生成到未来
+active runtime；通过 materialization 也不能证明 future runtime source independence。
+Review artifacts 只证明 12/3/56 inventory 可唯一构造，不计入 G2 full-scale coverage。
+
+同一 immutable compiler commit 在该 review lifecycle 中只允许：
+
+1. exact four-false design-inventory review；
+2. exact、完整绑定 identity/status/flags 的 `R0-PROMOTION` review；
+3. 为上述两遍保留的 fail-closed adversarial 或 diagnostic attempts。
+
+每个 attempt 必须在 fresh process 中执行并进入 append-only intent-to-run ledger；
+diagnostic success 不能覆盖 primary failure。若 promotion 除完整 input identity、
+status、activation/artifact flags 和由此机械传播的 roots 外改变任何 materialization
+semantics、constructor、operation、predicate 或 receipt contract，则旧 compiler
+commit 失效，必须重新 source review 或创建新的 isolated compiler commit。Review
+lifecycle 结束后，其 source 只能作为不可复用 evidence 留存。
+
+除本 closed exception 外，activation 前实现 v0.7 task transition、140-environment
+full-scale state、980-intent execution、controller path 或 qualification verifier 仍是
+`G2-FULL-SCALE-TASK-STATE` blocker。任一 audit compiler 越界、两个 source roots
+collision、active worktree 变化或 runtime reuse 都使 materialization review blocked，
+且不能由 lock 或 reviewer waiver 覆盖。
 
 ## 2. 冻结的 scale geometry
 
@@ -2532,6 +2596,7 @@ materialization evidence。新的独立 materialization 二审仍必须：
 在该二审完成并形成新的原子 activation candidate 前，companion 必须继续保持
 `activation_ready=false`、`artifact_bytes_compiled=false`、
 `runner_implemented=false` 和 `receipt_artifact_bytes_present=false`；v0.6 仍是唯一
-active profile。当前修订不允许 lock migration、v0.7 reducer/runner 实现或
+active profile。除第 1.2 节 closed `ReviewAuditCompilerV1` 外，当前修订不允许 lock
+migration、v0.7 runtime reducer/runner 实现或
 `G2-FULL-SCALE-TASK-STATE` qualification claim。任一 materialized pointer、code 或
 root 不一致都必须再次原子修订 profile 与 companion；runtime 或 lock 不能覆盖本节。

@@ -170,9 +170,9 @@ network_used = false
 `v0.7` 用于设计完整 scale state、独立 verifier、negative fixtures、resource
 supervision 和 A/B materialization contract。它当前只有设计 inventory：
 
-- profile bytes：116,230
+- profile bytes：119,802
 - profile SHA-256：
-  `8d7dbc32abe7f97142e21570a79e1a0ee64a4e20b66f1fd2b8d36538f2feb8c3`
+  `bbea97c5c360853a12c00bf1983f07beb7eac8f401ad3adc8f3b433d84d270e6`
 - companion bytes：62,097
 - companion SHA-256：
   `322365b8eb50d5479329fde2a734901e8bd96ce48bcfe1afa177588d38788360`
@@ -215,11 +215,15 @@ P3 = 0
 evidence。唯一保留的 activation blocker 是尚未执行的独立 materialization：
 
 1. 从 12 个 constructors 实际生成 base views；
-2. 由互不共享 reducer 的 producer/verifier 执行 3 个 positive 和 56 个 negative
-   transactions；
+2. 由两个互不共享 semantic source 的、review-lifecycle-only
+   `ReviewAuditCompilerV1` 执行 3 个 positive 和 56 个 negative transactions；
 3. 保存并复算全部 preconditions、observed codes、receipts、source roots 与
    content-addressed artifacts；
 4. 证明 zero authority、zero outcome read、zero network 和 source independence。
+
+该 audit compiler 例外只存在于隔离 candidate commit，永久不得 merge、copy、import
+或生成到 future active runtime；它不能执行 140 个 full-scale task states 或 980 个
+controller intents，也不能计为 G2 coverage。
 
 在该二审完成以前，禁止把 `activation_ready` 改为 true，禁止 lock migration、
 v0.7 runner/reducer 实现或借此宣称 G2 通过。
