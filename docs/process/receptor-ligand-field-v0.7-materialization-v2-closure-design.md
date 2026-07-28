@@ -133,6 +133,9 @@ seal SourceFreezeManifestV2
 seal downstream SourceFreezeSealEvidenceV2
              |
              v
+atomically seal one A0/B0 launch-intent batch before either child starts
+             |
+             v
 bootstrap A0/B0 candidate payloads
              |
              v
@@ -1089,13 +1092,16 @@ source_freeze_seal_evidence_root
 ```
 
 The manifest is atomically sealed and fresh-read before bootstrap launch；the
-seal evidence binds that exact root, and the later supervisor launch transcript
-binds the seal-evidence root as a pre-launch input. GoldenOracle
+seal evidence binds that exact root. A later
+`SourceFreezeLaunchBatchV2` must atomically bind both A0 and B0 intents before
+either child starts；two separate process-start records then bind the same batch
+root without an A0-to-B0 start dependency. GoldenOracle
 input/provenance binds both roots, the final core commit retains the exact two
 blobs, and official checkpoints/re-audit join their observed source commits and
 roots back to their actor records. A later source rewrite cannot inherit the
-manifest. Exact actor/pair/seal schemas and root formulas remain part of open
-P1 #16.
+manifest. A sequential `A0 start -> B0 intent` transcript is prohibited because
+it permits A0 to run before B0's intent is durable. Exact actor/pair/seal/batch/
+start schemas and root formulas remain part of open P1 #16.
 
 The oracle-attestation leaf must keep two decisions separate:
 
@@ -1256,7 +1262,8 @@ No step may be skipped or inherited from V1:
    every required pairwise semantic source/helper audit passes under the
    already frozen procedure. Atomically seal and fresh-read the all-eight
    `SourceFreezeManifestV2`, then seal its acyclic
-   `SourceFreezeSealEvidenceV2`, before bootstrap launch.
+   `SourceFreezeSealEvidenceV2`, then atomically seal one batch containing both
+   bootstrap launch intents before either bootstrap child starts.
 7. Run only disposable bootstrap A0/B0 to generate all 71
    candidate payloads plus positive transition evidence.
 8. Require bootstrap byte agreement and two independent closure reviews; retain any
@@ -1311,6 +1318,10 @@ At this checkpoint, at least the following remain open:
     policy；
 17. concrete oracle path/count/raw/semantic roots；
 18. V2 implementation, process proofs and fresh R0-R8 evidence。
+19. A distinct runtime source-freeze phase binding producer P, independent
+    verifier V, runtime supervisor/fresh-reader and the same-source-but-
+    process-distinct RA/RB replicas；the eight design/promotion actors cannot
+    substitute for this runtime source identity。
 
 Consequently no V2 object may currently use a status such as `frozen`,
 `complete`, `passed` or `activation-ready`.

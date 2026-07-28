@@ -249,8 +249,21 @@ residual_undeclared_P2 = 0
 三路复核先后暴露并关闭了 source-freeze 内容寻址、Oracle/Identity
 mix-and-match、closure-review count、main-component tree join、receipt
 source-boundary 和 Manifest/SealEvidence 回边。这里的 residual `0` 只表示没有再
-发现未登记的内部矛盾；设计文件第 13 节列出的 18 项 implementation P1 仍全部开放，
+发现未登记的内部矛盾；设计文件第 13 节当时列出的 18 项 implementation P1 仍全部开放，
 不构成 contract freeze、materialization pass、G2/G3 通过或 activation evidence。
+
+后续
+[V2 authoring checkpoint](receptor-ligand-field-v0.7-materialization-v2-authoring-checkpoint.md)
+选择 deterministic companion-first amendment，把 71-record design review 与
+10,446-record runtime actual chain 分相，并用 external authoring helper 复现四个
+RFC 6901 pointer correction。独立代码复核在修复 canonical byte/object
+`false == 0` 类型混淆后，对该 helper 的声明边界得到
+`P0=P1=P2=P3=0`；targeted tests 为 `19 passed, 9 subtests passed`。该 residual zero
+只覆盖 authoring helper，不覆盖正式合同或 evidence。
+
+同一红队复核发现八 actor design/promotion SourceFreeze 不包含 runtime producer P
+和 independent verifier V。该项作为第 19 个显式 P1 加入；runtime RA/RB 是同一 P
+source 的两个 process identities，不能被误写成两个 source-independent actors。
 
 在新 V2 contract 与独立 golden oracle 被内容寻址、绑定到新 phase identity 并从 R0
 重跑前，activation
@@ -261,12 +274,17 @@ blocker 包括：
 2. 从 12 个 constructors 实际生成 base views；
 3. 在 bootstrap candidate 生成前冻结 bootstrap A0/B0、official A1/B1、
    supervisor、fresh reader 与两名 closure reviewers 的八份 source，并封存
-   Manifest/SealEvidence；只由 bootstrap pair 生成 golden candidate，只由 official
-   pair 参加后续 R0-R8；
+   Manifest/SealEvidence；在任一 child 启动前原子封存同时包含 A0/B0 的 launch-intent
+   batch；只由 bootstrap pair 生成 golden candidate，只由 official pair 参加后续
+   R0-R8；
 4. 保存并复算全部 preconditions、observed codes、receipts、source roots 与
    content-addressed artifacts；
 5. 完成 R7 closed attack matrix并证明 zero authority、zero outcome read、
-   zero network 和 source independence。
+   zero network，以及“冻结检测程序未发现禁止共享通道”；不得把该结果表述为不可观测
+   历史独立性的证明；
+6. 在 runtime-review 前另行冻结 producer P、verifier V、runtime supervisor 和
+   runtime fresh reader 的 source manifest，并证明 same-source RA/RB process
+   isolation。
 
 该 audit compiler 例外只存在于隔离 candidate commit，永久不得 merge、copy、import
 或生成到 future active runtime；它不能执行 140 个 full-scale task states 或 980 个
@@ -355,7 +373,11 @@ physical ownership、complete membership、allocation conservation、observation
   已按原样记录，不伪称该 selector 通过；
 - baseline frozen artifacts 在 refreeze 后 targeted exact rebuild 通过；
 - provider-contract checks 通过，`network_used=false`；
-- bundle roots、counts、positive receipts 与 trace chain 均经独立重算。
+- bundle roots、counts、positive receipts 与 trace chain 均经独立重算；
+- V2 authoring helper：19 tests、9 subtests、19 unittest 和 Ruff 全部通过；其
+  read-only RFC 6901 counterfactual 为 `62093` bytes、
+  `sha256:93e62153972cc5db557ccb60c4f48ac52519e4271c3a7d59ffc9e6e5daa69795`；
+  该项不是 profile/companion mutation 或 materialization evidence。
 
 上述验证只支持工程资格声明，不支持 H1-H6 或相对性能结论。
 
@@ -391,8 +413,9 @@ Key 不得写入 Git、`.env`、Trace、report、command argument 或 fixture。
    source-independent qualification receipt；只有 exact review/activation 通过后才
    产生 implementation authority；
 4. 在 external lab 的隔离 implementation commit 中实现 v0.7
-   producer/verifier/resource-supervisor 与已激活的 G3 contracts，并重建 N=4/N=16 S/G
-   artifacts；随后单独审阅 source-lock migration；
+   producer/verifier/resource-supervisor 与已激活的 G3 contracts；先冻结独立 runtime
+   source manifest，令 RA/RB 共享 producer P source 但隔离 process namespace，再重建
+   N=4/N=16 S/G artifacts；随后单独审阅 source-lock migration；
 5. 在最终 locked source 上依次重跑 G0、G1 和完整 G2：140 个 scale task-state
    replays、980 intents，以及全部 7,252 intents 的隔离 A/B；不得复用旧 source 的
    G2 receipt；

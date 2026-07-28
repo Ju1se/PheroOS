@@ -1,0 +1,670 @@
+# Receptor-Gated Ligand Field v0.7 Materialization V2 Authoring Checkpoint
+
+状态：`draft-authoring-check-only`；V1 NO-GO、G2/G3 blocker 继续有效
+
+检查点日期：2026-07-28
+
+## 1. 决定
+
+本检查点把
+[V2 closure design](receptor-ligand-field-v0.7-materialization-v2-closure-design.md)
+中的三个开放方向收敛为可测试的候选设计：
+
+1. profile/companion 使用固定原始 bytes 加 deterministic amendment transform；
+2. 71-record design materialization 与 140-environment actual-chain runtime
+   fidelity 分相；
+3. design/promotion source freeze 使用八个 source actors、一个共同 bootstrap
+   launch-intent batch 和下游 process-start records。
+
+这仍不是冻结合同、profile amendment、source audit、materialization pass 或 runtime
+evidence。当前状态保持：
+
+```text
+materialization_review = "blocked"
+G2 = "blocked"
+G3 = "blocked"
+G4_G8_authorized = false
+provider_or_network_use = false
+comparative_superiority_conclusion = null
+hypothesis_conclusions = {}
+```
+
+本轮没有读取 API key，没有 provider/network request，没有 outcome read，没有修改
+PheroOS ABI、schema、TCK、Evidence、Governance、Optimal Commit、permission、
+fallback 或 output authority。所有 authoring reports 固定：
+
+```text
+authority_scope="none"
+acceptance_authorized=false
+commit_authority=false
+controller_execution=false
+evaluator_enabled=false
+provider_call_count=0
+outcome_read_count=0
+network_used=false
+core_write_count=0
+```
+
+## 2. Profile/companion amendment 决策
+
+### 2.1 固定输入
+
+选择“固定原始 bytes + deterministic transform”，不维护第二份平行语义 profile。
+输入固定为：
+
+```text
+P0 =
+  docs/process/receptor-ligand-field-experiment-profile-v0.7.md
+  byte_count = 119802
+  raw_root =
+    sha256:bbea97c5c360853a12c00bf1983f07beb7eac8f401ad3adc8f3b433d84d270e6
+
+C0 =
+  docs/process/receptor-ligand-field-experiment-profile-v0.7-fixtures.json
+  byte_count = 62097
+  raw_root =
+    sha256:322365b8eb50d5479329fde2a734901e8bd96ce48bcfe1afa177588d38788360
+```
+
+Main-bound `ProfileCompanionAmendmentTransformV2` 只能定义：
+
+- P0/C0 path、byte count 和 raw root；
+- 四个带 old-value assertion 的 RFC 6901 patch；
+- V2 companion schema、exact keys 和 semantic-root formula；
+- profile appendix 的 literal segments；
+- closed typed sealing-binding context；
+- stale-range registry 和 machine precedence；
+- transform 自身 root formula。
+
+Main 不能包含 amendment 输出 count/root，不能包含 GoldenOracle、commit 或 Identity。
+
+### 2.2 SealingBindingContextV2
+
+先前候选中的“runtime slots”容易被误解为可由实验 runtime 覆盖的值，现改为
+`SealingBindingContextV2`。它不是调用者自由填写的 map。
+
+唯一外部输入是 actual canonical Main blob。Context builder 必须：
+
+1. 严格解析 Main canonical bytes；
+2. 重算 Main byte count、raw root 和 `contract_root`；
+3. 验证 Main path 是 transform 固定的 target；
+4. 从这些 observed bytes 派生 `main_contract.*`；
+5. 执行 companion transform 后，从 C1 observed bytes 派生全部
+   `companion_output.*`；
+6. 拒绝 caller-supplied companion output value、unknown field、unresolved value、
+   duplicate declaration 或错误 use count。
+
+允许的 typed getters 只有：
+
+```text
+main_contract.path
+main_contract.byte_count
+main_contract.raw_root
+main_contract.semantic_root
+
+companion_output.path
+companion_output.byte_count
+companion_output.raw_root
+companion_output.fixture_input_set_root
+companion_output.positive_fixture_set_root
+companion_output.negative_fixture_set_root
+companion_output.semantic_manifest_root
+```
+
+`companion_output.path` 是 transform 固定 target，不是 caller slot。每个 declaration
+出现一次；template 可以重复引用，但 expected use count 必须由 transform 冻结。
+
+### 2.3 Companion-first transform
+
+Transform 必须先严格解析 C0，拒绝 duplicate/NFC-colliding keys，并对下列四个
+pointer 执行 old value `"/"` 到 new value `""` 的原子修正：
+
+```text
+/negative_fixtures/36/operations/0/path
+/negative_fixtures/36/operations/0/precondition/path
+/negative_fixtures/40/operations/0/path
+/negative_fixtures/40/operations/0/precondition/path
+```
+
+`""` 是 RFC 6901 document root；`"/"` 不是 alias。
+
+随后 transform：
+
+- 将 companion schema 改为明确的 V2 literal；
+- 新增且只新增五个 Main bindings：
+
+```text
+materialization_contract_version
+materialization_contract_path
+materialization_contract_byte_count
+materialization_contract_raw_root
+materialization_contract_semantic_root
+```
+
+- 重算 negative fixture set；
+- 使用新的 V2 semantic-manifest label；
+- 输出 `C(C1) || LF`。
+
+新的 fixture semantic preimage 必须包含上述五个 Main fields。否则 Main 改变时，
+semantic root 可能保持不变。它不得包含 C1 自身 byte count、raw root 或 semantic
+root。
+
+只执行四个 RFC 6901 patch、仍保留 V1 schema/formula 的 read-only counterfactual
+固定为：
+
+```text
+T1 operation root =
+  sha256:8e77fe97dc76ac3e16693f3c26f2c82467089a933fc71bc688b0266aff8dacbc
+T1 recipe root =
+  sha256:8ced8a22c7fa8382be2db04831835a1a80aa9ef0d43ebf2b51549d7d4ac66fc0
+T4 operation root =
+  sha256:1d3f6fa6e68cd8dd8f1944b023e3335d31121ce335898f6394fbe36e0df6723c
+T4 recipe root =
+  sha256:a75e0a6cfd8583f0a56ddb22da43918e7da37ba9bf9dfb918dd9570324123e06
+negative_fixture_set_root =
+  sha256:5c4cf71f6985766af2ab30735900403ef2dfeee57e674b0a2abbd342590c785e
+semantic_manifest_root =
+  sha256:eccec79803913d858ebc60b4c78ae8854a606102fffec7e681ae29c6d87a3bf2
+byte_count = 62093
+raw_root =
+  sha256:93e62153972cc5db557ccb60c4f48ac52519e4271c3a7d59ffc9e6e5daa69795
+```
+
+这些是 impact evidence，不是最终 C1 roots；Main bindings 尚不存在，所以 final C1
+不能生成。
+
+### 2.4 Append-only profile 和 precedence
+
+Profile transform 固定：
+
+```text
+P1 = P0 || APPENDIX_BYTES
+appendix_start_byte_offset = 119802
+```
+
+不得通过 heading search、fuzzy match 或 Markdown renderer 定位 appendix。
+APPENDIX 可以绑定 P0、observed Main 和 derived C1；禁止包含：
+
+```text
+final_profile_byte_count
+final_profile_raw_root
+amendment_result_root
+golden_oracle_root
+core_commit
+identity_root
+```
+
+P0 中三个 stale ranges 只作 baseline/history identity：
+
+| byte range | content role | exact range root |
+| --- | --- | --- |
+| `[34803,34955)` | old companion dependency row | `sha256:ade9f5823009ae8fd2082076da7b4c97db8116ecba82e36d205a8b70b062c4d3` |
+| `[35788,38578)` | old companion bindings/formula | `sha256:8fcd3bc50dd26bebd7bac140dbd216859ce098c6de3538d7b6284859c85ffa7a` |
+| `[91245,92063)` | old companion key inventory | `sha256:c06861aedfed371db979ba0c73de36b1d3852235dc4e4072188294f920545f20` |
+
+Machine precedence 唯一定义为：
+
+```text
+effective_v2(key) =
+  appendix_binding[key], if key is in closed_v2_override_key_set
+  baseline_value[key],   otherwise
+```
+
+Override missing、duplicate、unknown、从 stale range fallback 或 consumer 绕过
+`effective_v2` 都拒绝。旧 ranges 不再是 V2 fallback source。
+
+### 2.5 无环性
+
+只允许：
+
+```text
+P0,C0
+  -> Main
+  -> C1
+  -> P1
+  -> AmendmentResult
+  -> GoldenOracle
+  -> immutable core commit
+  -> Identity
+```
+
+Main 不绑定 C1/P1 output；C1/P1 不绑定自身 file root；Oracle/commit/Identity 只在
+下游。因此此 transform 没有发现内容寻址循环。
+
+## 3. Base 与 actual chain 分相
+
+### 3.1 三个不同角色轴
+
+| 轴 | identities | source relationship | required comparison |
+| --- | --- | --- | --- |
+| design materializers | A1/B1 | distinct frozen source roots | 12 个 source-neutral Base bytes/roots equal |
+| runtime producer replicas | RA/RB | same frozen producer P source | actual NDJSON 和 `ArtifactManifestV07` byte-exact |
+| independent runtime verifier | V | source distinct from P | independently reconstruct P-bound actual chain |
+
+A1/B1 不是 RA/RB；V 不是第二个 producer replica。
+
+### 3.2 Design/promotion scope
+
+71-record materialization 只覆盖：
+
+```text
+12 Base
+3 positive
+56 negative
+```
+
+环境 Base 应使用完整 source-neutral record stream，而不是一行弱化
+`EnvironmentCoreV2`。每个 environment/intent record 保留对应
+`ChainedRecordV07.payload` 的 exact semantic payload，但排除 source-bound genesis、
+previous/record roots、suite header/footer 和 `ArtifactManifestV07`。
+
+Design product 可以证明：
+
+- exact 12 constructors；
+- normalized view、path inventory、construction trace；
+- source-neutral record/payload order；
+- A1/B1 byte equality；
+- positive/negative operation materialization。
+
+它不能证明 actual source-bound chain、140-environment coverage 或 runtime fidelity。
+
+### 3.3 Runtime-review scope
+
+Actual runtime layer 必须另外保存：
+
+- `ActualRecordIndexEntryV2`；
+- `ActualRecordIndexV2`；
+- `ActualChainArtifactWrapperV2`；
+- `ActualChainVerificationV2`；
+- `BaseActualRecordSpanV2`；
+- `BaseActualChainJoinV2`。
+
+每个 actual wrapper 保留完整 source-bound：
+
+```text
+producer_source_commit
+producer_source_root
+record_genesis
+all ChainedRecordV07 records
+exact NDJSON bytes/root/count
+final_record_root
+exact 16-key ArtifactManifestV07
+```
+
+每个 full-scale replica 的 exact record inventory 是：
+
+```text
+suite_header                 1
+environment_header         140
+receiver_shard             644
+event_or_job_shard        1540
+step_record               7000
+environment_terminal       140
+intent_binding             980
+suite_footer                 1
+total                     10446
+```
+
+因此 runtime verifier 必须 all-and-only 验证 10,446 records、140-row total order、
+980 intents、coverage、chain、manifest 和 totals。12 个 fixture joins 不能替代其余
+133 个 environments。
+
+首次 source-neutral/source-bound 汇合只能发生在
+`BaseActualChainJoinV2`：
+
+```text
+BaseMaterializationV2 + ActualChainArtifactWrapperV2
+  -> BaseActualChainJoinV2
+  -> runtime supervisor attestation
+```
+
+Base 不能包含 actual wrapper root；actual artifact 不能包含 Base root；verifier source
+不能写入 producer manifest。
+
+### 3.4 Phase claim boundary
+
+```text
+design-review:
+  may prove deterministic 12/3/56 materialization
+  may not claim actual chain, runtime fidelity or G2 qualification
+
+promotion-review:
+  may rerun the same immutable design materializers
+  may not execute or claim 140-environment task-state fidelity
+
+runtime-review:
+  must use same-source fresh RA/RB plus separately sourced V
+  must prove full actual-chain coverage before G2 qualification
+```
+
+只有满足正式合同并通过的 promotion-review 才可关闭 deterministic-design
+materialization；只有满足正式 runtime 合同并通过的 runtime-review 才可关闭
+actual-chain fidelity。二者均不支持 H1-H6 或 comparative superiority。
+
+## 4. Source freeze refinement
+
+### 4.1 Design/promotion actor set
+
+Design/promotion `SourceFreezeManifestV2` 固定八个 source actors：
+
+```text
+bootstrap-a0
+bootstrap-b0
+official-a1
+official-b1
+supervisor
+fresh-reader
+closure-reviewer-a
+closure-reviewer-b
+```
+
+按 upper-triangular ordinal 覆盖全部 `8 choose 2 = 28` pairs。每个 actor 必须绑定：
+
+```text
+actor_id
+actor_role
+source_commit
+source_tree_oid
+source_inventory_root
+semantic_source_root
+actor_root
+```
+
+实际使用记录必须与完整 actor tuple exact equal，不能只比较一个 semantic root。
+
+### 4.2 检测结论不是历史独立性证明
+
+Pair decision literal 采用：
+
+```text
+no-prohibited-collision-detected-under-v2-procedure
+```
+
+禁止使用 `independence-audit-passed` 作为历史或认知独立性的证明。正式 metric record
+至少还必须包含：
+
+```text
+check_kind
+applicability
+pair_policy_root
+source_audit_procedure_root
+left_actor_root
+right_actor_root
+left_scoped_inventory_root
+right_scoped_inventory_root
+allowed_shared_input_set_root
+algorithm_id
+parameter_root
+observation_count
+observation_set_root
+observed_statistic
+threshold
+comparison_operator
+prohibited_collision_detected
+evidence_path
+evidence_byte_count
+evidence_raw_root
+evidence_semantic_root
+metric_observation_root
+```
+
+Threshold 必须来自 frozen procedure；applicability 必须来自 closed role-pair matrix。
+Opaque root 加 `detected=false` 只能通过 authoring structure check，不能通过正式 source
+audit。
+
+候选 AST/token operating point：
+
+```text
+AST subtree node count >= 48
+contiguous normalized token run >= 96
+token shingle width = 24
+minimum intersection = 16
+Jaccard threshold = 65/100
+containment threshold = 80/100
+waiver_count = 0
+```
+
+这些阈值必须在读取最终八份 actor source 结果前，用从零实现正控和
+copy/rename/comment/literal/line-ending 负控校准。它们不是 independence probability，
+也不是 RG-LF 性能证据。
+
+### 4.3 Manifest、Seal 和 launch DAG
+
+修订后的结构是：
+
+```text
+SourceAuditProcedureV2
+  + SourceAuditBasisV2
+  + 8 frozen actor sources
+  + 28 observed pair metrics
+  -> SourceFreezeManifestV2
+  -> SupervisorPrelaunchCheckpointV2
+  -> FreshReadObservationV2
+  -> SourceFreezeSealEvidenceV2
+  -> SourceFreezeLaunchBatchV2(A0 intent, B0 intent)
+  -> ProcessStartRecordA0 and ProcessStartRecordB0
+  -> bootstrap completions
+  -> separately sourced closure reviews
+  -> GoldenOracle
+  -> core commit
+  -> Identity
+```
+
+Seal 内的 structural chain 必须验证：
+
+```text
+genesis
+  -> supervisor checkpoint(previous_root=genesis, ordinal=0)
+  -> fresh observation(previous_root=checkpoint_root, ordinal=1)
+```
+
+三 root 必须 distinct。Checkpoint/observation 均绑定对应 actor tuple、
+Manifest path/count/raw/semantic root；Seal tip 等于 observation root。
+
+Seal 时：
+
+```text
+bootstrap_launch_intent_count=0
+bootstrap_completion_count=0
+golden_candidate_record_count=0
+```
+
+随后先原子封存一个同时包含 A0/B0 intents 的 launch batch，任何 child spawn 都必须
+晚于 batch durable seal。两份 process-start records 均绑定同一个 batch root；它们不
+以 A0 start root 作为 B0 的 predecessor。这样不会允许 A0 在 B0 intent 尚未封存时
+运行。
+
+结构记录不能证明真实 atomic write、fsync、fresh read、mount denial 或 process timing；
+正式 evidence 仍必须由 OS-level supervisor/fresh reader 观察。
+
+### 4.4 Runtime source freeze 是独立 P1
+
+八 actor Manifest 不包含 runtime producer P 或 independent verifier V。A1/B1
+不得改名为 P/V。
+
+Runtime-review 需要独立 `RuntimeSourceFreezeManifestV2`，最小 source actors：
+
+```text
+producer-p
+independent-verifier-v
+runtime-supervisor
+runtime-fresh-reader
+```
+
+这形成 4 actors 和 6 unordered source pairs。RA/RB 不是两个 source actors，而是
+同一 `producer-p` source 的两个 fresh process identities：
+
+```text
+RA.source_actor_id = RB.source_actor_id = "producer-p"
+RA/RB source commit/tree/inventory/semantic roots equal
+RA/RB process, attempt, checkpoint and output namespaces distinct
+```
+
+Runtime identity 必须绑定 runtime source manifest、P/V source tuples 和 RA/RB
+process records；不能复用 design `MaterializationReviewInputIdentityV2` 来承担该证明。
+
+## 5. R7 source-freeze fragment
+
+Source-freeze 专属 R7 fragment 的当前机械下界为 7 families、103 literal cases：
+
+| family | count |
+| --- | ---: |
+| `SF-PROCEDURE` | 8 |
+| `SF-AUDIT-BASIS` | 4 |
+| `SF-MANIFEST` | 23 |
+| `SF-PAIR-DETECTION` | 8 |
+| `SF-SEAL-TEMPORAL` | 23 |
+| `SF-ACTUAL-USE` | 32 |
+| `SF-DOWNSTREAM-JOIN` | 5 |
+| total | **103** |
+
+这是 source-freeze fragment，不是全局 R7 final count，也不能直接加到此前的 `182`，
+因为 case 可能重叠。每个 case 仍须 literal 展开 locator、mutation、八行 actor
+expectations 和 expected refusal precedence。
+
+Refusal total order 候选为：
+
+```text
+00 MR-ACTIVE-STATE
+01 MR-INPUT-BINDING
+02 MR-ARTIFACT-INTEGRITY
+03 MR-SOURCE-COLLISION
+04 MR-IMPORT-BOUNDARY
+05 MR-OUTCOME-READ
+06 MR-PROVIDER-OR-NETWORK
+07 MR-RESOURCE
+08 MR-BASE-MATERIALIZATION
+09 MR-TRANSACTION
+10 MR-EXPECTED-CODE
+11 MR-RECEIPT
+12 MR-AB-MISMATCH
+13 MR-TAMPER
+14 MR-UNCLASSIFIED
+```
+
+`103` cases、完整 metric evidence 和全局 R7 manifest 尚未物化，所以本节不关闭
+P1 #13/#16。
+
+## 6. External authoring implementation
+
+独立 external-lab authoring branch：
+
+```text
+branch = codex/v07-materialization-v2-authoring
+commit = 7d4e82ffefa33103c8708e0c1f352b240243c4e5
+```
+
+该 commit 只新增：
+
+```text
+src/rglf_lab/v2_contract_authoring.py
+tests/test_v2_contract_authoring.py
+```
+
+它实现：
+
+- v0.7 NFC canonical JSON、strict UTF-8、duplicate/NFC collision、
+  surrogate、BOM、float、trailing-data rejection；
+- 不依赖 Python digit limit 的 signed-integer parser/encoder；
+- `H` 和 `RAW`；
+- 四 pointer read-only counterfactual；
+- SourceAuditBasis、8 actor、28 pair、Manifest、nested Seal chain、
+  common launch batch 和 process-start structural validators；
+- Manifest/Seal/Batch/Transcripts 的 canonical byte-first joins；
+- `false == 0` / `true == 1` type-confusion rejection；
+- zero-authority reports；
+- AST regression denying IO/process/network/provider/dynamic-import surfaces。
+
+Final source bytes：
+
+```text
+src/rglf_lab/v2_contract_authoring.py
+  sha256:a66d1101a3653f4113d30c9477179d36c4d24167dfa3dc6e63e114ce139da28e
+
+tests/test_v2_contract_authoring.py
+  sha256:e79dd2a3c0dd5716d2acf122109724af6aa7e2c5acab7b389991388393916ef1
+```
+
+Provider-free verification：
+
+```text
+pytest:
+  19 passed, 9 subtests passed
+
+unittest:
+  Ran 19 tests
+  OK
+
+ruff:
+  All checks passed
+
+independent declared-boundary code review:
+  P0=0
+  P1=0
+  P2=0
+  P3=0
+```
+
+这里的 residual zero 只覆盖该 authoring module 明确声明的结构性边界。它不表示
+MaterializationContractV2、SourceAuditProcedureV2、GoldenOracle、Identity、R7、
+G2 或 G3 没有 blocker。
+
+Module 没有 CLI、write、acceptance、provider 或 network entrypoint。它不会写 profile、
+companion、core 或 evidence；counterfactual bytes 只在 memory 中返回。
+
+## 7. 当前开放 P1
+
+原 closure design 的 18 项仍是“至少”集合。本检查点新增一个独立 runtime source
+phase blocker，因此当前至少 19 项：
+
+1. exact Base projection tables、nested schemas、locators 和 construction traces；
+2. source-neutral Base/actual-chain phase contract 的完整 machine leaves，以及后续
+   runtime actual evidence；
+3. 三个 positive closure projection records；
+4. exact positive transition 和 after-view reseal contract；
+5. 56-record negative judge-input projection table；
+6. 四个 RFC 6901 pointers 的实际原子 profile/companion amendment；
+7. 71 descriptor records、expanded locators 和 closed expression AST；
+8. normative GoldenOracle schemas 和 joins；
+9. 71 golden payload counts/raw roots/root-pair values；
+10. source-independent/source-bound receipt formula matrix；
+11. V2 semantic/completion/verification/wrapper/process/attestation/bundle
+    machine schemas；
+12. IdentityV2 exact schema、phase/status/flag matrix 和 full Oracle join；
+13. global R7 literal manifest、final count 和 actor expectation matrix；
+14. concrete main component paths/counts/raw/semantic roots；
+15. `ProfileCompanionAmendmentTransformV2`、`SealingBindingContextV2` 和
+    append-only precedence 的 machine implementation；
+16. complete SourceAuditProcedure、observed metric records、Git/runtime import
+    audits、OS/object-store evidence、Manifest/Seal/launch process proof；
+17. concrete Oracle path/count/raw/semantic roots；
+18. V2 official implementation、source freeze、R0-R8 process evidence；
+19. `RuntimeSourceFreezeManifestV2`、P/V source audit、RA/RB process identity 和
+    runtime source-to-actual-chain joins。
+
+因此任何 V2 object 仍不得使用 `frozen`、`complete`、`passed` 或
+`activation-ready`。
+
+## 8. Claim boundary
+
+本检查点证明的是：
+
+- 已发现的四个 RFC 6901 pointer 影响可由独立 canonical implementation 重算；
+- 一个无环 amendment/source-freeze 候选结构可以被机器化；
+- design materialization 与 actual runtime fidelity 可以被明确分相；
+- 当前 authoring helper 对其声明的结构边界 fail closed。
+
+它不证明：
+
+- v0.7 activation；
+- G2/G3 completion；
+- actual `ChainedRecordV07`、`ArtifactManifestV07` 或 full-scale NDJSON 已生成；
+- source actors 的历史、认知或统计独立性；
+- provider/LLM behavior；
+- H1-H6；
+- receptor-gated ligand field 优于 sparse communication、blackboard、
+  retrieval routing、quorum、flooding 或 learned graph pruning；
+- production readiness 或 publication authority。
+
+科研表述继续保持：receptor-gated ligand field 是理论动机较强、可证伪的候选架构；
+comparative superiority 尚未证明。

@@ -17,6 +17,12 @@ restart from R0; V1 outputs cannot be grandfathered.
 The candidate closure architecture is recorded separately in
 [the V2 closure design](receptor-ligand-field-v0.7-materialization-v2-closure-design.md);
 it remains unsealed and has no activation effect.
+The later
+[V2 authoring checkpoint](receptor-ligand-field-v0.7-materialization-v2-authoring-checkpoint.md)
+adds a deterministic companion-first amendment candidate, separates the
+71-record design review from the 10,446-record runtime actual chain, and records
+the distinct runtime-source phase blocker. Its helper is authoring-only and
+does not make this V1 plan executable for acceptance.
 
 This document is a review-only execution plan for resolving the transition
 dependency between the active v0.6 external lab and the inactive v0.7

@@ -276,6 +276,10 @@ evidence namespace；复制后再次由 fresh process 重算 manifest 和九个 
 候选依赖图、schema interfaces、oracle firewall 和仍未关闭的 P1 记录在
 [V2 closure design](receptor-ligand-field-v0.7-materialization-v2-closure-design.md)。
 该文件是 unsealed design，不是本 finding 的关闭证据。
+后续
+[V2 authoring checkpoint](receptor-ligand-field-v0.7-materialization-v2-authoring-checkpoint.md)
+进一步选择 deterministic amendment、共同 A0/B0 launch-intent batch 和
+design/runtime actual-chain phase split；它同样不是关闭证据。
 
 1. 冻结机器可读、只含 normative semantics 的 `MaterializationContractV2`，明确
    base/positive schema、field sets、byte encoding、root labels、exclusions、
@@ -291,7 +295,9 @@ evidence namespace；复制后再次由 fresh process 重算 manifest 和九个 
 7. 把 R7 每个 bullet 展开为 closed case-ID manifest并补充 oracle 隔离 cases；
 8. 从 oracle 公开前已冻结的 clean immutable source commit 重新独立执行 official A/B；
 9. 从 R0 重跑 R0-R8，并由 fresh process 独立复读 sealed bundle；
-10. 只有 design-review 和 promotion-review 都通过，才可讨论 v0.7 lock migration。
+10. 只有 design-review 和 promotion-review 都通过，才可讨论 v0.7 lock migration；
+11. runtime-review 另行冻结 producer P/verifier V source、same-source RA/RB process
+    identities 和完整 10,446-record actual chain，不能继承 design materializer evidence。
 
 旧 V1 attempt、旧 payload roots 和旧 semantic bodies只能作为 rejected diagnostic
 evidence保留，不能迁移为 V2 acceptance evidence。
