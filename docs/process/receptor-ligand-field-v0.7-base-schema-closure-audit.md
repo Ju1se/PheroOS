@@ -200,6 +200,22 @@ review 均为 `P0=P1=P2=P3=0`。
 `final_c1_selected=false`、所有 execution/projection counts 为零、
 `authority_scope="none"`；本审计的六类 schema closure NO-GO 不变。
 
+### 5.4 Six-family candidate resolution matrix
+
+后续
+[constructor resolution matrix audit](receptor-ligand-field-v0.7-constructor-resolution-matrix-audit.md)
+与 external commit `f3af7f68ea6724942ceaf1c180b58c2a2017f07d`
+把本审计的六类 open questions 机器化为 90 条 globally unique claims。最终分类为
+31 `PROVEN`、13 `DERIVABLE`、45 `OPEN`、1 `CONFLICT`；唯一 conflict 不再是可兼容
+的 field rename，而是 exact four-pointer event-33 membership 与 active v0.6
+intrinsic-empty 语义，并由 draft v0.7 no-estimand-change bridge 明确连到同一变量。
+
+该 matrix 固定 `rule_source_locator_count=0` 与
+`semantic_entailment_proof_count=0`，所以它只封存 author-reviewed resolution，
+不是 paragraph-level entailment proof。Normative schema/projection、execution、
+materialization、actual observation、Main/Golden eligibility 和 authority 仍全部为
+zero/false；本 NO-GO 继续成立。
+
 ## 6. Source 和 process 的双层边界
 
 Source 不存在 literal-order 与 sorted-order 二选一：

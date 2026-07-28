@@ -1065,6 +1065,22 @@ event 34，并把三项旧 downstream audits 标记为 invalidated/rebuild-requi
 negative projection、provider/network/outcome read 和 authority 为 false/zero，
 因此不减少下节“至少 19”项开放 P1。
 
+最新
+[six-family constructor resolution matrix audit](receptor-ligand-field-v0.7-constructor-resolution-matrix-audit.md)
+与 external commit `f3af7f68ea6724942ceaf1c180b58c2a2017f07d`
+把 environment/suite/replica-pair/labels/source/process 的候选规则统一为 90 条
+content-addressed claims：31 `PROVEN`、13 `DERIVABLE`、45 `OPEN`、1
+`CONFLICT`。Audit 固定为 63,776 bytes，root 为
+`sha256:c1b3b94ff07221a953c7373f77465f28f0f39df86cb1efd05dd19c4a12557669`。
+三路独立 code/semantic/tamper review 均为 `P0=P1=P2=P3=0`；六组 V2 authoring
+联合验证为 88 tests/64 subtests。
+
+该矩阵显式固定 `rule_source_locator_count=0`、
+`semantic_entailment_proof_count=0`、`normative_schema_count=0`、
+`normative_projection_count=0`，并保持 execution、materialization、observation
+与 authority 为零。它是 author-reviewed candidate resolution，不是逐条 semantic
+proof、schema closure 或 G2/G3 放行，因此也不减少下节“至少 19”项开放 P1。
+
 ## 7. 当前开放 P1
 
 原 closure design 的 18 项仍是“至少”集合。本检查点新增一个独立 runtime source

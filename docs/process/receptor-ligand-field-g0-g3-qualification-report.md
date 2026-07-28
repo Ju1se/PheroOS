@@ -317,6 +317,16 @@ T7 disjointness negative relations 仍未覆盖。Machine report 保持 final C1
 amendment、write、activation、provider/network、execution 和 authority 为
 false/zero；因此 G2/G3 继续 blocked。
 
+后续 external authoring commit
+`f3af7f68ea6724942ceaf1c180b58c2a2017f07d` 与
+[six-family constructor resolution matrix audit](receptor-ligand-field-v0.7-constructor-resolution-matrix-audit.md)
+把六类 constructor research 整理为 90 条 claims：31 `PROVEN`、13
+`DERIVABLE`、45 `OPEN`、1 `CONFLICT`。唯一 conflict 由 exact four-pointer
+membership、active v0.6 intrinsic-empty 规则和 draft v0.7 semantic bridge
+共同绑定。Audit 同时固定 v0.7 draft、A1 unselected、rule locator/semantic
+entailment/schema/projection/execution/observation/authority counts 为零；因此它不把
+author-reviewed interpretation 伪称为 normative proof，也不降低 G2/G3 blocker。
+
 同一红队复核发现八 actor design/promotion SourceFreeze 不包含 runtime producer P
 和 independent verifier V。该项作为第 19 个显式 P1 加入；runtime RA/RB 是同一 P
 source 的两个 process identities，不能被误写成两个 source-independent actors。
@@ -444,6 +454,13 @@ physical ownership、complete membership、allocation conservation、observation
   post-fix review 均为 `P0=P1=P2=P3=0`。Audit 明确
   `event_34_preservation_basis=static-rfc6901-copy-locator-resolution-only`，
   不把静态 locator identity 伪称为执行证据。
+- 加入 six-family resolution matrix 后，六组 V2 authoring helpers 联合验证为
+  88 tests、64 subtests、88 unittest；Python 3.12、3.13、3.14 各自通过
+  12 项 resolution-audit tests，targeted Ruff、`py_compile` 与 `git diff --check`
+  通过，三路独立 code/semantic/tamper review 均为 `P0=P1=P2=P3=0`。
+  固定 audit 为 63,776 bytes，root 为
+  `sha256:c1b3b94ff07221a953c7373f77465f28f0f39df86cb1efd05dd19c4a12557669`；
+  locator 与 semantic-entailment proof count 仍为零。
 
 上述验证只支持工程资格声明，不支持 H1-H6 或相对性能结论。
 

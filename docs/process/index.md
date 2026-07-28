@@ -106,6 +106,11 @@ database, dashboard, or application deployment workflows.
   locator preservation, content-addressed root blast radius, downstream
   invalidation, incomplete negative coverage, and zero-authority verification.
   It selects no final C1 and changes no profile, companion, lock, or runtime.
+- [receptor-ligand-field-v0.7-constructor-resolution-matrix-audit.md](receptor-ligand-field-v0.7-constructor-resolution-matrix-audit.md)
+  records the six-family, 90-claim research resolution matrix over exact
+  document/four-pointer/A1 bytes. It separates PROVEN, DERIVABLE, OPEN, and
+  CONFLICT claims while fixing locator, semantic-entailment, schema,
+  projection, execution, observation, and authority counts at zero.
 - [receptor-ligand-field-g3-methodological-amendment-v0.1.md](receptor-ligand-field-g3-methodological-amendment-v0.1.md)
   is an inactive G3 review draft for common budget schedules, complete
   pre-cap ranking, size-qualified S/G artifacts, and Cost Ledger v2. It grants
