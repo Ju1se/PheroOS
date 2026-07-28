@@ -119,6 +119,13 @@ database, dashboard, or application deployment workflows.
   strict-integer Python semantics unsupported by the bound source, and keeps
   semantic-proof, schema, projection, and execution counts at zero, with
   `network_used=false` and `authority_scope=none`.
+- [receptor-ligand-field-v0.7-suite-evidence-overlay-audit.md](receptor-ligand-field-v0.7-suite-evidence-overlay-audit.md)
+  records the independent suite-family overlay: 15/15 rules, 22/22 source-ref
+  edges, and 25 exact locators, while global coverage remains 15/90 and false.
+  It marks four frozen target propositions as unsupported by their bound
+  sources, binds the report blocker policy, and creates no suite schema,
+  projection, 980-record materialization, execution, provider use, or
+  authority.
 - [receptor-ligand-field-g3-methodological-amendment-v0.1.md](receptor-ligand-field-g3-methodological-amendment-v0.1.md)
   is an inactive G3 review draft for common budget schedules, complete
   pre-cap ranking, size-qualified S/G artifacts, and Cost Ledger v2. It grants

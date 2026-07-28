@@ -91,10 +91,13 @@ materialization_authorized = false
 locators、excerpt roots 和 semantic-entailment proofs 仍为零，必须在后续 schema
 closure 前补齐。
 
-这些零值属于本 63,776-byte audit 自身，后续 artifact 不得回写或替换它们。首个
+这些零值属于本 63,776-byte audit 自身，后续 artifact 不得回写或替换它们。后续
 [environment evidence overlay](receptor-ligand-field-v0.7-environment-evidence-overlay-audit.md)
-以独立 sidecar 绑定 scoped locators 和 author reviews；原 audit 的 locator/proof
-counts 继续为零。
+与
+[suite evidence overlay](receptor-ligand-field-v0.7-suite-evidence-overlay-audit.md)
+分别以独立 sidecar 绑定 scoped locators 和 author reviews；原 audit 的
+locator/proof counts 继续为零。两个 sidecar 也不能在没有独立 overlay-set
+artifact 时把任一单体 global coverage 提升为 `30/90`。
 
 ## 3. Exact inputs
 
@@ -198,11 +201,14 @@ record_set_root =
 已支持：
 
 - 140 declarations、七 arms、980 zero-execution/zero-authority bindings；
-- 给定两个显式 orders 后的 ordinal function；
 - coverage 必须先于 guarded sequence。
 
 仍开放：
 
+- 旧矩阵虽把 ordinal formula 标作 `DERIVABLE`，但 bound profile 只证明
+  `140 * 7 = 980`，不能推出 row-major
+  `environment_ordinal * 7 + arm_ordinal`；该项现由 suite sidecar 明确标作
+  source-unsupported conditional candidate；
 - exact v0.5 arm-order source 尚未进入本 evidence set；
 - `intent_id` preimage/collision rule；
 - producer replica namespace 与 semantic-vs-construction placement；
@@ -397,11 +403,13 @@ test 的最终配对复现是 canonical `2f1d473` `1 passed in 48.96s`，authori
 
 ## 8. 下一 provider-free 顺序
 
-1. Environment 的 scoped locator/review slice 已完成；以同样边界依次覆盖 suite、
-   replica pair、labels、source、process。原 audit locator/proof count 与所有
-   machine/normative semantic proof count 继续为零。
+1. Environment 与 suite 的独立 scoped locator/review slices 已完成；以同样边界
+   依次覆盖 replica pair、labels、source、process。原 audit locator/proof count
+   与所有 machine/normative semantic proof count 继续为零；没有 overlay-set
+   artifact 前不得声称 combined global coverage。
 2. 依次解决 environment 的 source-neutral/re-chain 与 all-field projection。
-3. 冻结 suite 的 arm-order evidence、intent-ID、storage 和 sealing context。
+3. Suite 的 evidence locations 已绑定，但仍需新增 normative arm-order、
+   intent-ID、storage 和 sealing-context contract；sidecar 不能代替这些 contract。
 4. 冻结 replica namespaces、symmetry、storage 与 dual-evidence envelope。
 5. 只有在正式选择 A 后，执行 label amendment、补两个 negatives 并重建三项
    downstream audits。

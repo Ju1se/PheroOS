@@ -339,6 +339,20 @@ projection、execution、materialization、observation、provider 与 outcome �
 counts 仍为 0，`network_used=false`、`authority_scope=none`。Strict-integer
 relation 明确记为 bound source 不支持 Python `type(value) is int`。
 
+再后续 external authoring commit
+`5a9f9f8500aeafb8655692adcb3610bf99cc7e69` 与
+[suite evidence overlay audit](receptor-ligand-field-v0.7-suite-evidence-overlay-audit.md)
+为 suite 的 15/15 rules、22/22 source-ref edges 绑定 25 个 exact locators；
+global coverage 仍是该 artifact 自己的 15/90、`false`。Overlay 为 54,745 bytes，
+root 为
+`sha256:792829d3cf1fd4989f7d7f5f3b00aecc61b8ce030f1e8934e3f32f888c0f693b`。
+它明确拒绝把 row-major ordinal formula、suite error assignment、literal trace
+和三个 storage alternatives 当成 source-entailment，并固定
+`unsupported_bound_source_count=4`。Report-policy blocker list 另由
+`unresolved_set_root` 固定；proof/schema/projection/execution/materialization/
+provider/outcome/authority 仍为零/false/none。Environment artifact 保持
+byte-identical，两个 sidecars 也没有 combined overlay-set/global-coverage claim。
+
 同一红队复核发现八 actor design/promotion SourceFreeze 不包含 runtime producer P
 和 independent verifier V。该项作为第 19 个显式 P1 加入；runtime RA/RB 是同一 P
 source 的两个 process identities，不能被误写成两个 source-independent actors。
@@ -487,6 +501,23 @@ physical ownership、complete membership、allocation conservation、observation
   15/15 environment rules、20/20 source-ref edges、26 locators 和 global 15/90
   false；machine/normative proof、schema/projection/execution 的相关 counts 仍为
   0，`network_used=false`、`authority_scope=none`。
+- 加入 common family engine 与 suite evidence overlay 后，九组 V2 authoring
+  helpers 联合 `121` 个 unittest 全部通过；suite 为 `10/10`，common+suite 为
+  `17/17`，environment+common+suite 为 `33/33`。Python 3.12、3.13、3.14
+  各通过 17 项 common+suite tests，`py_compile`、88-column scan 和
+  `git diff --check` 通过；两轮独立 locator/code/semantic re-review 最终为
+  `P0=P1=P2=P3=0`。Suite 固定 25 locators/22 edges、5 `PROVEN`、1
+  `DERIVABLE`、9 `OPEN`、4 source-unsupported propositions；所有 proof、
+  schema、projection、execution、materialization、provider、outcome 和 authority
+  边界保持零/false/none。
+- Exact authoring commit 上的 full unittest discovery 运行 383 项、
+  1885.990 秒，保留为 1 failure + 1 error 的非绿色结果。Q rebuild 与 frozen Q
+  只在 canonical/authoring `external_source_tree_root` 及其派生
+  `artifact_root` 不同；canonical `2f1d473` worktree 中两者 exact-equal。
+  另一项是 prereg gate 正确拒绝 authoring branch，并观察到运行时尚未提交的 core
+  docs。该结果与 source/branch freeze 隔离解释一致，并显示 gates 按设计拒绝；
+  不计作 suite 语义回归，也不被改写为 full-suite pass。可归因的新 slice 验证仍是
+  17/17 focused 与 121/121 V2 tests。
 - Authoring branch 的 Q exact-rebuild refusal 是 frozen source-root isolation：
   canonical `2f1d473...` 绑定
   `sha256:9e3b1884fce7185e910b1d953c0ab1c1c7e690791e9ced2396429cb410352061`，

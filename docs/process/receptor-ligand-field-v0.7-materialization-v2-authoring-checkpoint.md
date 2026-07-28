@@ -1101,6 +1101,23 @@ materialization、observation、provider 与 outcome 的相关 counts 为 0，
 Python `type(value) is int`。因此这一步不修改原 audit，也不减少下节“至少 19”项
 开放 P1。
 
+再后续
+[suite evidence overlay audit](receptor-ligand-field-v0.7-suite-evidence-overlay-audit.md)
+与 external commit `5a9f9f8500aeafb8655692adcb3610bf99cc7e69`
+为 suite 的 15/15 rules、22/22 source-ref edges 生成 25 个 exact locators。
+它把 row-major ordinal formula、suite-specific error assignment、literal trace
+sequence 和三个 storage alternatives 明确记录为 bound source 不支持的作者合成；
+`unsupported_bound_source_count=4`。Arm-order review 分别绑定 v0.7 的
+`F/P/S/B/Q/G/R` context 与“canonical order 继承 v0.5”的 premise，但 exact v0.5
+bytes 仍不在 source corpus，因此该项保持 OPEN。
+
+Suite overlay 固定为 54,745 bytes，root 为
+`sha256:792829d3cf1fd4989f7d7f5f3b00aecc61b8ce030f1e8934e3f32f888c0f693b`。
+Common engine 还固定 report-policy `unresolved_set_root`，防止 artifact 不变而把
+blocker list 改写为已关闭。它不回写原 audit，不合并 environment/suite coverage，
+也保持 proof、schema、projection、execution、materialization、provider、outcome
+和 authority 为零/false/none。因此这一步仍不减少下节“至少 19”项开放 P1。
+
 ## 7. 当前开放 P1
 
 原 closure design 的 18 项仍是“至少”集合。本检查点新增一个独立 runtime source
