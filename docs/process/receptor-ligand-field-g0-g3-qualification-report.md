@@ -281,6 +281,18 @@ materialization/receipt count 为零。Combined tests 为
 `47 passed, 16 subtests passed`，两路独立 code review 均为
 `P0=P1=P2=P3=0`；该 residual zero 只覆盖 ambiguity-audit 的声明边界。
 
+后续 external authoring commit `d954daad0bb9f52fcdf182b53a2426e0532ed341`
+把 12 个 current Base parameter instances 绑定到 exact companion/inventory
+bytes、双 order ordinal、canonical parameter roots 和 106-node path-specific
+type fingerprints。Audit 明确固定 `exact_instance_count=12`、
+`normative_schema_count=0`、constructor/view/Base materialization count 全为零，
+并把 environment expansion、suite/pair domain、跨 v0.6/v0.7 label
+name/classification、source literal-order-to-sorted-view、process cross-field/
+OS-evidence envelope 记录为六项 blockers。Combined tests 为
+`61 passed, 31 subtests passed`，独立 code review 为
+`P0=P1=P2=P3=0`；该 residual zero 只覆盖 exact-instance audit 的声明边界，不表示
+constructor schema、Base payload、G2 或实验完成。
+
 同一红队复核发现八 actor design/promotion SourceFreeze 不包含 runtime producer P
 和 independent verifier V。该项作为第 19 个显式 P1 加入；runtime RA/RB 是同一 P
 source 的两个 process identities，不能被误写成两个 source-independent actors。
@@ -398,6 +410,10 @@ physical ownership、complete membership、allocation conservation、observation
   read-only RFC 6901 counterfactual 为 `62093` bytes、
   `sha256:93e62153972cc5db557ccb60c4f48ac52519e4271c3a7d59ffc9e6e5daa69795`；
   该项不是 profile/companion mutation 或 materialization evidence。
+- 四组 V2 authoring helpers 联合验证：61 tests、31 subtests、61 unittest 和
+  Ruff 全部通过；Python 3.12、3.13、3.14 各自通过新增的 14 项 Base parameter
+  audit tests。该项只证明 exact-instance audit 的声明边界，不证明 normative
+  constructor schema 或 materialization。
 
 上述验证只支持工程资格声明，不支持 H1-H6 或相对性能结论。
 

@@ -92,8 +92,10 @@ database, dashboard, or application deployment workflows.
   profile/companion amendment, design-versus-runtime actual-chain phase
   separation, byte-first SourceFreeze structural checks, an authoring-only
   71-record identity inventory, a 56-record negative judge-input ambiguity
-  audit, and the newly exposed runtime-source phase blocker. It preserves the
-  NO-GO and grants no materialization, activation, or experiment authority.
+  audit, an authoring-only 12-Base exact-instance parameter audit with
+  `normative_schema_count=0`, and the newly exposed runtime-source phase
+  blocker. It preserves the NO-GO and grants no materialization, activation,
+  or experiment authority.
 - [receptor-ligand-field-g3-methodological-amendment-v0.1.md](receptor-ligand-field-g3-methodological-amendment-v0.1.md)
   is an inactive G3 review draft for common budget schedules, complete
   pre-cap ranking, size-qualified S/G artifacts, and Cost Ledger v2. It grants

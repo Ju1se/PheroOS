@@ -878,6 +878,165 @@ counts/roots、operation/reseal/judge-input bytes、observed code 或 receipt。
 这一步将“不知道 exact judge input”变成可复核的 machine NO-GO；它没有填补该未知，
 也没有关闭 `NegativeJudgeInputProjectionV2`。
 
+### 6.3 12-record Base parameter exact-instance audit
+
+同一隔离 branch 的后续 commit：
+
+```text
+commit = d954daad0bb9f52fcdf182b53a2426e0532ed341
+```
+
+只新增：
+
+```text
+src/rglf_lab/v2_base_parameter_authoring.py
+tests/test_v2_base_parameter_authoring.py
+```
+
+该 audit 不尝试从 12 个样本归纳六类 constructor 的通用 schema。它从 exact
+four-pointer counterfactual companion，经 71-record inventory，按 companion 的
+constructor-rank order 绑定当前 12 个 literal parameter instances：
+
+```text
+exact_instance_count = 12
+constructor_instance_counts =
+  environment: 7
+  suite: 1
+  replica-pair: 1
+  labels: 1
+  source: 1
+  process: 1
+
+companion record ordinals = [0,1,2,3,4,5,6,7,8,9,10,11]
+source inventory ordinals = [0,1,2,3,4,5,6,11,9,7,10,8]
+```
+
+两种 order 被分别保留，不能互换。每条 record 绑定 companion pointer、Base ID、
+constructor ID/rank、source record root、现有 authoring parameter root、canonical
+parameter byte count/raw root，以及从根 pointer `""` 开始的 all-node RFC 6901
+type fingerprint。Object children 按 canonical key order，array children 保留
+declaration order；`boolean` 与 `integer` 严格分开。
+
+当前 12 个实例的 parameter shape 总计：
+
+```text
+parameter_node_count = 106
+array   = 4
+boolean = 3
+integer = 43
+null    = 1
+object  = 19
+string  = 36
+
+per-record node counts =
+  [7,7,7,7,7,7,7,2,3,8,30,14]
+```
+
+每条 path-specific fingerprint root 都由 immutable expected literal 独立锚定。
+因此保持全局 histogram 不变但移动 label array membership，或交换 process
+`exit_code`/`signal_number` 的 null/integer path，都会在 structure 层被拒绝；
+同 path、同 type 的值变化则仍可通过 structure 层，并必须由 exact
+source-to-inventory-to-audit byte join 拒绝。这一分层避免把结构审计偷升格成
+constructor schema。
+
+Audit 显式保留六项 machine blockers：
+
+1. environment：七个 current literals 只绑定
+   `A4/N100/S9000/R0/steps50/T1..T7` 的六参数对象；从该对象到完整
+   `ScaleEnvironmentConfigV07`、derived records 和 140 个 full-scale
+   environments 的投影仍未闭合；
+2. suite：当前实例只绑定 `producer_replica="A"`；可复用 replica domain、980
+   intent membership/order、projection 和 output bytes 仍未闭合；
+3. replica pair：当前实例只按方向绑定 `A/B`；reusable member domain、T1-T7
+   environment projection、actual artifact preservation/re-chain 和 comparison
+   envelope 仍未闭合；
+4. labels：v0.6 使用 `intrinsic_challenge_event_ids` 并声明 T7 intrinsic universe
+   为空；v0.7 prose 把 positions 33/34 同列为 mandatory，但 companion 使用
+   `task_intrinsic_challenge_event_ids=[...00033]` 和
+   `mandatory_probe_event_ids=[...00034]`。Audit 只记录这个 name/classification
+   conflict，不替 profile/companion 选择语义；
+5. source：当前七项 literal array 保留 `entry.py` 在 `eligibility.py` 之前的
+   declaration order；Unicode path order 的 observed permutation 是
+   `[1,0,2,3,4,5,6]`。Array-to-map/sorted-view projection 仍未冻结；
+6. process：当前实例只绑定 13 个 literal fields，以及 `Cg==`、segment count
+   `1/1`、RSS `1048576/2097152` 等 observed facts；generic key/type/range/
+   nullability、frame/count/clock/exit/wait4 cross-fields、measurement projection
+   root 和 OS-observed evidence envelope 仍未闭合。Synthetic companion
+   transcript 不是 runtime process receipt 或 experiment evidence。
+
+因此 audit 固定：
+
+```text
+normative_schema_count = 0
+normative_schema_closed = false
+constructor_execution_count = 0
+normalized_view_count = 0
+base_materialization_count = 0
+conclusion = "exact-instance-bound-normative-schema-open"
+authority_scope = "none"
+main_contract_eligible = false
+golden_oracle_eligible = false
+materialization_authorized = false
+```
+
+生成的内存 audit 固定为：
+
+```text
+byte_count = 25479
+raw_root =
+  sha256:7a00974b553a84961406228855e40b1b81b2c1a938cc84511f69b2c86a9e6c82
+record_set_root =
+  sha256:b79644c975496a7e9ca88bc19722f4f5b696cf5a402fcf5f687969db51854113
+blocker_set_root =
+  sha256:c2d5ba51de12687571bae1c3bab76e0bed8581077cc79e66473845eaec5f3d4b
+audit_root =
+  sha256:eef321732774e1511d828554912d55f03669e0b188675dbb8f5fcd0dd3ce67aa
+```
+
+Final source bytes：
+
+```text
+src/rglf_lab/v2_base_parameter_authoring.py
+  sha256:c5130191ce9a1a032a229a689a308b5659b3082fb113bc9b80f225ae38219a78
+
+tests/test_v2_base_parameter_authoring.py
+  sha256:c931e1d4377fa77dee159f0a468310497412bb5a35772ba880653ca891f71394
+```
+
+Combined authoring verification：
+
+```text
+pytest:
+  61 passed, 31 subtests passed
+
+unittest:
+  Ran 61 tests
+  OK
+
+Python 3.12 / 3.13 / 3.14:
+  14 Base-parameter-audit tests per interpreter
+  OK
+
+ruff:
+  All checks passed
+
+independent declared-boundary code review:
+  P0=0
+  P1=0
+  P2=0
+  P3=0
+```
+
+红队在重算全部可见 local roots 后，拒绝 nested bool/integer confusion、伪造
+inventory ordinal、family/type count 漂移、record reorder、path-specific label/
+process shape 漂移、unknown/missing keys，以及 authority/materialization 假提升。
+Structure 层有意不拒绝 same-shape open-semantics 变体；exact-source join 对它们
+fail closed。
+
+这一步只把“当前 12 个 parameter instances 的 exact bytes 与 shape 是什么”变成
+可复核事实。它没有生成 constructor、normalized view、Base payload、path inventory、
+construction trace、receipt 或 OS evidence，也没有关闭任何 normative schema。
+
 ## 7. 当前开放 P1
 
 原 closure design 的 18 项仍是“至少”集合。本检查点新增一个独立 runtime source
@@ -919,6 +1078,11 @@ unresolved set 可机读；它没有关闭上述第 1、3、4、5、7、8、9、
 14-cell matrix 和九个 blocker；它明确保留 `final_projection_count=0`，所以同样不
 减少开放 P1 数量。
 
+本轮 12-record Base parameter audit 只把第 1 项中的 current-instance
+parameter bytes、path-specific type shape 和六类 residual gap 机器化。它固定
+`normative_schema_count=0`，没有生成 nested projections、locators、construction
+traces 或 Base payload；因此开放 P1 数量仍是“至少 19”。
+
 ## 8. Claim boundary
 
 本检查点证明的是：
@@ -927,15 +1091,21 @@ unresolved set 可机读；它没有关闭上述第 1、3、4、5、7、8、9、
 - 一个无环 amendment/source-freeze 候选结构可以被机器化；
 - design materialization 与 actual runtime fidelity 可以被明确分相；
 - 当前 authoring helpers 对其声明的 SourceFreeze、71-record inventory 和
-  negative judge-input ambiguity 结构边界 fail closed；
+  negative judge-input ambiguity、12-record Base exact-instance parameter
+  结构边界 fail closed；
 - 当前 negative fixture execution coverage 是 0/56，且 exact judge-input
   projection 仍被 fail-closed 阻断。
+- 当前 12 个 Base parameter instances 可按 exact source bytes、双 order join 和
+  path-specific type fingerprint 复核。
 
 它不证明：
 
 - v0.7 activation；
 - G2/G3 completion；
 - actual `ChainedRecordV07`、`ArtifactManifestV07` 或 full-scale NDJSON 已生成；
+- constructor-specific normative parameter schemas、normalized views 或 Base
+  payloads 已生成；
+- synthetic process parameters 构成 OS-observed process evidence；
 - source actors 的历史、认知或统计独立性；
 - provider/LLM behavior；
 - H1-H6；
