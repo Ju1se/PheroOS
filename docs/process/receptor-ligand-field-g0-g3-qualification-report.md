@@ -261,6 +261,14 @@ RFC 6901 pointer correction。独立代码复核在修复 canonical byte/object
 `P0=P1=P2=P3=0`；targeted tests 为 `19 passed, 9 subtests passed`。该 residual zero
 只覆盖 authoring helper，不覆盖正式合同或 evidence。
 
+后续 external authoring commit `cbca3c31184067645b1de8ffa280672ec4390b2c`
+把 exact four-pointer counterfactual 投影为 12 Base、3 positive、56 negative 的
+71-record machine inventory。它绑定 69 个 operation、literal constructor/view/
+stage-code/precondition/receipt/recipe roots，并以 exact source bytes 和 expected-byte
+join 拒绝同形篡改；combined tests 为 `32 passed, 12 subtests passed`。但其每条
+record 仍明确携带 unresolved normative leaves，故不是 descriptor registry、
+Main、GoldenOracle、materialization evidence 或 P1 count reduction。
+
 同一红队复核发现八 actor design/promotion SourceFreeze 不包含 runtime producer P
 和 independent verifier V。该项作为第 19 个显式 P1 加入；runtime RA/RB 是同一 P
 source 的两个 process identities，不能被误写成两个 source-independent actors。

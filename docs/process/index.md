@@ -90,9 +90,10 @@ database, dashboard, or application deployment workflows.
 - [receptor-ligand-field-v0.7-materialization-v2-authoring-checkpoint.md](receptor-ligand-field-v0.7-materialization-v2-authoring-checkpoint.md)
   records the provider-free V2 authoring refinement: deterministic
   profile/companion amendment, design-versus-runtime actual-chain phase
-  separation, byte-first SourceFreeze structural checks, and the newly exposed
-  runtime-source phase blocker. It preserves the NO-GO and grants no
-  materialization, activation, or experiment authority.
+  separation, byte-first SourceFreeze structural checks, an authoring-only
+  71-record identity inventory, and the newly exposed runtime-source phase
+  blocker. It preserves the NO-GO and grants no materialization, activation,
+  or experiment authority.
 - [receptor-ligand-field-g3-methodological-amendment-v0.1.md](receptor-ligand-field-g3-methodological-amendment-v0.1.md)
   is an inactive G3 review draft for common budget schedules, complete
   pre-cap ranking, size-qualified S/G artifacts, and Cost Ledger v2. It grants

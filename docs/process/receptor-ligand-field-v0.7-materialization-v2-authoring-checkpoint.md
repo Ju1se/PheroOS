@@ -612,6 +612,113 @@ G2 或 G3 没有 blocker。
 Module 没有 CLI、write、acceptance、provider 或 network entrypoint。它不会写 profile、
 companion、core 或 evidence；counterfactual bytes 只在 memory 中返回。
 
+### 6.1 71-record fixture inventory authoring
+
+同一隔离 branch 的后续 commit：
+
+```text
+commit = cbca3c31184067645b1de8ffa280672ec4390b2c
+```
+
+只新增：
+
+```text
+src/rglf_lab/v2_fixture_inventory_authoring.py
+tests/test_v2_fixture_inventory_authoring.py
+```
+
+它从 exact current companion 开始，只执行前述四 pointer in-memory
+counterfactual，然后 byte-first 绑定：
+
+```text
+source_state = "four-pointer-counterfactual-v1-not-final-c1"
+source_byte_count = 62093
+source_raw_root =
+  sha256:93e62153972cc5db557ccb60c4f48ac52519e4271c3a7d59ffc9e6e5daa69795
+```
+
+Machine inventory 固定 71 个 stable identities：
+
+```text
+base_count = 12
+positive_count = 3
+negative_count = 56
+operation_count = 69
+record_order = "artifact-rank-then-utf8-stable-id-v1"
+artifact_rank = ["base", "positive", "negative"]
+```
+
+它验证 literal base constructor/parameters、view selector、positive
+fixture-input/expected-receipt/commitment roots、negative recipe roots、
+operation/precondition shapes、stage/code joins，以及三个 exact authoring guard：
+
+```text
+base_literal_binding_set_root =
+  sha256:54b0e993ec560bcbd5d48e206e0fd7682f06cc8d1a7405626b3c6dcc3328353d
+negative_stage_code_binding_set_root =
+  sha256:96d54045a1dc418c8faace0e1167f096b57ddaf15331a702dbdb74710fbab7ff
+operation_literal_binding_set_root =
+  sha256:fc74d74abda8691500f78a0a7641c23fd3950e4ea105c9fac60a22545eedb65c
+```
+
+生成的内存 inventory 固定为：
+
+```text
+byte_count = 116430
+raw_root =
+  sha256:37ad9ec7c217bec60911ea952b3abf43f9102da0cf47bb352842026a456ce155
+inventory_root =
+  sha256:eb6df144a64f8daebfebe6a6a8819ef99c83d44bab3130707cf5dde22fce4d04
+```
+
+Final source bytes：
+
+```text
+src/rglf_lab/v2_fixture_inventory_authoring.py
+  sha256:15549dc900daca987f8d185df4f02798ec84f7c7e42b04d560b61feb0be7ceed
+
+tests/test_v2_fixture_inventory_authoring.py
+  sha256:5476b16742b97f0b7813cd28246e467c6436cc6501f32afc7149d1fabaec5419
+```
+
+Combined authoring verification：
+
+```text
+pytest:
+  32 passed, 12 subtests passed
+
+unittest:
+  Ran 32 tests
+  OK
+
+ruff:
+  All checks passed
+
+independent declared-boundary code review:
+  P0=0
+  P1=0
+  P2=0
+  P3=0
+```
+
+红队用会重算 companion set/semantic roots 的反例验证了：同 stage 换 code、换
+judge、同形 precondition、同形 operation value 和 Base parameter 漂移均被拒绝；
+攻击者即使重算 record/inventory roots，也不能绕过 exact expected-byte join。
+
+这个 inventory 是 identity/known-binding skeleton，不是
+`MaterializationContractV2` 的 71-record descriptor registry。每条 record 都保留
+kind-specific `unresolved_normative_leaves`；特别是 Base nested semantic schemas、
+三个 `PositiveClosureProjectionV2`、positive after-view encoding/reseal、56 个
+`NegativeJudgeInputProjectionV2`、71 个 locator descriptors、parser resource bounds
+和 independent GoldenOracle 仍未闭合。三个 binding roots 是 authoring guards，不是
+独立 oracle。
+
+在 authoring branch 运行旧 full qualification suite 时，已完成部分得到
+`139 passed, 45 subtests passed, 5 failed` 后人工停止高成本 replay。五个失败来自
+frozen qualification/source-identity guard：同一 baseline exact-rebuild 测试在 clean
+活动实验 branch 通过，在新增 authoring source 的 branch 按设计拒绝。不得 refreeze
+旧 qualification artifacts 来掩盖该 source identity 变化。
+
 ## 7. 当前开放 P1
 
 原 closure design 的 18 项仍是“至少”集合。本检查点新增一个独立 runtime source
@@ -645,6 +752,10 @@ phase blocker，因此当前至少 19 项：
 因此任何 V2 object 仍不得使用 `frozen`、`complete`、`passed` 或
 `activation-ready`。
 
+本轮 71-record inventory 只使 12/3/56 identity、literal source binding 和当前
+unresolved set 可机读；它没有关闭上述第 1、3、4、5、7、8、9、14、15 或 17 项，
+因此开放 P1 数量仍是“至少 19”。
+
 ## 8. Claim boundary
 
 本检查点证明的是：
@@ -652,7 +763,8 @@ phase blocker，因此当前至少 19 项：
 - 已发现的四个 RFC 6901 pointer 影响可由独立 canonical implementation 重算；
 - 一个无环 amendment/source-freeze 候选结构可以被机器化；
 - design materialization 与 actual runtime fidelity 可以被明确分相；
-- 当前 authoring helper 对其声明的结构边界 fail closed。
+- 当前 authoring helpers 对其声明的 SourceFreeze 与 71-record inventory 结构边界
+  fail closed。
 
 它不证明：
 
