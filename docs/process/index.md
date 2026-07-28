@@ -82,6 +82,11 @@ database, dashboard, or application deployment workflows.
   records the executable NO-GO finding: the V1 identity does not bind unique
   base/positive payload contracts, so the public review remains fail-closed
   until a content-addressed V2 contract and complete oracle are frozen.
+- [receptor-ligand-field-v0.7-materialization-v2-closure-design.md](receptor-ligand-field-v0.7-materialization-v2-closure-design.md)
+  records the unsealed V2 closure architecture: a normative contract and
+  independent golden oracle are separated to avoid content-address cycles,
+  RFC 6901 root semantics are made explicit, and official A/B source remains
+  oracle-blind. It is a NO-GO design checkpoint, not an activation artifact.
 - [receptor-ligand-field-g3-methodological-amendment-v0.1.md](receptor-ligand-field-g3-methodological-amendment-v0.1.md)
   is an inactive G3 review draft for common budget schedules, complete
   pre-cap ranking, size-qualified S/G artifacts, and Cost Ledger v2. It grants

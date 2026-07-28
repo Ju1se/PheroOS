@@ -76,7 +76,7 @@ P3 = 0
 decision = NO-GO, correctly fail-closed
 ```
 
-三个 P1 分别聚合为：下节七项 normative underdetermination、future supervisor exact
+三个 P1 分别聚合为：下节八项 normative underdetermination、future supervisor exact
 oracle 未实现、R7 closed attack matrix 未实现。P2 是 future pass 所需的更强 source
 independence 证明：当前 Git/AST/source-root/non-identical-file audit 足以绑定 refusal，
 但未来 acceptance 还必须验证 runtime resolved-module origins，并审查近似复制或共享
@@ -154,6 +154,42 @@ R3 要求 normalized-view commitment、exposed path inventory 和 construction t
 contract root。后来补写自然语言不能原地改变 V1 含义。
 
 下一版必须使用新的 identity schema/root label，并从 R0 重启。
+
+### 4.8 两个 whole-document operation 使用了错误的 RFC 6901 pointer
+
+Profile 声明 operation path 是 RFC 6901 literal pointer，但 companion 的：
+
+```text
+N-T1-SILENT-CONFLICT operations[0].path
+N-T1-SILENT-CONFLICT operations[0].precondition.path
+N-T4-DAG-CYCLE      operations[0].path
+N-T4-DAG-CYCLE      operations[0].precondition.path
+```
+
+均为 `"/"`。RFC 6901 中 document root 是 empty string `""`；`"/"` 表示名为 empty
+string 的 object member。两项 `apply-transform` 的可读意图是作用于 whole normalized
+view，因此当前 literal 与声明的 pointer semantics 不一致。
+
+下一版必须把四个 literals 原子改为 `path=""`，同时重算两项 operation/recipe roots、negative set、
+semantic manifest、companion raw root 和所有 downstream identities。不得把 `""` 与
+`"/"` 同时接受为 root alias。
+
+三次只读复算，其中两次各自又使用 Python/Node 独立 canonical/H/RAW
+implementations，得到相同 counterfactual：
+
+| binding | current | four-pointer correction |
+| --- | --- | --- |
+| T1 operation | `sha256:c54b9e89f71109535a6419310e16124766940eb91d201cb66a2512d64c45e22f` | `sha256:8e77fe97dc76ac3e16693f3c26f2c82467089a933fc71bc688b0266aff8dacbc` |
+| T1 recipe | `sha256:1f9c4dc89c5dc85096feb6f28315c5a73e880c42ab9f043efc70381b80bf0fdb` | `sha256:8ced8a22c7fa8382be2db04831835a1a80aa9ef0d43ebf2b51549d7d4ac66fc0` |
+| T4 operation | `sha256:372d2cafb6f0951538878cb48d3b1a25912594897b52ae7d3a295460c26c710e` | `sha256:1d3f6fa6e68cd8dd8f1944b023e3335d31121ce335898f6394fbe36e0df6723c` |
+| T4 recipe | `sha256:2567bda69377e81494465758c98b96b5dbc9ba4518154995cbab5a3bf1ed7d3b` | `sha256:a75e0a6cfd8583f0a56ddb22da43918e7da37ba9bf9dfb918dd9570324123e06` |
+| negative set | `sha256:ae57ce3f050c4f1560026ecb198cb274adfee6ffcf49282fb4520ecf6e12f4e5` | `sha256:5c4cf71f6985766af2ab30735900403ef2dfeee57e674b0a2abbd342590c785e` |
+| semantic manifest | `sha256:dfbb83daea99bedc25e91c07f10aa301f42fba93808d57d9e6aaf395ae33feca` | `sha256:eccec79803913d858ebc60b4c78ae8854a606102fffec7e681ae29c6d87a3bf2` |
+| companion bytes | `62097` | `62093` |
+| companion RAW | `sha256:322365b8eb50d5479329fde2a734901e8bd96ce48bcfe1afa177588d38788360` | `sha256:93e62153972cc5db557ccb60c4f48ac52519e4271c3a7d59ffc9e6e5daa69795` |
+
+右列只是机械影响证明，不是已经采用的 amendment 或 future frozen root。当前 companion
+bytes 和 embedded roots 保持不变。
 
 ## 5. Supervisor 在解除 guard 前仍缺少的证明
 
@@ -237,17 +273,25 @@ evidence namespace；复制后再次由 fresh process 重算 manifest 和九个 
 
 ## 8. 关闭顺序
 
-1. 冻结机器可读 `MaterializationContractV2`，明确 base/positive schema、field sets、
-   byte encoding、root labels、exclusions 和 `raw_ndjson_bytes` encoding；
+候选依赖图、schema interfaces、oracle firewall 和仍未关闭的 P1 记录在
+[V2 closure design](receptor-ligand-field-v0.7-materialization-v2-closure-design.md)。
+该文件是 unsealed design，不是本 finding 的关闭证据。
+
+1. 冻结机器可读、只含 normative semantics 的 `MaterializationContractV2`，明确
+   base/positive schema、field sets、byte encoding、root labels、exclusions、
+   RFC 6901 root pointer 和 `raw_ndjson_bytes` encoding；
 2. 两位独立 reviewer 对 contract bytes 做 duplicate-key、canonicalization、
    all-and-only field/root 和 closure review；
-3. 创建 `MaterializationReviewInputIdentityV2`，绑定 contract path、byte count、
-   raw root 和 semantic contract root；
-4. 实现上述声明式 exact supervisor oracle；
-5. 把 R7 每个 bullet 展开为 closed case-ID manifest 并实现完整 refusal evidence；
-6. 从新的 clean immutable candidate commit 重新独立实现 A/B；
-7. 从 R0 重跑 R0-R8，并由 fresh process 独立复读 sealed bundle；
-8. 只有 design-review 和 promotion-review 都通过，才可讨论 v0.7 lock migration。
+3. Profile/companion 只绑定 normative contract；golden 结果不得写回两者；
+4. 用独立 bootstrap implementations 和 closure reviewers 冻结单独的
+   `MaterializationGoldenOracleV2`；
+5. 创建 `MaterializationReviewInputIdentityV2`，同时绑定 contract 与 oracle 的
+   path、byte count、raw root 和 semantic root；
+6. 实现上述声明式 exact supervisor oracle；
+7. 把 R7 每个 bullet 展开为 closed case-ID manifest并补充 oracle 隔离 cases；
+8. 从 oracle 公开前已冻结的 clean immutable source commit 重新独立执行 official A/B；
+9. 从 R0 重跑 R0-R8，并由 fresh process 独立复读 sealed bundle；
+10. 只有 design-review 和 promotion-review 都通过，才可讨论 v0.7 lock migration。
 
 旧 V1 attempt、旧 payload roots 和旧 semantic bodies只能作为 rejected diagnostic
 evidence保留，不能迁移为 V2 acceptance evidence。

@@ -5,12 +5,18 @@
 Audit update (2026-07-28): executable independent implementations showed that
 this V1 plan does not uniquely define `BaseMaterializationV1`,
 `PositiveTransactionProductV1`, the JSON encoding of `raw_ndjson_bytes`, or
-the complete 71-record root-locator oracle. The public review is therefore
+the complete 71-record root-locator oracle. It also treats two whole-document
+`apply-transform` operation/precondition path pairs as `"/"` even though
+RFC 6901 defines the document root as `""`. The public review is therefore
 fail-closed and this plan cannot currently produce
 `materialization-review-passed`. See
 [the materialization audit finding](receptor-ligand-field-v0.7-materialization-audit-finding.md).
-Closing the finding requires a content-addressed V2 contract and a new phase
-identity followed by a restart from R0; V1 outputs cannot be grandfathered.
+Closing the finding requires a content-addressed normative V2 contract, a
+separate independent golden oracle, and a new phase identity followed by a
+restart from R0; V1 outputs cannot be grandfathered.
+The candidate closure architecture is recorded separately in
+[the V2 closure design](receptor-ligand-field-v0.7-materialization-v2-closure-design.md);
+it remains unsealed and has no activation effect.
 
 This document is a review-only execution plan for resolving the transition
 dependency between the active v0.6 external lab and the inactive v0.7

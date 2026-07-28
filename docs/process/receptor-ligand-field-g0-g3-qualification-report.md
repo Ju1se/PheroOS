@@ -214,6 +214,8 @@ design assertions；后续 executable materialization audit 已证明该结论�
 - `/raw_ndjson_bytes` 没有 canonical JSON encoding；
 - `profile_defined_root_pairs` 没有 71-record exact locator oracle；
 - `MaterializationReviewInputIdentityV1` 没有绑定上述完整合同；
+- 两个 intended whole-document `apply-transform` 的 operation/precondition 共四个
+  pointer 使用 `path="/"`，与 RFC 6901 document root `""` 不一致；
 - supervisor 的 R7 attack matrix 尚未完整实现。
 
 两个独立 materializer 的局部测试均曾通过，却产生不兼容的 base objects，并共同把
@@ -227,13 +229,40 @@ materialization pass。
 `sha256:758fd1e0978da8712a144571ffabd9b1574ba7b7deb1554714fc38b5ac980e22`，
 fresh-process reread 为 `verified=true`。
 
-在新 V2 contract 被内容寻址、绑定到新 phase identity 并从 R0 重跑前，activation
+新的
+[V2 closure design](receptor-ligand-field-v0.7-materialization-v2-closure-design.md)
+进一步确定 normative contract 与 golden oracle 必须分层，避免 profile hash 与
+golden payload root 循环；official A/B 不得挂载 oracle。该文件仍只是 unsealed
+design，不是 pass。
+
+最终 closure-design 交叉复核固定在该设计文件：
+
+```text
+raw_sha256 =
+  sha256:1f408183703528066de3545d776e7b7d9f7884610fde8e74a785d7fb60f337d0
+independent_read_only_review_paths = 3
+residual_undeclared_P0 = 0
+residual_undeclared_P1 = 0
+residual_undeclared_P2 = 0
+```
+
+三路复核先后暴露并关闭了 source-freeze 内容寻址、Oracle/Identity
+mix-and-match、closure-review count、main-component tree join、receipt
+source-boundary 和 Manifest/SealEvidence 回边。这里的 residual `0` 只表示没有再
+发现未登记的内部矛盾；设计文件第 13 节列出的 18 项 implementation P1 仍全部开放，
+不构成 contract freeze、materialization pass、G2/G3 通过或 activation evidence。
+
+在新 V2 contract 与独立 golden oracle 被内容寻址、绑定到新 phase identity 并从 R0
+重跑前，activation
 blocker 包括：
 
-1. 先冻结 exact base/positive payload、root-pair registry 和 byte encoding；
+1. 先冻结 exact base/positive payload、root-pair registry、RFC 6901 root pointer
+   和 byte encoding；
 2. 从 12 个 constructors 实际生成 base views；
-3. 由两个互不共享 semantic source 的、review-lifecycle-only
-   `ReviewAuditCompilerV1` 执行 3 个 positive 和 56 个 negative transactions；
+3. 在 bootstrap candidate 生成前冻结 bootstrap A0/B0、official A1/B1、
+   supervisor、fresh reader 与两名 closure reviewers 的八份 source，并封存
+   Manifest/SealEvidence；只由 bootstrap pair 生成 golden candidate，只由 official
+   pair 参加后续 R0-R8；
 4. 保存并复算全部 preconditions、observed codes、receipts、source roots 与
    content-addressed artifacts；
 5. 完成 R7 closed attack matrix并证明 zero authority、zero outcome read、
@@ -352,8 +381,9 @@ Key 不得写入 Git、`.env`、Trace、report、command argument 或 fixture。
 
 后续仍只做 provider-free gate work：
 
-1. 按已通过 design 二审的 v0.7 specification 独立 materialize 12 个 base views、
-   3 个 positive 和 56 个 negative transactions，并生成可检索 receipts；
+1. 先完成 V2 normative contract、positive closure/transition mapping、两项 RFC 6901
+   correction、71-record descriptor registry 和独立 golden oracle；冻结 official A/B
+   source 时不得向其暴露 oracle；
 2. 只有 materialization、source-independence 和全部 root 二审通过后，才形成新的
    activation candidate；profile activation 与 prereg lock migration 仍需单独审阅；
 3. 在不含 executable source 的独立 methodology candidate 中 materialize G3 meta
