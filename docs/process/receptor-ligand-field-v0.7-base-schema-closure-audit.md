@@ -42,6 +42,8 @@ External authoring branch 的最终相关 commits：
 ```text
 d954daad0bb9f52fcdf182b53a2426e0532ed341
 d58ad290b21d340203d3e324a27d3cbceea18d87
+6707c028dfec9fae7fdc166788e2dd7b5e56ac21
+d6e4d05c0b7db80b802394091de32efc11c929ba
 ```
 
 12-record audit 仍绑定 106 个 path-specific parameter nodes、六项 blockers 和零
@@ -168,6 +170,35 @@ materialization 或 activation authority。
 probe。两名独立审阅者必须从该新判据对全部 20 个 T7 scale configs 得到相同分类；
 随后用 estimand-changing amendment 显式 supersede 当前规则，不能 in-place 修补
 companion。
+
+### 5.3 A1 counterfactual machine audit
+
+后续
+[T7 A1 counterfactual audit](receptor-ligand-field-v0.7-t7-a1-counterfactual-audit.md)
+在 external authoring commits
+`6707c028dfec9fae7fdc166788e2dd7b5e56ac21` 与
+`d6e4d05c0b7db80b802394091de32efc11c929ba` 中把建议 A1 实现为 exact
+in-memory byte counterfactual 并补齐 downstream byte-first evidence。它证明：
+
+- source 必须是 62093-byte four-pointer bytes；
+- A1 恰好改变三个 substantive leaves 与三个派生 roots；
+- RFC 6901 locator 从 mandatory index 0 移到 index 1 后，前后均解析为
+  `event:t7:9000:0:00034`；
+- 旧 71-record inventory、56-record negative audit 和 12-record Base audit
+  均对 A1 source fail closed，必须重建；
+- 当前 negative plan 仍只覆盖 mandatory-to-variable，另外两个 disjointness
+  relations 未覆盖。
+
+其 audit 固定为 6744 bytes、raw root
+`sha256:b6736881bf1f996d261f3012b1eb902259d2ef870185b870eda219b414fdba92`、
+audit root
+`sha256:d6edfe1f1f9dd2b193b4d1b7b8802d6c5e8c0564731dca80f2df012aa0624b1a`。
+Combined V2 authoring verification 为 76 tests、49 subtests；两路独立 post-fix
+review 均为 `P0=P1=P2=P3=0`。
+
+该结果只关闭 A1 impact-calculation 的局部不确定性。其 machine leaves 仍固定
+`final_c1_selected=false`、所有 execution/projection counts 为零、
+`authority_scope="none"`；本审计的六类 schema closure NO-GO 不变。
 
 ## 6. Source 和 process 的双层边界
 

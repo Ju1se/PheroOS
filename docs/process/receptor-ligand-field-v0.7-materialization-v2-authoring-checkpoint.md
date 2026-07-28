@@ -1052,6 +1052,19 @@ defect，不是等权 protocol choice。该后续审计只推荐原子版本化 
 保留现有 negative recipe 所指 event 34），没有修改 companion、profile、lock、Main、
 Golden 或 authority。
 
+再后续
+[T7 A1 counterfactual audit](receptor-ligand-field-v0.7-t7-a1-counterfactual-audit.md)
+与 external commits `6707c028dfec9fae7fdc166788e2dd7b5e56ac21`、
+`d6e4d05c0b7db80b802394091de32efc11c929ba`
+把该推荐机器化为 exact in-memory A1 impact evidence。它从 exact 62093-byte
+four-pointer source 生成 62094-byte A1，证明 locator index 0→1 前后均解析为
+event 34，并把三项旧 downstream audits 标记为 invalidated/rebuild-required。
+最终 targeted tests 为 15 tests/18 subtests，五组 V2 authoring helpers 合并为
+76 tests/49 subtests；Python 3.12/3.13/3.14 与两路独立 post-fix review 均复现。
+该 helper 仍固定 final C1、profile write、operation/reseal/judge execution、
+negative projection、provider/network/outcome read 和 authority 为 false/zero，
+因此不减少下节“至少 19”项开放 P1。
+
 ## 7. 当前开放 P1
 
 原 closure design 的 18 项仍是“至少”集合。本检查点新增一个独立 runtime source

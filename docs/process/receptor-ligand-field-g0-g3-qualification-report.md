@@ -305,6 +305,18 @@ provenance 结论：active v0.6 与 v0.7 no-estimand-change 条款唯一支持 i
 root blast radius，没有修改任何 active 或 candidate contract，因此不降低 G2/G3
 blocker。
 
+后续 external authoring commits
+`6707c028dfec9fae7fdc166788e2dd7b5e56ac21`、
+`d6e4d05c0b7db80b802394091de32efc11c929ba` 与
+[T7 A1 counterfactual audit](receptor-ligand-field-v0.7-t7-a1-counterfactual-audit.md)
+把建议的 preserve-event-34 A1 变成 exact in-memory byte/root evidence。Static
+RFC 6901 resolution 证明 source locator index 0 与 A1 locator index 1 都指向
+event 34；这不是 operation 或 judge execution。旧 71-record inventory、56-record
+negative audit 和 12-record Base audit 均对 A1 source fail closed，且另外两个
+T7 disjointness negative relations 仍未覆盖。Machine report 保持 final C1、
+amendment、write、activation、provider/network、execution 和 authority 为
+false/zero；因此 G2/G3 继续 blocked。
+
 同一红队复核发现八 actor design/promotion SourceFreeze 不包含 runtime producer P
 和 independent verifier V。该项作为第 19 个显式 P1 加入；runtime RA/RB 是同一 P
 source 的两个 process identities，不能被误写成两个 source-independent actors。
@@ -426,6 +438,12 @@ physical ownership、complete membership、allocation conservation、observation
   Ruff 全部通过；Python 3.12、3.13、3.14 各自通过新增的 14 项 Base parameter
   audit tests。该项只证明 exact-instance audit 的声明边界，不证明 normative
   constructor schema 或 materialization。
+- 加入 T7 A1 counterfactual 后，五组 V2 authoring helpers 最新联合验证为
+  76 tests、49 subtests、76 unittest；Python 3.12、3.13、3.14 各自通过 15 项
+  T7 A1 tests，两个新增文件的 targeted Ruff 与 `py_compile` 通过，两路独立
+  post-fix review 均为 `P0=P1=P2=P3=0`。Audit 明确
+  `event_34_preservation_basis=static-rfc6901-copy-locator-resolution-only`，
+  不把静态 locator identity 伪称为执行证据。
 
 上述验证只支持工程资格声明，不支持 H1-H6 或相对性能结论。
 

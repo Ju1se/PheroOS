@@ -101,6 +101,11 @@ database, dashboard, or application deployment workflows.
   classification conflict and its counterfactual root blast radius, and the
   exact distinction between current-instance facts and reusable constructor
   contracts. It changes no profile, companion, lock, or runtime.
+- [receptor-ligand-field-v0.7-t7-a1-counterfactual-audit.md](receptor-ligand-field-v0.7-t7-a1-counterfactual-audit.md)
+  records the exact in-memory T7 A1 correction candidate, static event-34
+  locator preservation, content-addressed root blast radius, downstream
+  invalidation, incomplete negative coverage, and zero-authority verification.
+  It selects no final C1 and changes no profile, companion, lock, or runtime.
 - [receptor-ligand-field-g3-methodological-amendment-v0.1.md](receptor-ligand-field-g3-methodological-amendment-v0.1.md)
   is an inactive G3 review draft for common budget schedules, complete
   pre-cap ranking, size-qualified S/G artifacts, and Cost Ledger v2. It grants
