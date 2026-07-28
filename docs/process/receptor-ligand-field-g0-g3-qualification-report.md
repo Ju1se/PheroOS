@@ -281,7 +281,8 @@ materialization/receipt count 为零。Combined tests 为
 `47 passed, 16 subtests passed`，两路独立 code review 均为
 `P0=P1=P2=P3=0`；该 residual zero 只覆盖 ambiguity-audit 的声明边界。
 
-后续 external authoring commit `d954daad0bb9f52fcdf182b53a2426e0532ed341`
+后续 external authoring commits `d954daad0bb9f52fcdf182b53a2426e0532ed341`
+和 `d58ad290b21d340203d3e324a27d3cbceea18d87`
 把 12 个 current Base parameter instances 绑定到 exact companion/inventory
 bytes、双 order ordinal、canonical parameter roots 和 106-node path-specific
 type fingerprints。Audit 明确固定 `exact_instance_count=12`、
@@ -291,7 +292,18 @@ name/classification、source literal-order-to-sorted-view、process cross-field/
 OS-evidence envelope 记录为六项 blockers。Combined tests 为
 `61 passed, 31 subtests passed`，独立 code review 为
 `P0=P1=P2=P3=0`；该 residual zero 只覆盖 exact-instance audit 的声明边界，不表示
-constructor schema、Base payload、G2 或实验完成。
+constructor schema、Base payload、G2 或实验完成。Source parameter literal array
+与 normalized Unicode-sorted file map 是必须并存的两层；开放项是 exact
+array-to-map projection，而不是选择其中一个 order。
+
+后续
+[Base schema closure audit](receptor-ligand-field-v0.7-base-schema-closure-audit.md)
+确认六类 reusable schemas/projections 均未闭合，并把 T7 labels 从“样本冲突”推进为
+provenance 结论：active v0.6 与 v0.7 no-estimand-change 条款唯一支持 intrinsic
+为空、两个 positions 均 mandatory；companion 的 split 是 blocking draft defect。
+审计只记录 A correction 及 B estimand-changing counterfactual 的 primary companion
+root blast radius，没有修改任何 active 或 candidate contract，因此不降低 G2/G3
+blocker。
 
 同一红队复核发现八 actor design/promotion SourceFreeze 不包含 runtime producer P
 和 independent verifier V。该项作为第 19 个显式 P1 加入；runtime RA/RB 是同一 P

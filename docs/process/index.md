@@ -96,6 +96,11 @@ database, dashboard, or application deployment workflows.
   `normative_schema_count=0`, and the newly exposed runtime-source phase
   blocker. It preserves the NO-GO and grants no materialization, activation,
   or experiment authority.
+- [receptor-ligand-field-v0.7-base-schema-closure-audit.md](receptor-ligand-field-v0.7-base-schema-closure-audit.md)
+  records the six-family Base schema closure NO-GO, the T7 companion/protocol
+  classification conflict and its counterfactual root blast radius, and the
+  exact distinction between current-instance facts and reusable constructor
+  contracts. It changes no profile, companion, lock, or runtime.
 - [receptor-ligand-field-g3-methodological-amendment-v0.1.md](receptor-ligand-field-g3-methodological-amendment-v0.1.md)
   is an inactive G3 review draft for common budget schedules, complete
   pre-cap ranking, size-qualified S/G artifacts, and Cost Ledger v2. It grants

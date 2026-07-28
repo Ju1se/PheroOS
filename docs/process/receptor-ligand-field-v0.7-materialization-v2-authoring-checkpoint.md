@@ -883,7 +883,10 @@ counts/roots、operation/reseal/judge-input bytes、observed code 或 receipt。
 同一隔离 branch 的后续 commit：
 
 ```text
-commit = d954daad0bb9f52fcdf182b53a2426e0532ed341
+initial commit =
+  d954daad0bb9f52fcdf182b53a2426e0532ed341
+source-projection clarification =
+  d58ad290b21d340203d3e324a27d3cbceea18d87
 ```
 
 只新增：
@@ -957,7 +960,10 @@ Audit 显式保留六项 machine blockers：
    conflict，不替 profile/companion 选择语义；
 5. source：当前七项 literal array 保留 `entry.py` 在 `eligibility.py` 之前的
    declaration order；Unicode path order 的 observed permutation 是
-   `[1,0,2,3,4,5,6]`。Array-to-map/sorted-view projection 仍未冻结；
+   `[1,0,2,3,4,5,6]`。`constructor_parameters` 必须保留 literal array，而
+   normalized source view 必须另行生成 Unicode-sorted file map；仍未冻结的是
+   exact array-to-map projection、file value shape 和 construction-trace steps，
+   不是在两个 order 中二选一；
 6. process：当前实例只绑定 13 个 literal fields，以及 `Cg==`、segment count
    `1/1`、RSS `1048576/2097152` 等 observed facts；generic key/type/range/
    nullability、frame/count/clock/exit/wait4 cross-fields、measurement projection
@@ -982,25 +988,25 @@ materialization_authorized = false
 生成的内存 audit 固定为：
 
 ```text
-byte_count = 25479
+byte_count = 25551
 raw_root =
-  sha256:7a00974b553a84961406228855e40b1b81b2c1a938cc84511f69b2c86a9e6c82
+  sha256:1612f3636a21a7689025cb8a1939fdfc86b119fada11537151485f787da21469
 record_set_root =
   sha256:b79644c975496a7e9ca88bc19722f4f5b696cf5a402fcf5f687969db51854113
 blocker_set_root =
-  sha256:c2d5ba51de12687571bae1c3bab76e0bed8581077cc79e66473845eaec5f3d4b
+  sha256:48e2dd6160dab7a884e9fd88e410cbfef32132d63b9ae78fd4eccc4617407979
 audit_root =
-  sha256:eef321732774e1511d828554912d55f03669e0b188675dbb8f5fcd0dd3ce67aa
+  sha256:3e8e6df93b99d5b714f6dc80ed5e2c1fe955e3473dd926d97b9278c4f8e7b9c3
 ```
 
 Final source bytes：
 
 ```text
 src/rglf_lab/v2_base_parameter_authoring.py
-  sha256:c5130191ce9a1a032a229a689a308b5659b3082fb113bc9b80f225ae38219a78
+  sha256:949dd0aab7f90059bf7fa3f48d739c8458a8a94e67125d3820695a8fda98b471
 
 tests/test_v2_base_parameter_authoring.py
-  sha256:c931e1d4377fa77dee159f0a468310497412bb5a35772ba880653ca891f71394
+  sha256:c21979ef9fbf217701f11d6f118c154cfd69bba9926b7529c648526b9195fa4f
 ```
 
 Combined authoring verification：
@@ -1036,6 +1042,15 @@ fail closed。
 这一步只把“当前 12 个 parameter instances 的 exact bytes 与 shape 是什么”变成
 可复核事实。它没有生成 constructor、normalized view、Base payload、path inventory、
 construction trace、receipt 或 OS evidence，也没有关闭任何 normative schema。
+
+后续
+[Base schema closure audit](receptor-ligand-field-v0.7-base-schema-closure-audit.md)
+把六类 exact-instance facts 与 reusable contracts 分开复核。Active v0.6 与 v0.7
+no-estimand-change provenance 唯一支持 T7 intrinsic 为空、positions 33/34 均为
+mandatory；companion 中的 33-intrinsic/34-mandatory 分法因此是 blocking draft
+defect，不是等权 protocol choice。该后续审计只推荐原子版本化 A correction（并优先
+保留现有 negative recipe 所指 event 34），没有修改 companion、profile、lock、Main、
+Golden 或 authority。
 
 ## 7. 当前开放 P1
 
