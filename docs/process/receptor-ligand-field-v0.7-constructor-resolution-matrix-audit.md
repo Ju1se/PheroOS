@@ -91,6 +91,11 @@ materialization_authorized = false
 locators、excerpt roots 和 semantic-entailment proofs 仍为零，必须在后续 schema
 closure 前补齐。
 
+这些零值属于本 63,776-byte audit 自身，后续 artifact 不得回写或替换它们。首个
+[environment evidence overlay](receptor-ligand-field-v0.7-environment-evidence-overlay-audit.md)
+以独立 sidecar 绑定 scoped locators 和 author reviews；原 audit 的 locator/proof
+counts 继续为零。
+
 ## 3. Exact inputs
 
 ### 3.1 四份研究文档
@@ -326,8 +331,30 @@ Tamper review 在重新计算所有可见 roots 后拒绝：
 - report boundary fields 假提升；
 - same-length document、four-pointer 或 A1 source 替换。
 
-完整 external lab `pytest -q` 不能宣称通过。它运行到 `90 passed` 后被终止，
-并出现一个独立既有失败：
+后续 environment overlay 在 external commit
+`ea73fe1add86529884adbf0ece7f6622fe4e3fa9` 上完成：
+
+```text
+environment rules = 15 / 15
+source-ref edges = 20 / 20
+locators = 26
+global rules covered = 15 / 90
+global_rule_coverage_complete = false
+
+overlay bytes = 55432
+overlay RAW =
+  sha256:76eb5d9d7c613fe5c7ace130837bd0eb0fa50d67cc3d235fbe524bd7662bd5f6
+overlay root =
+  sha256:abb8c6eee795b8dc1076d0f35c5289e615988ba790e813af0e6c2abe5c5b273c
+```
+
+它将 20 条 environment source-ref edges 定位到 exact Markdown/RFC 6901/absence
+review domains，但 machine/normative semantic proof、schema、projection、
+execution、materialization 与 observation 的相关 counts 仍为 0，
+`network_used=false`、`authority_scope=none`。尤其 strict-integer bound source
+不蕴含 Python `type(value) is int`；详情见独立 overlay audit。
+
+在隔离 authoring branch 上运行旧 frozen qualification 时，Q exact-rebuild 会拒绝：
 
 ```text
 tests/test_baseline_qualification.py::
@@ -338,9 +365,21 @@ ValueError:
   frozen artifact differs from builder: q-bm25-golden-v1.json
 ```
 
-该失败单独运行可复现为 `1 failed in 49.24s`。当时工作树除本次两个新增文件外无其他
-变化，失败测试也不导入本次 resolution module；因此不把它归因于本次检查点，也不掩盖
-它或伪称 full suite green。
+Frozen qualification 绑定 canonical active lab commit `2f1d473a6edb9fba61ccfa39d7214b0d688e44d7`
+的 source-tree root
+`sha256:9e3b1884fce7185e910b1d953c0ab1c1c7e690791e9ced2396429cb410352061`。
+在 resolution module 出现前，authoring parent
+`d6e4d05c0b7db80b802394091de32efc11c929ba` 的 source-tree root 已是
+`sha256:2a9907610d4ab19d83bb39e26038b3fcc019d90bed3dde09c3f48bc3928b0710`；
+`f3af7f68ea6724942ceaf1c180b58c2a2017f07d` 又变为
+`sha256:10f044bd978270b0dedcf232995b13859c059cad0fe48344f10c0f4291e28eb0`。
+
+因此该 refusal 是隔离 authoring branch 改变 source identity 后按设计发生的 frozen
+qualification invalidation，不是 active-baseline defect，也不是 resolution/overlay
+module 引入的行为回归。Canonical lab 的 frozen qualification 继续以 `9e3b...` 为准；
+不得在 authoring branch refreeze baseline artifact 来掩盖隔离。同一 exact-rebuild
+test 的最终配对复现是 canonical `2f1d473` `1 passed in 48.96s`，authoring
+`ea73fe1` 按预期 `1 failed in 49.02s`。
 
 ## 7. 对实验结论的影响
 
@@ -358,8 +397,9 @@ ValueError:
 
 ## 8. 下一 provider-free 顺序
 
-1. 为每条 rule 冻结 stable section/heading locator、exact excerpt bytes/root 和
-   semantic-entailment review；在此之前保持 locator/proof count 为零。
+1. Environment 的 scoped locator/review slice 已完成；以同样边界依次覆盖 suite、
+   replica pair、labels、source、process。原 audit locator/proof count 与所有
+   machine/normative semantic proof count 继续为零。
 2. 依次解决 environment 的 source-neutral/re-chain 与 all-field projection。
 3. 冻结 suite 的 arm-order evidence、intent-ID、storage 和 sealing context。
 4. 冻结 replica namespaces、symmetry、storage 与 dual-evidence envelope。

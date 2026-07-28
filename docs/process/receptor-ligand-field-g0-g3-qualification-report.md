@@ -327,6 +327,18 @@ membership、active v0.6 intrinsic-empty 规则和 draft v0.7 semantic bridge
 entailment/schema/projection/execution/observation/authority counts 为零；因此它不把
 author-reviewed interpretation 伪称为 normative proof，也不降低 G2/G3 blocker。
 
+再后续 external authoring commit
+`ea73fe1add86529884adbf0ece7f6622fe4e3fa9` 与
+[environment evidence overlay audit](receptor-ligand-field-v0.7-environment-evidence-overlay-audit.md)
+为 environment 的 15/15 rules、20/20 source-ref edges 绑定 26 个 exact
+Markdown/RFC 6901/absence-domain locators；global coverage 明确保留为 15/90、
+`false`。Overlay 为 55,432 bytes，root 为
+`sha256:abb8c6eee795b8dc1076d0f35c5289e615988ba790e813af0e6c2abe5c5b273c`。
+它不回写原 63,776-byte audit；machine/normative semantic proof、schema、
+projection、execution、materialization、observation、provider 与 outcome 的相关
+counts 仍为 0，`network_used=false`、`authority_scope=none`。Strict-integer
+relation 明确记为 bound source 不支持 Python `type(value) is int`。
+
 同一红队复核发现八 actor design/promotion SourceFreeze 不包含 runtime producer P
 和 independent verifier V。该项作为第 19 个显式 P1 加入；runtime RA/RB 是同一 P
 source 的两个 process identities，不能被误写成两个 source-independent actors。
@@ -402,6 +414,12 @@ lineage。这会涉及 schema/migration/Trace/Conformance/TCK；当前研究 bra
 旧 ID、最小 scalar substitute 或静默外部 shim 伪装成 `P` 通过。应保留 blocker，
 或另行取得明确 authority 后通过新版本 contract/新 controller ID 处理。
 
+这同时是一个 architecture P0：在当前 authority 下，G3 `P` 的 faithful durable
+multistep replay 尚未证明可达。下一步只能先研究一种完全 external、仍使用现有 ABI，
+并通过既有 lifecycle/Trace/Conformance/TCK 的忠实路线；如果该路线不能成立，必须
+停止当前 G3 `P` 实现并进入另行授权的 versioned core governance。External shim、
+scalar substitute 或弱化 replay identity 都不能作为 qualification evidence。
+
 ### 6.4 Cost contract 尚未成为 actual ledger
 
 59-field closed schema 的 self-check 已通过，但 natural/iso/sweep 的 per-run actual
@@ -461,6 +479,22 @@ physical ownership、complete membership、allocation conservation、observation
   固定 audit 为 63,776 bytes，root 为
   `sha256:c1b3b94ff07221a953c7373f77465f28f0f39df86cb1efd05dd19c4a12557669`；
   locator 与 semantic-entailment proof count 仍为零。
+- 加入 environment evidence overlay 后，七组 V2 authoring helpers 联合
+  `104` 个 unittest 全部通过；targeted overlay 为
+  `16 passed, 35 subtests passed`，Python 3.12、3.13、3.14 各通过 16 项 tests，
+  Ruff、`py_compile` 与 `git diff --check` 通过，最终独立 review 为
+  `P0=P1=P2=P3=0`。Overlay 固定
+  15/15 environment rules、20/20 source-ref edges、26 locators 和 global 15/90
+  false；machine/normative proof、schema/projection/execution 的相关 counts 仍为
+  0，`network_used=false`、`authority_scope=none`。
+- Authoring branch 的 Q exact-rebuild refusal 是 frozen source-root isolation：
+  canonical `2f1d473...` 绑定
+  `sha256:9e3b1884fce7185e910b1d953c0ab1c1c7e690791e9ced2396429cb410352061`，
+  而在 resolution/overlay module 之前的 authoring parent `d6e4d05...` 已是
+  `sha256:2a9907610d4ab19d83bb39e26038b3fcc019d90bed3dde09c3f48bc3928b0710`。
+  它不是 active Q baseline defect；不得在 authoring branch refreeze artifact
+  来掩盖该隔离。同一 test 配对复现为 canonical
+  `1 passed in 48.96s`、authoring `1 failed in 49.02s`。
 
 上述验证只支持工程资格声明，不支持 H1-H6 或相对性能结论。
 
@@ -506,7 +540,9 @@ Key 不得写入 Git、`.env`、Trace、report、command argument 或 fixture。
    generator/common eligibility 作为最小 G3 vertical
    slice，执行 natural、iso 和预注册的 6 个 sweep cells，生成 canonical actual
    ledger 与独立 verifier receipt；
-7. 再扩展到 `P/S/B/Q/G/R`；`P` 在当前 authority 下继续 blocked，除非另行批准
-   versioned Hybrid Replay change；保留任何 failure、null 或 negative result；
+7. 再扩展到 `S/B/Q/G/R`；对 `P` 先完成 external-only faithful replay
+   reachability research。若现有 ABI 下不可达，则继续 blocked，并转入另行授权的
+   versioned governance，不得用 shim 或 scalar substitute；保留任何 failure、
+   null 或 negative result；
 8. G0-G3 全部通过以前，不读取 API key，不运行 provider canary、pilot 或
    confirmatory LLM experiment。

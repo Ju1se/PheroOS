@@ -716,8 +716,14 @@ kind-specific `unresolved_normative_leaves`；特别是 Base nested semantic sch
 在 authoring branch 运行旧 full qualification suite 时，已完成部分得到
 `139 passed, 45 subtests passed, 5 failed` 后人工停止高成本 replay。五个失败来自
 frozen qualification/source-identity guard：同一 baseline exact-rebuild 测试在 clean
-活动实验 branch 通过，在新增 authoring source 的 branch 按设计拒绝。不得 refreeze
-旧 qualification artifacts 来掩盖该 source identity 变化。
+活动实验 branch 通过，在新增 authoring source 的 branch 按设计拒绝。Canonical
+commit `2f1d473a6edb9fba61ccfa39d7214b0d688e44d7` 绑定 source root
+`sha256:9e3b1884fce7185e910b1d953c0ab1c1c7e690791e9ced2396429cb410352061`；
+在本轮后续 modules 出现前，authoring parent
+`d6e4d05c0b7db80b802394091de32efc11c929ba` 已变为
+`sha256:2a9907610d4ab19d83bb39e26038b3fcc019d90bed3dde09c3f48bc3928b0710`。
+这是隔离 branch 的 frozen-qualification invalidation，不是 active-baseline defect。
+不得 refreeze 旧 qualification artifacts 来掩盖该 source identity 变化。
 
 ### 6.2 56-record negative judge-input ambiguity audit
 
@@ -1065,7 +1071,7 @@ event 34，并把三项旧 downstream audits 标记为 invalidated/rebuild-requi
 negative projection、provider/network/outcome read 和 authority 为 false/zero，
 因此不减少下节“至少 19”项开放 P1。
 
-最新
+随后
 [six-family constructor resolution matrix audit](receptor-ligand-field-v0.7-constructor-resolution-matrix-audit.md)
 与 external commit `f3af7f68ea6724942ceaf1c180b58c2a2017f07d`
 把 environment/suite/replica-pair/labels/source/process 的候选规则统一为 90 条
@@ -1078,15 +1084,30 @@ content-addressed claims：31 `PROVEN`、13 `DERIVABLE`、45 `OPEN`、1
 该矩阵显式固定 `rule_source_locator_count=0`、
 `semantic_entailment_proof_count=0`、`normative_schema_count=0`、
 `normative_projection_count=0`，并保持 execution、materialization、observation
-与 authority 为零。它是 author-reviewed candidate resolution，不是逐条 semantic
-proof、schema closure 或 G2/G3 放行，因此也不减少下节“至少 19”项开放 P1。
+的相关 counts 为 0，`network_used=false`、`authority_scope=none`。它是
+author-reviewed candidate resolution，不是逐条 semantic proof、schema closure
+或 G2/G3 放行，因此也不减少下节“至少 19”项开放 P1。
+
+再后续
+[environment evidence overlay audit](receptor-ligand-field-v0.7-environment-evidence-overlay-audit.md)
+与 external commit `ea73fe1add86529884adbf0ece7f6622fe4e3fa9`
+为 environment 的 15/15 rules、20/20 source-ref edges 生成 26 个 exact locators。
+这只是 family coverage；global coverage 仍是 15/90 且
+`global_rule_coverage_complete=false`。Overlay 固定为 55,432 bytes，root 为
+`sha256:abb8c6eee795b8dc1076d0f35c5289e615988ba790e813af0e6c2abe5c5b273c`，
+同时保持 machine/normative semantic proof、schema、projection、execution、
+materialization、observation、provider 与 outcome 的相关 counts 为 0，
+`network_used=false`、`authority_scope=none`。Strict-integer source 明确不能蕴含
+Python `type(value) is int`。因此这一步不修改原 audit，也不减少下节“至少 19”项
+开放 P1。
 
 ## 7. 当前开放 P1
 
 原 closure design 的 18 项仍是“至少”集合。本检查点新增一个独立 runtime source
 phase blocker，因此当前至少 19 项：
 
-1. exact Base projection tables、nested schemas、locators 和 construction traces；
+1. exact Base projection tables、nested schemas、其余五类 locators、全六类
+   machine semantic proofs 和 construction traces；
 2. source-neutral Base/actual-chain phase contract 的完整 machine leaves，以及后续
    runtime actual evidence；
 3. 三个 positive closure projection records；
@@ -1127,6 +1148,11 @@ parameter bytes、path-specific type shape 和六类 residual gap 机器化。�
 `normative_schema_count=0`，没有生成 nested projections、locators、construction
 traces 或 Base payload；因此开放 P1 数量仍是“至少 19”。
 
+本轮 environment overlay 只关闭第 1 项中的 scoped evidence-location 子问题：
+20 条 source-ref edges 可以 exact replay，但其余五类 locators、全六类 machine
+semantic proof、schema/projection、trace 与 Base payload 仍开放。因此开放 P1
+数量仍是“至少 19”。
+
 ## 8. Claim boundary
 
 本检查点证明的是：
@@ -1141,6 +1167,8 @@ traces 或 Base payload；因此开放 P1 数量仍是“至少 19”。
   projection 仍被 fail-closed 阻断。
 - 当前 12 个 Base parameter instances 可按 exact source bytes、双 order join 和
   path-specific type fingerprint 复核。
+- 当前 environment 的 20 条 source-ref edges 可按 exact locator bytes/value
+  复核，且 global coverage 明确保持 15/90。
 
 它不证明：
 
@@ -1149,6 +1177,8 @@ traces 或 Base payload；因此开放 P1 数量仍是“至少 19”。
 - actual `ChainedRecordV07`、`ArtifactManifestV07` 或 full-scale NDJSON 已生成；
 - constructor-specific normative parameter schemas、normalized views 或 Base
   payloads 已生成；
+- locator 等同 machine/normative semantic entailment，或 environment schema/
+  projection/constructor execution 已关闭；
 - synthetic process parameters 构成 OS-observed process evidence；
 - source actors 的历史、认知或统计独立性；
 - provider/LLM behavior；

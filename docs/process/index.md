@@ -110,7 +110,15 @@ database, dashboard, or application deployment workflows.
   records the six-family, 90-claim research resolution matrix over exact
   document/four-pointer/A1 bytes. It separates PROVEN, DERIVABLE, OPEN, and
   CONFLICT claims while fixing locator, semantic-entailment, schema,
-  projection, execution, observation, and authority counts at zero.
+  projection, execution, and observation counts at zero, with
+  `authority_scope=none`.
+- [receptor-ligand-field-v0.7-environment-evidence-overlay-audit.md](receptor-ligand-field-v0.7-environment-evidence-overlay-audit.md)
+  records the first scoped evidence overlay: 15/15 environment rules,
+  20/20 source-ref edges, and 26 exact locators, while global coverage remains
+  15/90 and false. It leaves the original 63,776-byte audit untouched, marks
+  strict-integer Python semantics unsupported by the bound source, and keeps
+  semantic-proof, schema, projection, and execution counts at zero, with
+  `network_used=false` and `authority_scope=none`.
 - [receptor-ligand-field-g3-methodological-amendment-v0.1.md](receptor-ligand-field-g3-methodological-amendment-v0.1.md)
   is an inactive G3 review draft for common budget schedules, complete
   pre-cap ranking, size-qualified S/G artifacts, and Cost Ledger v2. It grants
