@@ -2,7 +2,7 @@
 
 状态：G0、G1 通过；G2、G3 阻断；仅工程资格验证，不构成 H1-H6 结果
 
-检查点日期：2026-07-28
+检查点起始日期：2026-07-28；本次续审日期：2026-07-29
 
 ## 1. 客观结论
 
@@ -268,6 +268,18 @@ stage-code/precondition/receipt/recipe roots，并以 exact source bytes 和 exp
 join 拒绝同形篡改；combined tests 为 `32 passed, 12 subtests passed`。但其每条
 record 仍明确携带 unresolved normative leaves，故不是 descriptor registry、
 Main、GoldenOracle、materialization evidence 或 P1 count reduction。
+
+后续 external authoring commit `28ce671dcbd86cb5ebf173f64dc1d42a46e01497`
+把 56 个 negative records 的未知 judge input 机器化为 ambiguity audit。独立审计
+确认 constructor/view materialization 为 `0/12`，operation/reseal/judge/receipt
+actual execution 为 `0/56`；audit 只固定 41 structured、3 raw-NDJSON、6 source、
+6 process 候选 families、14-cell matrix、5 个 closed facts 和 9 个 blockers。
+只有三条 raw-NDJSON
+source-selection rules 可唯一识别，但 Base/C1/runtime joins 仍开放；因此 audit
+固定 `53` 项 source ambiguity、`final_projection_count=0` 和所有 execution/
+materialization/receipt count 为零。Combined tests 为
+`47 passed, 16 subtests passed`，两路独立 code review 均为
+`P0=P1=P2=P3=0`；该 residual zero 只覆盖 ambiguity-audit 的声明边界。
 
 同一红队复核发现八 actor design/promotion SourceFreeze 不包含 runtime producer P
 和 independent verifier V。该项作为第 19 个显式 P1 加入；runtime RA/RB 是同一 P

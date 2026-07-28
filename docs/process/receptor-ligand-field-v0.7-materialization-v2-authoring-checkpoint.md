@@ -2,7 +2,7 @@
 
 状态：`draft-authoring-check-only`；V1 NO-GO、G2/G3 blocker 继续有效
 
-检查点日期：2026-07-28
+检查点起始日期：2026-07-28；本次续审日期：2026-07-29
 
 ## 1. 决定
 
@@ -719,6 +719,165 @@ frozen qualification/source-identity guard：同一 baseline exact-rebuild 测�
 活动实验 branch 通过，在新增 authoring source 的 branch 按设计拒绝。不得 refreeze
 旧 qualification artifacts 来掩盖该 source identity 变化。
 
+### 6.2 56-record negative judge-input ambiguity audit
+
+同一隔离 branch 的后续 commit：
+
+```text
+commit = 28ce671dcbd86cb5ebf173f64dc1d42a46e01497
+```
+
+只新增：
+
+```text
+src/rglf_lab/v2_negative_projection_authoring.py
+tests/test_v2_negative_projection_authoring.py
+```
+
+在选择任何 final `NegativeJudgeInputProjectionV2` 前，独立 static/runtime API
+审计确认当前执行覆盖是：
+
+```text
+base constructor execution     = 0 / 12
+normalized view bytes          = 0 / 12
+operation transaction execution = 0 / 56
+reseal execution               = 0 / 56
+judge invocation               = 0 / 56
+rejection receipt generation   = 0 / 56
+```
+
+因此 fixture recipe 的存在不能解释成 fixture 已执行。现有相似 artifact verifier
+分别只接受自己的 closed artifact、profile identity 或 evidence bundle，不能替代
+negative fixture 的 producer validator、independent verifier、source auditor 或
+resource supervisor。
+
+新的 authoring-only audit 从 exact four-pointer counterfactual companion，经上一节
+71-record inventory，再对 56 个 negative records 做第二层 byte-first expected-byte
+join。它将已知分类固定为候选 source families，而不是 final byte selection：
+
+```text
+structured-view-family-v1       = 41
+decoded-raw-ndjson-family-v1    = 3
+source-file-family-v1           = 6
+process-evidence-family-v1      = 6
+mode_cell_count                 = 14
+closed_fact_count               = 5
+blocker_count                   = 9
+```
+
+只有以下三条的 source-selection rule 能由
+[V2 closure design](receptor-ligand-field-v0.7-materialization-v2-closure-design.md)
+第 5.4 节唯一识别：
+
+```text
+N-NDJSON-APPEND
+N-NDJSON-NONCANONICAL
+N-NDJSON-TRUNCATE
+```
+
+它们都要求 strict RFC 4648 decode `/raw_ndjson_bytes`、在 decoded octets 上执行
+byte operation，并把 mutated decoded octets 原样交给 frame judge。但 Base bytes、
+final C1 和 actual runtime source join 仍未生成，所以这三条也不产生 payload。
+
+其余 53 条仍有 exact judge-input source ambiguity：
+
+- structured records 尚未选择 normalized view line、source-neutral re-chain 或
+  actual chained artifact；
+- source records 尚未选择 target file UTF-8、file envelope 或 source inventory；
+- process records 尚未选择 OS-observed transcript、supervisor envelope 或 child
+  segment；
+- suite、replica-pair 和 label records 尚未选择 view line 或 rebuilt artifact/
+  comparison envelope；
+- 38 条非 `none-v1` recipes 尚无 exact reseal output byte contract。
+
+Audit 明确固定：
+
+```text
+ambiguous_projection_count = 53
+final_projection_count = 0
+materialized_payload_count = 0
+operation_execution_count = 0
+reseal_execution_count = 0
+judge_execution_count = 0
+rejection_receipt_count = 0
+conclusion = "final-projection-freeze-blocked"
+authority_scope = "none"
+projection_freeze_authorized = false
+main_contract_eligible = false
+golden_oracle_eligible = false
+```
+
+五条 closed facts 的语义正文嵌入 audit 并内容寻址；九个 blockers 分别覆盖 Base
+byte identity/dual layer、structured serialization、semantic closure、
+outer/replica closure、source envelope、process envelope、judge context firewall、
+final C1 join 和 actual runtime source join。它们是现有 P1 #5 及其与
+#1/#2/#6/#15/#19 依赖的 machine decomposition，不是九项已经关闭的新合同。
+
+生成的内存 audit 固定为：
+
+```text
+byte_count = 93067
+raw_root =
+  sha256:94b571da331b7fc8c1be72c29253bb47e532a00241f7a1dece37d17b5cd69ca6
+mode_matrix_root =
+  sha256:9f75ae9b2477910cac00c9512cd38141bed8d6940b03f2a7db3df164dff4fc84
+closed_fact_set_root =
+  sha256:e7c493653cc73d5c438f86dabe88aa6d14e9409ba3f1b7aa95ed196c7781276a
+blocker_set_root =
+  sha256:252bb40e66d7748890fea5070137b8fe34ca08ff73deccca86d0180560660f9f
+audit_root =
+  sha256:23ceb12efaf8d5c1e210d7c46c8d20660ac826d79c5d3269ee3f5480507ffcbf
+```
+
+Final source bytes：
+
+```text
+src/rglf_lab/v2_negative_projection_authoring.py
+  sha256:7427e878471e68cc1a9afb9c2b95b78af6be19e05542e5ac5cb3b91895370ee2
+
+tests/test_v2_negative_projection_authoring.py
+  sha256:53afd3051e1dfbc16d8c53b70c55fe9b14c29aba5d7bc60118842bb0936ba818
+```
+
+Combined authoring verification：
+
+```text
+pytest:
+  47 passed, 16 subtests passed
+
+unittest:
+  Ran 47 tests
+  OK
+
+Python 3.12 / 3.13 / 3.14:
+  15 projection-audit tests per interpreter
+  OK
+
+ruff:
+  All checks passed
+
+independent declared-boundary code review path A:
+  P0=0
+  P1=0
+  P2=0
+  P3=0
+
+independent declared-boundary code review path B:
+  P0=0
+  P1=0
+  P2=0
+  P3=0
+```
+
+红队在重算所有可见 roots 后，仍拒绝 closed-fact/blocker 文本替换、family/
+operation/reseal/judge/stage/code substitution、missing/duplicate/reordered records、
+raw status 漂移、bool/int type confusion、payload/root 字段注入，以及 final/
+materialization/authority 假提升。Audit 不包含 payload bytes、expected payload
+counts/roots、operation/reseal/judge-input bytes、observed code 或 receipt。
+
+这一步将“不知道 exact judge input”变成可复核的 machine NO-GO；它没有填补该未知，
+也没有关闭 `NegativeJudgeInputProjectionV2`。
+
 ## 7. 当前开放 P1
 
 原 closure design 的 18 项仍是“至少”集合。本检查点新增一个独立 runtime source
@@ -756,6 +915,10 @@ phase blocker，因此当前至少 19 项：
 unresolved set 可机读；它没有关闭上述第 1、3、4、5、7、8、9、14、15 或 17 项，
 因此开放 P1 数量仍是“至少 19”。
 
+本轮 56-record ambiguity audit 只把第 5 项拆成可机读的 41/3/6/6 family、
+14-cell matrix 和九个 blocker；它明确保留 `final_projection_count=0`，所以同样不
+减少开放 P1 数量。
+
 ## 8. Claim boundary
 
 本检查点证明的是：
@@ -763,8 +926,10 @@ unresolved set 可机读；它没有关闭上述第 1、3、4、5、7、8、9、
 - 已发现的四个 RFC 6901 pointer 影响可由独立 canonical implementation 重算；
 - 一个无环 amendment/source-freeze 候选结构可以被机器化；
 - design materialization 与 actual runtime fidelity 可以被明确分相；
-- 当前 authoring helpers 对其声明的 SourceFreeze 与 71-record inventory 结构边界
-  fail closed。
+- 当前 authoring helpers 对其声明的 SourceFreeze、71-record inventory 和
+  negative judge-input ambiguity 结构边界 fail closed；
+- 当前 negative fixture execution coverage 是 0/56，且 exact judge-input
+  projection 仍被 fail-closed 阻断。
 
 它不证明：
 
