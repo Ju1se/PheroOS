@@ -2,7 +2,7 @@
 
 状态：G0、G1 通过；G2、G3 阻断；仅工程资格验证，不构成 H1-H6 结果
 
-检查点日期：2026-07-27
+检查点日期：2026-07-28
 
 ## 1. 客观结论
 
@@ -198,29 +198,46 @@ runner_implemented = false
 receipt_artifact_bytes_present = false
 ```
 
-原独立二审发现的 2×P1 与 2×P2 已在 design specification 层关闭：五个
-`duplicate` 已成为 literal total transforms；cross-variant code precedence、
-base-artifact total order、schema/geometry/resource predicate domains 和 process
-measurement constructor 均已冻结。第二位审阅者使用独立 canonical encoder 重算
-全部 roots、3 个 positive inputs、11 个 expected receipts、3 个 positive
-commitments 和六组受影响 operation/recipe roots，最终严重度为：
+原 text-level 独立二审确实关闭了五个 `duplicate` transform、cross-variant code
+precedence、base-artifact total order、schema/geometry/resource predicate domains
+和 process measurement constructor，并独立重算了 companion roots、positive inputs、
+expected receipts 和 commitments。它当时报告的 `P0=P1=P2=P3=0` 只覆盖所选
+design assertions；后续 executable materialization audit 已证明该结论不能解释为
+“完整 materialization contract 无歧义”。
 
-```text
-P0 = 0
-P1 = 0
-P2 = 0
-P3 = 0
-```
+新的 [v0.7 materialization audit finding](receptor-ligand-field-v0.7-materialization-audit-finding.md)
+发现：
 
-这只说明当前 design specification 没有已知的 P0-P3 歧义，不是 materialization
-evidence。唯一保留的 activation blocker 是尚未执行的独立 materialization：
+- `BaseMaterializationV1` 没有 exact outer schema、field set、byte contract 和
+  root labels；
+- `PositiveTransactionProductV1` 没有 exact post-closure object contract；
+- `/raw_ndjson_bytes` 没有 canonical JSON encoding；
+- `profile_defined_root_pairs` 没有 71-record exact locator oracle；
+- `MaterializationReviewInputIdentityV1` 没有绑定上述完整合同；
+- supervisor 的 R7 attack matrix 尚未完整实现。
 
-1. 从 12 个 constructors 实际生成 base views；
-2. 由两个互不共享 semantic source 的、review-lifecycle-only
+两个独立 materializer 的局部测试均曾通过，却产生不兼容的 base objects，并共同把
+positive payload 错投影成 `fixture_input`。一个 transport-only fake double 还能以
+任意 IDs、空 root pairs 和 `E-FAKE` code 达成内部 equality。Public supervisor 现已
+加入 `blocked-underspecified-v1` stop-line；当前正确状态是 fail-closed NO-GO，而不是
+materialization pass。
+
+该拒绝已在 clean immutable candidate commit
+`5c1d2a92b8a257955aa287df674f6d1a32d1f424` 上运行并封存；refusal manifest root 是
+`sha256:758fd1e0978da8712a144571ffabd9b1574ba7b7deb1554714fc38b5ac980e22`，
+fresh-process reread 为 `verified=true`。
+
+在新 V2 contract 被内容寻址、绑定到新 phase identity 并从 R0 重跑前，activation
+blocker 包括：
+
+1. 先冻结 exact base/positive payload、root-pair registry 和 byte encoding；
+2. 从 12 个 constructors 实际生成 base views；
+3. 由两个互不共享 semantic source 的、review-lifecycle-only
    `ReviewAuditCompilerV1` 执行 3 个 positive 和 56 个 negative transactions；
-3. 保存并复算全部 preconditions、observed codes、receipts、source roots 与
+4. 保存并复算全部 preconditions、observed codes、receipts、source roots 与
    content-addressed artifacts；
-4. 证明 zero authority、zero outcome read、zero network 和 source independence。
+5. 完成 R7 closed attack matrix并证明 zero authority、zero outcome read、
+   zero network 和 source independence。
 
 该 audit compiler 例外只存在于隔离 candidate commit，永久不得 merge、copy、import
 或生成到 future active runtime；它不能执行 140 个 full-scale task states 或 980 个

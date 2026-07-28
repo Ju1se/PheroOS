@@ -78,6 +78,10 @@ database, dashboard, or application deployment workflows.
   audit compilers to materialize and cross-check the exact v0.7 `12/3/56`
   inventory before any activation decision. It does not implement a runner,
   migrate a lock, or make v0.7 active.
+- [receptor-ligand-field-v0.7-materialization-audit-finding.md](receptor-ligand-field-v0.7-materialization-audit-finding.md)
+  records the executable NO-GO finding: the V1 identity does not bind unique
+  base/positive payload contracts, so the public review remains fail-closed
+  until a content-addressed V2 contract and complete oracle are frozen.
 - [receptor-ligand-field-g3-methodological-amendment-v0.1.md](receptor-ligand-field-g3-methodological-amendment-v0.1.md)
   is an inactive G3 review draft for common budget schedules, complete
   pre-cap ranking, size-qualified S/G artifacts, and Cost Ledger v2. It grants

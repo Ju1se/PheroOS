@@ -2,6 +2,16 @@
 
 ## 1. Status, scope, and authority
 
+Audit update (2026-07-28): executable independent implementations showed that
+this V1 plan does not uniquely define `BaseMaterializationV1`,
+`PositiveTransactionProductV1`, the JSON encoding of `raw_ndjson_bytes`, or
+the complete 71-record root-locator oracle. The public review is therefore
+fail-closed and this plan cannot currently produce
+`materialization-review-passed`. See
+[the materialization audit finding](receptor-ligand-field-v0.7-materialization-audit-finding.md).
+Closing the finding requires a content-addressed V2 contract and a new phase
+identity followed by a restart from R0; V1 outputs cannot be grandfathered.
+
 This document is a review-only execution plan for resolving the transition
 dependency between the active v0.6 external lab and the inactive v0.7
 candidate. It is not a run report, an activation record, a lock migration, or
