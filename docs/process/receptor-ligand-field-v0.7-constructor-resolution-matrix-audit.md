@@ -101,8 +101,10 @@ closure 前补齐。
 [labels evidence overlay](receptor-ligand-field-v0.7-labels-evidence-overlay-audit.md)
 与
 [source evidence overlay](receptor-ligand-field-v0.7-source-evidence-overlay-audit.md)
+以及
+[process evidence overlay](receptor-ligand-field-v0.7-process-evidence-overlay-audit.md)
 分别以独立 sidecar 绑定 scoped locators 和 author reviews；原 audit 的
-locator/proof counts 继续为零。五个 sidecar 也不能在没有独立 overlay-set
+locator/proof counts 继续为零。六个 sidecar 也不能在没有独立 overlay-set
 artifact 时声称 combined coverage，或把任一单体 global coverage 提升为完整。
 
 ## 3. Exact inputs
@@ -322,6 +324,16 @@ generic policy、grammar/interpreter、projection、order witness、preflight、
 - actual ObservationV07、OS receipts、source/process identity 与 judge-input selection；
 - trace 与 preflight precedence。
 
+后续 process sidecar 已为 14/14 rules、23/23 source-ref edges 绑定 42 个
+locators，同时保留 5 `PROVEN`、3 `DERIVABLE`、6 `OPEN` 和 0 `CONFLICT`。
+其中五条 target propositions 含 bound source 无法推出的作者合成。三条
+`DERIVABLE` 均无 derivation AST、input/output roots 或 replay；只有 current RSS
+relation 有 conditional synthetic formula 的 source support。A1 exact instance 与
+whole-source absence review 都不能替代 actual child supervisor、clock、OS、
+rusage/wait4、source/process identity、`ObservationV07` 或 judge-input evidence。
+这些 provenance 进展不关闭 reusable schema、all-field projection、total
+predicates、trace 或 actual-evidence 问题。
+
 ## 6. Verification
 
 最终 provider-free verification：
@@ -469,8 +481,32 @@ overlay root =
 source-unsupported propositions；两条 `DERIVABLE` 均无 AST 或 replay。
 Actual Git/runtime absence 只由人工 whole-source review 维持 OPEN 边界。
 Proof/schema/projection/execution/materialization/actual/provider/outcome/authority
-仍为零/false/none。五个 sidecars 相互独立，没有 content-addressed overlay-set，
-因此这里仍不发布 combined numerator 或 coverage fraction。
+仍为零/false/none。在该 source slice 当时，五个 sidecars 相互独立，没有
+content-addressed overlay-set，因此这里仍不发布 combined numerator 或 coverage
+fraction。
+
+再后续 process overlay 在 external commit
+`8d4c4d3221b95180f5b2d159b6855eeb0b755dee` 上完成：
+
+```text
+process rules = 14 / 14
+source-ref edges = 23 / 23
+locators = 42
+global rules covered = 14 / 90
+global_rule_coverage_complete = false
+
+overlay bytes = 71805
+overlay root =
+  sha256:bb9c2e148bb3da4685d95fffcaba81a93e6d9677b0f717b2b470854664995a58
+```
+
+它固定 5 `PROVEN`、3 `DERIVABLE`、6 `OPEN` 与 5 条
+source-unsupported propositions；三条 `DERIVABLE` 均无 AST、input/output roots
+或 replay。Actual Observation/execution 只由人工 whole-source review 维持 OPEN
+边界，synthetic A1 不是 OS evidence。Proof/schema/projection/execution/
+materialization/actual/provider/outcome/authority 仍为零/false/none。六个
+sidecars 相互独立，没有 content-addressed overlay-set，因此这里仍不发布 combined
+numerator 或 coverage fraction。
 
 在隔离 authoring branch 上运行旧 frozen qualification 时，Q exact-rebuild 会拒绝：
 
@@ -515,11 +551,11 @@ test 的最终配对复现是 canonical `2f1d473` `1 passed in 48.96s`，authori
 
 ## 8. 下一 provider-free 顺序
 
-1. Environment、suite、replica-pair、labels 与 source 的独立 scoped
-   locator/review slices 已完成；以同样边界覆盖最后的 process family。原 audit
-   locator/proof
-   count 与所有 machine/normative semantic proof count 继续为零；没有
-   overlay-set artifact 前不得声称 combined global coverage。
+1. Environment、suite、replica-pair、labels、source 与 process 的独立 scoped
+   locator/review slices 已完成；下一步建立专门、content-addressed、可验证
+   有序/无重叠/同源 union 的 six-family overlay-set。原 audit locator/proof count
+   与所有 machine/normative semantic proof count 继续为零；没有 overlay-set
+   artifact 前不得声称 combined global coverage。
 2. 依次解决 environment 的 source-neutral/re-chain 与 all-field projection。
 3. Suite 的 evidence locations 已绑定，但仍需新增 normative arm-order、
    intent-ID、storage 和 sealing-context contract；sidecar 不能代替这些 contract。
@@ -527,8 +563,8 @@ test 的最终配对复现是 canonical `2f1d473` `1 passed in 48.96s`，authori
 5. 只有在正式选择 A 后，执行 label amendment、补两个 negatives 并重建三项
    downstream audits。
 6. 冻结 source map/root projection 与 process reusable schema；source sidecar
-   不能代替 actual Git/runtime evidence，process actual Observation evidence
-   继续保持独立阶段。
+   不能代替 actual Git/runtime evidence，process sidecar 也不能代替 actual
+   Observation/execution evidence。
 7. 六类 schema/projection 经独立实现与 tamper review 后，才可进入 Main contract 与
    GoldenOracle authoring。
 8. G0–G3 全部正式通过前，不读取或配置任何 LLM API key，不调用 provider，不开始

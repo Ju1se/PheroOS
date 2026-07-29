@@ -422,10 +422,50 @@ source 分布为 v0.7 `10`、plan `3`、V2 design `14`、A1 `5`、A1 audit `5`�
 Actual Git/source-freeze 与 loaded-runtime identity 的 absence 只由人工
 whole-source review 维持 OPEN 边界，不是 machine absence proof 或 actual
 evidence。此前 common engine 及四个 family sidecars 保持 byte-identical，原
-resolution audit 不变。五个 scoped sidecars 仍没有 overlay-set，因此不得发布
-combined numerator 或 coverage fraction。Proof/schema/projection/execution/
+resolution audit 不变。在该 source slice 当时，五个 scoped sidecars 仍没有
+overlay-set，因此不得发布 combined numerator 或 coverage fraction。
+Proof/schema/projection/execution/
 materialization/actual/provider/outcome/authority 仍为零/false/none，G2/G3 继续
 blocked。
+
+再后续 external authoring commit
+`8d4c4d3221b95180f5b2d159b6855eeb0b755dee` 与
+[process evidence overlay audit](receptor-ligand-field-v0.7-process-evidence-overlay-audit.md)
+为 process 的 14/14 rules、23/23 source-ref edges 绑定 42 个 exact locators；
+global coverage 仍是该 artifact 自己的 14/90、`false`。它保留 5 `PROVEN`、
+3 `DERIVABLE`、6 `OPEN`、0 `CONFLICT`，并固定五条
+source-unsupported propositions。三条 `DERIVABLE` 均没有 derivation AST、
+input/output roots 或 replay；只有 current RSS relation 有 conditional synthetic
+formula 的 source support，仍不是执行证据。
+
+Process overlay 的七个 exact anchors 是：
+
+```text
+bytes = 71805
+RAW =
+  sha256:5e988e74e20114b6cd3418b67f3a5da26b486155920ff0f48e3d0ff33db07ac9
+overlay_root =
+  sha256:bb9c2e148bb3da4685d95fffcaba81a93e6d9677b0f717b2b470854664995a58
+source_set_root =
+  sha256:81553b90b8912f9846974705da7f35687e1f13baaea9517cf147cb2f7df8b039
+locator_set_root =
+  sha256:907ad0b1fed2abc2c0f51ab85f054c67111e7f604530b583922d2654ba7d2c3e
+classification_review_set_root =
+  sha256:9aad694d0ce76baf4f3d9a97dbe3234178238d5c985ebc1aae52754ae63c7573
+unresolved_set_root =
+  sha256:7cf7c728147619e5db31141be936af71da7c801ee9e9ae9aee447ed83a4b3616
+```
+
+20 个 Markdown、14 个 JSON-pointer 与 8 个 whole-source locators 的 roles 为
+20 premise、4 integrity-context、10 semantic-context、8 absence-domain；
+source 分布为 v0.7 `17`、V2 design `11`、A1 `10`、A1 audit `4`。Whole-source
+absence review 只维持 actual Observation/execution 的 OPEN 边界，不是 machine
+absence proof。Synthetic A1 parameter object 也不是 child supervisor、clock、
+OS、rusage、wait4、source/process identity 或 judge-input evidence。此前 common
+engine 及五个 family sidecars 保持 byte-identical，原 resolution audit 不变。六个
+scoped sidecars 仍没有 overlay-set，因此不得发布 combined numerator 或 coverage
+fraction。Proof/schema/projection/execution/materialization/actual/provider/outcome/
+authority 仍为零/false/none，G2/G3 继续 blocked。
 
 同一红队复核发现八 actor design/promotion SourceFreeze 不包含 runtime producer P
 和 independent verifier V。该项作为第 19 个显式 P1 加入；runtime RA/RB 是同一 P
@@ -613,6 +653,18 @@ physical ownership、complete membership、allocation conservation、observation
   whole-source review。所有 proof/schema/projection/execution/materialization/
   actual/provider/outcome/authority 边界保持零/false/none。`80/80` 与
   `168/168` 都不是 full external discovery。
+- 加入 process evidence overlay 后，process 专项 `16/16`、
+  common+environment+suite+replica-pair+labels+source+process `96/96`、全部
+  V2 authoring-pattern `184/184` 通过；分别包含 37、199、263 个 subtests。
+  Targeted Ruff、module mypy、`py_compile`、88-codepoint/display-width scan 与
+  `git diff --check` 通过，两次 independent final
+  anchor/code/semantic/tamper red-team 通过。Process 固定 42 locators/23 edges、
+  5 `PROVEN`、3 `DERIVABLE`、6 `OPEN` 与 5 source-unsupported
+  propositions；三条 `DERIVABLE` 均无 AST/input/output roots/replay，actual
+  Observation/execution 仍为 OPEN/0。所有 proof/schema/projection/execution/
+  materialization/actual/provider/outcome/authority 边界保持零/false/none。
+  `96/96` 与 `184/184` 都不是 full external discovery；该 slice 未运行完整
+  external discovery，不能宣称 full suite green。
 - 此前 suite-overlay external commit
   `5a9f9f8500aeafb8655692adcb3610bf99cc7e69` 上的 full unittest discovery 运行
   383 项、
@@ -657,10 +709,11 @@ Key 不得写入 Git、`.env`、Trace、report、command argument 或 fixture。
 
 后续仍只做 provider-free gate work：
 
-1. 先以相同边界完成最后的 process 独立 evidence overlay；随后完成
-   V2 normative contract、positive closure/transition mapping、两项 RFC 6901
-   correction、71-record descriptor registry 和独立 golden oracle；冻结 official
-   A/B source 时不得向其暴露 oracle；
+1. 六类独立 evidence overlays 已完成；先建立专门、content-addressed 的
+   six-family overlay-set，并完成 V2 normative schema/projection、positive
+   closure/transition mapping、两项 RFC 6901 correction、71-record descriptor
+   registry 和独立 golden oracle；冻结 official A/B source 时不得向其暴露
+   oracle；
 2. 只有 materialization、source-independence 和全部 root 二审通过后，才形成新的
    activation candidate；profile activation 与 prereg lock migration 仍需单独审阅；
 3. 在不含 executable source 的独立 methodology candidate 中 materialize G3 meta

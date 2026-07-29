@@ -1196,7 +1196,54 @@ display-width scan、`git diff --check` 与 independent final red-team 均通过
 Git/source-freeze 与 loaded-runtime identity 的 absence 不是 machine absence proof
 或 actual evidence。
 此前 common engine 及 environment、suite、replica-pair、labels helpers 保持
-byte-identical，原 resolution audit 不变。五个 scoped sidecars 仍没有 overlay-set
+byte-identical，原 resolution audit 不变。在该 source slice 当时的五个 scoped
+sidecars 仍没有 overlay-set 或 combined coverage artifact，且
+proof/schema/projection/execution/
+materialization/actual/provider/outcome/authority 继续为零/false/none；开放 P1
+数量仍是“至少 19”，G2/G3 继续 blocked。
+
+再后续
+[process evidence overlay audit](receptor-ligand-field-v0.7-process-evidence-overlay-audit.md)
+与 external commit `8d4c4d3221b95180f5b2d159b6855eeb0b755dee`
+为 process 的 14/14 rules、23/23 source-ref edges 生成 42 个 exact locators。
+它保留 5 `PROVEN`、3 `DERIVABLE`、6 `OPEN` 与 0 `CONFLICT`，并把 current
+frame、reusable schema、current clock projection、total process predicates 和
+literal trace 等五条记录为 bound source 不支持的作者合成。
+
+Process overlay 的七个 exact anchors 是：
+
+```text
+bytes = 71805
+RAW =
+  sha256:5e988e74e20114b6cd3418b67f3a5da26b486155920ff0f48e3d0ff33db07ac9
+overlay_root =
+  sha256:bb9c2e148bb3da4685d95fffcaba81a93e6d9677b0f717b2b470854664995a58
+source_set_root =
+  sha256:81553b90b8912f9846974705da7f35687e1f13baaea9517cf147cb2f7df8b039
+locator_set_root =
+  sha256:907ad0b1fed2abc2c0f51ab85f054c67111e7f604530b583922d2654ba7d2c3e
+classification_review_set_root =
+  sha256:9aad694d0ce76baf4f3d9a97dbe3234178238d5c985ebc1aae52754ae63c7573
+unresolved_set_root =
+  sha256:7cf7c728147619e5db31141be936af71da7c801ee9e9ae9aee447ed83a4b3616
+```
+
+Process tests 为 16/16、37 subtests；
+common+environment+suite+pair+labels+source+process 为 96/96、199 subtests；
+全部 V2 authoring-pattern tests 为 184/184、263 subtests。Targeted Ruff、module
+mypy、`py_compile`、88-codepoint/display-width scan、`git diff --check` 与两次
+independent final red-team 均通过。`96/96` 和 `184/184` 不是 full external
+qualification-suite pass；该 slice 没有运行完整 external discovery，因此不能宣称
+full suite green。
+
+20 个 Markdown、14 个 JSON-pointer 与 8 个 whole-source locators 的 roles 为
+20 premise、4 integrity-context、10 semantic-context、8 absence-domain。
+三条 `DERIVABLE` 均没有 AST、input/output roots 或 replay；只有 current RSS
+relation 有 conditional synthetic formula 的 source support。Whole-source review
+只维持 actual Observation/execution 的 OPEN 边界，synthetic A1 不是 child
+supervisor、clock、OS、rusage/wait4、source/process identity 或 judge-input
+evidence。此前 common engine 及五个 family evidence helpers 保持
+byte-identical，原 resolution audit 不变。六个 scoped sidecars 仍没有 overlay-set
 或 combined coverage artifact，且 proof/schema/projection/execution/
 materialization/actual/provider/outcome/authority 继续为零/false/none；开放 P1
 数量仍是“至少 19”，G2/G3 继续 blocked。
@@ -1206,9 +1253,9 @@ materialization/actual/provider/outcome/authority 继续为零/false/none；开�
 原 closure design 的 18 项仍是“至少”集合。本检查点新增一个独立 runtime source
 phase blocker，因此当前至少 19 项：
 
-1. exact Base projection tables、nested schemas、process family locators、
-   全六类
-   machine semantic proofs 和 construction traces；
+1. exact Base projection tables、nested schemas、six-family content-addressed
+   locator union/overlay-set、全六类 machine semantic proofs 和 construction
+   traces；
 2. source-neutral Base/actual-chain phase contract 的完整 machine leaves，以及后续
    runtime actual evidence；
 3. 三个 positive closure projection records；
@@ -1249,12 +1296,13 @@ parameter bytes、path-specific type shape 和六类 residual gap 机器化。�
 `normative_schema_count=0`，没有生成 nested projections、locators、construction
 traces 或 Base payload；因此开放 P1 数量仍是“至少 19”。
 
-本轮 environment、suite、replica-pair、labels 与 source overlays 只关闭第 1 项中
-各自的 scoped evidence-location 子问题：20、22、23、34、27 条 source-ref edges
-可以 exact replay，但 process locators、全六类 machine semantic proof、schema/
+本轮 environment、suite、replica-pair、labels、source 与 process overlays 只关闭
+第 1 项中各自的 scoped evidence-location 子问题：20、22、23、34、27、23 条
+source-ref edges 可以 exact replay，但全六类 machine semantic proof、schema/
 projection、trace 与 Base payload 仍开放。Source whole-source absence review
-也不能替代 actual Git/runtime evidence。五个独立 sidecars 没有 overlay-set，
-不能发布 combined coverage。因此开放 P1 数量仍是“至少 19”。
+不能替代 actual Git/runtime evidence；process whole-source absence review 与
+synthetic A1 也不能替代 actual Observation/execution evidence。六个独立 sidecars
+没有 overlay-set，不能发布 combined coverage。因此开放 P1 数量仍是“至少 19”。
 
 ## 8. Claim boundary
 
@@ -1270,11 +1318,12 @@ projection、trace 与 Base payload 仍开放。Source whole-source absence revi
   projection 仍被 fail-closed 阻断。
 - 当前 12 个 Base parameter instances 可按 exact source bytes、双 order join 和
   path-specific type fingerprint 复核。
-- 当前 environment、suite、replica-pair、labels、source 的
-  20、22、23、34、27 条 source-ref edges 分别可按 exact locator bytes/value
-  复核；各单体 global coverage 明确保持独立且 incomplete，没有 combined
-  overlay-set；source 的 actual Git/runtime absence 仍只是人工 whole-source
-  review。
+- 当前 environment、suite、replica-pair、labels、source、process 的
+  20、22、23、34、27、23 条 source-ref edges 分别可按 exact locator
+  bytes/value 复核；各单体 global coverage 明确保持独立且 incomplete，没有
+  combined overlay-set；source 的 actual Git/runtime absence 与 process 的 actual
+  Observation/execution absence 仍只是人工 whole-source review，synthetic A1
+  不是 OS evidence。
 
 它不证明：
 

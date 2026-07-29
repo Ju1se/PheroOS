@@ -149,6 +149,14 @@ database, dashboard, or application deployment workflows.
   absence domains do not prove actual Git or runtime identity, and the
   overlay creates no semantic proof, source schema, projection, execution,
   provider use, or authority.
+- [receptor-ligand-field-v0.7-process-evidence-overlay-audit.md](receptor-ligand-field-v0.7-process-evidence-overlay-audit.md)
+  records the independent process overlay: 14/14 rules, 23/23 source-ref
+  edges, and 42 exact locators, with 5 PROVEN, 3 DERIVABLE, 6 OPEN, and 5
+  source-unsupported propositions. Its own global coverage remains 14/90 and
+  false; no six-family overlay-set or combined coverage is claimed.
+  Synthetic A1 literals and conditional RSS formula do not prove actual OS
+  observation, derivation replay, schema closure, execution, provider use, or
+  authority.
 - [receptor-ligand-field-g3-methodological-amendment-v0.1.md](receptor-ligand-field-g3-methodological-amendment-v0.1.md)
   is an inactive G3 review draft for common budget schedules, complete
   pre-cap ranking, size-qualified S/G artifacts, and Cost Ledger v2. It grants
