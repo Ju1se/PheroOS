@@ -108,6 +108,34 @@ corrected companion hash 与 activation-candidate Git blob IDs。Activation comm
 external lock 保存并证明这些值；lock migration 本身不进入任一 root preimage。两者
 都不能从六参数对象计算，也不能作为隐式 default 塞入 parameters。
 
+### 4.1 后续 E0 candidate
+
+后续
+[environment-config projection candidate audit](receptor-ligand-field-v0.7-environment-config-projection-candidate-audit.md)
+把上述 environment mapping 的最小 source-dependent candidate 机器化。它要求 exact
+六参数、exact 双 Root context 和显式 review/runtime scope，生成 all-and-only
+15-field config 与
+`H("g2-v07-environment-key-v1", complete config)`。七个 review records 与完整
+140-record runtime parameter domain 共形成 147 个 scoped synthetic records、
+140 个 unique configs。
+
+这更新了本节的时间状态，但不推翻 NO-GO：
+
+```text
+source_dependent_candidate_projection = present
+source_independent_implementation_count = 0
+machine_semantic_proof_count = 0
+normative_schema_count = 0
+actual_root_count = 0
+actual_runtime_record_count = 0
+base_materialization_count = 0
+rechain_execution_count = 0
+```
+
+Candidate-local preflight reasons 也没有选择 public `E-CONFIG` precedence。下一步是
+distinct implementation、normative leaves、final C1 与 actual sealing context，
+不是 provider 配置。
+
 ## 5. T7 label：active protocol 支持 A，companion 当前冲突
 
 冲突在同一个 v0.7 初始 commit 中出现，提交先后本身不能裁决：
@@ -271,9 +299,10 @@ constructor leaf
 后续仍只允许 provider-free research：
 
 1. 原子版本化 T7 的 A correction；若另提 B，先走 estimand-changing amendment；
-2. 分别冻结六类 exact parameter schemas、projection tables、error precedence 和
-   construction traces；
-3. 为 environment 明确 sealing context 和 exact-7/140 scope；
+2. 对已形成的 environment source-dependent E0 candidate 做 distinct
+   implementation 复算，再冻结其 normative parameter/context schema、projection
+   table、public error precedence 和 construction trace；
+3. 用 final C1 与 actual activation inputs 形成 environment sealing context；
 4. 为 source/process 保持 parameter/view/evidence 分层；
 5. 独立生成并复核 Main leaves，之后才生成 oracle；
 6. 原子形成新的 profile/companion candidate；重新执行 source freeze 与 R0-R8；

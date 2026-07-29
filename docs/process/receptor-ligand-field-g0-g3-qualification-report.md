@@ -493,6 +493,38 @@ schema、projection、execution、materialization、actual observation、provide
 outcome、network、authority 与 independence 仍为零/false/none；Main、
 GoldenOracle、G2/G3、R0-R8 和 API key 继续 NO-GO。
 
+再后续 external authoring commits
+`4889971e846ab166c0c79a569ce4b42b26b9ff5a`、
+`2fa2363f4291e6a63e910307280be726024aa4a1` 与
+[environment-config projection candidate audit](receptor-ligand-field-v0.7-environment-config-projection-candidate-audit.md)
+完成第一个 environment E0 source-dependent candidate。Exact 六参数加显式双 Root
+context 投影为 all-and-only 15-field config 和
+`H("g2-v07-environment-key-v1", complete config)`；七个 review records 与完整
+140-record runtime parameter domain 形成 147 个 scoped synthetic records、
+140 个 unique configs/keys。
+
+Final candidate 为 283,741 bytes：
+
+```text
+RAW =
+  sha256:ef43aeddd52311abe70d97478e063e4d6389a8b97c3ca4525ebc16406ed83200
+contract_root =
+  sha256:cf0be4b05f6255a26e0eed1a504afd3a615015c4b577eb65d971ad0789e0888a
+attack_case_set_root =
+  sha256:dcb67a31919a36592c6e818f00df12625d5034a18c4da0f57633e22576900bf5
+```
+
+77 条 executable candidate cases 是 5 个合法 controls 加 72 个拒绝 mutations，
+不是 77 个 rejected attacks。三轮红队依次发现并关闭 Python `false == 0` /
+`int == equal-float`、result object 非 exact-string key 和 input/source mapping
+非 exact-string key 三类漏洞。最终两路独立复核为 `P0=P1=P2=0`，308/308 roots
+重算为 0 mismatch；该 residual zero 只覆盖 E0 candidate 的内部声明边界。
+
+Whole-file source identity 不证明 section/row semantic entailment；source-independent
+implementation、normative schema/projection/public `E-CONFIG` precedence、actual
+sealing roots/runtime、Base/re-chain、Main/Golden 和 G2/G3 仍为 zero/false/blocked。
+因此该 slice 不授权 provider，也不产生 H1-H6 或 comparative-superiority 结果。
+
 同一红队复核发现八 actor design/promotion SourceFreeze 不包含 runtime producer P
 和 independent verifier V。该项作为第 19 个显式 P1 加入；runtime RA/RB 是同一 P
 source 的两个 process identities，不能被误写成两个 source-independent actors。
@@ -700,6 +732,15 @@ physical ownership、complete membership、allocation conservation、observation
   locator、schema、projection、trace、execution 或 actual-evidence gaps。本
   slice 没有运行 full external discovery，`202/202` 不能表述为 full suite
   green。
+- 加入 environment-config E0 candidate 及三轮 strict-exactness hardening 后，
+  targeted E0 为 `31 passed, 256 subtests passed`，全部 V2
+  authoring-pattern 为 `233 passed, 646 subtests passed`。Ruff、module/test
+  mypy、`compileall`、88-column scan 与 `git diff --check` 通过。两路最终
+  red-team 对 parameter/context/primary-source/result object 的 scalar 和 key-type
+  confusion 攻击均 fail closed；独立重算 308/308 roots 为 0 mismatch。77-case
+  corpus 恰为 5 controls、72 rejected mutations，actual runtime attack count
+  为 0。该 focused/V2-pattern 结果不是 full external discovery，也不证明
+  normative projection、G2/G3 或任何 hypothesis。
 - 此前 suite-overlay external commit
   `5a9f9f8500aeafb8655692adcb3610bf99cc7e69` 上的 full unittest discovery 运行
   383 项、
@@ -745,11 +786,13 @@ Key 不得写入 Git、`.env`、Trace、report、command argument 或 fixture。
 后续仍只做 provider-free gate work：
 
 1. 六类独立 evidence overlays 与 six-family overlay-set 的 structural
-   locator-union 子问题已完成；继续完成 V2 normative schema/projection、
-   positive closure/transition mapping、两项 RFC 6901 correction、71-record
-   descriptor registry 和独立 golden oracle。Structural set 不替代 exact Base
-   projections、nested schemas、semantic proofs 或 traces；冻结 official A/B
-   source 时不得向其暴露 oracle；
+   locator-union 子问题已完成；environment E0 的 source-dependent candidate
+   也已内部闭合。下一步先用 distinct implementation/source tree 重建 E0，并完成
+   row-to-source entailment、V2 normative schema/projection、public error
+   precedence、positive closure/transition mapping、两项 RFC 6901 correction、
+   71-record descriptor registry 和独立 golden oracle。Structural set 与 E0
+   candidate 都不替代 exact Base projections、nested schemas、semantic proofs
+   或 traces；冻结 official A/B source 时不得向其暴露 oracle；
 2. 只有 materialization、source-independence 和全部 root 二审通过后，才形成新的
    activation candidate；profile activation 与 prereg lock migration 仍需单独审阅；
 3. 在不含 executable source 的独立 methodology candidate 中 materialize G3 meta

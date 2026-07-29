@@ -164,6 +164,13 @@ database, dashboard, or application deployment workflows.
   structural rule-review and edge coverage is complete; semantic/locator
   closure, schemas, projections, traces, execution, actual evidence,
   independence, provider use, and authority remain unproved or zero.
+- [receptor-ligand-field-v0.7-environment-config-projection-candidate-audit.md](receptor-ligand-field-v0.7-environment-config-projection-candidate-audit.md)
+  records the first environment-config E0 vertical slice: six exact
+  parameters plus two explicit roots project to all 15 candidate config
+  fields and a cryptographic environment key over seven review and 140
+  runtime-domain parameter records. It is source-dependent, synthetic and
+  non-normative; actual roots/runtime, Base/re-chain, Main/Golden, G2/G3,
+  provider use and comparative conclusions remain blocked.
 - [receptor-ligand-field-g3-methodological-amendment-v0.1.md](receptor-ligand-field-g3-methodological-amendment-v0.1.md)
   is an inactive G3 review draft for common budget schedules, complete
   pre-cap ranking, size-qualified S/G artifacts, and Cost Ledger v2. It grants
