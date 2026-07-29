@@ -463,9 +463,35 @@ absence review 只维持 actual Observation/execution 的 OPEN 边界，不是 m
 absence proof。Synthetic A1 parameter object 也不是 child supervisor、clock、
 OS、rusage、wait4、source/process identity 或 judge-input evidence。此前 common
 engine 及五个 family sidecars 保持 byte-identical，原 resolution audit 不变。六个
-scoped sidecars 仍没有 overlay-set，因此不得发布 combined numerator 或 coverage
-fraction。Proof/schema/projection/execution/materialization/actual/provider/outcome/
-authority 仍为零/false/none，G2/G3 继续 blocked。
+scoped sidecars 在该 process slice 当时仍没有 overlay-set，因此该 slice 不发布
+combined numerator 或 coverage fraction。Proof/schema/projection/execution/
+materialization/actual/provider/outcome/authority 仍为零/false/none，G2/G3 继续
+blocked。
+
+再后续 external authoring commit
+`4c7993d09391977b892958dc0962e9a62f200d1b` 与
+[six-family evidence overlay-set audit](receptor-ligand-field-v0.7-six-family-evidence-overlay-set-audit.md)
+把六个 exact children 绑定为 6-family ordered union：90/90 rule-review
+bindings、149/149 rule × source-ref edges、217 locator bindings、93
+source-aware physical selectors。允许发布的 complete claim 只限 structural
+rule-review 与 edge coverage，不是 global semantic/locator closure。
+
+Set 保留 31 `PROVEN`、13 `DERIVABLE`、45 `OPEN`、1 `CONFLICT` 和 33 条
+source-unsupported propositions；全部 13 条 `DERIVABLE` 都未 replay，唯一
+conflict 仍属于 labels。Artifact 为 688,038 bytes：
+
+```text
+RAW =
+  sha256:657218e20176dff13b5049dc71be4be068762fd931e34808894de54212e3c542
+overlay_set_root =
+  sha256:b59de963e86845a19a282fe2e21b5eaf1bc3e35c651c02fa9a8bbae31b485201
+```
+
+原 resolution audit 的 locator/proof counts 与六个 child 的
+`global_rule_coverage_complete=false` 均不变。Machine/normative semantic proof、
+schema、projection、execution、materialization、actual observation、provider、
+outcome、network、authority 与 independence 仍为零/false/none；Main、
+GoldenOracle、G2/G3、R0-R8 和 API key 继续 NO-GO。
 
 同一红队复核发现八 actor design/promotion SourceFreeze 不包含 runtime producer P
 和 independent verifier V。该项作为第 19 个显式 P1 加入；runtime RA/RB 是同一 P
@@ -665,6 +691,15 @@ physical ownership、complete membership、allocation conservation、observation
   materialization/actual/provider/outcome/authority 边界保持零/false/none。
   `96/96` 与 `184/184` 都不是 full external discovery；该 slice 未运行完整
   external discovery，不能宣称 full suite green。
+- 加入 six-family overlay-set 后，targeted set `18/18`、
+  common+six families+set `114/114`、全部 V2 authoring-pattern `202/202`
+  通过；分别包含 127、326、390 个 subtests。Ruff、module mypy、
+  `compileall`、88-codepoint/display-width scan、`git diff --check` 和 anchored
+  read-only audit 通过。Set 只固定 90/90 structural reviews、149/149 structural
+  edges、217 locator bindings 和 93 physical selectors；它不关闭 semantic/
+  locator、schema、projection、trace、execution 或 actual-evidence gaps。本
+  slice 没有运行 full external discovery，`202/202` 不能表述为 full suite
+  green。
 - 此前 suite-overlay external commit
   `5a9f9f8500aeafb8655692adcb3610bf99cc7e69` 上的 full unittest discovery 运行
   383 项、
@@ -709,11 +744,12 @@ Key 不得写入 Git、`.env`、Trace、report、command argument 或 fixture。
 
 后续仍只做 provider-free gate work：
 
-1. 六类独立 evidence overlays 已完成；先建立专门、content-addressed 的
-   six-family overlay-set，并完成 V2 normative schema/projection、positive
-   closure/transition mapping、两项 RFC 6901 correction、71-record descriptor
-   registry 和独立 golden oracle；冻结 official A/B source 时不得向其暴露
-   oracle；
+1. 六类独立 evidence overlays 与 six-family overlay-set 的 structural
+   locator-union 子问题已完成；继续完成 V2 normative schema/projection、
+   positive closure/transition mapping、两项 RFC 6901 correction、71-record
+   descriptor registry 和独立 golden oracle。Structural set 不替代 exact Base
+   projections、nested schemas、semantic proofs 或 traces；冻结 official A/B
+   source 时不得向其暴露 oracle；
 2. 只有 materialization、source-independence 和全部 root 二审通过后，才形成新的
    activation candidate；profile activation 与 prereg lock migration 仍需单独审阅；
 3. 在不含 executable source 的独立 methodology candidate 中 materialize G3 meta

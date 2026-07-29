@@ -37,10 +37,14 @@ family_rule_coverage_complete = true
 global_rule_coverage_complete = false
 ```
 
-Environment、suite、replica-pair、labels、source 和 process 是六个独立 scoped
-artifacts。当前不存在绑定其有序、无重叠、同源 union 的 overlay-set artifact。
-因此不得发布 combined numerator、coverage fraction，或把任一单体的
-`global_rule_coverage_complete` 提升为 `true`。
+在本 process slice 生成时，environment、suite、replica-pair、labels、source 和
+process 仍是六个独立 scoped artifacts，尚无 overlay-set。后续
+[six-family evidence overlay-set audit](receptor-ligand-field-v0.7-six-family-evidence-overlay-set-audit.md)
+已将其 exact children 绑定为有序、source-aware、保留跨 family 共享位置的
+union，并只发布 90/90 rule-review 与 149/149 rule × source-ref edge 的
+structural coverage。该后续 artifact 不回写本 sidecar，也不把本 sidecar 的
+`global_rule_coverage_complete=false` 提升为 `true`；不得把 structural union
+表述成 global semantic/locator closure。
 
 ## 2. Classification、selectors 与 evidence roles
 
@@ -269,9 +273,10 @@ Main、GoldenOracle、R0-R8、API key 或 LLM run，也没有生成任何 arm ou
 
 下一 provider-free 顺序是：
 
-1. 为六个独立 sidecars 建立专门、content-addressed、可验证有序/无重叠/同源
-   union 的 overlay-set artifact；在它出现前不发布 combined coverage；
-2. 另行规范六类 normative parameter schemas、all-field projections、error
+1. Six-family overlay-set 的 structural locator-union 子问题已关闭；其允许的
+   complete claim 仅限 90/90 rule-review 与 149/149 rule × source-ref edges，
+   不改变本 sidecar 的 global-incomplete flag；
+2. 继续规范六类 normative parameter schemas、all-field projections、error
    precedence、traces 和 source/process actual-evidence contracts；sidecar 不能
    代替这些 contracts；
 3. 六类 normative schema/projection 全部关闭并独立复核后，才进入 Main contract

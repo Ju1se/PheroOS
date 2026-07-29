@@ -153,10 +153,17 @@ database, dashboard, or application deployment workflows.
   records the independent process overlay: 14/14 rules, 23/23 source-ref
   edges, and 42 exact locators, with 5 PROVEN, 3 DERIVABLE, 6 OPEN, and 5
   source-unsupported propositions. Its own global coverage remains 14/90 and
-  false; no six-family overlay-set or combined coverage is claimed.
+  false; the later overlay-set does not promote that child-level flag.
   Synthetic A1 literals and conditional RSS formula do not prove actual OS
   observation, derivation replay, schema closure, execution, provider use, or
   authority.
+- [receptor-ligand-field-v0.7-six-family-evidence-overlay-set-audit.md](receptor-ligand-field-v0.7-six-family-evidence-overlay-set-audit.md)
+  records the ordered, content-addressed structural union of all six scoped
+  overlays: 90/90 rule-review bindings, 149/149 rule × source-ref edges, 217
+  locator bindings, and 93 source-aware physical selectors. Only scoped
+  structural rule-review and edge coverage is complete; semantic/locator
+  closure, schemas, projections, traces, execution, actual evidence,
+  independence, provider use, and authority remain unproved or zero.
 - [receptor-ligand-field-g3-methodological-amendment-v0.1.md](receptor-ligand-field-g3-methodological-amendment-v0.1.md)
   is an inactive G3 review draft for common budget schedules, complete
   pre-cap ranking, size-qualified S/G artifacts, and Cost Ledger v2. It grants

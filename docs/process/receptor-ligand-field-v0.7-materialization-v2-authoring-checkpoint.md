@@ -1155,9 +1155,10 @@ preserved frozen author-reviewed classification，不是 machine semantic entail
 三条 `DERIVABLE` 均无 AST 或 replay。Labels tests 为 18/18，
 common+environment+suite+pair+labels 为 64/64，全部 V2 authoring-pattern
 tests 为 152/152；独立 red-team 报告 0 defects。这些不是 full external
-qualification-suite pass。四个 sidecars 没有 overlay-set 或 combined coverage
-artifact，且 proof/schema/projection/execution/materialization/provider/outcome/
-authority 继续为零/false/none；开放 P1 数量仍是“至少 19”。
+qualification-suite pass。在该 labels slice 当时，四个 sidecars 没有
+overlay-set 或 combined coverage artifact，且 proof/schema/projection/execution/
+materialization/provider/outcome/authority 继续为零/false/none；开放 P1 数量仍是
+“至少 19”。
 
 再后续
 [source evidence overlay audit](receptor-ligand-field-v0.7-source-evidence-overlay-audit.md)
@@ -1243,19 +1244,53 @@ relation 有 conditional synthetic formula 的 source support。Whole-source rev
 只维持 actual Observation/execution 的 OPEN 边界，synthetic A1 不是 child
 supervisor、clock、OS、rusage/wait4、source/process identity 或 judge-input
 evidence。此前 common engine 及五个 family evidence helpers 保持
-byte-identical，原 resolution audit 不变。六个 scoped sidecars 仍没有 overlay-set
-或 combined coverage artifact，且 proof/schema/projection/execution/
+byte-identical，原 resolution audit 不变。在该 process slice 当时，六个 scoped
+sidecars 仍没有 overlay-set 或 combined coverage artifact，且
+proof/schema/projection/execution/
 materialization/actual/provider/outcome/authority 继续为零/false/none；开放 P1
 数量仍是“至少 19”，G2/G3 继续 blocked。
+
+再后续
+[six-family evidence overlay-set audit](receptor-ligand-field-v0.7-six-family-evidence-overlay-set-audit.md)
+与 external commit `4c7993d09391977b892958dc0962e9a62f200d1b`
+把六个 exact child overlays 绑定为 ordered structural union：
+
+```text
+families = 6
+rule-review bindings = 90 / 90
+rule x source-ref edges = 149 / 149
+locator bindings = 217
+physical selectors = 93
+status = 31 PROVEN / 13 DERIVABLE / 45 OPEN / 1 CONFLICT
+unsupported by bound source = 33
+
+bytes = 688038
+RAW =
+  sha256:657218e20176dff13b5049dc71be4be068762fd931e34808894de54212e3c542
+overlay_set_root =
+  sha256:b59de963e86845a19a282fe2e21b5eaf1bc3e35c651c02fa9a8bbae31b485201
+```
+
+这里的 complete 只指 90/90 structural rule-review records 与 149/149 structural
+rule × source-ref edges。217 个 locator bindings 被 source-aware 地归并为 93 个
+physical selectors，但这不是 global locator closure；原 resolution audit 的
+locator/proof counts 与六个 child 的 global-incomplete flags 均不变。13 条
+`DERIVABLE` 全部未 replay，31 条 `PROVEN` 仍只是 author-reviewed，唯一 conflict
+仍属于 labels。Targeted、common+six+set 和全部 V2 authoring-pattern tests 分别为
+18/18、114/114、202/202，通过 127、326、390 个 subtests；本 slice 没有运行
+full external discovery，不能宣称 full suite green。
+
+这一步关闭下节 P1 #1 中的 six-family structural locator-union/overlay-set
+子问题，但没有关闭 exact Base projection、nested schema、machine semantic proof
+或 construction trace，因此开放 P1 数量仍是“至少 19”。
 
 ## 7. 当前开放 P1
 
 原 closure design 的 18 项仍是“至少”集合。本检查点新增一个独立 runtime source
 phase blocker，因此当前至少 19 项：
 
-1. exact Base projection tables、nested schemas、six-family content-addressed
-   locator union/overlay-set、全六类 machine semantic proofs 和 construction
-   traces；
+1. exact Base projection tables、nested schemas、全六类 machine semantic
+   proofs 和 construction traces；
 2. source-neutral Base/actual-chain phase contract 的完整 machine leaves，以及后续
    runtime actual evidence；
 3. 三个 positive closure projection records；
@@ -1296,13 +1331,15 @@ parameter bytes、path-specific type shape 和六类 residual gap 机器化。�
 `normative_schema_count=0`，没有生成 nested projections、locators、construction
 traces 或 Base payload；因此开放 P1 数量仍是“至少 19”。
 
-本轮 environment、suite、replica-pair、labels、source 与 process overlays 只关闭
-第 1 项中各自的 scoped evidence-location 子问题：20、22、23、34、27、23 条
-source-ref edges 可以 exact replay，但全六类 machine semantic proof、schema/
-projection、trace 与 Base payload 仍开放。Source whole-source absence review
-不能替代 actual Git/runtime evidence；process whole-source absence review 与
-synthetic A1 也不能替代 actual Observation/execution evidence。六个独立 sidecars
-没有 overlay-set，不能发布 combined coverage。因此开放 P1 数量仍是“至少 19”。
+本轮 environment、suite、replica-pair、labels、source 与 process overlays 先关闭
+第 1 项中各自的 scoped evidence-location 子问题；后续 six-family overlay-set 又
+关闭其 structural locator-union 子问题，使 90 个 reviews 与 149 条
+source-ref edges 可以按 exact ordered union replay。但全六类 machine semantic
+proof、schema/projection、trace 与 Base payload 仍开放。Source whole-source
+absence review 不能替代 actual Git/runtime evidence；process whole-source absence
+review 与 synthetic A1 也不能替代 actual Observation/execution evidence。
+Structural union 不能发布 global semantic/locator closure。因此开放 P1 数量仍是
+“至少 19”。
 
 ## 8. Claim boundary
 
@@ -1320,10 +1357,12 @@ synthetic A1 也不能替代 actual Observation/execution evidence。六个独�
   path-specific type fingerprint 复核。
 - 当前 environment、suite、replica-pair、labels、source、process 的
   20、22、23、34、27、23 条 source-ref edges 分别可按 exact locator
-  bytes/value 复核；各单体 global coverage 明确保持独立且 incomplete，没有
-  combined overlay-set；source 的 actual Git/runtime absence 与 process 的 actual
-  Observation/execution absence 仍只是人工 whole-source review，synthetic A1
-  不是 OS evidence。
+  bytes/value 复核；其 ordered six-family set 可复核 90/90 structural
+  rule-review records、149/149 structural edges、217 locator bindings 和 93
+  physical selectors。各单体 global coverage 仍 incomplete，set 也不证明 global
+  semantic/locator closure；source 的 actual Git/runtime absence 与 process 的
+  actual Observation/execution absence 仍只是人工 whole-source review，
+  synthetic A1 不是 OS evidence。
 
 它不证明：
 

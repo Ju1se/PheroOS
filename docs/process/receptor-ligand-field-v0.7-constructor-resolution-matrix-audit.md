@@ -104,8 +104,12 @@ closure 前补齐。
 以及
 [process evidence overlay](receptor-ligand-field-v0.7-process-evidence-overlay-audit.md)
 分别以独立 sidecar 绑定 scoped locators 和 author reviews；原 audit 的
-locator/proof counts 继续为零。六个 sidecar 也不能在没有独立 overlay-set
-artifact 时声称 combined coverage，或把任一单体 global coverage 提升为完整。
+locator/proof counts 继续为零。后续
+[six-family evidence overlay-set](receptor-ligand-field-v0.7-six-family-evidence-overlay-set-audit.md)
+已把六个 exact children 组成 content-addressed ordered union，但只允许发布
+90/90 rule-review 与 149/149 rule × source-ref edge 的 structural completeness。
+它不把任一单体 global coverage 提升为完整，也不构成 global semantic/locator
+closure。
 
 ## 3. Exact inputs
 
@@ -505,8 +509,34 @@ source-unsupported propositions；三条 `DERIVABLE` 均无 AST、input/output r
 或 replay。Actual Observation/execution 只由人工 whole-source review 维持 OPEN
 边界，synthetic A1 不是 OS evidence。Proof/schema/projection/execution/
 materialization/actual/provider/outcome/authority 仍为零/false/none。六个
-sidecars 相互独立，没有 content-addressed overlay-set，因此这里仍不发布 combined
-numerator 或 coverage fraction。
+sidecars 在该 process slice 当时相互独立，没有 content-addressed overlay-set，
+因此该 slice 不发布 combined numerator 或 coverage fraction。
+
+再后续 six-family overlay-set 在 external commit
+`4c7993d09391977b892958dc0962e9a62f200d1b` 上完成：
+
+```text
+ordered families = 6 / 6
+rule-review bindings = 90 / 90
+rule x source-ref edges = 149 / 149
+locator bindings = 217
+physical selectors = 93
+
+overlay-set bytes = 688038
+overlay-set RAW =
+  sha256:657218e20176dff13b5049dc71be4be068762fd931e34808894de54212e3c542
+overlay-set root =
+  sha256:b59de963e86845a19a282fe2e21b5eaf1bc3e35c651c02fa9a8bbae31b485201
+```
+
+它保留 31 `PROVEN`、13 `DERIVABLE`、45 `OPEN`、1 `CONFLICT` 和 33 条
+source-unsupported propositions。全部 13 条 `DERIVABLE` 均未 replay；唯一
+conflict 仍属于 labels。这里的 complete 只指 structural rule-review/edge union，
+不是 semantic proof、global locator closure、schema 或 projection closure。
+原 resolution audit 的 locator/proof counts 与六个 child 的
+`global_rule_coverage_complete=false` 均不变。Proof/schema/projection/execution/
+materialization/actual/provider/outcome/network/authority/independence 仍为
+零/false/none；详情见独立 overlay-set audit。
 
 在隔离 authoring branch 上运行旧 frozen qualification 时，Q exact-rebuild 会拒绝：
 
@@ -552,10 +582,11 @@ test 的最终配对复现是 canonical `2f1d473` `1 passed in 48.96s`，authori
 ## 8. 下一 provider-free 顺序
 
 1. Environment、suite、replica-pair、labels、source 与 process 的独立 scoped
-   locator/review slices 已完成；下一步建立专门、content-addressed、可验证
-   有序/无重叠/同源 union 的 six-family overlay-set。原 audit locator/proof count
-   与所有 machine/normative semantic proof count 继续为零；没有 overlay-set
-   artifact 前不得声称 combined global coverage。
+   locator/review slices，以及 six-family overlay-set 的 structural
+   locator-union 子问题已完成。允许的 complete claim 只限 90/90 rule-review
+   bindings 与 149/149 rule × source-ref edges；原 audit locator/proof count、
+   child global-incomplete flags 与所有 machine/normative semantic proof count
+   继续为零。
 2. 依次解决 environment 的 source-neutral/re-chain 与 all-field projection。
 3. Suite 的 evidence locations 已绑定，但仍需新增 normative arm-order、
    intent-ID、storage 和 sealing-context contract；sidecar 不能代替这些 contract。
