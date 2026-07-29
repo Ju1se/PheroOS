@@ -171,6 +171,12 @@ database, dashboard, or application deployment workflows.
   runtime-domain parameter records. It is source-dependent, synthetic and
   non-normative; actual roots/runtime, Base/re-chain, Main/Golden, G2/G3,
   provider use and comparative conclusions remain blocked.
+- [receptor-ligand-field-v0.7-e1-prereg-qualification-audit.md](receptor-ligand-field-v0.7-e1-prereg-qualification-audit.md)
+  preserves three source-only E1 preregistration attempts and blind reviews.
+  All three are rejected before implementation; five executable-contract P1
+  groups remain, so normative source-neutral closure must precede another E1
+  attempt. The bundle contains no E1 code, output, provider use, G2/G3 result,
+  or comparative conclusion.
 - [receptor-ligand-field-g3-methodological-amendment-v0.1.md](receptor-ligand-field-g3-methodological-amendment-v0.1.md)
   is an inactive G3 review draft for common budget schedules, complete
   pre-cap ranking, size-qualified S/G artifacts, and Cost Ledger v2. It grants

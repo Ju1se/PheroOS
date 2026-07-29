@@ -133,8 +133,11 @@ rechain_execution_count = 0
 ```
 
 Candidate-local preflight reasons 也没有选择 public `E-CONFIG` precedence。下一步是
-distinct implementation、normative leaves、final C1 与 actual sealing context，
-不是 provider 配置。
+先关闭 normative source-selector、typed-fact、artifact/replay、refusal 与 acyclic
+join leaves，再做 distinct implementation、final C1 与 actual sealing context，
+不是 provider 配置。三轮 source-only E1 preregistration 已在 implementation 前
+被 blind review 拒绝；它们没有把
+`source_independent_implementation_count` 从 0 提升。
 
 ## 5. T7 label：active protocol 支持 A，companion 当前冲突
 

@@ -787,12 +787,15 @@ Key 不得写入 Git、`.env`、Trace、report、command argument 或 fixture。
 
 1. 六类独立 evidence overlays 与 six-family overlay-set 的 structural
    locator-union 子问题已完成；environment E0 的 source-dependent candidate
-   也已内部闭合。下一步先用 distinct implementation/source tree 重建 E0，并完成
-   row-to-source entailment、V2 normative schema/projection、public error
-   precedence、positive closure/transition mapping、两项 RFC 6901 correction、
-   71-record descriptor registry 和独立 golden oracle。Structural set 与 E0
-   candidate 都不替代 exact Base projections、nested schemas、semantic proofs
-   或 traces；冻结 official A/B source 时不得向其暴露 oracle；
+   也已内部闭合。三轮 source-only E1 preregistration 都在 implementation 前被
+   blind review 拒绝，因此下一步先关闭 source selectors、typed facts、
+   artifact/replay、refusal 与 acyclic comparison/join 五组 normative contracts；
+   之后才允许 distinct implementation/source tree 重建 E0。还需完成
+   row-to-source entailment、public error precedence、positive
+   closure/transition mapping、两项 RFC 6901 correction、71-record descriptor
+   registry 和独立 golden oracle。Structural set 与 E0 candidate 都不替代 exact
+   Base projections、nested schemas、semantic proofs 或 traces；冻结 official
+   A/B source 时不得向其暴露 oracle；
 2. 只有 materialization、source-independence 和全部 root 二审通过后，才形成新的
    activation candidate；profile activation 与 prereg lock migration 仍需单独审阅；
 3. 在不含 executable source 的独立 methodology candidate 中 materialize G3 meta

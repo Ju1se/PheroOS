@@ -368,16 +368,19 @@ test discovery green；此前 full discovery 的 source/prereg isolation refusal
 
 后续仍只允许 provider-free research：
 
-1. 用 distinct implementation/source tree 独立重建同一 E0 mapping，并比较完整
-   bytes、rows、errors、corpus 与 roots；不能从本 helper import 或复制 literals；
+1. 三轮 source-only E1 preregistration 已在 implementation 前被 blind review
+   拒绝；先关闭 source selectors、typed facts、artifact/replay、refusal 与 acyclic
+   join 五组 normative contracts，不能用 prose-only v4 或复制 E0 literals 绕过；
 2. 把 row-to-source entailment、JSON type semantics、public `E-CONFIG` precedence
    和 two-root semantic binding 变成可审阅的 normative leaves；
-3. 原子选择并应用 four-pointer/A1 amendment，形成 final C1 后重算全部 source
+3. normative package 达到 P0=0、P1=0 后，再用 distinct implementation/source
+   tree 独立重建 E0 mapping，并比较完整 bytes、rows、errors、corpus 与 roots；
+4. 原子选择并应用 four-pointer/A1 amendment，形成 final C1 后重算全部 source
    identity；
-4. 取得 actual sealing context，再把 environment projection 接入六类 Base、
+5. 取得 actual sealing context，再把 environment projection 接入六类 Base、
    normalized view、actual-chain preservation/re-chain 和 independent verifier；
-5. 完成 Main 与 GoldenOracle 分层、R0-R8、G2/G3 和 source-lock migration；
-6. 只有 G0-G3 全部通过后，才允许 provider canary、pilot 或 confirmatory LLM
+6. 完成 Main 与 GoldenOracle 分层、R0-R8、G2/G3 和 source-lock migration；
+7. 只有 G0-G3 全部通过后，才允许 provider canary、pilot 或 confirmatory LLM
    experiment。
 
 ## 11. Claim boundary
