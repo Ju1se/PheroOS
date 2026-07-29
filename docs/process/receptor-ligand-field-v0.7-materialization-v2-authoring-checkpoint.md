@@ -1133,17 +1133,39 @@ Overlay 固定为 69,838 bytes，root 为
 `derivation_ast=null` 且未 replay；actual-evidence rule 只保持 OPEN。最终
 replica-pair tests 为 13/13，common+environment+suite+pair 为 46/46，全部 V2
 authoring-pattern tests 为 134/134；独立复核为 `P0=P1=P2=P3=0`。这些不是 full
-external qualification-suite pass。三个 sidecars 没有 overlay-set 或 combined
-coverage artifact，且 proof/schema/projection/execution/materialization/provider/
-outcome/authority 继续为零/false/none；开放 P1 数量仍是“至少 19”。
+external qualification-suite pass。在该 slice 当时存在的三个 sidecars 没有
+overlay-set 或 combined coverage artifact，且 proof/schema/projection/execution/
+materialization/provider/outcome/authority 继续为零/false/none；开放 P1 数量仍是
+“至少 19”。
+
+再后续
+[labels evidence overlay audit](receptor-ligand-field-v0.7-labels-evidence-overlay-audit.md)
+与 external commit `ccc38d65a89df79929aae4b14566a7be1d810435`
+为 labels 的 16/16 rules、34/34 source-ref edges 生成 46 个 exact locators。
+它保留 5 `PROVEN`、3 `DERIVABLE`、7 `OPEN` 与唯一
+`CONFLICT/conflict-witness`，并把 typed mandatory-ID projection、未选择的
+field-name bridge、rename/direct-copy projections、episode join、preflight 和
+literal trace 等八条记录为 bound source 不支持的作者合成。
+
+Overlay 固定为 78,044 bytes，root 为
+`sha256:881a36a51ae14db6d4dd5df3069a1faf9453204cc5b7ea86e27817963ba075de`。
+Conflict 的 four-pointer 与 active-v0.6 locators 是 premise；两个 v0.7 bridge
+locators 只是 semantic context，A1 不是 conflict premise，且仍未选择。这是
+preserved frozen author-reviewed classification，不是 machine semantic entailment。
+三条 `DERIVABLE` 均无 AST 或 replay。Labels tests 为 18/18，
+common+environment+suite+pair+labels 为 64/64，全部 V2 authoring-pattern
+tests 为 152/152；独立 red-team 报告 0 defects。这些不是 full external
+qualification-suite pass。四个 sidecars 没有 overlay-set 或 combined coverage
+artifact，且 proof/schema/projection/execution/materialization/provider/outcome/
+authority 继续为零/false/none；开放 P1 数量仍是“至少 19”。
 
 ## 7. 当前开放 P1
 
 原 closure design 的 18 项仍是“至少”集合。本检查点新增一个独立 runtime source
 phase blocker，因此当前至少 19 项：
 
-1. exact Base projection tables、nested schemas、labels/source/process 三类
-   locators、全六类
+1. exact Base projection tables、nested schemas、source/process 两类 locators、
+   全六类
    machine semantic proofs 和 construction traces；
 2. source-neutral Base/actual-chain phase contract 的完整 machine leaves，以及后续
    runtime actual evidence；
@@ -1185,11 +1207,11 @@ parameter bytes、path-specific type shape 和六类 residual gap 机器化。�
 `normative_schema_count=0`，没有生成 nested projections、locators、construction
 traces 或 Base payload；因此开放 P1 数量仍是“至少 19”。
 
-本轮 environment、suite 与 replica-pair overlays 只关闭第 1 项中各自的 scoped
-evidence-location 子问题：20、22、23 条 source-ref edges 可以 exact replay，但
-labels/source/process locators、全六类 machine semantic proof、schema/projection、
-trace 与 Base payload 仍开放。三个独立 sidecars 没有 overlay-set，不能发布
-combined coverage。因此开放 P1 数量仍是“至少 19”。
+本轮 environment、suite、replica-pair 与 labels overlays 只关闭第 1 项中各自的
+scoped evidence-location 子问题：20、22、23、34 条 source-ref edges 可以 exact
+replay，但 source/process locators、全六类 machine semantic proof、schema/
+projection、trace 与 Base payload 仍开放。四个独立 sidecars 没有 overlay-set，
+不能发布 combined coverage。因此开放 P1 数量仍是“至少 19”。
 
 ## 8. Claim boundary
 
@@ -1205,9 +1227,9 @@ combined coverage。因此开放 P1 数量仍是“至少 19”。
   projection 仍被 fail-closed 阻断。
 - 当前 12 个 Base parameter instances 可按 exact source bytes、双 order join 和
   path-specific type fingerprint 复核。
-- 当前 environment、suite、replica-pair 的 20、22、23 条 source-ref edges
-  分别可按 exact locator bytes/value 复核；各单体 global coverage 明确保持
-  15/90、15/90、14/90，且没有 combined overlay-set。
+- 当前 environment、suite、replica-pair、labels 的 20、22、23、34 条
+  source-ref edges 分别可按 exact locator bytes/value 复核；各单体 global
+  coverage 明确保持独立且 incomplete，没有 combined overlay-set。
 
 它不证明：
 

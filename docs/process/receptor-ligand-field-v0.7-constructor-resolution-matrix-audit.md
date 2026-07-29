@@ -97,8 +97,10 @@ closure 前补齐。
 [suite evidence overlay](receptor-ligand-field-v0.7-suite-evidence-overlay-audit.md)
 与
 [replica-pair evidence overlay](receptor-ligand-field-v0.7-replica-pair-evidence-overlay-audit.md)
+以及
+[labels evidence overlay](receptor-ligand-field-v0.7-labels-evidence-overlay-audit.md)
 分别以独立 sidecar 绑定 scoped locators 和 author reviews；原 audit 的
-locator/proof counts 继续为零。三个 sidecar 也不能在没有独立 overlay-set
+locator/proof counts 继续为零。四个 sidecar 也不能在没有独立 overlay-set
 artifact 时声称 combined coverage，或把任一单体 global coverage 提升为完整。
 
 ## 3. Exact inputs
@@ -261,6 +263,16 @@ zero-actual counts 与 absence review 支持 OPEN 边界。这些 provenance 进
 - downstream inventory/audit rebuild；
 - trace 与 internal preflight precedence。
 
+后续 labels sidecar 已为 16/16 rules、34/34 source-ref edges 绑定 46 个
+locators，同时保留 5 `PROVEN`、3 `DERIVABLE`、7 `OPEN` 和唯一
+`CONFLICT/conflict-witness`。其中八条 target propositions 含 bound source
+无法推出的作者合成；唯一 conflict 的 four-pointer 与 active-v0.6 locators 是
+premise，而两个 v0.7 names-bridge locators 只是 semantic context。A1 不是 conflict
+premise，也没有被选择。这是 preserved frozen author-reviewed classification，
+不是 machine semantic entailment。三条 `DERIVABLE` 均无 derivation AST 或 replay。
+这些 provenance 进展不关闭上述 amendment、projection、negative、rebuild 或 trace
+问题。
+
 ### 5.5 Source
 
 已支持：
@@ -404,9 +416,28 @@ overlay root =
 
 它固定 4 `PROVEN`、1 `DERIVABLE`、9 `OPEN` 与 7 条
 source-unsupported propositions；proof/schema/projection/execution/
-materialization/provider/outcome/authority 仍为零/false/none。三个 sidecars 相互
-独立，没有 content-addressed overlay-set，因此这里不发布 `44/90` combined
-coverage。
+materialization/provider/outcome/authority 仍为零/false/none。
+
+再后续 labels overlay 在 external commit
+`ccc38d65a89df79929aae4b14566a7be1d810435` 上完成：
+
+```text
+labels rules = 16 / 16
+source-ref edges = 34 / 34
+locators = 46
+global rules covered = 16 / 90
+global_rule_coverage_complete = false
+
+overlay bytes = 78044
+overlay root =
+  sha256:881a36a51ae14db6d4dd5df3069a1faf9453204cc5b7ea86e27817963ba075de
+```
+
+它固定 5 `PROVEN`、3 `DERIVABLE`、7 `OPEN`、1 preserved `CONFLICT` 与
+8 条 source-unsupported propositions；proof/schema/projection/execution/
+materialization/provider/outcome/authority 仍为零/false/none。四个 sidecars
+相互独立，没有 content-addressed overlay-set，因此这里不发布 combined numerator
+或 coverage fraction。
 
 在隔离 authoring branch 上运行旧 frozen qualification 时，Q exact-rebuild 会拒绝：
 
@@ -451,8 +482,8 @@ test 的最终配对复现是 canonical `2f1d473` `1 passed in 48.96s`，authori
 
 ## 8. 下一 provider-free 顺序
 
-1. Environment、suite 与 replica-pair 的独立 scoped locator/review slices
-   已完成；以同样边界依次覆盖 labels、source、process。原 audit locator/proof
+1. Environment、suite、replica-pair 与 labels 的独立 scoped locator/review
+   slices 已完成；以同样边界依次覆盖 source、process。原 audit locator/proof
    count 与所有 machine/normative semantic proof count 继续为零；没有
    overlay-set artifact 前不得声称 combined global coverage。
 2. 依次解决 environment 的 source-neutral/re-chain 与 all-field projection。

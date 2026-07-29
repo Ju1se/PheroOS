@@ -366,9 +366,28 @@ source-unsupported propositions。`PAIR-PROJECT-TWO-BY-SEVEN` 没有 derivation
 AST 或 replay；actual-evidence rule 继续 OPEN。Proof/schema/projection/execution/
 materialization/provider/outcome/authority 仍为零/false/none。
 
-Environment、suite、replica-pair 是三个独立 sidecars；当前不存在 overlay-set
-artifact。因此不得把人工算术和发布为 content-addressed `44/90` global
-coverage，也不得借此降低 G2/G3 blocker。
+在该 slice 当时存在的 environment、suite、replica-pair 是三个独立 sidecars；
+不存在 overlay-set artifact，因此没有发布 combined numerator、coverage fraction
+或 global-complete claim，也没有借此降低 G2/G3 blocker。
+
+再后续 external authoring commit
+`ccc38d65a89df79929aae4b14566a7be1d810435` 与
+[labels evidence overlay audit](receptor-ligand-field-v0.7-labels-evidence-overlay-audit.md)
+为 labels 的 16/16 rules、34/34 source-ref edges 绑定 46 个 exact locators；
+global coverage 仍是该 artifact 自己的 16/90、`false`。Overlay 为 78,044 bytes，
+root 为
+`sha256:881a36a51ae14db6d4dd5df3069a1faf9453204cc5b7ea86e27817963ba075de`。
+它保留 5 `PROVEN`、3 `DERIVABLE`、7 `OPEN`、1
+`CONFLICT/conflict-witness`，并固定八条 source-unsupported propositions。唯一
+conflict 的 two direct witnesses 保持 premise；两个 v0.7 names-bridge locators
+只是 semantic context，A1 不是 conflict premise，且仍未选择。这是 preserved
+frozen author-reviewed classification，不是 machine semantic entailment。三条
+`DERIVABLE` 没有 derivation AST 或 replay。Proof/schema/projection/execution/
+materialization/provider/outcome/authority 仍为零/false/none。
+
+Environment、suite、replica-pair、labels 是四个独立 sidecars；当前仍不存在
+overlay-set artifact。因此不得发布 combined numerator 或 coverage fraction，也
+不得借此降低 G2/G3 blocker。
 
 同一红队复核发现八 actor design/promotion SourceFreeze 不包含 runtime producer P
 和 independent verifier V。该项作为第 19 个显式 P1 加入；runtime RA/RB 是同一 P
@@ -535,14 +554,27 @@ physical ownership、complete membership、allocation conservation、observation
   Replica-pair 固定 41 locators/23 edges、4 `PROVEN`、1 `DERIVABLE`、9 `OPEN`
   与 7 source-unsupported propositions；所有 execution/provider/authority
   边界保持零/false/none。`134/134` 不是 full external discovery。
-- Exact authoring commit 上的 full unittest discovery 运行 383 项、
+- 加入 labels evidence overlay 后，labels 专项 `18/18`、
+  common+environment+suite+replica-pair+labels `64/64`、全部 V2
+  authoring-pattern `152/152` 通过；分别包含 33、127、191 个 subtests。
+  Targeted Ruff、module mypy、`py_compile`、88-codepoint/display-width scan 与
+  `git diff --check` 通过；两次独立标准库 root recomputation 与 anchored build
+  validation 一致，最终只读 red-team 报告 0 defects。Labels 固定
+  46 locators/34 edges、5 `PROVEN`、3
+  `DERIVABLE`、7 `OPEN`、1 preserved `CONFLICT` 与 8 source-unsupported
+  propositions；所有 execution/provider/authority 边界保持零/false/none。
+  `152/152` 不是 full external discovery。
+- 此前 suite-overlay external commit
+  `5a9f9f8500aeafb8655692adcb3610bf99cc7e69` 上的 full unittest discovery 运行
+  383 项、
   1885.990 秒，保留为 1 failure + 1 error 的非绿色结果。Q rebuild 与 frozen Q
   只在 canonical/authoring `external_source_tree_root` 及其派生
   `artifact_root` 不同；canonical `2f1d473` worktree 中两者 exact-equal。
   另一项是 prereg gate 正确拒绝 authoring branch，并观察到运行时尚未提交的 core
   docs。该结果与 source/branch freeze 隔离解释一致，并显示 gates 按设计拒绝；
-  不计作 suite 语义回归，也不被改写为 full-suite pass。可归因的新 slice 验证仍是
-  17/17 focused 与 121/121 V2 tests。
+  不计作 suite 语义回归，也不被改写为 full-suite pass。可归因于该 suite slice 的
+  验证仍是 17/17 focused 与 121/121 V2 tests；该历史 discovery 不是
+  `ccc38d65...` labels commit 的 full discovery。
 - Authoring branch 的 Q exact-rebuild refusal 是 frozen source-root isolation：
   canonical `2f1d473...` 绑定
   `sha256:9e3b1884fce7185e910b1d953c0ab1c1c7e690791e9ced2396429cb410352061`，
@@ -576,7 +608,7 @@ Key 不得写入 Git、`.env`、Trace、report、command argument 或 fixture。
 
 后续仍只做 provider-free gate work：
 
-1. 先以相同边界完成 labels/source/process 三个独立 evidence overlays；随后完成
+1. 先以相同边界完成 source/process 两个独立 evidence overlays；随后完成
    V2 normative contract、positive closure/transition mapping、两项 RFC 6901
    correction、71-record descriptor registry 和独立 golden oracle；冻结 official
    A/B source 时不得向其暴露 oracle；

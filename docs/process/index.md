@@ -133,6 +133,14 @@ database, dashboard, or application deployment workflows.
   false; no overlay-set or combined coverage is claimed. It creates no pair
   schema, projection, materialization, execution, provider use, or authority
   and does not lower the G2/G3 blockers.
+- [receptor-ligand-field-v0.7-labels-evidence-overlay-audit.md](receptor-ligand-field-v0.7-labels-evidence-overlay-audit.md)
+  records the independent labels overlay: 16/16 rules, 34/34 source-ref
+  edges, and 46 exact locators, with 5 PROVEN, 3 DERIVABLE, 7 OPEN, 1
+  preserved CONFLICT, and 8 source-unsupported propositions. Its own global
+  coverage remains 16/90 and false; no overlay-set or combined coverage is
+  claimed. It creates no machine or normative semantic proof, label schema,
+  projection, materialization, execution, provider use, or authority and does
+  not lower the G2/G3 blockers.
 - [receptor-ligand-field-g3-methodological-amendment-v0.1.md](receptor-ligand-field-g3-methodological-amendment-v0.1.md)
   is an inactive G3 review draft for common budget schedules, complete
   pre-cap ranking, size-qualified S/G artifacts, and Cost Ledger v2. It grants
