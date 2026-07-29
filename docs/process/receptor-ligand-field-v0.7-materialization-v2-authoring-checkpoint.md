@@ -1159,12 +1159,54 @@ qualification-suite pass。四个 sidecars 没有 overlay-set 或 combined cover
 artifact，且 proof/schema/projection/execution/materialization/provider/outcome/
 authority 继续为零/false/none；开放 P1 数量仍是“至少 19”。
 
+再后续
+[source evidence overlay audit](receptor-ligand-field-v0.7-source-evidence-overlay-audit.md)
+与 external commit `c1233a2bf7f71ae013973783fcb8f2612cfa1b09`
+为 source 的 16/16 rules、27/27 source-ref edges 生成 37 个 exact locators。
+它保留 6 `PROVEN`、2 `DERIVABLE`、8 `OPEN` 与 0 `CONFLICT`，并把 current
+frame、Python grammar/interpreter evidence、generic policy、Unicode permutation、
+pointer shape、preflight detail、literal trace 和 order output 等八条记录为
+bound source 不支持的作者合成。两条 `DERIVABLE` 均无 AST 或 replay。
+
+Source overlay 的七个 exact anchors 是：
+
+```text
+bytes = 69160
+RAW =
+  sha256:c9f8607496eb565e2f13e55842b22f46520293e322c787cc4214e371d679226f
+overlay_root =
+  sha256:cae3c99002f146b89fd8ac8c551782ce108a6c3199715488f6b75e5844f80999
+source_set_root =
+  sha256:81553b90b8912f9846974705da7f35687e1f13baaea9517cf147cb2f7df8b039
+locator_set_root =
+  sha256:22fb4114e662e9b53a06aec93242067f2736c02e1ed1609be5964e67e56c9f5a
+classification_review_set_root =
+  sha256:215860f96261637c774365aa73140cddc863f2a426227e4a7583c2427c151ee1
+unresolved_set_root =
+  sha256:94d5002c1cd826442ba603d91befc4aae5b08ff10c5df2edf69eae884d3d42f2
+```
+
+Source tests 为 16/16、35 subtests；common+environment+suite+pair+labels+source
+为 80/80、162 subtests；全部 V2 authoring-pattern tests 为 168/168、
+226 subtests。Targeted Ruff、module mypy、`py_compile`、88-codepoint/
+display-width scan、`git diff --check` 与 independent final red-team 均通过。
+`80/80` 和 `168/168` 不是 full external qualification-suite pass。
+
+10 个 whole-source locators 全部只是人工 absence-review domain；其中 actual
+Git/source-freeze 与 loaded-runtime identity 的 absence 不是 machine absence proof
+或 actual evidence。
+此前 common engine 及 environment、suite、replica-pair、labels helpers 保持
+byte-identical，原 resolution audit 不变。五个 scoped sidecars 仍没有 overlay-set
+或 combined coverage artifact，且 proof/schema/projection/execution/
+materialization/actual/provider/outcome/authority 继续为零/false/none；开放 P1
+数量仍是“至少 19”，G2/G3 继续 blocked。
+
 ## 7. 当前开放 P1
 
 原 closure design 的 18 项仍是“至少”集合。本检查点新增一个独立 runtime source
 phase blocker，因此当前至少 19 项：
 
-1. exact Base projection tables、nested schemas、source/process 两类 locators、
+1. exact Base projection tables、nested schemas、process family locators、
    全六类
    machine semantic proofs 和 construction traces；
 2. source-neutral Base/actual-chain phase contract 的完整 machine leaves，以及后续
@@ -1207,10 +1249,11 @@ parameter bytes、path-specific type shape 和六类 residual gap 机器化。�
 `normative_schema_count=0`，没有生成 nested projections、locators、construction
 traces 或 Base payload；因此开放 P1 数量仍是“至少 19”。
 
-本轮 environment、suite、replica-pair 与 labels overlays 只关闭第 1 项中各自的
-scoped evidence-location 子问题：20、22、23、34 条 source-ref edges 可以 exact
-replay，但 source/process locators、全六类 machine semantic proof、schema/
-projection、trace 与 Base payload 仍开放。四个独立 sidecars 没有 overlay-set，
+本轮 environment、suite、replica-pair、labels 与 source overlays 只关闭第 1 项中
+各自的 scoped evidence-location 子问题：20、22、23、34、27 条 source-ref edges
+可以 exact replay，但 process locators、全六类 machine semantic proof、schema/
+projection、trace 与 Base payload 仍开放。Source whole-source absence review
+也不能替代 actual Git/runtime evidence。五个独立 sidecars 没有 overlay-set，
 不能发布 combined coverage。因此开放 P1 数量仍是“至少 19”。
 
 ## 8. Claim boundary
@@ -1227,9 +1270,11 @@ projection、trace 与 Base payload 仍开放。四个独立 sidecars 没有 ove
   projection 仍被 fail-closed 阻断。
 - 当前 12 个 Base parameter instances 可按 exact source bytes、双 order join 和
   path-specific type fingerprint 复核。
-- 当前 environment、suite、replica-pair、labels 的 20、22、23、34 条
-  source-ref edges 分别可按 exact locator bytes/value 复核；各单体 global
-  coverage 明确保持独立且 incomplete，没有 combined overlay-set。
+- 当前 environment、suite、replica-pair、labels、source 的
+  20、22、23、34、27 条 source-ref edges 分别可按 exact locator bytes/value
+  复核；各单体 global coverage 明确保持独立且 incomplete，没有 combined
+  overlay-set；source 的 actual Git/runtime absence 仍只是人工 whole-source
+  review。
 
 它不证明：
 

@@ -141,6 +141,14 @@ database, dashboard, or application deployment workflows.
   claimed. It creates no machine or normative semantic proof, label schema,
   projection, materialization, execution, provider use, or authority and does
   not lower the G2/G3 blockers.
+- [receptor-ligand-field-v0.7-source-evidence-overlay-audit.md](receptor-ligand-field-v0.7-source-evidence-overlay-audit.md)
+  records the independent source overlay: 16/16 rules, 27/27 source-ref
+  edges, and 37 exact locators, with 6 PROVEN, 2 DERIVABLE, 8 OPEN, and 8
+  source-unsupported propositions. Its own global coverage remains 16/90 and
+  false; no overlay-set or combined coverage is claimed. Whole-source
+  absence domains do not prove actual Git or runtime identity, and the
+  overlay creates no semantic proof, source schema, projection, execution,
+  provider use, or authority.
 - [receptor-ligand-field-g3-methodological-amendment-v0.1.md](receptor-ligand-field-g3-methodological-amendment-v0.1.md)
   is an inactive G3 review draft for common budget schedules, complete
   pre-cap ranking, size-qualified S/G artifacts, and Cost Ledger v2. It grants

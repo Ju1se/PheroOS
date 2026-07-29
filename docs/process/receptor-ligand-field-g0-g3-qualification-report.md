@@ -389,6 +389,44 @@ Environment、suite、replica-pair、labels 是四个独立 sidecars；当前仍
 overlay-set artifact。因此不得发布 combined numerator 或 coverage fraction，也
 不得借此降低 G2/G3 blocker。
 
+再后续 external authoring commit
+`c1233a2bf7f71ae013973783fcb8f2612cfa1b09` 与
+[source evidence overlay audit](receptor-ligand-field-v0.7-source-evidence-overlay-audit.md)
+为 source 的 16/16 rules、27/27 source-ref edges 绑定 37 个 exact locators；
+global coverage 仍是该 artifact 自己的 16/90、`false`。它保留 6 `PROVEN`、
+2 `DERIVABLE`、8 `OPEN`、0 `CONFLICT`，并固定八条
+source-unsupported propositions。两条 `DERIVABLE` 均没有 derivation AST 或
+replay。
+
+Source overlay 的七个 exact anchors 是：
+
+```text
+bytes = 69160
+RAW =
+  sha256:c9f8607496eb565e2f13e55842b22f46520293e322c787cc4214e371d679226f
+overlay_root =
+  sha256:cae3c99002f146b89fd8ac8c551782ce108a6c3199715488f6b75e5844f80999
+source_set_root =
+  sha256:81553b90b8912f9846974705da7f35687e1f13baaea9517cf147cb2f7df8b039
+locator_set_root =
+  sha256:22fb4114e662e9b53a06aec93242067f2736c02e1ed1609be5964e67e56c9f5a
+classification_review_set_root =
+  sha256:215860f96261637c774365aa73140cddc863f2a426227e4a7583c2427c151ee1
+unresolved_set_root =
+  sha256:94d5002c1cd826442ba603d91befc4aae5b08ff10c5df2edf69eae884d3d42f2
+```
+
+17 个 Markdown、10 个 JSON-pointer 与 10 个 whole-source locators 的 roles 为
+12 premise、5 integrity-context、10 semantic-context、10 absence-domain；
+source 分布为 v0.7 `10`、plan `3`、V2 design `14`、A1 `5`、A1 audit `5`。
+Actual Git/source-freeze 与 loaded-runtime identity 的 absence 只由人工
+whole-source review 维持 OPEN 边界，不是 machine absence proof 或 actual
+evidence。此前 common engine 及四个 family sidecars 保持 byte-identical，原
+resolution audit 不变。五个 scoped sidecars 仍没有 overlay-set，因此不得发布
+combined numerator 或 coverage fraction。Proof/schema/projection/execution/
+materialization/actual/provider/outcome/authority 仍为零/false/none，G2/G3 继续
+blocked。
+
 同一红队复核发现八 actor design/promotion SourceFreeze 不包含 runtime producer P
 和 independent verifier V。该项作为第 19 个显式 P1 加入；runtime RA/RB 是同一 P
 source 的两个 process identities，不能被误写成两个 source-independent actors。
@@ -564,6 +602,17 @@ physical ownership、complete membership、allocation conservation、observation
   `DERIVABLE`、7 `OPEN`、1 preserved `CONFLICT` 与 8 source-unsupported
   propositions；所有 execution/provider/authority 边界保持零/false/none。
   `152/152` 不是 full external discovery。
+- 加入 source evidence overlay 后，source 专项 `16/16`、
+  common+environment+suite+replica-pair+labels+source `80/80`、全部 V2
+  authoring-pattern `168/168` 通过；分别包含 35、162、226 个 subtests。
+  Targeted Ruff、module mypy、`py_compile`、88-codepoint/display-width scan 与
+  `git diff --check` 通过，independent final anchor/code/semantic/tamper
+  red-team 通过。Source 固定 37 locators/27 edges、6 `PROVEN`、2
+  `DERIVABLE`、8 `OPEN` 与 8 source-unsupported propositions；两条
+  `DERIVABLE` 均无 AST/replay，actual Git/runtime absence 仍只是人工
+  whole-source review。所有 proof/schema/projection/execution/materialization/
+  actual/provider/outcome/authority 边界保持零/false/none。`80/80` 与
+  `168/168` 都不是 full external discovery。
 - 此前 suite-overlay external commit
   `5a9f9f8500aeafb8655692adcb3610bf99cc7e69` 上的 full unittest discovery 运行
   383 项、
@@ -608,7 +657,7 @@ Key 不得写入 Git、`.env`、Trace、report、command argument 或 fixture。
 
 后续仍只做 provider-free gate work：
 
-1. 先以相同边界完成 source/process 两个独立 evidence overlays；随后完成
+1. 先以相同边界完成最后的 process 独立 evidence overlay；随后完成
    V2 normative contract、positive closure/transition mapping、两项 RFC 6901
    correction、71-record descriptor registry 和独立 golden oracle；冻结 official
    A/B source 时不得向其暴露 oracle；
