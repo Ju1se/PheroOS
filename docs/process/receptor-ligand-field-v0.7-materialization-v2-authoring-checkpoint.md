@@ -1118,12 +1118,32 @@ blocker list 改写为已关闭。它不回写原 audit，不合并 environment/
 也保持 proof、schema、projection、execution、materialization、provider、outcome
 和 authority 为零/false/none。因此这一步仍不减少下节“至少 19”项开放 P1。
 
+再后续
+[replica-pair evidence overlay audit](receptor-ligand-field-v0.7-replica-pair-evidence-overlay-audit.md)
+与 external commit `00e6ba609ee8cda617004a503741f108c0b8b70c`
+为 replica-pair 的 14/14 rules、23/23 source-ref edges 生成 41 个 exact
+locators。它保留 4 `PROVEN`、1 `DERIVABLE`、9 `OPEN`，并把 generic
+distinctness/domain/symmetry、two-by-seven all-field projection、
+copy/reference/re-chain storage、pair error assignment、literal trace 和 swap-root
+relation 共七条记录为 bound source 不支持的作者合成。
+
+Overlay 固定为 69,838 bytes，root 为
+`sha256:953c8abc4629415fbfcb53405bd2d92caa722a968f9c256e0a3bfdf57517013b`。
+`PAIR-PROJECT-TWO-BY-SEVEN` 继续使用 frozen `DERIVABLE` 名称，但
+`derivation_ast=null` 且未 replay；actual-evidence rule 只保持 OPEN。最终
+replica-pair tests 为 13/13，common+environment+suite+pair 为 46/46，全部 V2
+authoring-pattern tests 为 134/134；独立复核为 `P0=P1=P2=P3=0`。这些不是 full
+external qualification-suite pass。三个 sidecars 没有 overlay-set 或 combined
+coverage artifact，且 proof/schema/projection/execution/materialization/provider/
+outcome/authority 继续为零/false/none；开放 P1 数量仍是“至少 19”。
+
 ## 7. 当前开放 P1
 
 原 closure design 的 18 项仍是“至少”集合。本检查点新增一个独立 runtime source
 phase blocker，因此当前至少 19 项：
 
-1. exact Base projection tables、nested schemas、其余五类 locators、全六类
+1. exact Base projection tables、nested schemas、labels/source/process 三类
+   locators、全六类
    machine semantic proofs 和 construction traces；
 2. source-neutral Base/actual-chain phase contract 的完整 machine leaves，以及后续
    runtime actual evidence；
@@ -1165,10 +1185,11 @@ parameter bytes、path-specific type shape 和六类 residual gap 机器化。�
 `normative_schema_count=0`，没有生成 nested projections、locators、construction
 traces 或 Base payload；因此开放 P1 数量仍是“至少 19”。
 
-本轮 environment overlay 只关闭第 1 项中的 scoped evidence-location 子问题：
-20 条 source-ref edges 可以 exact replay，但其余五类 locators、全六类 machine
-semantic proof、schema/projection、trace 与 Base payload 仍开放。因此开放 P1
-数量仍是“至少 19”。
+本轮 environment、suite 与 replica-pair overlays 只关闭第 1 项中各自的 scoped
+evidence-location 子问题：20、22、23 条 source-ref edges 可以 exact replay，但
+labels/source/process locators、全六类 machine semantic proof、schema/projection、
+trace 与 Base payload 仍开放。三个独立 sidecars 没有 overlay-set，不能发布
+combined coverage。因此开放 P1 数量仍是“至少 19”。
 
 ## 8. Claim boundary
 
@@ -1184,8 +1205,9 @@ semantic proof、schema/projection、trace 与 Base payload 仍开放。因此�
   projection 仍被 fail-closed 阻断。
 - 当前 12 个 Base parameter instances 可按 exact source bytes、双 order join 和
   path-specific type fingerprint 复核。
-- 当前 environment 的 20 条 source-ref edges 可按 exact locator bytes/value
-  复核，且 global coverage 明确保持 15/90。
+- 当前 environment、suite、replica-pair 的 20、22、23 条 source-ref edges
+  分别可按 exact locator bytes/value 复核；各单体 global coverage 明确保持
+  15/90、15/90、14/90，且没有 combined overlay-set。
 
 它不证明：
 
@@ -1194,7 +1216,7 @@ semantic proof、schema/projection、trace 与 Base payload 仍开放。因此�
 - actual `ChainedRecordV07`、`ArtifactManifestV07` 或 full-scale NDJSON 已生成；
 - constructor-specific normative parameter schemas、normalized views 或 Base
   payloads 已生成；
-- locator 等同 machine/normative semantic entailment，或 environment schema/
+- locator 等同 machine/normative semantic entailment，或任一 family schema/
   projection/constructor execution 已关闭；
 - synthetic process parameters 构成 OS-observed process evidence；
 - source actors 的历史、认知或统计独立性；

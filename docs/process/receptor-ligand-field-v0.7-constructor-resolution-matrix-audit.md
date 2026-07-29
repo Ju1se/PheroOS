@@ -93,11 +93,13 @@ closure 前补齐。
 
 这些零值属于本 63,776-byte audit 自身，后续 artifact 不得回写或替换它们。后续
 [environment evidence overlay](receptor-ligand-field-v0.7-environment-evidence-overlay-audit.md)
-与
+、
 [suite evidence overlay](receptor-ligand-field-v0.7-suite-evidence-overlay-audit.md)
+与
+[replica-pair evidence overlay](receptor-ligand-field-v0.7-replica-pair-evidence-overlay-audit.md)
 分别以独立 sidecar 绑定 scoped locators 和 author reviews；原 audit 的
-locator/proof counts 继续为零。两个 sidecar 也不能在没有独立 overlay-set
-artifact 时把任一单体 global coverage 提升为 `30/90`。
+locator/proof counts 继续为零。三个 sidecar 也不能在没有独立 overlay-set
+artifact 时声称 combined coverage，或把任一单体 global coverage 提升为完整。
 
 ## 3. Exact inputs
 
@@ -232,6 +234,13 @@ record_set_root =
 - source-neutral semantic equality 与 actual artifact/manifest equality 的双层 envelope；
 - exact trace、sealing context 与 preflight precedence。
 
+后续 replica-pair sidecar 已为 14/14 rules、23/23 source-ref edges 绑定 41 个
+locators，但明确记录其中七条 target propositions 含 bound source 无法推出的作者
+合成。尤其 `PAIR-PROJECT-TWO-BY-SEVEN` 只保留 frozen `DERIVABLE` 名称，
+`derivation_ast=null` 且未 replay；`PAIR-OPEN-ACTUAL-EVIDENCE` 只由当前
+zero-actual counts 与 absence review 支持 OPEN 边界。这些 provenance 进展不关闭
+上述 schema、projection、storage 或 actual-evidence 问题。
+
 ### 5.4 Labels
 
 已支持：
@@ -360,6 +369,45 @@ execution、materialization 与 observation 的相关 counts 仍为 0，
 `network_used=false`、`authority_scope=none`。尤其 strict-integer bound source
 不蕴含 Python `type(value) is int`；详情见独立 overlay audit。
 
+后续 suite overlay 在 external commit
+`5a9f9f8500aeafb8655692adcb3610bf99cc7e69` 上完成：
+
+```text
+suite rules = 15 / 15
+source-ref edges = 22 / 22
+locators = 25
+global rules covered = 15 / 90
+global_rule_coverage_complete = false
+
+overlay bytes = 54745
+overlay root =
+  sha256:792829d3cf1fd4989f7d7f5f3b00aecc61b8ce030f1e8934e3f32f888c0f693b
+```
+
+它把四条 source-unsupported propositions 与 unresolved/report policy 绑定，但没有
+生成 suite schema、980 records、execution 或 authority。
+
+再后续 replica-pair overlay 在 external commit
+`00e6ba609ee8cda617004a503741f108c0b8b70c` 上完成：
+
+```text
+replica-pair rules = 14 / 14
+source-ref edges = 23 / 23
+locators = 41
+global rules covered = 14 / 90
+global_rule_coverage_complete = false
+
+overlay bytes = 69838
+overlay root =
+  sha256:953c8abc4629415fbfcb53405bd2d92caa722a968f9c256e0a3bfdf57517013b
+```
+
+它固定 4 `PROVEN`、1 `DERIVABLE`、9 `OPEN` 与 7 条
+source-unsupported propositions；proof/schema/projection/execution/
+materialization/provider/outcome/authority 仍为零/false/none。三个 sidecars 相互
+独立，没有 content-addressed overlay-set，因此这里不发布 `44/90` combined
+coverage。
+
 在隔离 authoring branch 上运行旧 frozen qualification 时，Q exact-rebuild 会拒绝：
 
 ```text
@@ -403,10 +451,10 @@ test 的最终配对复现是 canonical `2f1d473` `1 passed in 48.96s`，authori
 
 ## 8. 下一 provider-free 顺序
 
-1. Environment 与 suite 的独立 scoped locator/review slices 已完成；以同样边界
-   依次覆盖 replica pair、labels、source、process。原 audit locator/proof count
-   与所有 machine/normative semantic proof count 继续为零；没有 overlay-set
-   artifact 前不得声称 combined global coverage。
+1. Environment、suite 与 replica-pair 的独立 scoped locator/review slices
+   已完成；以同样边界依次覆盖 labels、source、process。原 audit locator/proof
+   count 与所有 machine/normative semantic proof count 继续为零；没有
+   overlay-set artifact 前不得声称 combined global coverage。
 2. 依次解决 environment 的 source-neutral/re-chain 与 all-field projection。
 3. Suite 的 evidence locations 已绑定，但仍需新增 normative arm-order、
    intent-ID、storage 和 sealing-context contract；sidecar 不能代替这些 contract。

@@ -351,7 +351,24 @@ root 为
 `unsupported_bound_source_count=4`。Report-policy blocker list 另由
 `unresolved_set_root` 固定；proof/schema/projection/execution/materialization/
 provider/outcome/authority 仍为零/false/none。Environment artifact 保持
-byte-identical，两个 sidecars 也没有 combined overlay-set/global-coverage claim。
+byte-identical；该 environment/suite pair 也没有 combined
+overlay-set/global-coverage claim。
+
+再后续 external authoring commit
+`00e6ba609ee8cda617004a503741f108c0b8b70c` 与
+[replica-pair evidence overlay audit](receptor-ligand-field-v0.7-replica-pair-evidence-overlay-audit.md)
+为 replica-pair 的 14/14 rules、23/23 source-ref edges 绑定 41 个 exact
+locators；global coverage 仍是该 artifact 自己的 14/90、`false`。Overlay 为
+69,838 bytes，root 为
+`sha256:953c8abc4629415fbfcb53405bd2d92caa722a968f9c256e0a3bfdf57517013b`。
+它保留 4 `PROVEN`、1 `DERIVABLE`、9 `OPEN`，并固定七条
+source-unsupported propositions。`PAIR-PROJECT-TWO-BY-SEVEN` 没有 derivation
+AST 或 replay；actual-evidence rule 继续 OPEN。Proof/schema/projection/execution/
+materialization/provider/outcome/authority 仍为零/false/none。
+
+Environment、suite、replica-pair 是三个独立 sidecars；当前不存在 overlay-set
+artifact。因此不得把人工算术和发布为 content-addressed `44/90` global
+coverage，也不得借此降低 G2/G3 blocker。
 
 同一红队复核发现八 actor design/promotion SourceFreeze 不包含 runtime producer P
 和 independent verifier V。该项作为第 19 个显式 P1 加入；runtime RA/RB 是同一 P
@@ -510,6 +527,14 @@ physical ownership、complete membership、allocation conservation、observation
   `DERIVABLE`、9 `OPEN`、4 source-unsupported propositions；所有 proof、
   schema、projection、execution、materialization、provider、outcome 和 authority
   边界保持零/false/none。
+- 加入 replica-pair evidence overlay 后，replica-pair 专项 `13/13`、
+  common+environment+suite+replica-pair `46/46`、全部 V2 authoring-pattern
+  `134/134` 通过；`py_compile`、88-codepoint/display-width scan 与
+  `git diff --check` 通过，最终独立 code/semantic/tamper review 为
+  `P0=P1=P2=P3=0`。独立 verifier 重算 126 项 roots/hashes，`0 mismatch`。
+  Replica-pair 固定 41 locators/23 edges、4 `PROVEN`、1 `DERIVABLE`、9 `OPEN`
+  与 7 source-unsupported propositions；所有 execution/provider/authority
+  边界保持零/false/none。`134/134` 不是 full external discovery。
 - Exact authoring commit 上的 full unittest discovery 运行 383 项、
   1885.990 秒，保留为 1 failure + 1 error 的非绿色结果。Q rebuild 与 frozen Q
   只在 canonical/authoring `external_source_tree_root` 及其派生
@@ -551,9 +576,10 @@ Key 不得写入 Git、`.env`、Trace、report、command argument 或 fixture。
 
 后续仍只做 provider-free gate work：
 
-1. 先完成 V2 normative contract、positive closure/transition mapping、两项 RFC 6901
-   correction、71-record descriptor registry 和独立 golden oracle；冻结 official A/B
-   source 时不得向其暴露 oracle；
+1. 先以相同边界完成 labels/source/process 三个独立 evidence overlays；随后完成
+   V2 normative contract、positive closure/transition mapping、两项 RFC 6901
+   correction、71-record descriptor registry 和独立 golden oracle；冻结 official
+   A/B source 时不得向其暴露 oracle；
 2. 只有 materialization、source-independence 和全部 root 二审通过后，才形成新的
    activation candidate；profile activation 与 prereg lock migration 仍需单独审阅；
 3. 在不含 executable source 的独立 methodology candidate 中 materialize G3 meta

@@ -126,6 +126,13 @@ database, dashboard, or application deployment workflows.
   sources, binds the report blocker policy, and creates no suite schema,
   projection, 980-record materialization, execution, provider use, or
   authority.
+- [receptor-ligand-field-v0.7-replica-pair-evidence-overlay-audit.md](receptor-ligand-field-v0.7-replica-pair-evidence-overlay-audit.md)
+  records the independent replica-pair overlay: 14/14 rules, 23/23 source-ref
+  edges, and 41 exact locators, with 4 PROVEN, 1 DERIVABLE, 9 OPEN, and 7
+  source-unsupported propositions. Its own global coverage remains 14/90 and
+  false; no overlay-set or combined coverage is claimed. It creates no pair
+  schema, projection, materialization, execution, provider use, or authority
+  and does not lower the G2/G3 blockers.
 - [receptor-ligand-field-g3-methodological-amendment-v0.1.md](receptor-ligand-field-g3-methodological-amendment-v0.1.md)
   is an inactive G3 review draft for common budget schedules, complete
   pre-cap ranking, size-qualified S/G artifacts, and Cost Ledger v2. It grants
