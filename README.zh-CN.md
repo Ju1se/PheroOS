@@ -4,13 +4,17 @@
 
 [![tests](https://github.com/Ju1se/PheroOS/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/Ju1se/PheroOS/actions/workflows/tests.yml)
 
-PheroOS 是面向受治理、群体原生多智能体运行时的 provider-free 协议核心包。
+PheroOS 是面向受治理多智能体运行时的 provider-free 协议核心包，核心定位是
+authority/commit 语义。
 
 > Agents are not authority. Protocol is authority.
 
 PheroOS 定义外部运行时如何声明能力、隔离作用域、验证智能体输入、形成受治理的决策、
 记录因果谱系并证明兼容性。它不运行智能体循环，不调用模型或工具，不托管 API，也不
 提供数据库。
+
+对外定位是 governed authority/commit protocol。collective 与 pheromone profile
+是实验性协议形状；本项目不声称已经证明涌现或群体智能能力。
 
 ## 项目状态
 
@@ -24,8 +28,8 @@ PheroOS 定义外部运行时如何声明能力、隔离作用域、验证智能
 | 许可证 | MIT |
 
 Draft 表示公共形状仍可能通过有迁移说明的变更继续演进，并不表示 reference path 只是
-占位实现。Baseline、Hybrid Pheromone、Optimal Commit、持久权威 contract 及其原子化
-reference path、Trace 与 Conformance 都已经实现并由确定性测试覆盖。在首个稳定 ABI
+占位实现。Baseline、authority/commit、持久权威 contract 及其原子化 reference path、
+Trace 与 Conformance 都已经实现并由确定性测试覆盖。在首个稳定 ABI
 发布之前，使用方应固定精确 commit，以及自己实现的 schema/profile 版本。
 已检入的 Stable Core candidate 仍是
 `draft / promotion_candidate / formal_stable=false`；当前没有任何公共 lifecycle entry
@@ -99,7 +103,7 @@ manifest / adapter / installed artifact
 | `pheroos.protocol` | Manifest、candidate、policy、schema、loading 与 validation | 纯 contract code；不依赖 Kernel、runtime、provider 或 Conformance |
 | `pheroos.kernel` | scope-aware plan、permission、readiness、connection 与 exposure contract | 决定可用能力；不调用工具/provider，也不做领域结论 |
 | `pheroos.drivers` | provider-neutral descriptor 与 `declare -> validate -> register -> probe -> bind -> expose -> invoke -> trace` 生命周期 | 真实 adapter 与 provider SDK 位于 core 之外 |
-| `pheroos.governance` | verification、evidence、quorum、swarm decision、risk、commit、certificate、finality 与 output gate | Agent 和 adaptive layer 可以提议；只有依照已声明 Protocol 行事的 Governance 才能签发 runtime decision authority |
+| `pheroos.governance` | verification、evidence、quorum、collective decision、risk、commit、certificate、finality 与 output gate | Agent 和 adaptive layer 可以提议；只有依照已声明 Protocol 行事的 Governance 才能签发 runtime decision authority |
 | `pheroos.trace` | canonical `TraceEvent`、scoped envelope、validation 与 append-only store contract | 不是 database、queue、event bus 或 monitor daemon |
 | `pheroos.conformance` | Manifest profile、source check、外部 adapter matrix 与 Commit TCK | 确定性、provider-free、network-free |
 | `pheroos.cli` | 本地 versioned-JSON 管理命令 | 只是 thin wrapper；不是 HTTP API 或服务 |
@@ -133,9 +137,9 @@ CLI 只委托公共 facade。Private engine 不构成第二套 ABI。
 
 | 路径 | Manifest 选择条件 | 受治理行为 | Conformance profile | 示例 |
 | --- | --- | --- | --- | --- |
-| Baseline | 未声明 swarm 或 Commit | verified quorum、declared candidate、safe fallback | `pheroos-core-v1` | [`toy-protocol`](examples/toy-protocol/)、[`e2e-protocol`](examples/e2e-protocol/) |
-| Basic swarm | `mode=bee_swarm` 或 `mode=ant_colony` | verified scout、recruitment/inhibition、有界 pheromone memory | `pheroos-swarm-v1` | [`swarm-protocol`](examples/swarm-protocol/) |
-| Hybrid Pheromone v1 | v1 manifest 中的 `mode=hybrid` | diffusion、feedback、nonlinear response、L1-L4 proposal 与有界 adjustment | `pheroos-hybrid-swarm-v1` | [`hybrid-pheromone-protocol`](examples/hybrid-pheromone-protocol/) |
+| Baseline | 未声明 optional attention 或 Commit | verified quorum、declared candidate、safe fallback | `pheroos-core-v1` | [`toy-protocol`](examples/toy-protocol/)、[`e2e-protocol`](examples/e2e-protocol/) |
+| Experimental collective attention | `mode=bee_swarm` 或 `mode=ant_colony` | verified scout、recruitment/inhibition、有界 pheromone memory | `pheroos-swarm-v1` | [`swarm-protocol`](examples/swarm-protocol/) |
+| Experimental Hybrid Pheromone | v1 manifest 中的 `mode=hybrid` | diffusion、feedback、nonlinear response、L1-L4 proposal 与有界 adjustment | `pheroos-hybrid-swarm-v1` | [`hybrid-pheromone-protocol`](examples/hybrid-pheromone-protocol/) |
 | Scoped Hybrid Replay v2 | Capability/Protocol v3 document 选择 `pheroos.protocol.v2` | Store-backed durable replay 与 scoped authority | 精确的 v2 Store、session、replay 与 runtime-integration Conformance | [`hybrid-replay-protocol`](examples/hybrid-replay-protocol/) |
 | Optimal Commit | `collective_commit_policy` | evidence-governed truth、stability、liveness、certificate、可选 distributed finality | assurance-specific Commit profile | [`hybrid-commit-protocol`](examples/hybrid-commit-protocol/)、[`distributed-commit-protocol`](examples/distributed-commit-protocol/) |
 
@@ -143,7 +147,7 @@ Optimal Commit 会根据 assurance 与已声明的 Hybrid attention semantics �
 `pheroos-commit-integrity-v1`、`pheroos-hybrid-commit-v1`、
 `pheroos-certified-commit-v1` 或 `pheroos-distributed-commit-v1`。
 
-### Hybrid Pheromone：attention 与 collective memory
+### Experimental Hybrid Pheromone：attention 与 collective memory
 
 主要 Draft 路径是由 StateStore 支撑的 Hybrid Replay v2：
 
@@ -297,7 +301,7 @@ pheroos abi diff
 | --- | --- |
 | [`toy-protocol`](examples/toy-protocol/) | 最小 manifest、declared candidate、quorum 与 fallback |
 | [`e2e-protocol`](examples/e2e-protocol/) | 最小 Protocol -> Kernel -> Driver -> Governance -> Trace vertical slice |
-| [`swarm-protocol`](examples/swarm-protocol/) | 基础 verified swarm signal 与 bounded pheromone memory |
+| [`swarm-protocol`](examples/swarm-protocol/) | 实验性 verified collective signal 与 bounded pheromone memory |
 | [`hybrid-pheromone-protocol`](examples/hybrid-pheromone-protocol/) | 完整 Hybrid collective step 与四个 output gate |
 | [`hybrid-replay-protocol`](examples/hybrid-replay-protocol/) | Scoped Hybrid Replay v2、重启与 fresh-process continuation |
 | [`adaptive-pheromone-replay`](examples/adaptive-pheromone-replay/) | 外部 adaptive proposal 与 governance-issued replay state |
