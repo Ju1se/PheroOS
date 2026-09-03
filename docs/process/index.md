@@ -30,6 +30,13 @@ database, dashboard, or application deployment workflows.
   against full, sparse, blackboard, retrieval-routing, learned-pruning, and
   current scalar-pheromone controls without changing Commit truth or importing
   an experiment runtime into protocol-core.
+- [receptor-ligand-field-vnext-architecture-research.md](receptor-ligand-field-vnext-architecture-research.md)
+  is the non-normative architecture research baseline that combines insect
+  receptor saturation, input-gain control, social-insect recruitment,
+  cross-inhibition, congestion feedback, multi-agent dependence, supersession,
+  and conservative attention allocation into candidate vNext formulas and
+  ABI/TCK guidance. It activates no profile and changes no current protocol
+  semantics.
 - [receptor-ligand-field-experiment-profile-v0.1.md](receptor-ligand-field-experiment-profile-v0.1.md)
   is the preserved first G0 draft, superseded before any arm execution after an
   independent design audit found baseline and mass-conservation ambiguities.
