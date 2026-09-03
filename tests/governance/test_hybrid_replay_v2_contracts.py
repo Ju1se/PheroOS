@@ -25,7 +25,7 @@ from pheroos.governance._hybrid_replay_v2.contracts import (
 from pheroos.governance._hybrid_replay_v2.numeric import (
     HYBRID_REPLAY_NUMERIC_WIRE_VERSION_V2,
 )
-from pheroos.trace import canonical_pheromone_clip_payload
+from pheroos.trace._pheromone_receipts import canonical_pheromone_clip_payload
 
 
 def _root(index: int) -> str:

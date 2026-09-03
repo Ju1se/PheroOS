@@ -62,7 +62,6 @@ from pheroos.governance.hybrid_commit import (
     HybridCommitAttentionStatus,
     HybridCommitEvaluationRequest,
     HybridCommitEvaluationStatus,
-    evaluate_hybrid_commit_evaluation,
     evaluate_hybrid_commit_step,
     hybrid_commit_evaluation_is_authoritative,
     hybrid_commit_evaluation_payload,
@@ -93,7 +92,7 @@ from pheroos.governance.support_lease import (
     eligible_principal_snapshot_payload,
     support_lease_payload,
 )
-from pheroos.protocol import canonical_commit_payload
+from pheroos.protocol.commit_wire import canonical_commit_payload
 from pheroos.protocol.commit_models import (
     COMMIT_CANONICAL_VERSION,
     COMMIT_MODEL,
@@ -1046,18 +1045,6 @@ def _action_facts(
         trace_event_id=f"trace:{outcome.run_id}:permission:{suffix}",
     )
     return stop, permission
-
-
-def test_deprecated_total_entry_is_only_a_warning_alias() -> None:
-    request = object()
-
-    with pytest.warns(DeprecationWarning, match="evaluate_hybrid_commit_step"):
-        legacy = evaluate_hybrid_commit_evaluation(request)
-    canonical = evaluate_hybrid_commit_step(request=request)
-
-    assert hybrid_commit_evaluation_payload(legacy) == hybrid_commit_evaluation_payload(
-        canonical
-    )
 
 
 def test_total_entry_returns_authoritative_progress_without_assurance_downgrade() -> (

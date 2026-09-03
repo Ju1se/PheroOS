@@ -4,7 +4,7 @@
       "covered_branches": 21219,
       "covered_lines": 67378,
       "measurement_base_commit": "f6d60114dd476d4fa81705721abd8b9f5043b573",
-      "measurement_source_sha256": "sha256:fb76ac4109f647136c647b01af1cf2ff9e7f1d4733d400c8e458f0063c4f0bdb",
+      "measurement_source_sha256": "sha256:2edef169f14dbce3ad06e212f1c7299e77a84a022ee877618a6308895066e393",
       "total_branches": 22280,
       "total_lines": 68598
     },
@@ -12,7 +12,7 @@
       "covered_branches": 18821,
       "covered_lines": 59141,
       "measurement_base_commit": "f6d60114dd476d4fa81705721abd8b9f5043b573",
-      "measurement_source_sha256": "sha256:fb76ac4109f647136c647b01af1cf2ff9e7f1d4733d400c8e458f0063c4f0bdb",
+      "measurement_source_sha256": "sha256:2edef169f14dbce3ad06e212f1c7299e77a84a022ee877618a6308895066e393",
       "total_branches": 19558,
       "total_lines": 59943
     }
@@ -76,18 +76,6 @@
         "original": "                if (\n                    len(distinct) != 1\n                    or matches[0].event.envelope_root != envelope.envelope_root\n",
         "sha256": "sha256:fb938be4a47f0351f373ef1d9b15987c7237ab13f7ca769b37682b7440cf2ad5",
         "start_line": 425
-      }
-    },
-    {
-      "line": 67,
-      "name": "trace-required-lineage",
-      "path": "pheroos/trace/_validation_core.py",
-      "source": {
-        "ast_kind": "If",
-        "end_line": 67,
-        "original": "    if missing:\n",
-        "sha256": "sha256:3361e20dee7f544b0d4a89d8c67aa2b0f1778da1b8136b2138a13ed06db09d6c",
-        "start_line": 67
       }
     },
     {
@@ -222,7 +210,6 @@
           "tests/governance/test_hybrid_replay_v2_contracts.py",
           "tests/governance/test_hybrid_replay_v2_store_hardening.py",
           "tests/governance/test_lazy_facade.py",
-          "tests/governance/test_legacy_authority_isolation.py",
           "tests/governance/test_legacy_governance_primitives_adversarial.py",
           "tests/governance/test_membership_v2_contracts_source.py",
           "tests/governance/test_quorum_commit.py",
@@ -237,7 +224,6 @@
         "pytest_targets": [
           "tests/conformance/test_checker_regression_alarms.py",
           "tests/conformance/test_hybrid_trace_changed_totality.py",
-          "tests/conformance/test_policy_check_totality.py",
           "tests/conformance/test_protocol_declaration_totality.py",
           "tests/conformance/test_schema_catalog_adversarial_totality.py",
           "tests/conformance/test_v2_checker_totality.py",
@@ -274,7 +260,6 @@
           "tests/governance/test_output_totality.py",
           "tests/governance/test_pheromone_feedback_totality.py",
           "tests/governance/test_policy_adjustment_totality.py",
-          "tests/governance/test_recovery_policy.py",
           "tests/governance/test_risk_commit_decomposition.py",
           "tests/governance/test_runtime_policy_totality.py",
           "tests/governance/test_static_engine_compatibility.py",
@@ -312,7 +297,6 @@
           "tests/governance/test_memory_risk_schema_totality.py",
           "tests/governance/test_membership_v2_operations.py",
           "tests/governance/test_observation_binding.py",
-          "tests/governance/test_pheromone_module_boundaries.py",
           "tests/governance/test_private_import_graph.py",
           "tests/governance/test_stop_signal.py",
           "tests/governance/test_support_v2_contracts_evaluation.py",
@@ -368,7 +352,6 @@
           "tests/conformance/test_lazy_facade.py",
           "tests/conformance/test_misc_changed_totality.py",
           "tests/conformance/test_package_import_graph.py",
-          "tests/conformance/test_pheromone_exploration_manifest_driven.py",
           "tests/conformance/test_report_v2.py",
           "tests/conformance/test_replay_checker_changed_totality.py",
           "tests/conformance/test_schema_catalog.py",
@@ -400,7 +383,6 @@
           "tests/conformance/test_driver_invocation_v2_adversarial.py",
           "tests/conformance/test_layer_action_and_kind_interactions.py",
           "tests/conformance/test_manifest_driven_fixture_edges.py",
-          "tests/conformance/test_pheromone_kind_profile_manifest_driven.py",
           "tests/conformance/test_protocol_version_fail_closed.py",
           "tests/conformance/test_public_abi_boundary.py",
           "tests/conformance/test_public_api_lifecycle.py",
@@ -489,7 +471,7 @@
         "category": "generated_facade",
         "generator": "scripts/generate_governance_public_api.py",
         "path": "pheroos/governance/_public_api.py",
-        "sha256": "sha256:3f15b34f378b94a347c4dae1edc4baa44a15c6308a2195c32bda0ab32e5cef1c"
+        "sha256": "sha256:fe8bdf90474f9fc88edd5df31a6e030006a826c200698bd5dff4afdc722c9d04"
       }
     ],
     "groups": [

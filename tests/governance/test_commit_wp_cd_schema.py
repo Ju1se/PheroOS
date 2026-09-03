@@ -65,6 +65,8 @@ from pheroos.governance.support_lease import (
 from pheroos.protocol import (
     COMMIT_WIRE_VERSION,
     CommitAssurance,
+)
+from pheroos.protocol.commit_wire import (
     canonical_commit_payload,
     canonical_commit_set,
     commit_payload_fingerprint,

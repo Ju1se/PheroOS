@@ -44,9 +44,7 @@ from pheroos.governance._commit_validation import (
     require_commit_text,
 )
 
-from pheroos.governance._legacy.authority_registry import (
-    LEGACY_AUTHORITY_REGISTRY,
-)
+from pheroos.governance._process_state import PROCESS_STATE
 
 from pheroos.governance.authority import AuthorityLevel, can_verify
 
@@ -358,7 +356,7 @@ def initialize_distributed_commit_state(
         schema="pheroos-distributed-state-base-v1",
         profile=portable.profile,
     )
-    with LEGACY_AUTHORITY_REGISTRY.transaction() as registry:
+    with PROCESS_STATE.transaction() as registry:
         cursor = registry.get(_LEGACY_DISTRIBUTED_STATE_CURSORS, authority_key)
         if cursor is not None:
             if cursor.base_fingerprint != base_fingerprint:

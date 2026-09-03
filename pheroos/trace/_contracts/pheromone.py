@@ -23,6 +23,57 @@ def _contract(
 
 
 PHEROMONE_TRACE_EVENT_CONTRACTS: tuple[TraceEventContract, ...] = (
+    # Collective replay events remain valid as private attention-profile
+    # lineage.  They are deliberately absent from the manifest conformance
+    # registry; keeping their trace contracts lets the implemented Hybrid
+    # profile replay and audit its internal evidence without making swarm
+    # semantics mandatory for baseline implementations.
+    _contract("explore", frozenset({"scout_count"})),
+    _contract(
+        "scout_report",
+        frozenset(
+            {
+                "scout_id",
+                "candidate_id",
+                "evidence_id",
+                "provenance",
+                "support",
+                "source_trace_event_id",
+                "verification_trace_event_id",
+            }
+        ),
+    ),
+    *(
+        _contract(
+            event_type,
+            frozenset(
+                {
+                    "source_id",
+                    "candidate_id",
+                    "strength",
+                    "provenance",
+                    "source_trace_event_id",
+                    "verification_trace_event_id",
+                }
+            ),
+        )
+        for event_type in ("recruit", "inhibit")
+    ),
+    _contract(
+        "candidate_score",
+        frozenset(
+            {
+                "scores",
+                "score_breakdown",
+                "scout_diversity",
+                "pheromone_source_diversity",
+            }
+        ),
+    ),
+    _contract(
+        "consensus_check",
+        frozenset({"quorum_threshold", "min_independent_scouts"}),
+    ),
     _contract(
         "pheromone_deposit",
         frozenset(

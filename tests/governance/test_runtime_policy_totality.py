@@ -11,7 +11,8 @@ from pheroos.governance.runtime_policy import (
     resolve_collective_fallback_id,
     validate_collective_runtime_policy,
 )
-from pheroos.protocol import CollectiveDecisionPolicy, PheromoneKindProfile
+from pheroos.protocol import CollectiveDecisionPolicy
+from pheroos.protocol.models import PheromoneKindProfile
 
 
 LAYER_IDS = ("reactive", "learned", "evolutionary", "metacognitive")

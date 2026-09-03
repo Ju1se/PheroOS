@@ -35,7 +35,7 @@ from pheroos.conformance.checks import _hybrid_trace_replay as _replay
 from pheroos.conformance.checks import _hybrid_trace_score as _score
 from pheroos.conformance.checks import _hybrid_trace_shared as _shared
 from pheroos.conformance.report import CheckResult
-from pheroos.governance import replay_state_from_hybrid_step
+from pheroos.governance._swarm.replay import replay_state_from_hybrid_step
 from pheroos.protocol import load_capability_manifest
 from pheroos.trace import TraceEvent
 from tests.conformance import test_swarm_protocol_conformance as _scenario_corpus

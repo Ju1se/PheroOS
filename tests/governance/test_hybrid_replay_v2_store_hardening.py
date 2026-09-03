@@ -7,7 +7,7 @@ from typing import Any, cast
 import pytest
 
 import pheroos.governance._hybrid_replay_v2.projection as projection_module
-from pheroos.governance import replay_state_from_hybrid_step
+from pheroos.governance._swarm.replay import replay_state_from_hybrid_step
 from pheroos.governance._authority_session_v2.contracts import (
     GovernanceAuthorityBindingErrorV2,
 )

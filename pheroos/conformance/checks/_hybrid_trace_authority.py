@@ -5,7 +5,7 @@ from dataclasses import dataclass, field
 from math import fsum
 from typing import Any, cast
 
-from pheroos.governance import HybridReplayState
+from pheroos.governance._swarm.records import HybridReplayState
 from pheroos.governance.pheromone import BREAKDOWN_CATEGORIES
 from pheroos.protocol.models import CapabilityManifest, collective_fallback_id
 from pheroos.trace import TraceEvent

@@ -20,7 +20,6 @@ if TYPE_CHECKING:
     from pheroos.governance.authority import AuthorityLevel as AuthorityLevel
     from pheroos.governance.candidate import Candidate as Candidate
     from pheroos.governance.candidate import CandidateSet as CandidateSet
-    from pheroos.governance.target import CanonicalTarget as CanonicalTarget
     from pheroos.governance.collective import (
         CollectiveDecisionState as CollectiveDecisionState,
     )
@@ -47,24 +46,16 @@ if TYPE_CHECKING:
         COMMIT_WIRE_VERSION as COMMIT_WIRE_VERSION,
     )
     from pheroos.governance.commit_state import CommitAssurance as CommitAssurance
-    from pheroos.governance.commit_state import CommitReplayState as CommitReplayState
-    from pheroos.governance.commit_state import CommitWindowState as CommitWindowState
     from pheroos.governance.stop_signal import CommitAction as CommitAction
-    from pheroos.governance.commit_state import DecisionOutcome as DecisionOutcome
     from pheroos.governance.commit_state import (
         DecisionOutcomeKind as DecisionOutcomeKind,
     )
     from pheroos.governance.commit_state import DecisionPhase as DecisionPhase
-    from pheroos.governance.commit_state import DecisionProgress as DecisionProgress
     from pheroos.governance.commit_state_v2 import ReplayNamespace as ReplayNamespace
     from pheroos.governance.commit_state import ReplayReceipt as ReplayReceipt
     from pheroos.governance.evidence import EvidenceEdge as EvidenceEdge
     from pheroos.governance.evidence import EvidenceGraph as EvidenceGraph
     from pheroos.governance.evidence import EvidenceNode as EvidenceNode
-    from pheroos.governance.collective import (
-        HybridCollectiveStep as HybridCollectiveStep,
-    )
-    from pheroos.governance.collective import HybridReplayState as HybridReplayState
     from pheroos.governance.collective import InhibitionSignal as InhibitionSignal
     from pheroos.governance.layer_coordination import (
         LayerCoordinationPolicy as LayerCoordinationPolicy,
@@ -83,50 +74,9 @@ if TYPE_CHECKING:
         OutputAuthorizationResult as OutputAuthorizationResult,
     )
     from pheroos.governance.output import OutputContract as OutputContract
-    from pheroos.governance.pheromone import (
-        PHEROMONE_EXTENSION_PREFIXES as PHEROMONE_EXTENSION_PREFIXES,
-    )
-    from pheroos.governance.pheromone import (
-        PHEROMONE_KIND_PROFILE_MAP_VERSION as PHEROMONE_KIND_PROFILE_MAP_VERSION,
-    )
-    from pheroos.governance.pheromone import (
-        PheromoneBatchResult as PheromoneBatchResult,
-    )
-    from pheroos.governance.pheromone import (
-        PheromoneBudgetState as PheromoneBudgetState,
-    )
-    from pheroos.governance.pheromone import (
-        PheromoneDiffusionPolicy as PheromoneDiffusionPolicy,
-    )
-    from pheroos.governance.pheromone import PheromoneEdge as PheromoneEdge
-    from pheroos.governance.pheromone import (
-        PheromoneExplorationObservation as PheromoneExplorationObservation,
-    )
-    from pheroos.governance.pheromone_feedback import (
-        PheromoneFeedback as PheromoneFeedback,
-    )
-    from pheroos.protocol.models import PheromoneKindProfile as PheromoneKindProfile
     from pheroos.governance.authority_domain import (
         PreparedGovernanceTransition as PreparedGovernanceTransition,
     )
-    from pheroos.governance.pheromone import (
-        PheromoneLifecycleRecord as PheromoneLifecycleRecord,
-    )
-    from pheroos.governance.pheromone import (
-        PheromoneNeighborhood as PheromoneNeighborhood,
-    )
-    from pheroos.governance.pheromone import (
-        PheromoneNormalizationRecord as PheromoneNormalizationRecord,
-    )
-    from pheroos.governance.pheromone import PheromonePolicy as PheromonePolicy
-    from pheroos.governance.pheromone_feedback import (
-        PheromoneReinforcementResult as PheromoneReinforcementResult,
-    )
-    from pheroos.governance.pheromone import (
-        PheromoneScoreResult as PheromoneScoreResult,
-    )
-    from pheroos.governance.pheromone import PheromoneSubject as PheromoneSubject
-    from pheroos.governance.pheromone import PheromoneTrail as PheromoneTrail
     from pheroos.governance.policy_adjustment import (
         PolicyAdjustmentBatchResult as PolicyAdjustmentBatchResult,
     )
@@ -142,15 +92,8 @@ if TYPE_CHECKING:
     from pheroos.governance.quorum import QuorumDecision as QuorumDecision
     from pheroos.governance.quorum import QuorumSignal as QuorumSignal
     from pheroos.governance.collective import RecruitmentSignal as RecruitmentSignal
-    from pheroos.governance.recovery import RecoveryTrace as RecoveryTrace
     from pheroos.governance.policy_adjustment import (
         RunScopedPolicyOverlay as RunScopedPolicyOverlay,
-    )
-    from pheroos.governance.pheromone import (
-        SUPPORTED_PHEROMONE_KINDS as SUPPORTED_PHEROMONE_KINDS,
-    )
-    from pheroos.governance.pheromone import (
-        SUPPORTED_PHEROMONE_SUBJECT_TYPES as SUPPORTED_PHEROMONE_SUBJECT_TYPES,
     )
     from pheroos.governance.collective import ScoutReport as ScoutReport
     from pheroos.governance.signal import Signal as Signal
@@ -162,13 +105,10 @@ if TYPE_CHECKING:
     )
     from pheroos.governance.stop_signal import StopSignal as StopSignal
     from pheroos.governance.layer_coordination import StrategyBias as StrategyBias
-    from pheroos.governance.trace import TraceEvent as TraceEvent
+    from pheroos.trace import TraceEvent as TraceEvent
     from pheroos.governance.commit_numeric import WEIGHT_SCALE as WEIGHT_SCALE
     from pheroos.governance.layer_coordination import (
         allocate_layer_weights as allocate_layer_weights,
-    )
-    from pheroos.governance.commit_state import (
-        advance_commit_window_state as advance_commit_window_state,
     )
     from pheroos.governance.permission import (
         action_permission_is_authoritative as action_permission_is_authoritative,
@@ -186,31 +126,13 @@ if TYPE_CHECKING:
         apply_policy_adjustment_overlay as apply_policy_adjustment_overlay,
     )
     from pheroos.governance.authority import can_verify as can_verify
-    from pheroos.governance.pheromone import (
-        canonical_pheromone_kind_profiles as canonical_pheromone_kind_profiles,
-    )
-    from pheroos.governance.commit_numeric import (
-        canonical_commit_payload as canonical_commit_payload,
-    )
-    from pheroos.governance.commit_numeric import (
-        canonical_commit_set as canonical_commit_set,
-    )
     from pheroos.governance.commit_numeric import checked_add as checked_add
     from pheroos.governance.commit_numeric import checked_multiply as checked_multiply
     from pheroos.governance.commit_numeric import checked_subtract as checked_subtract
     from pheroos.governance.collective import (
         candidate_score_lineage as candidate_score_lineage,
     )
-    from pheroos.governance.pheromone import (
-        clip_pheromone_deposit_strength as clip_pheromone_deposit_strength,
-    )
-    from pheroos.governance.pheromone import (
-        clip_pheromone_strength as clip_pheromone_strength,
-    )
     from pheroos.governance.commit_numeric import ceil_scaled_count as ceil_scaled_count
-    from pheroos.governance.pheromone import (
-        collect_pheromone_source_diversity as collect_pheromone_source_diversity,
-    )
     from pheroos.governance.quorum import commit_candidate as commit_candidate
     from pheroos.governance.schema import commit_schema as commit_schema
     from pheroos.governance.commit_state import (
@@ -218,12 +140,6 @@ if TYPE_CHECKING:
     )
     from pheroos.governance.commit_state import (
         commit_replay_state_contains as commit_replay_state_contains,
-    )
-    from pheroos.governance.commit_state import (
-        commit_replay_state_is_authoritative as commit_replay_state_is_authoritative,
-    )
-    from pheroos.governance.commit_state import (
-        commit_replay_state_is_current as commit_replay_state_is_current,
     )
     from pheroos.governance.commit_state import (
         commit_replay_state_matches as commit_replay_state_matches,
@@ -238,41 +154,13 @@ if TYPE_CHECKING:
         commit_window_state_fingerprint as commit_window_state_fingerprint,
     )
     from pheroos.governance.commit_state import (
-        commit_window_state_is_authoritative as commit_window_state_is_authoritative,
-    )
-    from pheroos.governance.commit_state import (
         commit_window_state_payload as commit_window_state_payload,
-    )
-    from pheroos.governance.commit_numeric import (
-        commit_payload_fingerprint as commit_payload_fingerprint,
-    )
-    from pheroos.governance.pheromone import deposit_pheromone as deposit_pheromone
-    from pheroos.governance.pheromone import (
-        deposit_pheromone_trails as deposit_pheromone_trails,
-    )
-    from pheroos.governance.pheromone import (
-        diffuse_pheromone_trails as diffuse_pheromone_trails,
-    )
-    from pheroos.governance.pheromone import (
-        diffuse_pheromone_trails_with_records as diffuse_pheromone_trails_with_records,
-    )
-    from pheroos.governance.pheromone import (
-        diffusion_policy_from_collective as diffusion_policy_from_collective,
     )
     from pheroos.governance.collective import (
         evaluate_collective_decision as evaluate_collective_decision,
     )
     from pheroos.governance.collective import (
         evaluate_collective_decision_step as evaluate_collective_decision_step,
-    )
-    from pheroos.governance.collective import (
-        evaluate_hybrid_collective_step as evaluate_hybrid_collective_step,
-    )
-    from pheroos.governance.collective import (
-        hybrid_collective_step_is_authoritative as hybrid_collective_step_is_authoritative,
-    )
-    from pheroos.governance.collective import (
-        hybrid_replay_state_is_authoritative as hybrid_replay_state_is_authoritative,
     )
     from pheroos.governance.layer_coordination import (
         evaluate_layer_coordination as evaluate_layer_coordination,
@@ -283,30 +171,14 @@ if TYPE_CHECKING:
     from pheroos.governance.quorum import (
         evaluate_quorum_decision as evaluate_quorum_decision,
     )
-    from pheroos.governance.pheromone import evaporate_trails as evaporate_trails
-    from pheroos.governance.pheromone import (
-        evaporate_trails_with_records as evaporate_trails_with_records,
-    )
-    from pheroos.governance.pheromone import (
-        is_extension_pheromone_value as is_extension_pheromone_value,
-    )
     from pheroos.governance.permission import (
         issue_action_permission as issue_action_permission,
-    )
-    from pheroos.governance.commit_state import (
-        initialize_commit_replay_state as initialize_commit_replay_state,
-    )
-    from pheroos.governance.commit_state import (
-        initialize_commit_window_state as initialize_commit_window_state,
     )
     from pheroos.governance.layer_coordination import (
         layer_coordination_policy_from_collective as layer_coordination_policy_from_collective,
     )
     from pheroos.governance.layer_coordination import (
         layer_action_effect as layer_action_effect,
-    )
-    from pheroos.governance.layer_coordination import (
-        materialize_layer_pheromone_proposals as materialize_layer_pheromone_proposals,
     )
     from pheroos.governance.commit_numeric import multiply_scaled as multiply_scaled
     from pheroos.governance.commit_numeric import (
@@ -333,35 +205,10 @@ if TYPE_CHECKING:
     from pheroos.governance.principal import (
         principal_verification_payload as principal_verification_payload,
     )
-    from pheroos.governance.pheromone import (
-        normalize_legacy_pheromone_trail as normalize_legacy_pheromone_trail,
-    )
-    from pheroos.governance.pheromone import (
-        observe_pheromone_exploration as observe_pheromone_exploration,
-    )
     from pheroos.governance.output import output_authorized as output_authorized
     from pheroos.governance.output import output_gate_lineage as output_gate_lineage
-    from pheroos.governance.pheromone import pheromone_lineage as pheromone_lineage
-    from pheroos.governance.pheromone import (
-        pheromone_policy_from_collective as pheromone_policy_from_collective,
-    )
-    from pheroos.governance.pheromone import (
-        pheromone_subject_id as pheromone_subject_id,
-    )
-    from pheroos.governance.pheromone import (
-        pheromone_subject_type as pheromone_subject_type,
-    )
-    from pheroos.governance.pheromone_feedback import (
-        reinforce_pheromone_trails as reinforce_pheromone_trails,
-    )
-    from pheroos.governance.pheromone_feedback import (
-        reinforce_pheromone_trails_with_records as reinforce_pheromone_trails_with_records,
-    )
     from pheroos.governance.stop_signal import (
         resolve_stop_signal as resolve_stop_signal,
-    )
-    from pheroos.governance.commit_state import (
-        record_commit_replay_receipts as record_commit_replay_receipts,
     )
     from pheroos.governance.commit_state import (
         replay_receipt_fingerprint as replay_receipt_fingerprint,
@@ -369,25 +216,10 @@ if TYPE_CHECKING:
     from pheroos.governance.commit_state import (
         replay_receipt_payload as replay_receipt_payload,
     )
-    from pheroos.governance.commit_state import (
-        restart_commit_window_epoch as restart_commit_window_epoch,
-    )
-    from pheroos.governance.collective import (
-        replay_state_from_hybrid_step as replay_state_from_hybrid_step,
-    )
     from pheroos.governance.commit_numeric import (
         require_scaled_integer as require_scaled_integer,
     )
     from pheroos.governance.collective import score_candidates as score_candidates
-    from pheroos.governance.pheromone import (
-        score_pheromone_trails as score_pheromone_trails,
-    )
-    from pheroos.governance.pheromone import (
-        score_pheromone_trails_result as score_pheromone_trails_result,
-    )
-    from pheroos.governance.pheromone import (
-        score_pheromone_trails_with_breakdown as score_pheromone_trails_with_breakdown,
-    )
     from pheroos.governance.commit_semantics import (
         select_terminal_outcome_kind as select_terminal_outcome_kind,
     )
@@ -419,21 +251,6 @@ if TYPE_CHECKING:
     from pheroos.governance.layer_coordination import (
         validate_layer_proposal as validate_layer_proposal,
     )
-    from pheroos.governance.pheromone import (
-        validate_pheromone_budget_state as validate_pheromone_budget_state,
-    )
-    from pheroos.governance.pheromone_feedback import (
-        validate_pheromone_feedback as validate_pheromone_feedback,
-    )
-    from pheroos.governance.pheromone import (
-        validate_pheromone_policy as validate_pheromone_policy,
-    )
-    from pheroos.governance.pheromone import (
-        validate_pheromone_topology as validate_pheromone_topology,
-    )
-    from pheroos.governance.pheromone import (
-        validate_pheromone_trail as validate_pheromone_trail,
-    )
     from pheroos.governance.policy_adjustment import (
         validate_policy_adjustment_proposal as validate_policy_adjustment_proposal,
     )
@@ -447,16 +264,10 @@ if TYPE_CHECKING:
         validate_strategy_bias as validate_strategy_bias,
     )
     from pheroos.governance.commit_state import (
-        decision_outcome_is_authoritative as decision_outcome_is_authoritative,
-    )
-    from pheroos.governance.commit_state import (
         decision_outcome_fingerprint as decision_outcome_fingerprint,
     )
     from pheroos.governance.commit_state import (
         decision_outcome_payload as decision_outcome_payload,
-    )
-    from pheroos.governance.commit_state import (
-        decision_progress_is_authoritative as decision_progress_is_authoritative,
     )
     from pheroos.governance.commit_state import (
         decision_progress_fingerprint as decision_progress_fingerprint,
@@ -476,9 +287,6 @@ if TYPE_CHECKING:
     )
     from pheroos.governance.challenge import ChallengeCoverage as ChallengeCoverage
     from pheroos.governance.challenge import ChallengeResult as ChallengeResult
-    from pheroos.governance.risk import (
-        CommitThresholdSnapshot as CommitThresholdSnapshot,
-    )
     from pheroos.governance.observation import (
         CounterevidenceDisposition as CounterevidenceDisposition,
     )
@@ -492,9 +300,6 @@ if TYPE_CHECKING:
     from pheroos.governance.support_lease import (
         EligiblePrincipalCluster as EligiblePrincipalCluster,
     )
-    from pheroos.governance.support_lease import (
-        EligiblePrincipalSnapshot as EligiblePrincipalSnapshot,
-    )
     from pheroos.governance.evidence_binding import EvidenceBinding as EvidenceBinding
     from pheroos.governance.evidence_binding import (
         EvidenceGroupContribution as EvidenceGroupContribution,
@@ -506,7 +311,6 @@ if TYPE_CHECKING:
     from pheroos.governance.observation import (
         ObservationPolarity as ObservationPolarity,
     )
-    from pheroos.governance.risk import RiskAssessment as RiskAssessment
     from pheroos.governance.risk_v2 import RiskBand as RiskBand
     from pheroos.governance.evidence_binding import (
         SourceDomainContribution as SourceDomainContribution,
@@ -514,7 +318,6 @@ if TYPE_CHECKING:
     from pheroos.governance.support_lease import (
         SupportEquivocationFinding as SupportEquivocationFinding,
     )
-    from pheroos.governance.support_lease import SupportLease as SupportLease
     from pheroos.governance.support_lease import (
         SupportLeaseEvaluation as SupportLeaseEvaluation,
     )
@@ -523,9 +326,6 @@ if TYPE_CHECKING:
     )
     from pheroos.governance.support_lease import (
         SupportLeaseProposal as SupportLeaseProposal,
-    )
-    from pheroos.governance.support_lease import (
-        SupportLeaseRevocation as SupportLeaseRevocation,
     )
     from pheroos.governance.support_lease import (
         SupportLeaseStatus as SupportLeaseStatus,
@@ -554,9 +354,6 @@ if TYPE_CHECKING:
         commit_threshold_snapshot_fingerprint as commit_threshold_snapshot_fingerprint,
     )
     from pheroos.governance.risk import (
-        commit_threshold_snapshot_is_authoritative as commit_threshold_snapshot_is_authoritative,
-    )
-    from pheroos.governance.risk import (
         commit_threshold_snapshot_matches as commit_threshold_snapshot_matches,
     )
     from pheroos.governance.risk import (
@@ -582,9 +379,6 @@ if TYPE_CHECKING:
     )
     from pheroos.governance.support_lease import (
         eligible_principal_snapshot_fingerprint as eligible_principal_snapshot_fingerprint,
-    )
-    from pheroos.governance.support_lease import (
-        eligible_principal_snapshot_is_authoritative as eligible_principal_snapshot_is_authoritative,
     )
     from pheroos.governance.support_lease import (
         eligible_principal_snapshot_matches as eligible_principal_snapshot_matches,
@@ -622,18 +416,8 @@ if TYPE_CHECKING:
     from pheroos.governance.support_lease import (
         expire_support_lease as expire_support_lease,
     )
-    from pheroos.governance.risk import (
-        issue_commit_threshold_snapshot as issue_commit_threshold_snapshot,
-    )
     from pheroos.governance.observation import (
         issue_counterevidence_disposition as issue_counterevidence_disposition,
-    )
-    from pheroos.governance.support_lease import (
-        issue_eligible_principal_snapshot as issue_eligible_principal_snapshot,
-    )
-    from pheroos.governance.risk import issue_risk_assessment as issue_risk_assessment
-    from pheroos.governance.support_lease import (
-        issue_support_lease as issue_support_lease,
     )
     from pheroos.governance.observation import (
         observation_attestation_fingerprint as observation_attestation_fingerprint,
@@ -647,14 +431,8 @@ if TYPE_CHECKING:
     from pheroos.governance.evidence_binding import (
         rebuild_evidence_binding_roots as rebuild_evidence_binding_roots,
     )
-    from pheroos.governance.support_lease import (
-        revoke_support_lease as revoke_support_lease,
-    )
     from pheroos.governance.risk import (
         risk_assessment_fingerprint as risk_assessment_fingerprint,
-    )
-    from pheroos.governance.risk import (
-        risk_assessment_is_authoritative as risk_assessment_is_authoritative,
     )
     from pheroos.governance.risk import (
         risk_assessment_matches as risk_assessment_matches,
@@ -670,9 +448,6 @@ if TYPE_CHECKING:
         support_lease_fingerprint as support_lease_fingerprint,
     )
     from pheroos.governance.support_lease import (
-        support_lease_is_authoritative as support_lease_is_authoritative,
-    )
-    from pheroos.governance.support_lease import (
         support_lease_payload as support_lease_payload,
     )
     from pheroos.governance.support_lease import (
@@ -685,9 +460,6 @@ if TYPE_CHECKING:
         support_lease_revocation_fingerprint as support_lease_revocation_fingerprint,
     )
     from pheroos.governance.support_lease import (
-        support_lease_revocation_is_authoritative as support_lease_revocation_is_authoritative,
-    )
-    from pheroos.governance.support_lease import (
         support_lease_revocation_matches as support_lease_revocation_matches,
     )
     from pheroos.governance.support_lease import (
@@ -695,9 +467,6 @@ if TYPE_CHECKING:
     )
     from pheroos.governance.support_lease import (
         support_lease_status as support_lease_status,
-    )
-    from pheroos.governance.support_lease import (
-        switch_support_lease as switch_support_lease,
     )
     from pheroos.governance.challenge import (
         verified_challenge_fingerprint as verified_challenge_fingerprint,
@@ -729,10 +498,6 @@ if TYPE_CHECKING:
     from pheroos.governance.observation import (
         verify_observation_attestation as verify_observation_attestation,
     )
-    from pheroos.governance.attention import (
-        ATTENTION_AUTHORITY_SCOPE as ATTENTION_AUTHORITY_SCOPE,
-    )
-    from pheroos.governance.attention import ATTENTION_CHANNEL as ATTENTION_CHANNEL
     from pheroos.governance.certificate import (
         CERTIFICATE_HASH_ALGORITHM as CERTIFICATE_HASH_ALGORITHM,
     )
@@ -744,9 +509,6 @@ if TYPE_CHECKING:
     )
     from pheroos.governance.certificate import (
         EVIDENCE_COMMIT_CERTIFICATE_VERSION as EVIDENCE_COMMIT_CERTIFICATE_VERSION,
-    )
-    from pheroos.governance.attention import (
-        HYBRID_ATTENTION_PROFILE as HYBRID_ATTENTION_PROFILE,
     )
     from pheroos.governance.hybrid_commit import (
         HYBRID_COMMIT_BINDING_PROFILE as HYBRID_COMMIT_BINDING_PROFILE,
@@ -772,16 +534,6 @@ if TYPE_CHECKING:
     from pheroos.governance.certificate import (
         OUTCOME_CERTIFICATE_VERSION as OUTCOME_CERTIFICATE_VERSION,
     )
-    from pheroos.governance.attention import AttentionBreakdown as AttentionBreakdown
-    from pheroos.governance.attention import (
-        AttentionCandidatePriority as AttentionCandidatePriority,
-    )
-    from pheroos.governance.attention import (
-        AttentionReopenEligibility as AttentionReopenEligibility,
-    )
-    from pheroos.governance.attention import (
-        AttentionSubjectPriority as AttentionSubjectPriority,
-    )
     from pheroos.governance.commit import CandidateClaimBinding as CandidateClaimBinding
     from pheroos.governance.commit import CandidateCommitInput as CandidateCommitInput
     from pheroos.governance.commit import (
@@ -801,26 +553,13 @@ if TYPE_CHECKING:
     from pheroos.governance.commit_state import (
         CommitFinalityStatus as CommitFinalityStatus,
     )
-    from pheroos.governance.commit_state import (
-        CommitFinalityVerification as CommitFinalityVerification,
-    )
-    from pheroos.governance.commit_state import (
-        CommitLivenessInput as CommitLivenessInput,
-    )
     from pheroos.governance.output import CommitOutputAction as CommitOutputAction
     from pheroos.governance.output import (
         CommitOutputAuthorization as CommitOutputAuthorization,
     )
     from pheroos.governance.commit import CommitReasonCode as CommitReasonCode
-    from pheroos.governance.commit_state import CommitWindowSeal as CommitWindowSeal
-    from pheroos.governance.support_lease import (
-        EligibleMembershipEpochState as EligibleMembershipEpochState,
-    )
     from pheroos.governance.historical_certificate import (
         EvidenceCommitCertificate as EvidenceCommitCertificate,
-    )
-    from pheroos.governance.attention import (
-        ExplorationDirective as ExplorationDirective,
     )
     from pheroos.governance.hybrid_commit import (
         HybridCommitAttentionStatus as HybridCommitAttentionStatus,
@@ -843,25 +582,10 @@ if TYPE_CHECKING:
     from pheroos.governance.hybrid_commit import HybridCommitStep as HybridCommitStep
     from pheroos.governance.certificate import LocalCommitReceipt as LocalCommitReceipt
     from pheroos.governance.certificate import OutcomeCertificate as OutcomeCertificate
-    from pheroos.governance.risk import (
-        RiskAssessmentChainState as RiskAssessmentChainState,
-    )
     from pheroos.governance.support_lease import (
         SupportLeaseReplayReceipt as SupportLeaseReplayReceipt,
     )
-    from pheroos.governance.support_lease import (
-        SupportLeaseReplayState as SupportLeaseReplayState,
-    )
     from pheroos.governance.commit import assess_optimal_commit as assess_optimal_commit
-    from pheroos.governance.attention import (
-        attention_breakdown_fingerprint as attention_breakdown_fingerprint,
-    )
-    from pheroos.governance.attention import (
-        attention_breakdown_is_authoritative as attention_breakdown_is_authoritative,
-    )
-    from pheroos.governance.attention import (
-        attention_breakdown_payload as attention_breakdown_payload,
-    )
     from pheroos.governance.output import (
         authorize_terminal_execution as authorize_terminal_execution,
     )
@@ -902,16 +626,10 @@ if TYPE_CHECKING:
         commit_finality_verification_fingerprint as commit_finality_verification_fingerprint,
     )
     from pheroos.governance.commit_state import (
-        commit_finality_verification_is_authoritative as commit_finality_verification_is_authoritative,
-    )
-    from pheroos.governance.commit_state import (
         commit_finality_verification_payload as commit_finality_verification_payload,
     )
     from pheroos.governance.commit_state import (
         commit_liveness_input_fingerprint as commit_liveness_input_fingerprint,
-    )
-    from pheroos.governance.commit_state import (
-        commit_liveness_input_is_authoritative as commit_liveness_input_is_authoritative,
     )
     from pheroos.governance.commit_state import (
         commit_liveness_input_payload as commit_liveness_input_payload,
@@ -929,40 +647,13 @@ if TYPE_CHECKING:
         commit_window_seal_fingerprint as commit_window_seal_fingerprint,
     )
     from pheroos.governance.commit_state import (
-        commit_window_seal_for_state as commit_window_seal_for_state,
-    )
-    from pheroos.governance.commit_state import (
-        commit_window_seal_is_authoritative as commit_window_seal_is_authoritative,
-    )
-    from pheroos.governance.commit_state import (
-        commit_window_seal_is_current as commit_window_seal_is_current,
-    )
-    from pheroos.governance.commit_state import (
-        commit_window_seal_matches_receipt as commit_window_seal_matches_receipt,
-    )
-    from pheroos.governance.commit_state import (
         commit_window_seal_payload as commit_window_seal_payload,
-    )
-    from pheroos.governance.commit_state import (
-        commit_window_state_is_current as commit_window_state_is_current,
     )
     from pheroos.governance.output import (
         deliver_terminal_outcome as deliver_terminal_outcome,
     )
-    from pheroos.governance.attention import (
-        derive_attention_breakdown as derive_attention_breakdown,
-    )
-    from pheroos.governance.attention import (
-        derive_exploration_directive as derive_exploration_directive,
-    )
     from pheroos.governance.support_lease import (
         eligible_membership_epoch_state_fingerprint as eligible_membership_epoch_state_fingerprint,
-    )
-    from pheroos.governance.support_lease import (
-        eligible_membership_epoch_state_is_authoritative as eligible_membership_epoch_state_is_authoritative,
-    )
-    from pheroos.governance.support_lease import (
-        eligible_membership_epoch_state_is_current as eligible_membership_epoch_state_is_current,
     )
     from pheroos.governance.support_lease import (
         eligible_membership_epoch_state_payload as eligible_membership_epoch_state_payload,
@@ -979,23 +670,8 @@ if TYPE_CHECKING:
     from pheroos.governance.historical_certificate import (
         evidence_commit_certificate_payload as evidence_commit_certificate_payload,
     )
-    from pheroos.governance.attention import (
-        evaluate_hybrid_attention_step as evaluate_hybrid_attention_step,
-    )
-    from pheroos.governance.hybrid_commit import (
-        evaluate_hybrid_commit_evaluation as evaluate_hybrid_commit_evaluation,
-    )
     from pheroos.governance.hybrid_commit import (
         evaluate_hybrid_commit_step as evaluate_hybrid_commit_step,
-    )
-    from pheroos.governance.attention import (
-        exploration_directive_fingerprint as exploration_directive_fingerprint,
-    )
-    from pheroos.governance.attention import (
-        exploration_directive_is_authoritative as exploration_directive_is_authoritative,
-    )
-    from pheroos.governance.attention import (
-        exploration_directive_payload as exploration_directive_payload,
     )
     from pheroos.governance.hybrid_commit import (
         hybrid_attention_projection as hybrid_attention_projection,
@@ -1030,35 +706,11 @@ if TYPE_CHECKING:
     from pheroos.governance.hybrid_commit import (
         hybrid_commit_truth_projection as hybrid_commit_truth_projection,
     )
-    from pheroos.governance.risk import (
-        initialize_risk_assessment_chain as initialize_risk_assessment_chain,
-    )
-    from pheroos.governance.support_lease import (
-        initialize_support_lease_replay_state as initialize_support_lease_replay_state,
-    )
     from pheroos.governance.commit import (
         issue_commit_evaluation_context as issue_commit_evaluation_context,
     )
-    from pheroos.governance.commit_state import (
-        issue_commit_liveness_input as issue_commit_liveness_input,
-    )
-    from pheroos.governance.certificate import (
-        issue_evidence_commit_certificate as issue_evidence_commit_certificate,
-    )
-    from pheroos.governance.certificate import (
-        issue_local_commit_receipt as issue_local_commit_receipt,
-    )
-    from pheroos.governance.certificate import (
-        issue_outcome_certificate as issue_outcome_certificate,
-    )
     from pheroos.governance.certificate import (
         local_commit_receipt_fingerprint as local_commit_receipt_fingerprint,
-    )
-    from pheroos.governance.certificate import (
-        local_commit_receipt_is_authoritative as local_commit_receipt_is_authoritative,
-    )
-    from pheroos.governance.certificate import (
-        local_commit_receipt_matches as local_commit_receipt_matches,
     )
     from pheroos.governance.certificate import (
         local_commit_receipt_payload as local_commit_receipt_payload,
@@ -1073,9 +725,6 @@ if TYPE_CHECKING:
         outcome_certificate_from_payload as outcome_certificate_from_payload,
     )
     from pheroos.governance.certificate import (
-        outcome_certificate_is_authoritative as outcome_certificate_is_authoritative,
-    )
-    from pheroos.governance.certificate import (
         outcome_certificate_payload as outcome_certificate_payload,
     )
     from pheroos.governance.certificate import (
@@ -1084,26 +733,11 @@ if TYPE_CHECKING:
     from pheroos.governance.commit import (
         rebuild_commit_assessment_roots as rebuild_commit_assessment_roots,
     )
-    from pheroos.governance.commit_state import (
-        reduce_commit_liveness as reduce_commit_liveness,
-    )
-    from pheroos.governance.commit_state import (
-        reset_commit_window_state as reset_commit_window_state,
-    )
     from pheroos.governance.risk import (
         risk_assessment_chain_state_fingerprint as risk_assessment_chain_state_fingerprint,
     )
     from pheroos.governance.risk import (
-        risk_assessment_chain_state_is_authoritative as risk_assessment_chain_state_is_authoritative,
-    )
-    from pheroos.governance.risk import (
-        risk_assessment_chain_state_is_current as risk_assessment_chain_state_is_current,
-    )
-    from pheroos.governance.risk import (
         risk_assessment_chain_state_payload as risk_assessment_chain_state_payload,
-    )
-    from pheroos.governance.risk import (
-        risk_assessment_is_latest as risk_assessment_is_latest,
     )
     from pheroos.governance.support_lease import (
         support_lease_replay_receipt_payload as support_lease_replay_receipt_payload,
@@ -1112,22 +746,10 @@ if TYPE_CHECKING:
         support_lease_replay_state_fingerprint as support_lease_replay_state_fingerprint,
     )
     from pheroos.governance.support_lease import (
-        support_lease_replay_state_is_authoritative as support_lease_replay_state_is_authoritative,
-    )
-    from pheroos.governance.support_lease import (
-        support_lease_replay_state_is_current as support_lease_replay_state_is_current,
-    )
-    from pheroos.governance.support_lease import (
         support_lease_replay_state_payload as support_lease_replay_state_payload,
     )
     from pheroos.governance.historical_certificate import (
         verify_evidence_commit_certificate as verify_evidence_commit_certificate,
-    )
-    from pheroos.governance.certificate import (
-        verify_evidence_commit_finality as verify_evidence_commit_finality,
-    )
-    from pheroos.governance.certificate import (
-        verify_local_commit_finality as verify_local_commit_finality,
     )
     from pheroos.governance.certificate import (
         verify_outcome_certificate as verify_outcome_certificate,
@@ -1175,9 +797,6 @@ if TYPE_CHECKING:
         DistributedCommitProposal as DistributedCommitProposal,
     )
     from pheroos.governance.distributed_commit import (
-        DistributedCommitState as DistributedCommitState,
-    )
-    from pheroos.governance.distributed_commit import (
         DistributedFinalityDecision as DistributedFinalityDecision,
     )
     from pheroos.governance.distributed_commit import (
@@ -1218,9 +837,6 @@ if TYPE_CHECKING:
         distributed_commit_certificate_from_payload as distributed_commit_certificate_from_payload,
     )
     from pheroos.governance.distributed_commit import (
-        distributed_commit_certificate_is_current_final as distributed_commit_certificate_is_current_final,
-    )
-    from pheroos.governance.distributed_commit import (
         distributed_commit_certificate_payload as distributed_commit_certificate_payload,
     )
     from pheroos.governance.distributed_commit import (
@@ -1236,9 +852,6 @@ if TYPE_CHECKING:
         distributed_commit_proposal_from_payload as distributed_commit_proposal_from_payload,
     )
     from pheroos.governance.distributed_commit import (
-        distributed_commit_proposal_is_authoritative as distributed_commit_proposal_is_authoritative,
-    )
-    from pheroos.governance.distributed_commit import (
         distributed_commit_proposal_payload as distributed_commit_proposal_payload,
     )
     from pheroos.governance.distributed_commit import (
@@ -1248,12 +861,6 @@ if TYPE_CHECKING:
         distributed_commit_state_from_payload as distributed_commit_state_from_payload,
     )
     from pheroos.governance.distributed_commit import (
-        distributed_commit_state_is_authoritative as distributed_commit_state_is_authoritative,
-    )
-    from pheroos.governance.distributed_commit import (
-        distributed_commit_state_is_current as distributed_commit_state_is_current,
-    )
-    from pheroos.governance.distributed_commit import (
         distributed_commit_state_payload as distributed_commit_state_payload,
     )
     from pheroos.governance.distributed_commit import (
@@ -1261,9 +868,6 @@ if TYPE_CHECKING:
     )
     from pheroos.governance.distributed_commit import (
         distributed_finality_decision_from_payload as distributed_finality_decision_from_payload,
-    )
-    from pheroos.governance.distributed_commit import (
-        distributed_finality_decision_is_authoritative as distributed_finality_decision_is_authoritative,
     )
     from pheroos.governance.distributed_commit import (
         distributed_finality_decision_payload as distributed_finality_decision_payload,
@@ -1282,21 +886,6 @@ if TYPE_CHECKING:
     )
     from pheroos.governance.distributed_commit import (
         epoch_transition_decision_ref as epoch_transition_decision_ref,
-    )
-    from pheroos.governance.distributed_commit import (
-        evaluate_distributed_finality as evaluate_distributed_finality,
-    )
-    from pheroos.governance.distributed_commit import (
-        initialize_distributed_commit_state as initialize_distributed_commit_state,
-    )
-    from pheroos.governance.distributed_commit import (
-        issue_distributed_commit_certificate as issue_distributed_commit_certificate,
-    )
-    from pheroos.governance.distributed_commit import (
-        issue_distributed_commit_proposal as issue_distributed_commit_proposal,
-    )
-    from pheroos.governance.distributed_commit import (
-        issue_epoch_transition_certificate as issue_epoch_transition_certificate,
     )
     from pheroos.governance.distributed_commit import (
         portable_membership_root as portable_membership_root,
@@ -1329,19 +918,7 @@ if TYPE_CHECKING:
         quorum_witness_signing_root as quorum_witness_signing_root,
     )
     from pheroos.governance.distributed_commit import (
-        record_witness_verifications as record_witness_verifications,
-    )
-    from pheroos.governance.distributed_commit import (
-        register_distributed_commit_certificate as register_distributed_commit_certificate,
-    )
-    from pheroos.governance.distributed_commit import (
-        transition_distributed_commit_epoch as transition_distributed_commit_epoch,
-    )
-    from pheroos.governance.distributed_commit import (
         verify_distributed_commit_certificate as verify_distributed_commit_certificate,
-    )
-    from pheroos.governance.distributed_commit import (
-        verify_distributed_commit_finality as verify_distributed_commit_finality,
     )
     from pheroos.governance.distributed_commit import (
         verify_distributed_commit_proposal as verify_distributed_commit_proposal,
@@ -1351,9 +928,6 @@ if TYPE_CHECKING:
     )
     from pheroos.governance.distributed_commit import (
         verify_portable_witness_verification as verify_portable_witness_verification,
-    )
-    from pheroos.governance.distributed_commit import (
-        verify_quorum_witness as verify_quorum_witness,
     )
     from pheroos.governance.distributed_commit import (
         witness_replay_receipt as witness_replay_receipt,
@@ -1372,9 +946,6 @@ if TYPE_CHECKING:
     )
     from pheroos.governance.distributed_commit import (
         witness_verification_from_payload as witness_verification_from_payload,
-    )
-    from pheroos.governance.distributed_commit import (
-        witness_verification_is_authoritative as witness_verification_is_authoritative,
     )
     from pheroos.governance.distributed_commit import (
         witness_verification_payload as witness_verification_payload,

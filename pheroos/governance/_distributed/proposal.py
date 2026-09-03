@@ -42,9 +42,7 @@ from pheroos.governance._commit_validation import (
     require_commit_step,
 )
 
-from pheroos.governance._legacy.authority_registry import (
-    LEGACY_AUTHORITY_REGISTRY,
-)
+from pheroos.governance._process_state import PROCESS_STATE
 
 
 from pheroos.governance.certificate import (
@@ -297,7 +295,7 @@ def issue_distributed_commit_proposal(
         proposal.epoch,
         proposal.proposal_id,
     )
-    with LEGACY_AUTHORITY_REGISTRY.transaction() as registry:
+    with PROCESS_STATE.transaction() as registry:
         existing = registry.get(_LEGACY_PROPOSALS_BY_ID, key)
         if existing is not None:
             if distributed_commit_proposal_fingerprint(existing) != (

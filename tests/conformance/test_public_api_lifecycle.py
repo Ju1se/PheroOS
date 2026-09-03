@@ -4,9 +4,6 @@ from copy import deepcopy
 from importlib import import_module
 from pathlib import Path
 
-from pheroos.conformance._public_api import (
-    COMPATIBILITY_MODULES as CONFORMANCE_COMPATIBILITY_MODULES,
-)
 from pheroos.conformance.public_api_lifecycle import (
     DEFAULT_REMOVE_AFTER,
     PUBLIC_API_GROUPS,
@@ -329,107 +326,6 @@ def test_checked_lifecycle_matches_every_export_and_has_no_orphans() -> None:
             item["stability"] in PUBLIC_API_STABILITIES for item in entries.values()
         )
         assert all(item["since"] == "0.1.0" for item in entries.values())
-
-
-def test_removal_ledger_marks_d07_through_d14_without_deprecating_valid_entrypoint() -> (
-    None
-):
-    lifecycle = build_public_api_lifecycle(ROOT)
-    driver = _entries(lifecycle, "pheroos.drivers")
-    governance = _entries(lifecycle, "pheroos.governance")
-    conformance = _entries(lifecycle, "pheroos.conformance")
-
-    for name in (
-        "DataProviderDriverDescriptor",
-        "ModelDriverDescriptor",
-        "SandboxDriverDescriptor",
-        "StorageDriverDescriptor",
-        "ToolDriverDescriptor",
-    ):
-        assert driver[name]["stability"] == "deprecated"
-        assert driver[name]["replacement"] == "pheroos.drivers.DriverDescriptor"
-        assert driver[name]["remove_after"] == DEFAULT_REMOVE_AFTER
-    assert driver["DriverHealth"]["replacement"] == (
-        "pheroos.drivers.DriverProbeResult"
-    )
-    assert governance["CanonicalTarget"]["replacement"] == (
-        "pheroos.protocol.TargetSpec"
-    )
-    assert governance["RecoveryTrace"]["replacement"] == ("pheroos.trace.TraceEvent")
-    assert governance["evaluate_hybrid_commit_evaluation"]["replacement"] == (
-        "pheroos.governance.evaluate_hybrid_commit_step"
-    )
-    for name in (
-        "canonical_commit_payload",
-        "canonical_commit_set",
-        "commit_payload_fingerprint",
-    ):
-        assert governance[name]["replacement"] == f"pheroos.protocol.{name}"
-
-    run = conformance["run_conformance"]
-    assert run["stability"] == "draft"
-    assert run["remove_after"] is None
-    assert run["replacement"] is None
-    assert run["parameter_lifecycle"] == [
-        {
-            "name": "root",
-            "stability": "deprecated",
-            "replacement": "pheroos.conformance.run_source_conformance",
-            "remove_after": DEFAULT_REMOVE_AFTER,
-        }
-    ]
-
-    compatibility = {
-        (item["package"], item["name"]): item
-        for item in lifecycle["compatibility_surfaces"]
-    }
-    trace = compatibility[("pheroos.governance", "trace")]
-    assert trace["stability"] == "deprecated"
-    assert trace["replacement"] == "pheroos.trace"
-    assert trace["remove_after"] == DEFAULT_REMOVE_AFTER
-
-    conformance_compatibility = {
-        name: item
-        for (package, name), item in compatibility.items()
-        if package == "pheroos.conformance"
-    }
-    assert set(conformance_compatibility) == {
-        "checks",
-        "commit_tck",
-        "commit_tck_v2_protocol",
-        "profile",
-        "public_api_inventory",
-        "public_api_lifecycle",
-        "report",
-        "runner",
-    }
-    assert set(conformance_compatibility) == set(CONFORMANCE_COMPATIBILITY_MODULES)
-    for name, target in CONFORMANCE_COMPATIBILITY_MODULES.items():
-        entry = conformance_compatibility[name]
-        assert entry["replacement"] == target
-        assert entry["stability"] == "draft"
-        assert entry["remove_after"] is None
-
-
-def test_wp05_deprecated_authority_cohort_has_exact_public_v2_replacements() -> None:
-    lifecycle = build_public_api_lifecycle(ROOT)
-    governance = _entries(lifecycle, "pheroos.governance")
-
-    assert len(WP05_AUTHORITY_REPLACEMENTS) == 86
-    for name, replacement in WP05_AUTHORITY_REPLACEMENTS.items():
-        entry = governance[name]
-        assert entry["group"] == "compatibility"
-        assert entry["stability"] == "deprecated"
-        assert entry["replacement"] == replacement
-        assert entry["remove_after"] == DEFAULT_REMOVE_AFTER
-        reason = entry["retained_with_reason"]
-        assert isinstance(reason, str)
-        assert "Draft v1" in reason
-        assert "TCK-backed" in reason
-
-        package_name, replacement_name = replacement.rsplit(".", 1)
-        replacement_package = import_module(package_name)
-        assert replacement_name in replacement_package.__all__
 
 
 def test_wp05_deprecation_requires_a_public_reusable_v2_conformance_matrix() -> None:
@@ -792,68 +688,6 @@ def test_lifecycle_rejects_invalid_entry_fields_and_transitions() -> None:
     assert f"entry:{identity}:unexpected_remove_after" in public_api_lifecycle_problems(
         malformed
     )
-
-
-def test_lifecycle_rejects_invalid_parameter_lifecycle_metadata() -> None:
-    lifecycle = build_public_api_lifecycle(ROOT)
-    conformance = {
-        entry["name"]: entry
-        for entry in lifecycle["packages"]["pheroos.conformance"]["exports"]
-    }
-    assert "root" in {
-        item["name"] for item in conformance["run_conformance"]["parameter_lifecycle"]
-    }
-
-    malformed = deepcopy(lifecycle)
-    entries = {
-        entry["name"]: entry
-        for entry in malformed["packages"]["pheroos.conformance"]["exports"]
-    }
-    entries["run_conformance"]["parameter_lifecycle"] = {}
-    assert any(
-        problem.endswith(":parameter_lifecycle")
-        for problem in public_api_lifecycle_problems(malformed)
-    )
-
-    malformed = deepcopy(lifecycle)
-    entries = {
-        entry["name"]: entry
-        for entry in malformed["packages"]["pheroos.conformance"]["exports"]
-    }
-    entries["run_conformance"]["parameter_lifecycle"] = [None, {"name": "root"}]
-    problems = public_api_lifecycle_problems(malformed)
-    assert any(problem.endswith(":parameter_invalid") for problem in problems)
-    assert any(problem.endswith(":parameter_fields") for problem in problems)
-
-    malformed = deepcopy(lifecycle)
-    entries = {
-        entry["name"]: entry
-        for entry in malformed["packages"]["pheroos.conformance"]["exports"]
-    }
-    invalid_parameter = {
-        "name": "",
-        "stability": "draft",
-        "replacement": "not-a-reference",
-        "remove_after": "invalid",
-    }
-    valid_parameter = {
-        "name": "root",
-        "stability": "deprecated",
-        "replacement": "pheroos.conformance.run_source_conformance",
-        "remove_after": DEFAULT_REMOVE_AFTER,
-    }
-    entries["run_conformance"]["parameter_lifecycle"] = [
-        invalid_parameter,
-        valid_parameter,
-        deepcopy(valid_parameter),
-    ]
-    problems = public_api_lifecycle_problems(malformed)
-    assert any(problem.endswith(":parameter_name") for problem in problems)
-    assert any(":parameter_orphan:" in problem for problem in problems)
-    assert any(problem.endswith(":parameter_stability") for problem in problems)
-    assert any(problem.endswith(":parameter_remove_after") for problem in problems)
-    assert any(problem.endswith(":parameter_replacement") for problem in problems)
-    assert any(problem.endswith(":parameter_duplicate") for problem in problems)
 
 
 def test_lifecycle_rejects_invalid_compatibility_diagnostic_and_error_registries() -> (

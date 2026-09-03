@@ -9,17 +9,19 @@ from pheroos.governance import (
     Candidate,
     CandidateSet,
     LayerProposal,
+    PolicyAdjustmentProposal,
+    verify_signal_input,
+)
+from pheroos.governance._swarm.pipeline import evaluate_hybrid_collective_step
+from pheroos.governance._swarm.replay import replay_state_from_hybrid_step
+from pheroos.governance._swarm.signals import ScoutReport
+from pheroos.governance._pheromone.records import (
     PheromoneEdge,
-    PheromoneFeedback,
     PheromoneNeighborhood,
     PheromoneSubject,
     PheromoneTrail,
-    PolicyAdjustmentProposal,
-    ScoutReport,
-    evaluate_hybrid_collective_step,
-    replay_state_from_hybrid_step,
-    verify_signal_input,
 )
+from pheroos.governance.pheromone_feedback import PheromoneFeedback
 from pheroos.protocol import (
     collective_fallback_id,
     load_capability_manifest,

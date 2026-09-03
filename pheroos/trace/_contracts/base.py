@@ -86,6 +86,42 @@ BASE_TRACE_EVENT_CONTRACTS: tuple[TraceEventContract, ...] = (
         )
         for event_type in sorted(COMMIT_EVENT_TYPES)
     ),
+    # Commit and fallback are baseline governance outcomes.  They are kept
+    # here as generic trace events; the retired swarm contract no longer owns
+    # their registration or makes them a swarm conformance requirement.
+    *(
+        _contract(
+            event_type,
+            required=frozenset(
+                {
+                    "target",
+                    "candidate_id",
+                    "decision_reason",
+                    "upstream_score_lineage",
+                }
+            ),
+            authority_relevant=True,
+            schema_condition=True,
+        )
+        for event_type in ("commit", "fallback")
+    ),
+    # Output authorization is a core governance gate, not a swarm-specific
+    # event. Keep its small lineage contract in the baseline catalog after the
+    # former aggregate swarm contract was retired.
+    _contract(
+        "output",
+        required=frozenset(
+            {
+                "committed_candidate",
+                "evidence_provenance",
+                "stop_resolution",
+                "publication_permission",
+                "authorized",
+            }
+        ),
+        authority_relevant=True,
+        schema_condition=True,
+    ),
 )
 
 

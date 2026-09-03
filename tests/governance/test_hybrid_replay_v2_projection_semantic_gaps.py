@@ -7,7 +7,7 @@ from typing import Any, Callable
 
 import pytest
 
-from pheroos.governance import replay_state_from_hybrid_step
+from pheroos.governance._swarm.replay import replay_state_from_hybrid_step
 from pheroos.governance._authority_store_v2_contracts.foundation import _compute_root
 from pheroos.governance._hybrid_replay_v2.contracts import HybridReplaySnapshotV2
 from pheroos.governance._hybrid_replay_v2.projection import (

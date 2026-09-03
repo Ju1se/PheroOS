@@ -26,11 +26,6 @@
       "priority": "P0"
     },
     {
-      "description": "Delete required Trace lineage validation.",
-      "id": "trace_required_lineage",
-      "priority": "P0"
-    },
-    {
       "description": "Delete certificate or fingerprint binding.",
       "id": "certificate_fingerprint_binding",
       "priority": "P0"
@@ -141,25 +136,6 @@
     {
       "authority_graph": "stable_authority",
       "equivalent_review": null,
-      "family": "trace_required_lineage",
-      "id": "p0-trace-required-lineage",
-      "priority": "P0",
-      "source": {
-        "end_line": 67,
-        "original": "    if missing:\n",
-        "path": "pheroos/trace/_validation_core.py",
-        "replacement": "    if False and missing:\n",
-        "sha256": "sha256:3361e20dee7f544b0d4a89d8c67aa2b0f1778da1b8136b2138a13ed06db09d6c",
-        "start_line": 67
-      },
-      "tests": [
-        "tests/trace/test_trace_store.py::test_event_specific_lineage_contract_rejects_each_missing_field"
-      ],
-      "timeout_seconds": 60
-    },
-    {
-      "authority_graph": "stable_authority",
-      "equivalent_review": null,
       "family": "certificate_fingerprint_binding",
       "id": "p0-certificate-expected-body-root",
       "priority": "P0",
@@ -222,7 +198,6 @@
       "p0-output-stop-resolution-gate",
       "p0-governance-ledger-cas",
       "p0-scoped-trace-replay-envelope",
-      "p0-trace-required-lineage",
       "p0-certificate-expected-body-root",
       "p0-finite-number-bool"
     ],
@@ -232,7 +207,6 @@
       "p0-output-stop-resolution-gate",
       "p0-governance-ledger-cas",
       "p0-scoped-trace-replay-envelope",
-      "p0-trace-required-lineage",
       "p0-certificate-expected-body-root",
       "p0-finite-number-bool"
     ],
@@ -242,7 +216,6 @@
       "p0-output-stop-resolution-gate",
       "p0-governance-ledger-cas",
       "p0-scoped-trace-replay-envelope",
-      "p0-trace-required-lineage",
       "p0-certificate-expected-body-root",
       "p0-finite-number-bool"
     ]

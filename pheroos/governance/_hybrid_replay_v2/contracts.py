@@ -33,7 +33,7 @@ from pheroos.governance._hybrid_replay_v2.numeric import (
     decode_binary64_v1,
     encode_binary64_v1,
 )
-from pheroos.trace import canonical_pheromone_clip_payload
+from pheroos.trace._pheromone_receipts import canonical_pheromone_clip_payload
 
 
 HYBRID_REPLAY_SNAPSHOT_SCHEMA_V2 = "pheroos-governance-hybrid-replay-snapshot-v2"

@@ -92,11 +92,9 @@ from pheroos.protocol.models import (
     CollectiveDecisionPolicy,
     thaw_protocol_value,
 )
-from pheroos.trace import (
-    PHEROMONE_CLIP_PAYLOAD_VERSION,
-    TraceEvent,
-    pheromone_clip_payload_fingerprint,
-)
+from pheroos.trace import TraceEvent
+from pheroos.trace._lineage_types import PHEROMONE_CLIP_PAYLOAD_VERSION
+from pheroos.trace._pheromone_receipts import pheromone_clip_payload_fingerprint
 
 from pheroos.governance._swarm.pipeline import *
 from pheroos.governance._swarm.records import *

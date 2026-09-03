@@ -22,6 +22,8 @@ from pheroos.trace import (
     InMemoryTraceStore,
     TraceEvent,
     VALID_EVENT_TYPES,
+)
+from pheroos.trace._pheromone_receipts import (
     canonical_pheromone_clip_payload,
     pheromone_clip_payload_fingerprint,
 )

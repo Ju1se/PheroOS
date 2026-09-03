@@ -298,12 +298,13 @@ authentication, databases, or action executors in protocol-core. A deployment
 running untrusted Python must isolate it from the coordinator and StateStore
 writer with a process or stronger boundary.
 
-## 4. The 36-symbol `authority: AuthorityLevel` cohort
+## 4. The 14-symbol `authority: AuthorityLevel` cohort
 
-The checked-in public Python shape inventory currently contains exactly 36
+The checked-in public Python shape inventory currently contains exactly 14
 Governance functions with a public parameter named `authority` annotated as
-`AuthorityLevel`. WP-01 treats the complete set below as one trusted-host v1
-migration cohort:
+`AuthorityLevel`. WP-01 treats the complete exported set below as one
+trusted-host v1 migration cohort. Other authority-bearing implementations are
+private and are not part of this facade contract:
 
 ```text
 assemble_portable_distributed_commit_certificate
@@ -311,35 +312,13 @@ assess_optimal_commit
 bind_evidence
 epoch_transition_certificate_body_root
 evidence_commit_certificate_body_root
-initialize_commit_replay_state
-initialize_commit_window_state
-initialize_distributed_commit_state
-initialize_risk_assessment_chain
-initialize_support_lease_replay_state
 issue_action_permission
 issue_commit_evaluation_context
-issue_commit_liveness_input
-issue_commit_threshold_snapshot
 issue_counterevidence_disposition
-issue_distributed_commit_certificate
-issue_eligible_principal_snapshot
-issue_epoch_transition_certificate
-issue_evidence_commit_certificate
-issue_local_commit_receipt
-issue_outcome_certificate
-issue_risk_assessment
-issue_support_lease
 outcome_certificate_body_root
-revoke_support_lease
-switch_support_lease
-transition_distributed_commit_epoch
 verify_challenge_attestation
-verify_distributed_commit_finality
-verify_evidence_commit_finality
-verify_local_commit_finality
 verify_observation_attestation
 verify_principal_attestation
-verify_quorum_witness
 verify_signal_input
 verify_stop_resolution
 ```
@@ -350,7 +329,7 @@ These functions remain Draft trusted-host compatibility in WP-01. They are not
 Stable credentials, are not accepted by v2 consumers, and are not marked
 Deprecated before a usable replacement exists.
 
-For the `0.2.0rc1` replacement milestone, every one of the 36 lifecycle entries
+For the `0.2.0rc1` replacement milestone, every one of the 14 lifecycle entries
 must be reviewed individually:
 
 1. export a v2 counterpart that accepts a live, scope-bound authority session

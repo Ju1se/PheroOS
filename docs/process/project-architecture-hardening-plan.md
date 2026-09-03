@@ -257,14 +257,15 @@ version 与 provider version 分离；Kernel plan discriminator 也独立。v1 r
 
 ### 6.5 清理与兼容
 
-[Removal ledger](removal-ledger.md) 的 18 项全部关闭：
+[Removal ledger](removal-ledger.md) 的 18 项均已作出最终处置：
 
-- 5 项 `removed`：替代路径已成为唯一实现；
-- 8 项 `retained-with-reason`：仍承担公共兼容或 ABI 身份；
-- 5 项 `versioned-deferred`：只能在声明的 ABI/package 版本门槛后删除。
+- D-01 至 D-14 为 `removed`，替代路径已成为唯一公共实现；
+- D-15 至 D-17 为 `versioned-deferred`，只能在声明的 ABI/package 版本门槛后删除；
+- D-18 为 `retained-with-reason`，仍承担受限的历史兼容职责。
 
-`versioned-deferred` 是有 remove gate 的兼容决策，不是未完成实现。旧 alias 仍由 lifecycle artifact
-跟踪；已声明 `remove-after 0.3.0` 的入口在达到版本、迁移和使用证据门槛前不会被提前删除。
+本次一周清理冻结在 D-06 至 D-14 以及第一层 swarm-conformance 移除；第三层
+facade 收缩不属于本轮范围。`versioned-deferred` 是有 remove gate 的兼容决策，
+不是未完成实现。
 
 ## 7. 扩展性与“协议过严”评估
 

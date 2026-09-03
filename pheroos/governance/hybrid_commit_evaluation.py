@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import warnings
 
 from pheroos.governance._hybrid.commit import (
     hybrid_commit_evaluation_is_authoritative,
@@ -62,20 +61,6 @@ def _evaluate_hybrid_commit_step(request: object) -> HybridCommitEvaluation:
     )
 
 
-def evaluate_hybrid_commit_evaluation(
-    request: object,
-) -> HybridCommitEvaluation:
-    """Deprecated compatibility alias for the canonical total entry."""
-
-    warnings.warn(
-        "evaluate_hybrid_commit_evaluation is deprecated; use "
-        "evaluate_hybrid_commit_step(request=...) instead",
-        DeprecationWarning,
-        stacklevel=2,
-    )
-    return _evaluate_hybrid_commit_step(request)
-
-
 _PUBLIC_MODULE = __name__
 for _public_object in (
     HybridCommitAttentionStatus,
@@ -84,7 +69,6 @@ for _public_object in (
     HybridCommitEvaluation,
     HybridCommitEvaluationRequest,
     HybridCommitEvaluationStatus,
-    evaluate_hybrid_commit_evaluation,
     hybrid_commit_diagnostic_payload,
     hybrid_commit_evaluation_fingerprint,
     hybrid_commit_evaluation_is_authoritative,
@@ -106,7 +90,6 @@ __all__ = [
     "HybridCommitEvaluation",
     "HybridCommitEvaluationRequest",
     "HybridCommitEvaluationStatus",
-    "evaluate_hybrid_commit_evaluation",
     "hybrid_commit_diagnostic_payload",
     "hybrid_commit_evaluation_fingerprint",
     "hybrid_commit_evaluation_is_authoritative",

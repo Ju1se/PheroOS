@@ -4,7 +4,6 @@ from collections.abc import Callable
 from hashlib import sha256
 from pathlib import Path
 from typing import Any
-import warnings
 
 from pheroos.conformance.checks import (
     authority_ledger_contract,
@@ -38,13 +37,6 @@ from pheroos.conformance.checks import (
     no_assurance_downgrade,
     observation_binding_contract,
     output_contract,
-    pheromone_behavior,
-    pheromone_diffusion,
-    pheromone_kind_profile,
-    pheromone_policy,
-    pheromone_reinforcement,
-    pheromone_response_model,
-    pheromone_subject_scoring,
     policy_adjustment_bounds,
     principal_attestation_contract,
     public_abi_boundary,
@@ -55,7 +47,6 @@ from pheroos.conformance.checks import (
     safe_fallback_collective,
     score_breakdown_contract,
     source_surface,
-    swarm_trace_contract,
     support_lease_contract,
     trace_contract,
     trace_store_contract,
@@ -88,13 +79,6 @@ MANIFEST_CHECKS: dict[str, ManifestCheck] = {
     "collective_policy": collective_policy.check,
     "safe_fallback_collective": safe_fallback_collective.check,
     "score_breakdown_contract": score_breakdown_contract.check,
-    "pheromone_policy": pheromone_policy.check,
-    "pheromone_behavior": pheromone_behavior.check,
-    "pheromone_subject_scoring": pheromone_subject_scoring.check,
-    "pheromone_kind_profile": pheromone_kind_profile.check,
-    "pheromone_diffusion": pheromone_diffusion.check,
-    "pheromone_reinforcement": pheromone_reinforcement.check,
-    "pheromone_response_model": pheromone_response_model.check,
     "layer_coordination_policy": layer_coordination_policy.check,
     "policy_adjustment_bounds": policy_adjustment_bounds.check,
     "hybrid_trace_contract": hybrid_trace_contract.check,
@@ -122,7 +106,6 @@ MANIFEST_CHECKS: dict[str, ManifestCheck] = {
     "recovery_policy": recovery_policy.check,
     "output_contract": output_contract.check,
     "trace_contract": trace_contract.check,
-    "swarm_trace_contract": swarm_trace_contract.check,
     "driver_contract": driver_contract.check,
     "kernel_contract": kernel_contract.check,
     "extension_contract": extension_contract.check,
@@ -148,23 +131,12 @@ def validate_manifest(path: str | Path) -> ConformanceReport:
     )
 
 
-def run_conformance(
-    path: str | Path, *, root: str | Path | None = None
-) -> ConformanceReport:
+def run_conformance(path: str | Path) -> ConformanceReport:
     """Run only the checks declared by the manifest-selected ABI profile.
 
-    ``root`` remains accepted for source compatibility, but manifest
-    conformance intentionally does not use it.  Source-boundary proof is a
-    separate versioned profile exposed by :func:`run_source_conformance`.
+    Source-boundary proof is a separate versioned profile exposed by
+    :func:`run_source_conformance`.
     """
-
-    if root is not None:
-        warnings.warn(
-            "run_conformance(..., root=...) is deprecated; use "
-            "run_source_conformance(root) for source proof",
-            DeprecationWarning,
-            stacklevel=2,
-        )
     target = Path(path)
     manifest_path = target / "capability.json" if target.is_dir() else target
     checks = [safe_check("manifest_schema", manifest_schema.check, manifest_path)]

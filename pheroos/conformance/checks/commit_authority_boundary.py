@@ -16,7 +16,6 @@ from pheroos.governance import (
     StopResolutionVerification,
     action_permission_is_authoritative,
     action_permission_matches,
-    commit_payload_fingerprint,
     issue_action_permission,
     stop_resolution_verification_is_authoritative,
     stop_resolution_verification_matches,
@@ -25,6 +24,7 @@ from pheroos.governance import (
 from pheroos.governance.errors import GovernanceError
 from pheroos.conformance.checks._commit_tck_contract import check_commit_tck_cases
 from pheroos.protocol import CapabilityManifest
+from pheroos.protocol.commit_wire import commit_payload_fingerprint
 
 
 _ISSUED_AT_STEP = 4

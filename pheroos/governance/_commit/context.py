@@ -23,9 +23,7 @@ from pheroos.governance._commit_validation import (
     require_commit_step,
     require_commit_text,
 )
-from pheroos.governance._legacy.authority_registry import (
-    LEGACY_AUTHORITY_REGISTRY,
-)
+from pheroos.governance._process_state import PROCESS_STATE
 from pheroos.governance._risk.payloads import (
     commit_threshold_snapshot_fingerprint,
     risk_assessment_chain_state_fingerprint,
@@ -353,7 +351,7 @@ def _register_commit_evaluation_context(
     authority_key = _commit_context_authority_key(context)
     claim_authority_key = _commit_context_claim_authority_key(context)
     claim_authority_fingerprint = _commit_context_claims_fingerprint(context)
-    with LEGACY_AUTHORITY_REGISTRY.transaction() as registry:
+    with PROCESS_STATE.transaction() as registry:
         existing_claims = registry.get(
             _LEGACY_COMMIT_CONTEXT_CLAIMS,
             claim_authority_key,
@@ -468,7 +466,7 @@ def commit_evaluation_context_is_authoritative(context: object) -> bool:
         authority_key = _commit_context_authority_key(context)
         claim_authority_key = _commit_context_claim_authority_key(context)
         claim_fingerprint = _commit_context_claims_fingerprint(context)
-        with LEGACY_AUTHORITY_REGISTRY.transaction() as registry:
+        with PROCESS_STATE.transaction() as registry:
             registered = registry.get(_LEGACY_COMMIT_CONTEXTS, authority_key)
             registered_claims = registry.get(
                 _LEGACY_COMMIT_CONTEXT_CLAIMS,

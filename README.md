@@ -14,9 +14,10 @@ verifies agent inputs, reaches a governed decision, records causal lineage, and
 proves compatibility. It does not run agent loops, call models or tools, host an
 API, or provide a database.
 
-The validated public positioning is governed authority/commit protocol. Optional
-collective and pheromone profiles are experimental protocol shapes; this project
-does not claim demonstrated emergent or swarm intelligence.
+The validated public positioning is a governed authority/commit protocol.
+Attention and pheromone code is retained only as private experimental
+implementation detail; it is not part of the baseline public ABI or a claim of
+demonstrated emergent or swarm intelligence.
 
 ## Project Status
 
@@ -128,8 +129,9 @@ to their public facades. Private engines are not a second ABI.
   `SignalVerification`.
 - Governance commits only a candidate declared for the active target. Failed
   consensus selects the target's declared safe fallback.
-- Pheromone is bounded collective memory and attention. It is not evidence,
-  truth, permission, quorum, a certificate, or output authority.
+- Private attention profiles may maintain bounded collective memory. That state
+  is not evidence, truth, permission, quorum, a certificate, or output
+  authority.
 - Unknown critical versions, non-finite numbers, cross-scope records, malformed
   authority facts, and stale state heads fail closed.
 - Governed Baseline Output v2 and collective output paths require four
@@ -148,43 +150,14 @@ Optional protocols do not change baseline manifests that do not declare them.
 | Path | Manifest selection | Governed behavior | Conformance profile | Example |
 | --- | --- | --- | --- | --- |
 | Baseline | No optional attention or Commit declaration | Verified quorum, declared candidate, safe fallback | `pheroos-core-v1` | [`toy-protocol`](examples/toy-protocol/), [`e2e-protocol`](examples/e2e-protocol/) |
-| Experimental collective attention | `mode=bee_swarm` or `mode=ant_colony` | Verified scouts, recruitment/inhibition, bounded pheromone memory | `pheroos-swarm-v1` | [`swarm-protocol`](examples/swarm-protocol/) |
-| Experimental Hybrid Pheromone | `mode=hybrid` in a v1 manifest | Diffusion, feedback, nonlinear response, L1-L4 proposals, and bounded adjustment | `pheroos-hybrid-swarm-v1` | [`hybrid-pheromone-protocol`](examples/hybrid-pheromone-protocol/) |
 | Scoped Hybrid Replay v2 | Capability/Protocol v3 documents selecting `pheroos.protocol.v2` | Store-backed durable replay and scoped authority | Exact v2 Store, session, replay, and runtime-integration Conformance | [`hybrid-replay-protocol`](examples/hybrid-replay-protocol/) |
 | Optimal Commit | `collective_commit_policy` | Evidence-governed truth, stability, liveness, certificates, optional distributed finality | Assurance-specific Commit profile | [`hybrid-commit-protocol`](examples/hybrid-commit-protocol/), [`distributed-commit-protocol`](examples/distributed-commit-protocol/) |
 
 Optimal Commit selects `pheroos-commit-integrity-v1`,
 `pheroos-hybrid-commit-v1`, `pheroos-certified-commit-v1`, or
-`pheroos-distributed-commit-v1` according to its assurance and declared Hybrid
-attention semantics.
-
-### Experimental Hybrid Pheromone: attention and collective memory
-
-The primary Draft path is Store-backed Hybrid Replay v2:
-
-```text
-evaluate_hybrid_collective_step_v2(...)
--> build_hybrid_replay_advance_request_v2(...)
--> open_hybrid_replay_authority_session_v2(...)
--> advance_hybrid_replay_state_v2(...)
--> rehydrate_hybrid_replay_state_v2(...) after restart
-```
-
-The evaluator validates the complete batch before applying bounded adjustment,
-deposit, evaporation, diffusion, feedback reinforcement, nonlinear response,
-L1-L4 coordination, scoring, the independent-scout gate, and
-commit-or-fallback. Its non-portable source proof is bound to the exact
-authority context. Only an atomic StateStore commit creates durable replay
-authority; a portable snapshot, digest, checkpoint, or same-shaped object does
-not. Rehydration proves committed inclusion and position, and only the current
-head may parent another advance. See
-[`hybrid-replay-protocol`](examples/hybrid-replay-protocol/) for deterministic
-restart and fresh-subprocess continuation.
-
-`evaluate_hybrid_collective_step(...)`, `HybridReplayState`, and
-`replay_state_from_hybrid_step(...)` remain Deprecated Draft compatibility
-surfaces. They model the earlier process-local path and are not the durable v2
-authority or restart path.
+`pheroos-distributed-commit-v1` according to its assurance and any declared
+attention semantics. Attention is advisory only and cannot create evidence,
+truth, permission, or authority.
 
 ### Optimal Commit: truth and authority
 
@@ -192,7 +165,7 @@ Optimal Commit keeps two channels separate:
 
 | Channel | Inputs | May influence | Cannot do |
 | --- | --- | --- | --- |
-| Exploration/attention | Scouts, pheromone, recruitment, inhibition, layer proposals | Search priority, candidate attention, external evidence collection | Create evidence, change commit truth, issue a certificate |
+| Optional attention | External proposals and bounded memory | Search priority, candidate attention, external evidence collection | Create evidence, change commit truth, issue a certificate |
 | Truth/authority | Verified principal, risk, membership, evidence, counterevidence, challenge, lease, stop, permission, replay, and prior-window records | Commit metrics, terminal outcome, certificate and action gates | Call providers or bypass the declared policy |
 
 The manifest selects an assurance level:
@@ -329,10 +302,7 @@ domain-neutral.
 | --- | --- |
 | [`toy-protocol`](examples/toy-protocol/) | Minimal manifest, declared candidates, quorum and fallback |
 | [`e2e-protocol`](examples/e2e-protocol/) | Minimal Protocol -> Kernel -> Driver -> Governance -> Trace slice |
-| [`swarm-protocol`](examples/swarm-protocol/) | Experimental verified collective signals and bounded pheromone memory |
-| [`hybrid-pheromone-protocol`](examples/hybrid-pheromone-protocol/) | Complete Hybrid collective step and four output gates |
 | [`hybrid-replay-protocol`](examples/hybrid-replay-protocol/) | Scoped Hybrid Replay v2, restart, and fresh-process continuation |
-| [`adaptive-pheromone-replay`](examples/adaptive-pheromone-replay/) | External adaptive proposals and governance-issued replay state |
 | [`scoped-output-protocol`](examples/scoped-output-protocol/) | Baseline Output v2 activation, current grants, and atomic output commit |
 | [`runtime-integration-protocol`](examples/runtime-integration-protocol/) | Exact-version Driver, authority, Trace, recovery, and delivery transcript |
 | [`risk-v2-protocol`](examples/risk-v2-protocol/) | Store-backed risk authority and restart-safe currentness |
@@ -382,9 +352,8 @@ publication. See the
 ## Documentation
 
 - Core specification: [SPEC.md](SPEC.md)
-- Hybrid Pheromone: [ABI reference](docs/protocol/hybrid-pheromone-abi.md),
-  [durable Replay v2](docs/protocol/hybrid-replay-v2.md), and
-  [v1 migration](docs/protocol/hybrid-pheromone-v1-migration.md)
+- Historical attention profiles remain in the repository as private Draft
+  implementation references; they are not part of the supported public ABI.
 - Optimal Commit: [ABI reference](docs/protocol/optimal-commit-abi.md) and
   [v1 migration](docs/protocol/optimal-commit-v1-migration.md)
 - Project process: [development index](docs/process/index.md),

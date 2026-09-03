@@ -1,9 +1,8 @@
-"""Private namespace for frozen v1 compatibility implementations.
+"""Private namespace for the remaining frozen implementation helpers.
 
-The package initializer is deliberately inert.  Legacy owners that still need
-the process-local authority registry import its private module explicitly;
-merely importing an unrelated compatibility helper must not initialize that
-registry in an otherwise durable v2 process.
+The package initializer is deliberately inert.  Public authority is owned by
+the StateStore-backed v2 contracts; any helper here is an internal migration
+detail and is never part of the package ABI.
 """
 
 __all__: list[str] = []

@@ -135,10 +135,7 @@ REQUIRED_VALIDATION_MARKERS = {
         "tests/examples/test_hybrid_replay_protocol.py",
         "pheroos conformance examples/distributed-commit-protocol",
     ),
-    "scope-concurrency-lifecycle": (
-        "tests/kernel/test_runtime_scope.py",
-        "tests/governance/test_legacy_authority_isolation.py",
-    ),
+    "scope-concurrency-lifecycle": ("tests/kernel/test_runtime_scope.py",),
     "authority-restart-atomicity": (
         "tests/governance/test_authority_ledger.py",
         "tests/governance/test_atomic_hybrid_commit.py",
@@ -260,7 +257,7 @@ WORKFLOW_JOB_DIGESTS = {
         "4ad4ce1e3e40fb3945a56bf8a7e5add2963e17da987aac7816d93d76ab59739b"
     ),
     "scope-concurrency-lifecycle": (
-        "291ae9f567b7551f165985366153aef83f8a31c05370867b46264a54a2d2c2fc"
+        "458a058ac5ffb6670581c8e3d2afd0d3a7242ce21c6f2ecb240714cbd638fcff"
     ),
     "authority-restart-atomicity": (
         "5dd6cfb4f6c905be491159087fa0633f4cd84145bd73547bcfc7f7092cca45a8"

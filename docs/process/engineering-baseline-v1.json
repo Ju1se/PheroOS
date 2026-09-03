@@ -53,24 +53,24 @@
       "runtime_version": "0.1.0"
     },
     "public_api": {
-      "compatibility_surface_count": 59,
-      "diagnostic_code_count": 228,
-      "diagnostic_registry_sha256": "sha256:c2a03e2c5f981d23f114fc6c1b8e70073d6478ba5f02286730dd9a47f5a4477a",
+      "compatibility_surface_count": 53,
+      "diagnostic_code_count": 227,
+      "diagnostic_registry_sha256": "sha256:be68bdfe4fc188e8b7f711bc508a1d98d19cfcc35cb5cfb8172bd694b83e30c1",
       "error_type_count": 6,
-      "export_count": 1408,
-      "inventory_sha256": "f363fc7fd5395fc7d0d1b1fd10009a9a97a3d4f2c8bc814d0b533fe4909264e6",
-      "lifecycle_sha256": "ee10f1ecfaed030c7f8f154e52cfb302e1662c3e46abc6ee247415812849d670",
+      "export_count": 1232,
+      "inventory_sha256": "2c7b21e90e43a1c3e56181fc9760b25378f90a94d2ea20fd778f2b7eb59683fe",
+      "lifecycle_sha256": "7026ad2a9bff3a67144e4bbf8317ab8667a59c2ff2c118e6df1210c6a3c3b46b",
       "package_export_counts": {
         "pheroos.conformance": 118,
-        "pheroos.drivers": 54,
-        "pheroos.governance": 1068,
+        "pheroos.drivers": 48,
+        "pheroos.governance": 911,
         "pheroos.kernel": 31,
-        "pheroos.protocol": 99,
-        "pheroos.trace": 38
+        "pheroos.protocol": 89,
+        "pheroos.trace": 35
       },
       "stability_counts": {
-        "deprecated": 98,
-        "draft": 1310,
+        "deprecated": 0,
+        "draft": 1232,
         "stable": 0
       }
     },
@@ -198,16 +198,16 @@
       }
     },
     "source": {
-      "conformance_loc": 59029,
-      "core_python_files": 624,
-      "core_python_loc": 220988,
-      "governance_loc": 134002
+      "conformance_loc": 55910,
+      "core_python_files": 606,
+      "core_python_loc": 216397,
+      "governance_loc": 132877
     },
     "tck": {
       "pheroos/conformance/tck/commit-integrity-v1.json": {
         "case_count": 38,
-        "semantic_root": "sha256:0e9cd7fd56087d5cc4987d5a7ed056ed6649512c30ee486685e3dbd45e8b7abe",
-        "sha256": "9255ed7e1298841baaaeee8b139a7ba86df457493dd30d6d7312ce600a1d41e3",
+        "semantic_root": "sha256:376c3dc76fc469e7b77bcba81d32a65f40aec0507669a8e35b3cd61c88e7d2bb",
+        "sha256": "2c2872b4135d8881b41b61d0028f0c3164da7f5d5068d5b036421016f2ea0343",
         "version": "pheroos-commit-integrity-tck-v1"
       },
       "pheroos/conformance/tck/commit-integrity-v2.json": {
@@ -218,7 +218,7 @@
       }
     },
     "tests": {
-      "collected": 5931
+      "collected": 5834
     },
     "toolchain": {
       "ci_constraints_sha256": "9a2d83e622db4e0d189d03348d8699b329f6fc97dc93af7686d6cf270ce73370",
@@ -274,6 +274,6 @@
       "dependencies.forbidden_core_import_count"
     ]
   },
-  "reason": "Bind hash-closed CPython 3.12-3.14 CI wheel lock and audited RC hardening",
+  "reason": "D-06 through D-14 compatibility cleanup; obsolete tests removed and private Hybrid trace contracts retained",
   "version": "pheroos-engineering-baseline-v1"
 }

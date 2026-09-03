@@ -302,7 +302,6 @@ jobs:
           tests/kernel/test_driver_syscalls.py
           tests/drivers/test_driver_invocation.py
           tests/conformance/test_runtime_scope_contract.py
-          tests/governance/test_legacy_authority_isolation.py
 
   authority-restart-atomicity:
     runs-on: ubuntu-latest

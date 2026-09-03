@@ -124,8 +124,11 @@ def test_hybrid_replay_v2_matrix_uses_only_public_composition_contracts() -> Non
         "pheroos.governance.authority_session_v2",
         "pheroos.governance.authority_store_v2",
         "pheroos.governance.layer_coordination",
+        "pheroos.governance.pheromone",
+        "pheroos.governance.pheromone_feedback",
         "pheroos.protocol",
         "pheroos.protocol.authority_v2",
+        "pheroos.protocol.models",
     }
     assert all(".governance._" not in module for module in project_imports)
     assert "evaluate_hybrid_collective_step(" not in source

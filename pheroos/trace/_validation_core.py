@@ -3,6 +3,7 @@ from __future__ import annotations
 from pheroos.trace._coordination_lineage_rules import (
     apply_coordination_lineage_rule,
 )
+from pheroos.trace._collective_lineage_rules import apply_collective_lineage_rule
 from pheroos.trace._lineage_types import (
     DECLARED_COORDINATION_LAYER_IDS as DECLARED_COORDINATION_LAYER_IDS,
     EXTENSION_EVENT_PREFIXES as EXTENSION_EVENT_PREFIXES,
@@ -16,7 +17,6 @@ from pheroos.trace._pheromone_receipts import (
     canonical_pheromone_clip_payload as canonical_pheromone_clip_payload,
     pheromone_clip_payload_fingerprint as pheromone_clip_payload_fingerprint,
 )
-from pheroos.trace._swarm_lineage_rules import apply_swarm_lineage_rule
 from pheroos.trace.commit_contracts import (
     COMMIT_EVENT_TYPES,
     validate_commit_trace_event,
@@ -69,9 +69,9 @@ def _validate_declared_event_lineage(
             f"{event.event_type} trace lineage missing required fields: "
             f"{', '.join(missing)}"
         )
-    if apply_swarm_lineage_rule(event, required_fields):
-        return
     if apply_pheromone_lineage_rule(event, required_fields):
+        return
+    if apply_collective_lineage_rule(event, required_fields):
         return
     apply_coordination_lineage_rule(event, required_fields)
 

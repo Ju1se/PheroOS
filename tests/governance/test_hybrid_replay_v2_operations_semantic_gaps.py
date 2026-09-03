@@ -7,7 +7,7 @@ from typing import Any, cast
 
 import pytest
 
-from pheroos.governance import replay_state_from_hybrid_step
+from pheroos.governance._swarm.replay import replay_state_from_hybrid_step
 from pheroos.governance._authority_session_v2.operations import (
     bind_governance_issuer_capability_v2,
 )

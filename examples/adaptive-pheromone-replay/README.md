@@ -1,7 +1,8 @@
-# Adaptive Pheromone Replay Example
+# Historical/private Adaptive Attention Replay Fixture
 
-This provider-free example demonstrates the external adaptive runtime contract
-for pheromone updates.
+This provider-free fixture records the historical external adaptive runtime
+contract for pheromone updates. It is private implementation coverage, not a
+supported public swarm profile or a claim of emergent intelligence.
 
 The replay script behaves like an outside learner, but it does not implement
 machine learning, reinforcement learning, storage, scheduling, networking, or

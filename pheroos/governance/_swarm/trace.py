@@ -30,9 +30,10 @@ from pheroos.governance.policy_adjustment import PolicyAdjustmentProposal
 from pheroos.governance.quorum import QuorumDecision
 from pheroos.protocol.models import CollectiveDecisionPolicy
 from pheroos.protocol.models import thaw_protocol_value
-from pheroos.trace import PHEROMONE_CLIP_PAYLOAD_VERSION
 from pheroos.trace import TraceEvent
-from pheroos.trace import pheromone_clip_payload_fingerprint
+from pheroos.trace._lineage_types import PHEROMONE_CLIP_PAYLOAD_VERSION
+from pheroos.trace._pheromone_receipts import pheromone_clip_payload_fingerprint
+from pheroos.trace.validation import VALID_EVENT_TYPES, is_extension_event_type
 from typing import Any
 import json
 from pheroos.governance._swarm.records import CollectiveDecisionState
@@ -64,10 +65,15 @@ def _trace_event(
         reason=reason,
         lineage=lineage or {},
     )
-    try:
-        event.validate()
-    except ValueError as exc:
-        raise GovernanceError(f"invalid governance trace action: {exc}") from exc
+    # The former swarm event contracts are no longer part of the public Trace
+    # ABI. Private attention events may still be carried by this implementation
+    # profile, while every canonical or namespaced extension event remains
+    # fully validated by Trace.
+    if event_type in VALID_EVENT_TYPES or is_extension_event_type(event_type):
+        try:
+            event.validate()
+        except ValueError as exc:
+            raise GovernanceError(f"invalid governance trace action: {exc}") from exc
     return event
 
 

@@ -17,7 +17,7 @@ from pheroos.governance.commit_state import (
     commit_replay_state_payload,
     initialize_commit_replay_state,
 )
-from pheroos.protocol import canonical_commit_payload
+from pheroos.protocol.commit_wire import canonical_commit_payload
 from pheroos.protocol.loader import (
     parse_finite_json_float,
     reject_duplicate_json_object_keys,

@@ -23,9 +23,7 @@ from pheroos.governance._commit_validation import (
 )
 
 
-from pheroos.governance._legacy.authority_registry import (
-    LEGACY_AUTHORITY_REGISTRY,
-)
+from pheroos.governance._process_state import PROCESS_STATE
 
 from pheroos.governance.commit_numeric import (
     commit_payload_fingerprint,
@@ -125,7 +123,7 @@ def initialize_commit_replay_state(
         schema="pheroos-commit-replay-base-v1",
         profile=normalized_profile,
     )
-    with LEGACY_AUTHORITY_REGISTRY.transaction() as registry:
+    with PROCESS_STATE.transaction() as registry:
         cursor = registry.get(_LEGACY_COMMIT_REPLAY_CURSORS, authority_key)
         if cursor is not None:
             if cursor.base_fingerprint != base_fingerprint:

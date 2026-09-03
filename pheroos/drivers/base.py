@@ -85,13 +85,6 @@ class DriverHandle:
 
 
 @dataclass(frozen=True)
-class DriverHealth:
-    driver_id: str
-    healthy: bool
-    detail: str = ""
-
-
-@dataclass(frozen=True)
 class DriverResult:
     driver_id: str
     ok: bool

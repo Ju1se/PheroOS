@@ -258,7 +258,7 @@ def test_commit_profile_precedes_legacy_swarm_and_hybrid_detection() -> None:
 
     assert profile_for_manifest(core).version == "pheroos-commit-integrity-v1"
     assert profile_for_manifest(hybrid).version == "pheroos-hybrid-commit-v1"
-    assert "pheromone_behavior" in profile_for_manifest(hybrid).required_checks
+    assert "pheromone_behavior" not in profile_for_manifest(hybrid).required_checks
     assert (
         "score_breakdown_contract" not in profile_for_manifest(hybrid).required_checks
     )
@@ -277,7 +277,7 @@ def test_commit_profile_precedes_legacy_swarm_and_hybrid_detection() -> None:
         )
     )
     assert advisory_hybrid_profile.version == "pheroos-commit-integrity-v1"
-    assert "pheromone_behavior" in advisory_hybrid_profile.required_checks
+    assert "pheromone_behavior" not in advisory_hybrid_profile.required_checks
     assert "commit_channel_separation" in advisory_hybrid_profile.required_checks
 
 
@@ -322,7 +322,7 @@ def test_commit_profile_assurance_matrix_is_fail_closed_and_cumulative() -> None
     )
 
     assert certified_profile.version == "pheroos-certified-commit-v1"
-    assert "pheromone_diffusion" in certified_profile.required_checks
+    assert "pheromone_diffusion" not in certified_profile.required_checks
     assert "commit_certificate_contract" in certified_profile.required_checks
     assert distributed_profile.version == "pheroos-distributed-commit-v1"
     assert "distributed_finality_contract" in distributed_profile.required_checks

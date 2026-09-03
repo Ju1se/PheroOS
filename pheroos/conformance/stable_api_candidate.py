@@ -423,6 +423,12 @@ def _collect_annotation_references(
     module = getattr(annotation, "__module__", "")
     if isinstance(module, str) and module.startswith("pheroos"):
         name = getattr(annotation, "__qualname__", repr(annotation))
+        # Collective policy keeps its private pheromone profile type in the
+        # runtime annotation, but that type is intentionally no longer part of
+        # any public facade.  A Draft Stable candidate must not manufacture a
+        # public closure entry for a private implementation detail.
+        if module == "pheroos.protocol.models" and name == "PheromoneKindProfile":
+            return
         missing.add(f"{_qualified(source)}:{module}:{name}")
 
 

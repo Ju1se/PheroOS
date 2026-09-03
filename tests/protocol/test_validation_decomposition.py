@@ -9,13 +9,13 @@ from pheroos.protocol import (
     CapabilityManifest,
     EvidencePolicy,
     OutputPolicy,
-    PheromoneKindProfile,
     QuorumPolicy,
     RecoveryProtocol,
     SignalSpec,
     TracePolicy,
     load_capability_manifest,
 )
+from pheroos.protocol.models import PheromoneKindProfile
 from pheroos.protocol.validation import (
     _validate_capability_manifest_v1,
     canonical_nonblank_text,

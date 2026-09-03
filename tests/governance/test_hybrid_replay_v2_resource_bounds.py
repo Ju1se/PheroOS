@@ -10,7 +10,7 @@ import pytest
 
 from pheroos.governance._hybrid_replay_v2 import contracts
 from pheroos.governance._hybrid_replay_v2.contracts import HybridReplaySnapshotV2
-from pheroos.trace import canonical_pheromone_clip_payload
+from pheroos.trace._pheromone_receipts import canonical_pheromone_clip_payload
 from tests.governance.test_hybrid_replay_v2_contracts import (
     _diffusion_source_trail,
     _snapshot,

@@ -19,7 +19,6 @@ from pheroos.trace import (
 from pheroos.trace import _coordination_lineage_rules as coordination_rules
 from pheroos.trace import _lineage_primitives as lineage_primitives
 from pheroos.trace import _scoped_store_v2_codec as store_codec
-from pheroos.trace import _swarm_lineage_rules as swarm_rules
 from pheroos.trace import commit_contracts
 from pheroos.trace._lineage_types import (
     DECLARED_COORDINATION_LAYER_IDS,
@@ -407,57 +406,6 @@ def test_coordination_rule_dispatch_and_policy_adjustment_edges() -> None:
                 )
             ),
         )
-
-
-@pytest.mark.parametrize(
-    ("lineage", "expected"),
-    [
-        (
-            {
-                **valid_lineage("candidate_score"),
-                "score_breakdown": [],
-            },
-            "candidate_score trace lineage score_breakdown must be a non-empty object",
-        ),
-        (
-            {
-                **valid_lineage("candidate_score"),
-                "score_breakdown": {"candidate:other": {"scout": 3.0}},
-            },
-            "candidate_score trace scores and breakdown must cover the same candidates",
-        ),
-        (
-            {
-                **valid_lineage("candidate_score"),
-                "score_breakdown": {"candidate:alpha": []},
-            },
-            "candidate_score trace breakdown must map candidate ids to category objects",
-        ),
-    ],
-)
-def test_candidate_score_changed_guards_fail_closed(
-    lineage: dict[str, object],
-    expected: str,
-) -> None:
-    _assert_error(
-        expected,
-        lambda: swarm_rules.apply_swarm_lineage_rule(
-            _view("candidate_score", lineage),
-            frozenset(),
-        ),
-    )
-
-
-def test_consensus_threshold_must_be_positive() -> None:
-    lineage = valid_lineage("consensus_check")
-    lineage["quorum_threshold"] = 0
-    _assert_error(
-        "consensus_check trace lineage quorum_threshold must be positive",
-        lambda: swarm_rules.apply_swarm_lineage_rule(
-            _view("consensus_check", lineage),
-            frozenset(),
-        ),
-    )
 
 
 def test_scoped_codec_guards_cover_portability_and_type_boundaries() -> None:

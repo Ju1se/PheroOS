@@ -139,16 +139,6 @@ def test_opaque_nonportable_authority_cannot_enter_candidate() -> None:
     ("package_name", "binding", "expected_problem"),
     (
         (
-            "pheroos.drivers",
-            "DriverHealth",
-            "deprecated:pheroos.drivers.DriverHealth",
-        ),
-        (
-            "pheroos.governance",
-            "normalize_legacy_pheromone_trail",
-            "compatibility:pheroos.governance.normalize_legacy_pheromone_trail",
-        ),
-        (
             "pheroos.governance",
             "GovernanceAuthoritySessionV2",
             (
@@ -281,14 +271,6 @@ def test_deprecated_or_compatibility_binding_cannot_enter_candidate() -> None:
     entry["lifecycle_stability"] = "deprecated"
 
     assert f"deprecated:{entry['binding']}" in stable_api_candidate_problems(candidate)
-
-    actual_deprecated = build_stable_api_candidate(
-        ROOT,
-        roots={"pheroos.drivers": ("DriverHealth",)},
-    )
-    assert "deprecated:pheroos.drivers.DriverHealth" in (
-        stable_api_candidate_problems(actual_deprecated)
-    )
 
 
 def test_draft_candidate_drift_is_not_formal_stable_breakage() -> None:

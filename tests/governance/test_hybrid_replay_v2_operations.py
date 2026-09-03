@@ -9,7 +9,7 @@ from typing import Any
 
 import pytest
 
-from pheroos.governance import replay_state_from_hybrid_step
+from pheroos.governance._swarm.replay import replay_state_from_hybrid_step
 from pheroos.governance._authority_session_v2.contracts import (
     GovernanceDomainRetirementRequestV2,
     GovernanceIssuerCapabilityV2,

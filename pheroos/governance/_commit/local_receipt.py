@@ -13,9 +13,7 @@ from pheroos.governance._commit.certificate_contracts import (
 )
 from pheroos.governance._commit.common import AuthorityScope
 from pheroos.governance._commit_validation import require_commit_text
-from pheroos.governance._legacy.authority_registry import (
-    LEGACY_AUTHORITY_REGISTRY,
-)
+from pheroos.governance._process_state import PROCESS_STATE
 from pheroos.governance.authority import AuthorityLevel
 from pheroos.governance.commit_numeric import commit_payload_fingerprint
 from pheroos.governance.errors import GovernanceError
@@ -117,7 +115,7 @@ def local_commit_receipt_is_authoritative(receipt: object) -> bool:
             discriminator=LOCAL_COMMIT_RECEIPT_DISCRIMINATOR,
             record_id=receipt.receipt_id,
         )
-        registered = LEGACY_AUTHORITY_REGISTRY.get(
+        registered = PROCESS_STATE.get(
             LEGACY_CERTIFICATE_IDENTITIES,
             key,
         )
@@ -144,7 +142,7 @@ def bind_local_commit_receipt_authority(
         discriminator=LOCAL_COMMIT_RECEIPT_DISCRIMINATOR,
         record_id=receipt.receipt_id,
     )
-    with LEGACY_AUTHORITY_REGISTRY.transaction() as registry:
+    with PROCESS_STATE.transaction() as registry:
         existing = registry.get(LEGACY_CERTIFICATE_IDENTITIES, key)
         if existing is not None:
             existing_ref, existing_record = existing

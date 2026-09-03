@@ -21,7 +21,10 @@ from pheroos.governance.output import (
     deliver_terminal_outcome,
 )
 from pheroos.governance.schema import commit_schema, validate_commit_wire_record
-from pheroos.protocol import canonical_commit_payload, commit_payload_fingerprint
+from pheroos.protocol.commit_wire import (
+    canonical_commit_payload,
+    commit_payload_fingerprint,
+)
 from pheroos.protocol.schema_validation import validate_json_schema
 from tests.governance import test_commit_certificate as certificate_fixture
 from tests.governance import test_commit_output_actions as output_fixture
@@ -358,34 +361,6 @@ def test_total_hybrid_evaluation_wire_is_strict_total_and_no_downgrade() -> None
         )
         == []
     )
-
-
-def test_actual_total_evaluator_invalid_payload_round_trips_and_fails_closed() -> None:
-    from pheroos.governance.hybrid_commit_evaluation import (
-        evaluate_hybrid_commit_evaluation,
-        hybrid_commit_evaluation_payload,
-    )
-
-    evaluation = evaluate_hybrid_commit_evaluation(object())
-    record = _envelope(
-        hybrid_commit_evaluation_payload(evaluation),
-        schema="pheroos-hybrid-commit-evaluation-v1",
-        profile=evaluation.profile,
-    )
-    assert evaluation.status == "invalid"
-    assert evaluation.authoritative is False
-    assert evaluation.terminal is True
-    assert validate_commit_wire_record(record) == []
-    for leaf in tuple(record["payload"]):
-        missing = deepcopy(record)
-        del missing["payload"][leaf]
-        assert validate_commit_wire_record(missing), leaf
-    unknown = deepcopy(record)
-    unknown["payload"]["legacy_score_to_commit"] = True
-    assert validate_commit_wire_record(unknown)
-    tampered = deepcopy(record)
-    tampered["payload"]["evaluation_root"] = "sha256:" + ("f" * 64)
-    assert validate_commit_wire_record(tampered)
 
 
 def test_every_commit_envelope_has_an_exact_discriminator_and_strict_payload() -> None:

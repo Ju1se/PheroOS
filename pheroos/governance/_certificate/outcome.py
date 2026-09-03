@@ -35,7 +35,7 @@ from pheroos.governance._commit.certificate_contracts import (
     LEGACY_CERTIFICATE_IDENTITIES as _LEGACY_CERTIFICATE_IDENTITIES,
     certificate_identity_key as _certificate_id_key,
 )
-from pheroos.governance._legacy.authority_registry import LEGACY_AUTHORITY_REGISTRY
+from pheroos.governance._process_state import PROCESS_STATE
 from pheroos.governance.authority import AuthorityLevel, can_verify
 from pheroos.governance.commit import (
     CommitAssessment,
@@ -193,7 +193,7 @@ def outcome_certificate_is_authoritative(certificate: object) -> bool:
             discriminator=OUTCOME_CERTIFICATE_DISCRIMINATOR,
             record_id=certificate.certificate_id,
         )
-        registered = LEGACY_AUTHORITY_REGISTRY.get(
+        registered = PROCESS_STATE.get(
             _LEGACY_CERTIFICATE_IDENTITIES,
             key,
         )
@@ -290,7 +290,7 @@ def _register_outcome_certificate(
         discriminator=OUTCOME_CERTIFICATE_DISCRIMINATOR,
         record_id=certificate.certificate_id,
     )
-    with LEGACY_AUTHORITY_REGISTRY.transaction() as registry:
+    with PROCESS_STATE.transaction() as registry:
         existing = registry.get(_LEGACY_CERTIFICATE_IDENTITIES, key)
         if existing is not None:
             existing_ref, existing_record = existing

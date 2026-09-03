@@ -7,7 +7,8 @@ from typing import Any
 import pytest
 
 from pheroos.cli.main import main
-from pheroos.trace import TraceEvent, pheromone_clip_payload_fingerprint
+from pheroos.trace import TraceEvent
+from pheroos.trace._pheromone_receipts import pheromone_clip_payload_fingerprint
 
 
 def test_schema_export_matches_checked_in_surface_artifacts(capsys: Any) -> None:
@@ -416,16 +417,6 @@ def test_schema_export_trace_exposes_event_specific_lineage_contracts(
         for item in schema["allOf"]
     }
 
-    assert conditions["scout_report"]["required"] == [
-        "candidate_id",
-        "evidence_id",
-        "provenance",
-        "scout_id",
-        "source_trace_event_id",
-        "support",
-        "verification_trace_event_id",
-    ]
-    assert conditions["recruit"]["properties"]["strength"]["minimum"] == 0
     clip = conditions["pheromone_clip"]
     assert clip["properties"]["applied_strength"]["minimum"] == 0
     assert (
@@ -445,10 +436,6 @@ def test_schema_export_trace_exposes_event_specific_lineage_contracts(
         "causal_fingerprint",
     ]
     assert len(conditions["pheromone_observe"]["oneOf"]) == 3
-    assert conditions["consensus_check"]["required"] == [
-        "min_independent_scouts",
-        "quorum_threshold",
-    ]
     assert conditions["pheromone_diffuse"]["properties"]["attenuation"]["maximum"] == 1
     assert conditions["pheromone_score"]["required"] == [
         "active_trails",
@@ -480,16 +467,6 @@ def test_schema_export_trace_exposes_event_specific_lineage_contracts(
         "result",
         "source_id",
         "source_trace_event_id",
-    ]
-    assert (
-        conditions["candidate_score"]["properties"]["score_breakdown"]["minProperties"]
-        == 1
-    )
-    assert conditions["commit"]["required"] == [
-        "candidate_id",
-        "decision_reason",
-        "target",
-        "upstream_score_lineage",
     ]
     assert len(conditions["output"]["allOf"]) == 2
 

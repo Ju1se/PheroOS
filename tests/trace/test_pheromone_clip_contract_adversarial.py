@@ -8,10 +8,10 @@ from typing import Any, cast
 import pytest
 
 from pheroos.conformance.checks import hybrid_trace_contract
-from pheroos.governance import replay_state_from_hybrid_step
+from pheroos.governance._swarm.replay import replay_state_from_hybrid_step
 from pheroos.protocol import load_capability_manifest
-from pheroos.trace import (
-    TraceEvent,
+from pheroos.trace import TraceEvent
+from pheroos.trace._pheromone_receipts import (
     canonical_pheromone_clip_payload,
     pheromone_clip_payload_fingerprint,
 )

@@ -18,8 +18,10 @@ from pheroos.governance import (
     VerifiedCommitReplaySourceV2,
     canonical_commit_replay_receipts_v2,
     commit_replay_stream_ref_v2,
-    initialize_commit_replay_state,
     prepare_commit_replay_advance_v2,
+)
+from pheroos.governance.commit_state import (
+    initialize_commit_replay_state,
     record_commit_replay_receipts,
 )
 from pheroos.governance._commit_state_v2.source import (

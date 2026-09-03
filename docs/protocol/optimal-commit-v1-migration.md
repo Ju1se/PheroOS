@@ -1,8 +1,8 @@
 # Optimal Commit Draft ABI Migration
 
 This migration is opt-in. Existing manifests that omit
-`collective_commit_policy` keep their current core, swarm, or Hybrid profile
-and their existing result/trace behavior.
+`collective_commit_policy` keep the `pheroos-core-v1` profile and their existing
+result/trace behavior.
 
 ## Activating Optimal Commit
 
@@ -16,10 +16,8 @@ declare:
 - terminal delivery/publication/execution policy;
 - certificate mode and, for distributed assurance, the complete fault model.
 
-Activation changes profile precedence. A Commit declaration selects a Commit
-profile before legacy swarm profile selection. Hybrid pheromone declarations
-remain active as attention checks, but legacy blended swarm scores do not become
-commit authority.
+Activation selects a Commit profile. Attention declarations remain advisory
+inputs; legacy blended swarm scores do not become commit authority.
 
 ## Runtime call sequence
 

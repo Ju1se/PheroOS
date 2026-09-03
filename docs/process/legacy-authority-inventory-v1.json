@@ -2,7 +2,7 @@
   "counts": {
     "cursor_types": 6,
     "legacy_namespaces": 14,
-    "registry_importers": 14,
+    "registry_importers": 0,
     "sentinel_only_issuance_candidates": 40,
     "store_rehydratable_opaque_tokens": 5
   },
@@ -105,22 +105,7 @@
         "symbol": "_LEGACY_SUPPORT_REPLAY_CURSORS"
       }
     ],
-    "registry_importers": [
-      "pheroos/governance/_certificate/outcome.py",
-      "pheroos/governance/_certificate/portable.py",
-      "pheroos/governance/_commit/context.py",
-      "pheroos/governance/_commit/local_receipt.py",
-      "pheroos/governance/_commit_state/replay.py",
-      "pheroos/governance/_commit_state/window.py",
-      "pheroos/governance/_distributed/certificate.py",
-      "pheroos/governance/_distributed/epoch.py",
-      "pheroos/governance/_distributed/proposal.py",
-      "pheroos/governance/_distributed/state.py",
-      "pheroos/governance/_distributed/witness.py",
-      "pheroos/governance/_risk/chain.py",
-      "pheroos/governance/_support/membership.py",
-      "pheroos/governance/_support/replay.py"
-    ],
+    "registry_importers": [],
     "sentinel_only_issuance_candidates": [
       {
         "path": "pheroos/governance/_certificate/outcome.py",

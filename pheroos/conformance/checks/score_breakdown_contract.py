@@ -5,7 +5,6 @@ from pheroos.governance import (
     Candidate,
     CandidateSet,
     InhibitionSignal,
-    PheromoneTrail,
     RecruitmentSignal,
     ScoutReport,
     AuthorityLevel,
@@ -14,6 +13,7 @@ from pheroos.governance import (
     validate_score_breakdown,
     verify_signal_input,
 )
+from pheroos.governance.pheromone import PheromoneTrail
 from pheroos.governance.signal import SignalVerification
 from pheroos.protocol.models import (
     CapabilityManifest,

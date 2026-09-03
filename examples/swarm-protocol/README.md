@@ -1,5 +1,10 @@
-# Swarm Protocol Example
+# Historical/private Swarm Fixture
 
-This example is provider-free, network-free, and deterministic. It demonstrates a declared collective decision policy, independent scout reports, recruitment and inhibition signals, evidence-bound pheromone memory, pheromone evaporation, a declared safe fallback candidate, output authorization requirements, and swarm trace events.
+This provider-free, network-free, deterministic fixture is retained for
+historical implementation coverage. It is not a supported public swarm
+profile, does not establish emergent-intelligence capability, and is not
+required by baseline conformance.
 
-The pheromone fields model stigmergic memory as a traceable, decaying score signal. Pheromone trails can attach to uniform subjects, are bounded by source and deposit caps, and use deterministic exponential decay by default. Pheromone trails do not create evidence, commit candidates, or authorize output.
+Its legacy attention fields exercise traceable, bounded score metadata. They do
+not create evidence, commit candidates, authorize output, or change the public
+governed authority/commit positioning.

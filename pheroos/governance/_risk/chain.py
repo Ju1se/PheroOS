@@ -7,9 +7,7 @@ from pheroos.governance._commit_validation import (
     require_commit_step,
     require_commit_text,
 )
-from pheroos.governance._legacy.authority_registry import (
-    LEGACY_AUTHORITY_REGISTRY,
-)
+from pheroos.governance._process_state import PROCESS_STATE
 from pheroos.governance._risk.invariants import (
     _normalized_bindings,
     _record_bindings_equal,
@@ -162,7 +160,7 @@ def initialize_risk_assessment_chain(
         schema="pheroos-risk-assessment-chain-base-v1",
         profile=str(bindings["profile"]),
     )
-    with LEGACY_AUTHORITY_REGISTRY.transaction() as registry:
+    with PROCESS_STATE.transaction() as registry:
         cursor = registry.get(_LEGACY_RISK_CHAIN_CURSORS, authority_key)
         if cursor is not None:
             if cursor.base_fingerprint != base_fingerprint:

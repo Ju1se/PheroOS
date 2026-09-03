@@ -64,8 +64,6 @@ from pheroos.conformance.profile import (
     CORE_PROFILE_VERSION,
     DISTRIBUTED_COMMIT_PROFILE_VERSION,
     HYBRID_COMMIT_PROFILE_VERSION,
-    HYBRID_SWARM_PROFILE_VERSION,
-    SWARM_PROFILE_VERSION,
 )
 from pheroos.conformance.public_api_inventory import PUBLIC_API_INVENTORY_VERSION
 from pheroos.conformance.report import CONFORMANCE_REPORT_VERSION
@@ -169,8 +167,6 @@ _OPTIONAL_PROFILE_VERSIONS = (
     ("core", CORE_PROFILE_VERSION),
     ("distributed-commit", DISTRIBUTED_COMMIT_PROFILE_VERSION),
     ("hybrid-commit", HYBRID_COMMIT_PROFILE_VERSION),
-    ("hybrid-swarm", HYBRID_SWARM_PROFILE_VERSION),
-    ("swarm", SWARM_PROFILE_VERSION),
 )
 
 _OPTIONAL_CAPABILITY_VERSIONS = (

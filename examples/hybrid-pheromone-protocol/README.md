@@ -1,8 +1,8 @@
-# Hybrid Pheromone Protocol Example
+# Historical/private Hybrid Attention Fixture
 
 This example is provider-free, network-free, deterministic, and domain-neutral.
 
-Run the complete reference governance path from the repository root:
+Run the retained private implementation path from the repository root:
 
 ```bash
 python examples/hybrid-pheromone-protocol/run.py
@@ -14,7 +14,7 @@ run-scoped adjustment through
 `evaluate_hybrid_collective_step`, then authorizes output through all four
 output gates. Its trace contains only lifecycle actions that actually occurred.
 
-It demonstrates the hybrid pheromone ABI:
+It demonstrates the historical/private hybrid attention implementation:
 
 - route-bound pheromone subjects that diffuse into declared candidate subjects
 - feedback reinforcement with provenance and trace lineage
@@ -25,6 +25,6 @@ It demonstrates the hybrid pheromone ABI:
   consensus candidate; fallback paths are covered by conformance and tests)
 - output authorization only after the governed output contract passes
 
-The external hybrid runtime is intentionally absent. Protocol-core owns only the
-ABI contracts, deterministic governance reference behavior, trace event names,
-conformance checks, and this small example.
+The external hybrid runtime is intentionally absent. This fixture is not a
+supported public swarm profile or evidence of emergent swarm intelligence; the
+current public positioning remains governed authority/commit.

@@ -13,16 +13,6 @@
     },
     {
       "group": "compatibility",
-      "name": "attention",
-      "package": "pheroos.governance",
-      "remove_after": null,
-      "replacement": "pheroos.governance.attention",
-      "retained_with_reason": "Lazy module attribute retained for package-level import compatibility",
-      "since": "0.1.0",
-      "stability": "draft"
-    },
-    {
-      "group": "compatibility",
       "name": "authority",
       "package": "pheroos.governance",
       "remove_after": null,
@@ -343,26 +333,6 @@
     },
     {
       "group": "compatibility",
-      "name": "pheromone",
-      "package": "pheroos.governance",
-      "remove_after": null,
-      "replacement": "pheroos.governance.pheromone",
-      "retained_with_reason": "Lazy module attribute retained for package-level import compatibility",
-      "since": "0.1.0",
-      "stability": "draft"
-    },
-    {
-      "group": "compatibility",
-      "name": "pheromone_feedback",
-      "package": "pheroos.governance",
-      "remove_after": null,
-      "replacement": "pheroos.governance.pheromone_feedback",
-      "retained_with_reason": "Lazy module attribute retained for package-level import compatibility",
-      "since": "0.1.0",
-      "stability": "draft"
-    },
-    {
-      "group": "compatibility",
       "name": "policy_adjustment",
       "package": "pheroos.governance",
       "remove_after": null,
@@ -387,16 +357,6 @@
       "package": "pheroos.governance",
       "remove_after": null,
       "replacement": "pheroos.governance.quorum",
-      "retained_with_reason": "Lazy module attribute retained for package-level import compatibility",
-      "since": "0.1.0",
-      "stability": "draft"
-    },
-    {
-      "group": "compatibility",
-      "name": "recovery",
-      "package": "pheroos.governance",
-      "remove_after": null,
-      "replacement": "pheroos.governance.recovery",
       "retained_with_reason": "Lazy module attribute retained for package-level import compatibility",
       "since": "0.1.0",
       "stability": "draft"
@@ -490,26 +450,6 @@
       "retained_with_reason": "Lazy module attribute retained for package-level import compatibility",
       "since": "0.1.0",
       "stability": "draft"
-    },
-    {
-      "group": "compatibility",
-      "name": "target",
-      "package": "pheroos.governance",
-      "remove_after": null,
-      "replacement": "pheroos.governance.target",
-      "retained_with_reason": "Lazy module attribute retained for package-level import compatibility",
-      "since": "0.1.0",
-      "stability": "draft"
-    },
-    {
-      "group": "compatibility",
-      "name": "trace",
-      "package": "pheroos.governance",
-      "remove_after": "0.3.0",
-      "replacement": "pheroos.trace",
-      "retained_with_reason": "Thin module alias retained while imports migrate to canonical pheroos.trace",
-      "since": "0.1.0",
-      "stability": "deprecated"
     },
     {
       "group": "compatibility",
@@ -1987,13 +1927,6 @@
       "package": "pheroos.protocol"
     },
     {
-      "code": "swarm_trace_lineage_incomplete",
-      "family": "manifest-validation",
-      "kind": "exact",
-      "owner": "pheroos.protocol.validation",
-      "package": "pheroos.protocol"
-    },
-    {
       "code": "trace_lineage_incomplete",
       "family": "manifest-validation",
       "kind": "exact",
@@ -3197,17 +3130,9 @@
           "group": "entrypoint",
           "name": "run_conformance",
           "package": "pheroos.conformance",
-          "parameter_lifecycle": [
-            {
-              "name": "root",
-              "remove_after": "0.3.0",
-              "replacement": "pheroos.conformance.run_source_conformance",
-              "stability": "deprecated"
-            }
-          ],
           "remove_after": null,
           "replacement": null,
-          "retained_with_reason": "The manifest conformance entrypoint remains supported; only the ignored root keyword is deprecated",
+          "retained_with_reason": null,
           "since": "0.1.0",
           "stability": "draft"
         },
@@ -3424,7 +3349,7 @@
       ]
     },
     "pheroos.drivers": {
-      "export_count": 54,
+      "export_count": 48,
       "exports": [
         {
           "group": "record",
@@ -3557,16 +3482,6 @@
           "stability": "draft"
         },
         {
-          "group": "compatibility",
-          "name": "DataProviderDriverDescriptor",
-          "package": "pheroos.drivers",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.drivers.DriverDescriptor",
-          "retained_with_reason": "Draft compatibility subtype; canonical DriverDescriptor preserves subtype fields under ext.pheroos.legacy_descriptor",
-          "since": "0.1.0",
-          "stability": "deprecated"
-        },
-        {
           "group": "record",
           "name": "DriverBinding",
           "package": "pheroos.drivers",
@@ -3605,16 +3520,6 @@
           "retained_with_reason": null,
           "since": "0.1.0",
           "stability": "draft"
-        },
-        {
-          "group": "compatibility",
-          "name": "DriverHealth",
-          "package": "pheroos.drivers",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.drivers.DriverProbeResult",
-          "retained_with_reason": "Driver readiness is represented by the versioned probe result",
-          "since": "0.1.0",
-          "stability": "deprecated"
         },
         {
           "group": "record",
@@ -3777,46 +3682,6 @@
           "stability": "draft"
         },
         {
-          "group": "compatibility",
-          "name": "ModelDriverDescriptor",
-          "package": "pheroos.drivers",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.drivers.DriverDescriptor",
-          "retained_with_reason": "Draft compatibility subtype; canonical DriverDescriptor preserves subtype fields under ext.pheroos.legacy_descriptor",
-          "since": "0.1.0",
-          "stability": "deprecated"
-        },
-        {
-          "group": "compatibility",
-          "name": "SandboxDriverDescriptor",
-          "package": "pheroos.drivers",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.drivers.DriverDescriptor",
-          "retained_with_reason": "Draft compatibility subtype; canonical DriverDescriptor preserves subtype fields under ext.pheroos.legacy_descriptor",
-          "since": "0.1.0",
-          "stability": "deprecated"
-        },
-        {
-          "group": "compatibility",
-          "name": "StorageDriverDescriptor",
-          "package": "pheroos.drivers",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.drivers.DriverDescriptor",
-          "retained_with_reason": "Draft compatibility subtype; canonical DriverDescriptor preserves subtype fields under ext.pheroos.legacy_descriptor",
-          "since": "0.1.0",
-          "stability": "deprecated"
-        },
-        {
-          "group": "compatibility",
-          "name": "ToolDriverDescriptor",
-          "package": "pheroos.drivers",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.drivers.DriverDescriptor",
-          "retained_with_reason": "Draft compatibility subtype; canonical DriverDescriptor preserves subtype fields under ext.pheroos.legacy_descriptor",
-          "since": "0.1.0",
-          "stability": "deprecated"
-        },
-        {
           "group": "entrypoint",
           "name": "bind",
           "package": "pheroos.drivers",
@@ -3969,7 +3834,7 @@
       ]
     },
     "pheroos.governance": {
-      "export_count": 1068,
+      "export_count": 911,
       "exports": [
         {
           "group": "record",
@@ -3984,26 +3849,6 @@
         {
           "group": "record",
           "name": "ATOMIC_HYBRID_COMMIT_VERSION",
-          "package": "pheroos.governance",
-          "remove_after": null,
-          "replacement": null,
-          "retained_with_reason": null,
-          "since": "0.1.0",
-          "stability": "draft"
-        },
-        {
-          "group": "record",
-          "name": "ATTENTION_AUTHORITY_SCOPE",
-          "package": "pheroos.governance",
-          "remove_after": null,
-          "replacement": null,
-          "retained_with_reason": null,
-          "since": "0.1.0",
-          "stability": "draft"
-        },
-        {
-          "group": "record",
-          "name": "ATTENTION_CHANNEL",
           "package": "pheroos.governance",
           "remove_after": null,
           "replacement": null,
@@ -4124,46 +3969,6 @@
         {
           "group": "record",
           "name": "AtomicHybridCommitStatus",
-          "package": "pheroos.governance",
-          "remove_after": null,
-          "replacement": null,
-          "retained_with_reason": null,
-          "since": "0.1.0",
-          "stability": "draft"
-        },
-        {
-          "group": "record",
-          "name": "AttentionBreakdown",
-          "package": "pheroos.governance",
-          "remove_after": null,
-          "replacement": null,
-          "retained_with_reason": null,
-          "since": "0.1.0",
-          "stability": "draft"
-        },
-        {
-          "group": "record",
-          "name": "AttentionCandidatePriority",
-          "package": "pheroos.governance",
-          "remove_after": null,
-          "replacement": null,
-          "retained_with_reason": null,
-          "since": "0.1.0",
-          "stability": "draft"
-        },
-        {
-          "group": "record",
-          "name": "AttentionReopenEligibility",
-          "package": "pheroos.governance",
-          "remove_after": null,
-          "replacement": null,
-          "retained_with_reason": null,
-          "since": "0.1.0",
-          "stability": "draft"
-        },
-        {
-          "group": "record",
-          "name": "AttentionSubjectPriority",
           "package": "pheroos.governance",
           "remove_after": null,
           "replacement": null,
@@ -5042,16 +4847,6 @@
           "stability": "draft"
         },
         {
-          "group": "compatibility",
-          "name": "CanonicalTarget",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.protocol.TargetSpec",
-          "retained_with_reason": "Target declarations are owned and validated by the Protocol ABI",
-          "since": "0.1.0",
-          "stability": "deprecated"
-        },
-        {
           "group": "record",
           "name": "CertificateConflictFinding",
           "package": "pheroos.governance",
@@ -5612,16 +5407,6 @@
           "stability": "draft"
         },
         {
-          "group": "compatibility",
-          "name": "CommitFinalityVerification",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.VerifiedCommitFinalityInputV2",
-          "retained_with_reason": "Draft v1 process-local Commit replay, window, seal, liveness, and finality authority retained for compatibility while consumers migrate to the public TCK-backed StateStore v2 owners",
-          "since": "0.1.0",
-          "stability": "deprecated"
-        },
-        {
           "group": "record",
           "name": "CommitGateDependenciesV2",
           "package": "pheroos.governance",
@@ -5630,16 +5415,6 @@
           "retained_with_reason": null,
           "since": "0.1.0",
           "stability": "draft"
-        },
-        {
-          "group": "compatibility",
-          "name": "CommitLivenessInput",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.VerifiedCommitDecisionSourceV2",
-          "retained_with_reason": "Draft v1 process-local Commit replay, window, seal, liveness, and finality authority retained for compatibility while consumers migrate to the public TCK-backed StateStore v2 owners",
-          "since": "0.1.0",
-          "stability": "deprecated"
         },
         {
           "group": "record",
@@ -5722,16 +5497,6 @@
           "stability": "draft"
         },
         {
-          "group": "compatibility",
-          "name": "CommitReplayState",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.VerifiedCommitReplayStateV2",
-          "retained_with_reason": "Draft v1 process-local Commit replay, window, seal, liveness, and finality authority retained for compatibility while consumers migrate to the public TCK-backed StateStore v2 owners",
-          "since": "0.1.0",
-          "stability": "deprecated"
-        },
-        {
           "group": "record",
           "name": "CommitStopRequestV2",
           "package": "pheroos.governance",
@@ -5750,36 +5515,6 @@
           "retained_with_reason": null,
           "since": "0.1.0",
           "stability": "draft"
-        },
-        {
-          "group": "compatibility",
-          "name": "CommitThresholdSnapshot",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.VerifiedRiskStateV2",
-          "retained_with_reason": "Draft v1 process-local Risk and threshold authority retained for compatibility while consumers migrate to the public TCK-backed StateStore Risk v2 owner",
-          "since": "0.1.0",
-          "stability": "deprecated"
-        },
-        {
-          "group": "compatibility",
-          "name": "CommitWindowSeal",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.VerifiedCommitDecisionStateV2",
-          "retained_with_reason": "Draft v1 process-local Commit replay, window, seal, liveness, and finality authority retained for compatibility while consumers migrate to the public TCK-backed StateStore v2 owners",
-          "since": "0.1.0",
-          "stability": "deprecated"
-        },
-        {
-          "group": "compatibility",
-          "name": "CommitWindowState",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.VerifiedCommitDecisionStateV2",
-          "retained_with_reason": "Draft v1 process-local Commit replay, window, seal, liveness, and finality authority retained for compatibility while consumers migrate to the public TCK-backed StateStore v2 owners",
-          "since": "0.1.0",
-          "stability": "deprecated"
         },
         {
           "group": "record",
@@ -5982,16 +5717,6 @@
           "stability": "draft"
         },
         {
-          "group": "compatibility",
-          "name": "DecisionOutcome",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.VerifiedCommitDecisionStateV2",
-          "retained_with_reason": "Draft v1 process-local Commit replay, window, seal, liveness, and finality authority retained for compatibility while consumers migrate to the public TCK-backed StateStore v2 owners",
-          "since": "0.1.0",
-          "stability": "deprecated"
-        },
-        {
           "group": "record",
           "name": "DecisionOutcomeKind",
           "package": "pheroos.governance",
@@ -6010,16 +5735,6 @@
           "retained_with_reason": null,
           "since": "0.1.0",
           "stability": "draft"
-        },
-        {
-          "group": "compatibility",
-          "name": "DecisionProgress",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.VerifiedCommitDecisionStateV2",
-          "retained_with_reason": "Draft v1 process-local Commit replay, window, seal, liveness, and finality authority retained for compatibility while consumers migrate to the public TCK-backed StateStore v2 owners",
-          "since": "0.1.0",
-          "stability": "deprecated"
         },
         {
           "group": "record",
@@ -6100,16 +5815,6 @@
           "retained_with_reason": null,
           "since": "0.1.0",
           "stability": "draft"
-        },
-        {
-          "group": "compatibility",
-          "name": "DistributedCommitState",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.VerifiedDistributedStateV2",
-          "retained_with_reason": "Draft v1 process-local Distributed issuer, transition, and finality authority retained for compatibility while consumers migrate to the public TCK-backed four-lane StateStore v2 owner; portable codecs remain separate",
-          "since": "0.1.0",
-          "stability": "deprecated"
         },
         {
           "group": "record",
@@ -6352,16 +6057,6 @@
           "stability": "draft"
         },
         {
-          "group": "compatibility",
-          "name": "EligibleMembershipEpochState",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.VerifiedMembershipStateV2",
-          "retained_with_reason": "Draft v1 process-local Membership, Support, and replay authority retained for compatibility while consumers migrate to the public TCK-backed StateStore v2 owners",
-          "since": "0.1.0",
-          "stability": "deprecated"
-        },
-        {
           "group": "record",
           "name": "EligiblePrincipal",
           "package": "pheroos.governance",
@@ -6380,16 +6075,6 @@
           "retained_with_reason": null,
           "since": "0.1.0",
           "stability": "draft"
-        },
-        {
-          "group": "compatibility",
-          "name": "EligiblePrincipalSnapshot",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.VerifiedMembershipStateV2",
-          "retained_with_reason": "Draft v1 process-local Membership, Support, and replay authority retained for compatibility while consumers migrate to the public TCK-backed StateStore v2 owners",
-          "since": "0.1.0",
-          "stability": "deprecated"
         },
         {
           "group": "record",
@@ -6464,16 +6149,6 @@
         {
           "group": "record",
           "name": "EvidenceSummary",
-          "package": "pheroos.governance",
-          "remove_after": null,
-          "replacement": null,
-          "retained_with_reason": null,
-          "since": "0.1.0",
-          "stability": "draft"
-        },
-        {
-          "group": "record",
-          "name": "ExplorationDirective",
           "package": "pheroos.governance",
           "remove_after": null,
           "replacement": null,
@@ -6983,16 +6658,6 @@
         },
         {
           "group": "record",
-          "name": "HYBRID_ATTENTION_PROFILE",
-          "package": "pheroos.governance",
-          "remove_after": null,
-          "replacement": null,
-          "retained_with_reason": null,
-          "since": "0.1.0",
-          "stability": "draft"
-        },
-        {
-          "group": "record",
           "name": "HYBRID_COMMIT_BINDING_PROFILE",
           "package": "pheroos.governance",
           "remove_after": null,
@@ -7092,16 +6757,6 @@
           "stability": "draft"
         },
         {
-          "group": "compatibility",
-          "name": "HybridCollectiveStep",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.VerifiedHybridSourceStepV2",
-          "retained_with_reason": "Draft v1 process-local Hybrid step and replay authority retained for compatibility while consumers migrate to the public TCK-backed StateStore v2 owner; it cannot authorize a v2 path",
-          "since": "0.1.0",
-          "stability": "deprecated"
-        },
-        {
           "group": "record",
           "name": "HybridCommitAttentionStatus",
           "package": "pheroos.governance",
@@ -7190,16 +6845,6 @@
           "retained_with_reason": null,
           "since": "0.1.0",
           "stability": "draft"
-        },
-        {
-          "group": "compatibility",
-          "name": "HybridReplayState",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.VerifiedHybridReplayStateV2",
-          "retained_with_reason": "Draft v1 process-local Hybrid step and replay authority retained for compatibility while consumers migrate to the public TCK-backed StateStore v2 owner; it cannot authorize a v2 path",
-          "since": "0.1.0",
-          "stability": "deprecated"
         },
         {
           "group": "record",
@@ -7883,26 +7528,6 @@
         },
         {
           "group": "record",
-          "name": "PHEROMONE_EXTENSION_PREFIXES",
-          "package": "pheroos.governance",
-          "remove_after": null,
-          "replacement": null,
-          "retained_with_reason": null,
-          "since": "0.1.0",
-          "stability": "draft"
-        },
-        {
-          "group": "record",
-          "name": "PHEROMONE_KIND_PROFILE_MAP_VERSION",
-          "package": "pheroos.governance",
-          "remove_after": null,
-          "replacement": null,
-          "retained_with_reason": null,
-          "since": "0.1.0",
-          "stability": "draft"
-        },
-        {
-          "group": "record",
           "name": "PREPARED_GOVERNANCE_TRANSITION_SCHEMA_V2",
           "package": "pheroos.governance",
           "remove_after": null,
@@ -7974,156 +7599,6 @@
         {
           "group": "record",
           "name": "PRINCIPAL_VERIFICATION_SET_STATE_SCHEMA_V2",
-          "package": "pheroos.governance",
-          "remove_after": null,
-          "replacement": null,
-          "retained_with_reason": null,
-          "since": "0.1.0",
-          "stability": "draft"
-        },
-        {
-          "group": "record",
-          "name": "PheromoneBatchResult",
-          "package": "pheroos.governance",
-          "remove_after": null,
-          "replacement": null,
-          "retained_with_reason": null,
-          "since": "0.1.0",
-          "stability": "draft"
-        },
-        {
-          "group": "record",
-          "name": "PheromoneBudgetState",
-          "package": "pheroos.governance",
-          "remove_after": null,
-          "replacement": null,
-          "retained_with_reason": null,
-          "since": "0.1.0",
-          "stability": "draft"
-        },
-        {
-          "group": "record",
-          "name": "PheromoneDiffusionPolicy",
-          "package": "pheroos.governance",
-          "remove_after": null,
-          "replacement": null,
-          "retained_with_reason": null,
-          "since": "0.1.0",
-          "stability": "draft"
-        },
-        {
-          "group": "record",
-          "name": "PheromoneEdge",
-          "package": "pheroos.governance",
-          "remove_after": null,
-          "replacement": null,
-          "retained_with_reason": null,
-          "since": "0.1.0",
-          "stability": "draft"
-        },
-        {
-          "group": "record",
-          "name": "PheromoneExplorationObservation",
-          "package": "pheroos.governance",
-          "remove_after": null,
-          "replacement": null,
-          "retained_with_reason": null,
-          "since": "0.1.0",
-          "stability": "draft"
-        },
-        {
-          "group": "record",
-          "name": "PheromoneFeedback",
-          "package": "pheroos.governance",
-          "remove_after": null,
-          "replacement": null,
-          "retained_with_reason": null,
-          "since": "0.1.0",
-          "stability": "draft"
-        },
-        {
-          "group": "record",
-          "name": "PheromoneKindProfile",
-          "package": "pheroos.governance",
-          "remove_after": null,
-          "replacement": null,
-          "retained_with_reason": null,
-          "since": "0.1.0",
-          "stability": "draft"
-        },
-        {
-          "group": "record",
-          "name": "PheromoneLifecycleRecord",
-          "package": "pheroos.governance",
-          "remove_after": null,
-          "replacement": null,
-          "retained_with_reason": null,
-          "since": "0.1.0",
-          "stability": "draft"
-        },
-        {
-          "group": "record",
-          "name": "PheromoneNeighborhood",
-          "package": "pheroos.governance",
-          "remove_after": null,
-          "replacement": null,
-          "retained_with_reason": null,
-          "since": "0.1.0",
-          "stability": "draft"
-        },
-        {
-          "group": "record",
-          "name": "PheromoneNormalizationRecord",
-          "package": "pheroos.governance",
-          "remove_after": null,
-          "replacement": null,
-          "retained_with_reason": null,
-          "since": "0.1.0",
-          "stability": "draft"
-        },
-        {
-          "group": "record",
-          "name": "PheromonePolicy",
-          "package": "pheroos.governance",
-          "remove_after": null,
-          "replacement": null,
-          "retained_with_reason": null,
-          "since": "0.1.0",
-          "stability": "draft"
-        },
-        {
-          "group": "record",
-          "name": "PheromoneReinforcementResult",
-          "package": "pheroos.governance",
-          "remove_after": null,
-          "replacement": null,
-          "retained_with_reason": null,
-          "since": "0.1.0",
-          "stability": "draft"
-        },
-        {
-          "group": "record",
-          "name": "PheromoneScoreResult",
-          "package": "pheroos.governance",
-          "remove_after": null,
-          "replacement": null,
-          "retained_with_reason": null,
-          "since": "0.1.0",
-          "stability": "draft"
-        },
-        {
-          "group": "record",
-          "name": "PheromoneSubject",
-          "package": "pheroos.governance",
-          "remove_after": null,
-          "replacement": null,
-          "retained_with_reason": null,
-          "since": "0.1.0",
-          "stability": "draft"
-        },
-        {
-          "group": "record",
-          "name": "PheromoneTrail",
           "package": "pheroos.governance",
           "remove_after": null,
           "replacement": null,
@@ -8392,16 +7867,6 @@
           "stability": "draft"
         },
         {
-          "group": "compatibility",
-          "name": "RecoveryTrace",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.trace.TraceEvent",
-          "retained_with_reason": "Recovery lineage uses the canonical TraceEvent with event_type=recovery",
-          "since": "0.1.0",
-          "stability": "deprecated"
-        },
-        {
           "group": "record",
           "name": "RecruitmentSignal",
           "package": "pheroos.governance",
@@ -8430,26 +7895,6 @@
           "retained_with_reason": null,
           "since": "0.1.0",
           "stability": "draft"
-        },
-        {
-          "group": "compatibility",
-          "name": "RiskAssessment",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.VerifiedRiskStateV2",
-          "retained_with_reason": "Draft v1 process-local Risk and threshold authority retained for compatibility while consumers migrate to the public TCK-backed StateStore Risk v2 owner",
-          "since": "0.1.0",
-          "stability": "deprecated"
-        },
-        {
-          "group": "compatibility",
-          "name": "RiskAssessmentChainState",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.VerifiedRiskStateV2",
-          "retained_with_reason": "Draft v1 process-local Risk and threshold authority retained for compatibility while consumers migrate to the public TCK-backed StateStore Risk v2 owner",
-          "since": "0.1.0",
-          "stability": "deprecated"
         },
         {
           "group": "record",
@@ -8504,26 +7949,6 @@
         {
           "group": "record",
           "name": "RunScopedPolicyOverlay",
-          "package": "pheroos.governance",
-          "remove_after": null,
-          "replacement": null,
-          "retained_with_reason": null,
-          "since": "0.1.0",
-          "stability": "draft"
-        },
-        {
-          "group": "record",
-          "name": "SUPPORTED_PHEROMONE_KINDS",
-          "package": "pheroos.governance",
-          "remove_after": null,
-          "replacement": null,
-          "retained_with_reason": null,
-          "since": "0.1.0",
-          "stability": "draft"
-        },
-        {
-          "group": "record",
-          "name": "SUPPORTED_PHEROMONE_SUBJECT_TYPES",
           "package": "pheroos.governance",
           "remove_after": null,
           "replacement": null,
@@ -8782,16 +8207,6 @@
           "stability": "draft"
         },
         {
-          "group": "compatibility",
-          "name": "SupportLease",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.VerifiedSupportStateV2",
-          "retained_with_reason": "Draft v1 process-local Membership, Support, and replay authority retained for compatibility while consumers migrate to the public TCK-backed StateStore v2 owners",
-          "since": "0.1.0",
-          "stability": "deprecated"
-        },
-        {
           "group": "record",
           "name": "SupportLeaseEvaluation",
           "package": "pheroos.governance",
@@ -8840,26 +8255,6 @@
           "retained_with_reason": null,
           "since": "0.1.0",
           "stability": "draft"
-        },
-        {
-          "group": "compatibility",
-          "name": "SupportLeaseReplayState",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.VerifiedSupportStateV2",
-          "retained_with_reason": "Draft v1 process-local Membership, Support, and replay authority retained for compatibility while consumers migrate to the public TCK-backed StateStore v2 owners",
-          "since": "0.1.0",
-          "stability": "deprecated"
-        },
-        {
-          "group": "compatibility",
-          "name": "SupportLeaseRevocation",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.VerifiedSupportStateV2",
-          "retained_with_reason": "Draft v1 process-local Membership, Support, and replay authority retained for compatibility while consumers migrate to the public TCK-backed StateStore v2 owners",
-          "since": "0.1.0",
-          "stability": "deprecated"
         },
         {
           "group": "record",
@@ -9422,16 +8817,6 @@
           "stability": "draft"
         },
         {
-          "group": "compatibility",
-          "name": "advance_commit_window_state",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.prepare_commit_decision_successor_v2",
-          "retained_with_reason": "Draft v1 process-local Commit replay, window, seal, liveness, and finality authority retained for compatibility while consumers migrate to the public TCK-backed StateStore v2 owners",
-          "since": "0.1.0",
-          "stability": "deprecated"
-        },
-        {
           "group": "transition",
           "name": "advance_distributed_commit_v2",
           "package": "pheroos.governance",
@@ -9514,36 +8899,6 @@
         {
           "group": "entrypoint",
           "name": "assess_optimal_commit",
-          "package": "pheroos.governance",
-          "remove_after": null,
-          "replacement": null,
-          "retained_with_reason": null,
-          "since": "0.1.0",
-          "stability": "draft"
-        },
-        {
-          "group": "verification",
-          "name": "attention_breakdown_fingerprint",
-          "package": "pheroos.governance",
-          "remove_after": null,
-          "replacement": null,
-          "retained_with_reason": null,
-          "since": "0.1.0",
-          "stability": "draft"
-        },
-        {
-          "group": "verification",
-          "name": "attention_breakdown_is_authoritative",
-          "package": "pheroos.governance",
-          "remove_after": null,
-          "replacement": null,
-          "retained_with_reason": null,
-          "since": "0.1.0",
-          "stability": "draft"
-        },
-        {
-          "group": "verification",
-          "name": "attention_breakdown_payload",
           "package": "pheroos.governance",
           "remove_after": null,
           "replacement": null,
@@ -9772,16 +9127,6 @@
           "stability": "draft"
         },
         {
-          "group": "compatibility",
-          "name": "canonical_commit_payload",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.protocol.canonical_commit_payload",
-          "retained_with_reason": "Draft Governance error-adapter retained while consumers migrate to the Protocol-owned commit codec",
-          "since": "0.1.0",
-          "stability": "deprecated"
-        },
-        {
           "group": "entrypoint",
           "name": "canonical_commit_replay_receipts_v2",
           "package": "pheroos.governance",
@@ -9790,16 +9135,6 @@
           "retained_with_reason": null,
           "since": "0.1.0",
           "stability": "draft"
-        },
-        {
-          "group": "compatibility",
-          "name": "canonical_commit_set",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.protocol.canonical_commit_set",
-          "retained_with_reason": "Draft Governance error-adapter retained while consumers migrate to the Protocol-owned commit codec",
-          "since": "0.1.0",
-          "stability": "deprecated"
         },
         {
           "group": "entrypoint",
@@ -9814,16 +9149,6 @@
         {
           "group": "entrypoint",
           "name": "canonical_membership_clusters_v2",
-          "package": "pheroos.governance",
-          "remove_after": null,
-          "replacement": null,
-          "retained_with_reason": null,
-          "since": "0.1.0",
-          "stability": "draft"
-        },
-        {
-          "group": "verification",
-          "name": "canonical_pheromone_kind_profiles",
           "package": "pheroos.governance",
           "remove_after": null,
           "replacement": null,
@@ -9944,36 +9269,6 @@
         {
           "group": "entrypoint",
           "name": "checked_subtract",
-          "package": "pheroos.governance",
-          "remove_after": null,
-          "replacement": null,
-          "retained_with_reason": null,
-          "since": "0.1.0",
-          "stability": "draft"
-        },
-        {
-          "group": "entrypoint",
-          "name": "clip_pheromone_deposit_strength",
-          "package": "pheroos.governance",
-          "remove_after": null,
-          "replacement": null,
-          "retained_with_reason": null,
-          "since": "0.1.0",
-          "stability": "draft"
-        },
-        {
-          "group": "entrypoint",
-          "name": "clip_pheromone_strength",
-          "package": "pheroos.governance",
-          "remove_after": null,
-          "replacement": null,
-          "retained_with_reason": null,
-          "since": "0.1.0",
-          "stability": "draft"
-        },
-        {
-          "group": "verification",
-          "name": "collect_pheromone_source_diversity",
           "package": "pheroos.governance",
           "remove_after": null,
           "replacement": null,
@@ -10232,16 +9527,6 @@
           "stability": "draft"
         },
         {
-          "group": "compatibility",
-          "name": "commit_finality_verification_is_authoritative",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.VerifiedCommitFinalityInputV2",
-          "retained_with_reason": "Draft v1 process-local Commit replay, window, seal, liveness, and finality authority retained for compatibility while consumers migrate to the public TCK-backed StateStore v2 owners",
-          "since": "0.1.0",
-          "stability": "deprecated"
-        },
-        {
           "group": "verification",
           "name": "commit_finality_verification_payload",
           "package": "pheroos.governance",
@@ -10292,16 +9577,6 @@
           "stability": "draft"
         },
         {
-          "group": "compatibility",
-          "name": "commit_liveness_input_is_authoritative",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.VerifiedCommitDecisionSourceV2",
-          "retained_with_reason": "Draft v1 process-local Commit replay, window, seal, liveness, and finality authority retained for compatibility while consumers migrate to the public TCK-backed StateStore v2 owners",
-          "since": "0.1.0",
-          "stability": "deprecated"
-        },
-        {
           "group": "verification",
           "name": "commit_liveness_input_payload",
           "package": "pheroos.governance",
@@ -10350,16 +9625,6 @@
           "retained_with_reason": null,
           "since": "0.1.0",
           "stability": "draft"
-        },
-        {
-          "group": "compatibility",
-          "name": "commit_payload_fingerprint",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.protocol.commit_payload_fingerprint",
-          "retained_with_reason": "Draft Governance error-adapter retained while consumers migrate to the Protocol-owned commit codec",
-          "since": "0.1.0",
-          "stability": "deprecated"
         },
         {
           "group": "transition",
@@ -10450,26 +9715,6 @@
           "retained_with_reason": null,
           "since": "0.1.0",
           "stability": "draft"
-        },
-        {
-          "group": "compatibility",
-          "name": "commit_replay_state_is_authoritative",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.commit_replay_state_is_current_v2",
-          "retained_with_reason": "Draft v1 process-local Commit replay, window, seal, liveness, and finality authority retained for compatibility while consumers migrate to the public TCK-backed StateStore v2 owners",
-          "since": "0.1.0",
-          "stability": "deprecated"
-        },
-        {
-          "group": "compatibility",
-          "name": "commit_replay_state_is_current",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.commit_replay_state_is_current_v2",
-          "retained_with_reason": "Draft v1 process-local Commit replay, window, seal, liveness, and finality authority retained for compatibility while consumers migrate to the public TCK-backed StateStore v2 owners",
-          "since": "0.1.0",
-          "stability": "deprecated"
         },
         {
           "group": "transition",
@@ -10602,16 +9847,6 @@
           "stability": "draft"
         },
         {
-          "group": "compatibility",
-          "name": "commit_threshold_snapshot_is_authoritative",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.risk_state_is_current_v2",
-          "retained_with_reason": "Draft v1 process-local Risk and threshold authority retained for compatibility while consumers migrate to the public TCK-backed StateStore Risk v2 owner",
-          "since": "0.1.0",
-          "stability": "deprecated"
-        },
-        {
           "group": "verification",
           "name": "commit_threshold_snapshot_matches",
           "package": "pheroos.governance",
@@ -10672,46 +9907,6 @@
           "stability": "draft"
         },
         {
-          "group": "compatibility",
-          "name": "commit_window_seal_for_state",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.require_current_commit_decision_state_v2",
-          "retained_with_reason": "Draft v1 process-local Commit replay, window, seal, liveness, and finality authority retained for compatibility while consumers migrate to the public TCK-backed StateStore v2 owners",
-          "since": "0.1.0",
-          "stability": "deprecated"
-        },
-        {
-          "group": "compatibility",
-          "name": "commit_window_seal_is_authoritative",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.commit_decision_state_is_current_v2",
-          "retained_with_reason": "Draft v1 process-local Commit replay, window, seal, liveness, and finality authority retained for compatibility while consumers migrate to the public TCK-backed StateStore v2 owners",
-          "since": "0.1.0",
-          "stability": "deprecated"
-        },
-        {
-          "group": "compatibility",
-          "name": "commit_window_seal_is_current",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.commit_decision_state_is_current_v2",
-          "retained_with_reason": "Draft v1 process-local Commit replay, window, seal, liveness, and finality authority retained for compatibility while consumers migrate to the public TCK-backed StateStore v2 owners",
-          "since": "0.1.0",
-          "stability": "deprecated"
-        },
-        {
-          "group": "compatibility",
-          "name": "commit_window_seal_matches_receipt",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.require_current_commit_decision_state_v2",
-          "retained_with_reason": "Draft v1 process-local Commit replay, window, seal, liveness, and finality authority retained for compatibility while consumers migrate to the public TCK-backed StateStore v2 owners",
-          "since": "0.1.0",
-          "stability": "deprecated"
-        },
-        {
           "group": "verification",
           "name": "commit_window_seal_payload",
           "package": "pheroos.governance",
@@ -10730,26 +9925,6 @@
           "retained_with_reason": null,
           "since": "0.1.0",
           "stability": "draft"
-        },
-        {
-          "group": "compatibility",
-          "name": "commit_window_state_is_authoritative",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.commit_decision_state_is_current_v2",
-          "retained_with_reason": "Draft v1 process-local Commit replay, window, seal, liveness, and finality authority retained for compatibility while consumers migrate to the public TCK-backed StateStore v2 owners",
-          "since": "0.1.0",
-          "stability": "deprecated"
-        },
-        {
-          "group": "compatibility",
-          "name": "commit_window_state_is_current",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.commit_decision_state_is_current_v2",
-          "retained_with_reason": "Draft v1 process-local Commit replay, window, seal, liveness, and finality authority retained for compatibility while consumers migrate to the public TCK-backed StateStore v2 owners",
-          "since": "0.1.0",
-          "stability": "deprecated"
         },
         {
           "group": "verification",
@@ -10832,16 +10007,6 @@
           "stability": "draft"
         },
         {
-          "group": "compatibility",
-          "name": "decision_outcome_is_authoritative",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.require_current_commit_decision_state_v2",
-          "retained_with_reason": "Draft v1 process-local Commit replay, window, seal, liveness, and finality authority retained for compatibility while consumers migrate to the public TCK-backed StateStore v2 owners",
-          "since": "0.1.0",
-          "stability": "deprecated"
-        },
-        {
           "group": "verification",
           "name": "decision_outcome_payload",
           "package": "pheroos.governance",
@@ -10862,16 +10027,6 @@
           "stability": "draft"
         },
         {
-          "group": "compatibility",
-          "name": "decision_progress_is_authoritative",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.require_current_commit_decision_state_v2",
-          "retained_with_reason": "Draft v1 process-local Commit replay, window, seal, liveness, and finality authority retained for compatibility while consumers migrate to the public TCK-backed StateStore v2 owners",
-          "since": "0.1.0",
-          "stability": "deprecated"
-        },
-        {
           "group": "verification",
           "name": "decision_progress_payload",
           "package": "pheroos.governance",
@@ -10884,76 +10039,6 @@
         {
           "group": "entrypoint",
           "name": "deliver_terminal_outcome",
-          "package": "pheroos.governance",
-          "remove_after": null,
-          "replacement": null,
-          "retained_with_reason": null,
-          "since": "0.1.0",
-          "stability": "draft"
-        },
-        {
-          "group": "transition",
-          "name": "deposit_pheromone",
-          "package": "pheroos.governance",
-          "remove_after": null,
-          "replacement": null,
-          "retained_with_reason": null,
-          "since": "0.1.0",
-          "stability": "draft"
-        },
-        {
-          "group": "transition",
-          "name": "deposit_pheromone_trails",
-          "package": "pheroos.governance",
-          "remove_after": null,
-          "replacement": null,
-          "retained_with_reason": null,
-          "since": "0.1.0",
-          "stability": "draft"
-        },
-        {
-          "group": "entrypoint",
-          "name": "derive_attention_breakdown",
-          "package": "pheroos.governance",
-          "remove_after": null,
-          "replacement": null,
-          "retained_with_reason": null,
-          "since": "0.1.0",
-          "stability": "draft"
-        },
-        {
-          "group": "entrypoint",
-          "name": "derive_exploration_directive",
-          "package": "pheroos.governance",
-          "remove_after": null,
-          "replacement": null,
-          "retained_with_reason": null,
-          "since": "0.1.0",
-          "stability": "draft"
-        },
-        {
-          "group": "transition",
-          "name": "diffuse_pheromone_trails",
-          "package": "pheroos.governance",
-          "remove_after": null,
-          "replacement": null,
-          "retained_with_reason": null,
-          "since": "0.1.0",
-          "stability": "draft"
-        },
-        {
-          "group": "transition",
-          "name": "diffuse_pheromone_trails_with_records",
-          "package": "pheroos.governance",
-          "remove_after": null,
-          "replacement": null,
-          "retained_with_reason": null,
-          "since": "0.1.0",
-          "stability": "draft"
-        },
-        {
-          "group": "entrypoint",
-          "name": "diffusion_policy_from_collective",
           "package": "pheroos.governance",
           "remove_after": null,
           "replacement": null,
@@ -10980,16 +10065,6 @@
           "retained_with_reason": null,
           "since": "0.1.0",
           "stability": "draft"
-        },
-        {
-          "group": "compatibility",
-          "name": "distributed_commit_certificate_is_current_final",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.verified_distributed_commit_finality_input_v2",
-          "retained_with_reason": "Draft v1 process-local Distributed issuer, transition, and finality authority retained for compatibility while consumers migrate to the public TCK-backed four-lane StateStore v2 owner; portable codecs remain separate",
-          "since": "0.1.0",
-          "stability": "deprecated"
         },
         {
           "group": "verification",
@@ -11022,16 +10097,6 @@
           "stability": "draft"
         },
         {
-          "group": "compatibility",
-          "name": "distributed_commit_proposal_is_authoritative",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.distributed_state_is_current_v2",
-          "retained_with_reason": "Draft v1 process-local Distributed issuer, transition, and finality authority retained for compatibility while consumers migrate to the public TCK-backed four-lane StateStore v2 owner; portable codecs remain separate",
-          "since": "0.1.0",
-          "stability": "deprecated"
-        },
-        {
           "group": "verification",
           "name": "distributed_commit_proposal_payload",
           "package": "pheroos.governance",
@@ -11060,26 +10125,6 @@
           "retained_with_reason": null,
           "since": "0.1.0",
           "stability": "draft"
-        },
-        {
-          "group": "compatibility",
-          "name": "distributed_commit_state_is_authoritative",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.distributed_state_is_current_v2",
-          "retained_with_reason": "Draft v1 process-local Distributed issuer, transition, and finality authority retained for compatibility while consumers migrate to the public TCK-backed four-lane StateStore v2 owner; portable codecs remain separate",
-          "since": "0.1.0",
-          "stability": "deprecated"
-        },
-        {
-          "group": "compatibility",
-          "name": "distributed_commit_state_is_current",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.distributed_state_is_current_v2",
-          "retained_with_reason": "Draft v1 process-local Distributed issuer, transition, and finality authority retained for compatibility while consumers migrate to the public TCK-backed four-lane StateStore v2 owner; portable codecs remain separate",
-          "since": "0.1.0",
-          "stability": "deprecated"
         },
         {
           "group": "verification",
@@ -11140,16 +10185,6 @@
           "retained_with_reason": null,
           "since": "0.1.0",
           "stability": "draft"
-        },
-        {
-          "group": "compatibility",
-          "name": "distributed_finality_decision_is_authoritative",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.verified_distributed_commit_finality_input_v2",
-          "retained_with_reason": "Draft v1 process-local Distributed issuer, transition, and finality authority retained for compatibility while consumers migrate to the public TCK-backed four-lane StateStore v2 owner; portable codecs remain separate",
-          "since": "0.1.0",
-          "stability": "deprecated"
         },
         {
           "group": "verification",
@@ -11242,26 +10277,6 @@
           "stability": "draft"
         },
         {
-          "group": "compatibility",
-          "name": "eligible_membership_epoch_state_is_authoritative",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.membership_state_is_current_v2",
-          "retained_with_reason": "Draft v1 process-local Membership, Support, and replay authority retained for compatibility while consumers migrate to the public TCK-backed StateStore v2 owners",
-          "since": "0.1.0",
-          "stability": "deprecated"
-        },
-        {
-          "group": "compatibility",
-          "name": "eligible_membership_epoch_state_is_current",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.membership_state_is_current_v2",
-          "retained_with_reason": "Draft v1 process-local Membership, Support, and replay authority retained for compatibility while consumers migrate to the public TCK-backed StateStore v2 owners",
-          "since": "0.1.0",
-          "stability": "deprecated"
-        },
-        {
           "group": "verification",
           "name": "eligible_membership_epoch_state_payload",
           "package": "pheroos.governance",
@@ -11280,16 +10295,6 @@
           "retained_with_reason": null,
           "since": "0.1.0",
           "stability": "draft"
-        },
-        {
-          "group": "compatibility",
-          "name": "eligible_principal_snapshot_is_authoritative",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.membership_state_is_current_v2",
-          "retained_with_reason": "Draft v1 process-local Membership, Support, and replay authority retained for compatibility while consumers migrate to the public TCK-backed StateStore v2 owners",
-          "since": "0.1.0",
-          "stability": "deprecated"
         },
         {
           "group": "verification",
@@ -11432,16 +10437,6 @@
           "stability": "draft"
         },
         {
-          "group": "compatibility",
-          "name": "evaluate_distributed_finality",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.verified_distributed_commit_finality_input_v2",
-          "retained_with_reason": "Draft v1 process-local Distributed issuer, transition, and finality authority retained for compatibility while consumers migrate to the public TCK-backed four-lane StateStore v2 owner; portable codecs remain separate",
-          "since": "0.1.0",
-          "stability": "deprecated"
-        },
-        {
           "group": "transition",
           "name": "evaluate_evidence_binding",
           "package": "pheroos.governance",
@@ -11453,26 +10448,6 @@
         },
         {
           "group": "transition",
-          "name": "evaluate_hybrid_attention_step",
-          "package": "pheroos.governance",
-          "remove_after": null,
-          "replacement": null,
-          "retained_with_reason": null,
-          "since": "0.1.0",
-          "stability": "draft"
-        },
-        {
-          "group": "compatibility",
-          "name": "evaluate_hybrid_collective_step",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.evaluate_hybrid_collective_step_v2",
-          "retained_with_reason": "Draft v1 process-local Hybrid step and replay authority retained for compatibility while consumers migrate to the public TCK-backed StateStore v2 owner; it cannot authorize a v2 path",
-          "since": "0.1.0",
-          "stability": "deprecated"
-        },
-        {
-          "group": "transition",
           "name": "evaluate_hybrid_collective_step_v2",
           "package": "pheroos.governance",
           "remove_after": null,
@@ -11480,16 +10455,6 @@
           "retained_with_reason": null,
           "since": "0.1.0",
           "stability": "draft"
-        },
-        {
-          "group": "compatibility",
-          "name": "evaluate_hybrid_commit_evaluation",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.evaluate_hybrid_commit_step",
-          "retained_with_reason": "Draft alias retained for one compatibility window; the total step entrypoint is canonical",
-          "since": "0.1.0",
-          "stability": "deprecated"
         },
         {
           "group": "transition",
@@ -11544,26 +10509,6 @@
         {
           "group": "transition",
           "name": "evaluate_support_v2",
-          "package": "pheroos.governance",
-          "remove_after": null,
-          "replacement": null,
-          "retained_with_reason": null,
-          "since": "0.1.0",
-          "stability": "draft"
-        },
-        {
-          "group": "transition",
-          "name": "evaporate_trails",
-          "package": "pheroos.governance",
-          "remove_after": null,
-          "replacement": null,
-          "retained_with_reason": null,
-          "since": "0.1.0",
-          "stability": "draft"
-        },
-        {
-          "group": "transition",
-          "name": "evaporate_trails_with_records",
           "package": "pheroos.governance",
           "remove_after": null,
           "replacement": null,
@@ -11692,36 +10637,6 @@
           "stability": "draft"
         },
         {
-          "group": "verification",
-          "name": "exploration_directive_fingerprint",
-          "package": "pheroos.governance",
-          "remove_after": null,
-          "replacement": null,
-          "retained_with_reason": null,
-          "since": "0.1.0",
-          "stability": "draft"
-        },
-        {
-          "group": "verification",
-          "name": "exploration_directive_is_authoritative",
-          "package": "pheroos.governance",
-          "remove_after": null,
-          "replacement": null,
-          "retained_with_reason": null,
-          "since": "0.1.0",
-          "stability": "draft"
-        },
-        {
-          "group": "verification",
-          "name": "exploration_directive_payload",
-          "package": "pheroos.governance",
-          "remove_after": null,
-          "replacement": null,
-          "retained_with_reason": null,
-          "since": "0.1.0",
-          "stability": "draft"
-        },
-        {
           "group": "transition",
           "name": "finalize_hybrid_commit_transition",
           "package": "pheroos.governance",
@@ -11770,16 +10685,6 @@
           "retained_with_reason": null,
           "since": "0.1.0",
           "stability": "draft"
-        },
-        {
-          "group": "compatibility",
-          "name": "hybrid_collective_step_is_authoritative",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.VerifiedHybridSourceStepV2",
-          "retained_with_reason": "Draft v1 process-local Hybrid step and replay authority retained for compatibility while consumers migrate to the public TCK-backed StateStore v2 owner; it cannot authorize a v2 path",
-          "since": "0.1.0",
-          "stability": "deprecated"
         },
         {
           "group": "verification",
@@ -11902,16 +10807,6 @@
           "stability": "draft"
         },
         {
-          "group": "compatibility",
-          "name": "hybrid_replay_state_is_authoritative",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.hybrid_replay_state_is_current_v2",
-          "retained_with_reason": "Draft v1 process-local Hybrid step and replay authority retained for compatibility while consumers migrate to the public TCK-backed StateStore v2 owner; it cannot authorize a v2 path",
-          "since": "0.1.0",
-          "stability": "deprecated"
-        },
-        {
           "group": "entrypoint",
           "name": "hybrid_replay_state_is_current_v2",
           "package": "pheroos.governance",
@@ -11934,66 +10829,6 @@
         {
           "group": "entrypoint",
           "name": "hybrid_replay_transition_id_v2",
-          "package": "pheroos.governance",
-          "remove_after": null,
-          "replacement": null,
-          "retained_with_reason": null,
-          "since": "0.1.0",
-          "stability": "draft"
-        },
-        {
-          "group": "compatibility",
-          "name": "initialize_commit_replay_state",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.prepare_commit_replay_advance_v2",
-          "retained_with_reason": "Draft v1 process-local Commit replay, window, seal, liveness, and finality authority retained for compatibility while consumers migrate to the public TCK-backed StateStore v2 owners",
-          "since": "0.1.0",
-          "stability": "deprecated"
-        },
-        {
-          "group": "compatibility",
-          "name": "initialize_commit_window_state",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.prepare_commit_decision_initialize_v2",
-          "retained_with_reason": "Draft v1 process-local Commit replay, window, seal, liveness, and finality authority retained for compatibility while consumers migrate to the public TCK-backed StateStore v2 owners",
-          "since": "0.1.0",
-          "stability": "deprecated"
-        },
-        {
-          "group": "compatibility",
-          "name": "initialize_distributed_commit_state",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.prepare_distributed_epoch_v2",
-          "retained_with_reason": "Draft v1 process-local Distributed issuer, transition, and finality authority retained for compatibility while consumers migrate to the public TCK-backed four-lane StateStore v2 owner; portable codecs remain separate",
-          "since": "0.1.0",
-          "stability": "deprecated"
-        },
-        {
-          "group": "compatibility",
-          "name": "initialize_risk_assessment_chain",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.prepare_risk_state_advance_v2",
-          "retained_with_reason": "Draft v1 process-local Risk and threshold authority retained for compatibility while consumers migrate to the public TCK-backed StateStore Risk v2 owner",
-          "since": "0.1.0",
-          "stability": "deprecated"
-        },
-        {
-          "group": "compatibility",
-          "name": "initialize_support_lease_replay_state",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.prepare_support_initialize_v2",
-          "retained_with_reason": "Draft v1 process-local Membership, Support, and replay authority retained for compatibility while consumers migrate to the public TCK-backed StateStore v2 owners",
-          "since": "0.1.0",
-          "stability": "deprecated"
-        },
-        {
-          "group": "verification",
-          "name": "is_extension_pheromone_value",
           "package": "pheroos.governance",
           "remove_after": null,
           "replacement": null,
@@ -12032,16 +10867,6 @@
           "stability": "draft"
         },
         {
-          "group": "compatibility",
-          "name": "issue_commit_liveness_input",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.prepare_commit_decision_successor_v2",
-          "retained_with_reason": "Draft v1 process-local Commit replay, window, seal, liveness, and finality authority retained for compatibility while consumers migrate to the public TCK-backed StateStore v2 owners",
-          "since": "0.1.0",
-          "stability": "deprecated"
-        },
-        {
           "group": "transition",
           "name": "issue_commit_permission_v2",
           "package": "pheroos.governance",
@@ -12052,16 +10877,6 @@
           "stability": "draft"
         },
         {
-          "group": "compatibility",
-          "name": "issue_commit_threshold_snapshot",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.advance_risk_state_v2",
-          "retained_with_reason": "Draft v1 process-local Risk and threshold authority retained for compatibility while consumers migrate to the public TCK-backed StateStore Risk v2 owner",
-          "since": "0.1.0",
-          "stability": "deprecated"
-        },
-        {
           "group": "transition",
           "name": "issue_counterevidence_disposition",
           "package": "pheroos.governance",
@@ -12070,96 +10885,6 @@
           "retained_with_reason": null,
           "since": "0.1.0",
           "stability": "draft"
-        },
-        {
-          "group": "compatibility",
-          "name": "issue_distributed_commit_certificate",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.prepare_distributed_certificate_v2",
-          "retained_with_reason": "Draft v1 process-local Distributed issuer, transition, and finality authority retained for compatibility while consumers migrate to the public TCK-backed four-lane StateStore v2 owner; portable codecs remain separate",
-          "since": "0.1.0",
-          "stability": "deprecated"
-        },
-        {
-          "group": "compatibility",
-          "name": "issue_distributed_commit_proposal",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.prepare_distributed_proposal_v2",
-          "retained_with_reason": "Draft v1 process-local Distributed issuer, transition, and finality authority retained for compatibility while consumers migrate to the public TCK-backed four-lane StateStore v2 owner; portable codecs remain separate",
-          "since": "0.1.0",
-          "stability": "deprecated"
-        },
-        {
-          "group": "compatibility",
-          "name": "issue_eligible_principal_snapshot",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.commit_membership_epoch_v2",
-          "retained_with_reason": "Draft v1 process-local Membership, Support, and replay authority retained for compatibility while consumers migrate to the public TCK-backed StateStore v2 owners",
-          "since": "0.1.0",
-          "stability": "deprecated"
-        },
-        {
-          "group": "compatibility",
-          "name": "issue_epoch_transition_certificate",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.prepare_distributed_epoch_v2",
-          "retained_with_reason": "Draft v1 process-local Distributed issuer, transition, and finality authority retained for compatibility while consumers migrate to the public TCK-backed four-lane StateStore v2 owner; portable codecs remain separate",
-          "since": "0.1.0",
-          "stability": "deprecated"
-        },
-        {
-          "group": "compatibility",
-          "name": "issue_evidence_commit_certificate",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.prepare_commit_certificate_v2",
-          "retained_with_reason": "Draft v1 issuer and process-local current-finality authority retained for compatibility while consumers migrate to the public TCK-backed Decision and Certificate v2 owners; historical codecs remain separate",
-          "since": "0.1.0",
-          "stability": "deprecated"
-        },
-        {
-          "group": "compatibility",
-          "name": "issue_local_commit_receipt",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.advance_commit_decision_v2",
-          "retained_with_reason": "Draft v1 issuer and process-local current-finality authority retained for compatibility while consumers migrate to the public TCK-backed Decision and Certificate v2 owners; historical codecs remain separate",
-          "since": "0.1.0",
-          "stability": "deprecated"
-        },
-        {
-          "group": "compatibility",
-          "name": "issue_outcome_certificate",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.advance_commit_decision_v2",
-          "retained_with_reason": "Draft v1 issuer and process-local current-finality authority retained for compatibility while consumers migrate to the public TCK-backed Decision and Certificate v2 owners; historical codecs remain separate",
-          "since": "0.1.0",
-          "stability": "deprecated"
-        },
-        {
-          "group": "compatibility",
-          "name": "issue_risk_assessment",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.advance_risk_state_v2",
-          "retained_with_reason": "Draft v1 process-local Risk and threshold authority retained for compatibility while consumers migrate to the public TCK-backed StateStore Risk v2 owner",
-          "since": "0.1.0",
-          "stability": "deprecated"
-        },
-        {
-          "group": "compatibility",
-          "name": "issue_support_lease",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.prepare_support_issue_v2",
-          "retained_with_reason": "Draft v1 process-local Membership, Support, and replay authority retained for compatibility while consumers migrate to the public TCK-backed StateStore v2 owners",
-          "since": "0.1.0",
-          "stability": "deprecated"
         },
         {
           "group": "entrypoint",
@@ -12192,38 +10917,8 @@
           "stability": "draft"
         },
         {
-          "group": "compatibility",
-          "name": "local_commit_receipt_is_authoritative",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.require_current_commit_decision_state_v2",
-          "retained_with_reason": "Draft v1 issuer and process-local current-finality authority retained for compatibility while consumers migrate to the public TCK-backed Decision and Certificate v2 owners; historical codecs remain separate",
-          "since": "0.1.0",
-          "stability": "deprecated"
-        },
-        {
-          "group": "compatibility",
-          "name": "local_commit_receipt_matches",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.require_current_commit_decision_state_v2",
-          "retained_with_reason": "Draft v1 issuer and process-local current-finality authority retained for compatibility while consumers migrate to the public TCK-backed Decision and Certificate v2 owners; historical codecs remain separate",
-          "since": "0.1.0",
-          "stability": "deprecated"
-        },
-        {
           "group": "verification",
           "name": "local_commit_receipt_payload",
-          "package": "pheroos.governance",
-          "remove_after": null,
-          "replacement": null,
-          "retained_with_reason": null,
-          "since": "0.1.0",
-          "stability": "draft"
-        },
-        {
-          "group": "transition",
-          "name": "materialize_layer_pheromone_proposals",
           "package": "pheroos.governance",
           "remove_after": null,
           "replacement": null,
@@ -12292,16 +10987,6 @@
           "stability": "draft"
         },
         {
-          "group": "compatibility",
-          "name": "normalize_legacy_pheromone_trail",
-          "package": "pheroos.governance",
-          "remove_after": null,
-          "replacement": null,
-          "retained_with_reason": "Canonical Draft migration boundary for legacy scalar-weight trails; normalization never creates evidence or authority",
-          "since": "0.1.0",
-          "stability": "draft"
-        },
-        {
           "group": "verification",
           "name": "observation_attestation_fingerprint",
           "package": "pheroos.governance",
@@ -12334,16 +11019,6 @@
         {
           "group": "entrypoint",
           "name": "observation_weight_ppm",
-          "package": "pheroos.governance",
-          "remove_after": null,
-          "replacement": null,
-          "retained_with_reason": null,
-          "since": "0.1.0",
-          "stability": "draft"
-        },
-        {
-          "group": "transition",
-          "name": "observe_pheromone_exploration",
           "package": "pheroos.governance",
           "remove_after": null,
           "replacement": null,
@@ -12522,16 +11197,6 @@
           "stability": "draft"
         },
         {
-          "group": "compatibility",
-          "name": "outcome_certificate_is_authoritative",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.require_current_commit_decision_state_v2",
-          "retained_with_reason": "Draft v1 issuer and process-local current-finality authority retained for compatibility while consumers migrate to the public TCK-backed Decision and Certificate v2 owners; historical codecs remain separate",
-          "since": "0.1.0",
-          "stability": "deprecated"
-        },
-        {
           "group": "verification",
           "name": "outcome_certificate_payload",
           "package": "pheroos.governance",
@@ -12564,46 +11229,6 @@
         {
           "group": "verification",
           "name": "output_payload_fingerprint",
-          "package": "pheroos.governance",
-          "remove_after": null,
-          "replacement": null,
-          "retained_with_reason": null,
-          "since": "0.1.0",
-          "stability": "draft"
-        },
-        {
-          "group": "entrypoint",
-          "name": "pheromone_lineage",
-          "package": "pheroos.governance",
-          "remove_after": null,
-          "replacement": null,
-          "retained_with_reason": null,
-          "since": "0.1.0",
-          "stability": "draft"
-        },
-        {
-          "group": "entrypoint",
-          "name": "pheromone_policy_from_collective",
-          "package": "pheroos.governance",
-          "remove_after": null,
-          "replacement": null,
-          "retained_with_reason": null,
-          "since": "0.1.0",
-          "stability": "draft"
-        },
-        {
-          "group": "entrypoint",
-          "name": "pheromone_subject_id",
-          "package": "pheroos.governance",
-          "remove_after": null,
-          "replacement": null,
-          "retained_with_reason": null,
-          "since": "0.1.0",
-          "stability": "draft"
-        },
-        {
-          "group": "entrypoint",
-          "name": "pheromone_subject_type",
           "package": "pheroos.governance",
           "remove_after": null,
           "replacement": null,
@@ -13072,16 +11697,6 @@
           "stability": "draft"
         },
         {
-          "group": "compatibility",
-          "name": "record_commit_replay_receipts",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.advance_commit_replay_state_v2",
-          "retained_with_reason": "Draft v1 process-local Commit replay, window, seal, liveness, and finality authority retained for compatibility while consumers migrate to the public TCK-backed StateStore v2 owners",
-          "since": "0.1.0",
-          "stability": "deprecated"
-        },
-        {
           "group": "transition",
           "name": "record_evidence_replay_inputs",
           "package": "pheroos.governance",
@@ -13090,16 +11705,6 @@
           "retained_with_reason": null,
           "since": "0.1.0",
           "stability": "draft"
-        },
-        {
-          "group": "compatibility",
-          "name": "record_witness_verifications",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.advance_distributed_commit_v2",
-          "retained_with_reason": "Draft v1 process-local Distributed issuer, transition, and finality authority retained for compatibility while consumers migrate to the public TCK-backed four-lane StateStore v2 owner; portable codecs remain separate",
-          "since": "0.1.0",
-          "stability": "deprecated"
         },
         {
           "group": "entrypoint",
@@ -13120,26 +11725,6 @@
           "retained_with_reason": null,
           "since": "0.1.0",
           "stability": "draft"
-        },
-        {
-          "group": "compatibility",
-          "name": "reduce_commit_liveness",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.reduce_commit_decision_v2",
-          "retained_with_reason": "Draft v1 process-local Commit replay, window, seal, liveness, and finality authority retained for compatibility while consumers migrate to the public TCK-backed StateStore v2 owners",
-          "since": "0.1.0",
-          "stability": "deprecated"
-        },
-        {
-          "group": "compatibility",
-          "name": "register_distributed_commit_certificate",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.advance_distributed_commit_v2",
-          "retained_with_reason": "Draft v1 process-local Distributed issuer, transition, and finality authority retained for compatibility while consumers migrate to the public TCK-backed four-lane StateStore v2 owner; portable codecs remain separate",
-          "since": "0.1.0",
-          "stability": "deprecated"
         },
         {
           "group": "entrypoint",
@@ -13262,26 +11847,6 @@
           "stability": "draft"
         },
         {
-          "group": "transition",
-          "name": "reinforce_pheromone_trails",
-          "package": "pheroos.governance",
-          "remove_after": null,
-          "replacement": null,
-          "retained_with_reason": null,
-          "since": "0.1.0",
-          "stability": "draft"
-        },
-        {
-          "group": "transition",
-          "name": "reinforce_pheromone_trails_with_records",
-          "package": "pheroos.governance",
-          "remove_after": null,
-          "replacement": null,
-          "retained_with_reason": null,
-          "since": "0.1.0",
-          "stability": "draft"
-        },
-        {
           "group": "entrypoint",
           "name": "replacement_matches_prior_v2",
           "package": "pheroos.governance",
@@ -13310,16 +11875,6 @@
           "retained_with_reason": null,
           "since": "0.1.0",
           "stability": "draft"
-        },
-        {
-          "group": "compatibility",
-          "name": "replay_state_from_hybrid_step",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.advance_hybrid_replay_state_v2",
-          "retained_with_reason": "Draft v1 process-local Hybrid step and replay authority retained for compatibility while consumers migrate to the public TCK-backed StateStore v2 owner; it cannot authorize a v2 path",
-          "since": "0.1.0",
-          "stability": "deprecated"
         },
         {
           "group": "entrypoint",
@@ -13462,16 +12017,6 @@
           "stability": "draft"
         },
         {
-          "group": "compatibility",
-          "name": "reset_commit_window_state",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.prepare_commit_decision_successor_v2",
-          "retained_with_reason": "Draft v1 process-local Commit replay, window, seal, liveness, and finality authority retained for compatibility while consumers migrate to the public TCK-backed StateStore v2 owners",
-          "since": "0.1.0",
-          "stability": "deprecated"
-        },
-        {
           "group": "transition",
           "name": "resolve_commit_stop_v2",
           "package": "pheroos.governance",
@@ -13490,16 +12035,6 @@
           "retained_with_reason": null,
           "since": "0.1.0",
           "stability": "draft"
-        },
-        {
-          "group": "compatibility",
-          "name": "restart_commit_window_epoch",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.prepare_commit_decision_successor_v2",
-          "retained_with_reason": "Draft v1 process-local Commit replay, window, seal, liveness, and finality authority retained for compatibility while consumers migrate to the public TCK-backed StateStore v2 owners",
-          "since": "0.1.0",
-          "stability": "deprecated"
         },
         {
           "group": "entrypoint",
@@ -13532,16 +12067,6 @@
           "stability": "draft"
         },
         {
-          "group": "compatibility",
-          "name": "revoke_support_lease",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.prepare_support_revoke_v2",
-          "retained_with_reason": "Draft v1 process-local Membership, Support, and replay authority retained for compatibility while consumers migrate to the public TCK-backed StateStore v2 owners",
-          "since": "0.1.0",
-          "stability": "deprecated"
-        },
-        {
           "group": "verification",
           "name": "risk_assessment_chain_state_fingerprint",
           "package": "pheroos.governance",
@@ -13550,26 +12075,6 @@
           "retained_with_reason": null,
           "since": "0.1.0",
           "stability": "draft"
-        },
-        {
-          "group": "compatibility",
-          "name": "risk_assessment_chain_state_is_authoritative",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.risk_state_is_current_v2",
-          "retained_with_reason": "Draft v1 process-local Risk and threshold authority retained for compatibility while consumers migrate to the public TCK-backed StateStore Risk v2 owner",
-          "since": "0.1.0",
-          "stability": "deprecated"
-        },
-        {
-          "group": "compatibility",
-          "name": "risk_assessment_chain_state_is_current",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.risk_state_is_current_v2",
-          "retained_with_reason": "Draft v1 process-local Risk and threshold authority retained for compatibility while consumers migrate to the public TCK-backed StateStore Risk v2 owner",
-          "since": "0.1.0",
-          "stability": "deprecated"
         },
         {
           "group": "verification",
@@ -13590,26 +12095,6 @@
           "retained_with_reason": null,
           "since": "0.1.0",
           "stability": "draft"
-        },
-        {
-          "group": "compatibility",
-          "name": "risk_assessment_is_authoritative",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.risk_state_is_current_v2",
-          "retained_with_reason": "Draft v1 process-local Risk and threshold authority retained for compatibility while consumers migrate to the public TCK-backed StateStore Risk v2 owner",
-          "since": "0.1.0",
-          "stability": "deprecated"
-        },
-        {
-          "group": "compatibility",
-          "name": "risk_assessment_is_latest",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.risk_state_is_current_v2",
-          "retained_with_reason": "Draft v1 process-local Risk and threshold authority retained for compatibility while consumers migrate to the public TCK-backed StateStore Risk v2 owner",
-          "since": "0.1.0",
-          "stability": "deprecated"
         },
         {
           "group": "verification",
@@ -13694,36 +12179,6 @@
         {
           "group": "transition",
           "name": "score_candidates",
-          "package": "pheroos.governance",
-          "remove_after": null,
-          "replacement": null,
-          "retained_with_reason": null,
-          "since": "0.1.0",
-          "stability": "draft"
-        },
-        {
-          "group": "transition",
-          "name": "score_pheromone_trails",
-          "package": "pheroos.governance",
-          "remove_after": null,
-          "replacement": null,
-          "retained_with_reason": null,
-          "since": "0.1.0",
-          "stability": "draft"
-        },
-        {
-          "group": "transition",
-          "name": "score_pheromone_trails_result",
-          "package": "pheroos.governance",
-          "remove_after": null,
-          "replacement": null,
-          "retained_with_reason": null,
-          "since": "0.1.0",
-          "stability": "draft"
-        },
-        {
-          "group": "transition",
-          "name": "score_pheromone_trails_with_breakdown",
           "package": "pheroos.governance",
           "remove_after": null,
           "replacement": null,
@@ -13832,16 +12287,6 @@
           "stability": "draft"
         },
         {
-          "group": "compatibility",
-          "name": "support_lease_is_authoritative",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.support_state_is_current_v2",
-          "retained_with_reason": "Draft v1 process-local Membership, Support, and replay authority retained for compatibility while consumers migrate to the public TCK-backed StateStore v2 owners",
-          "since": "0.1.0",
-          "stability": "deprecated"
-        },
-        {
           "group": "verification",
           "name": "support_lease_payload",
           "package": "pheroos.governance",
@@ -13902,26 +12347,6 @@
           "stability": "draft"
         },
         {
-          "group": "compatibility",
-          "name": "support_lease_replay_state_is_authoritative",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.support_state_is_current_v2",
-          "retained_with_reason": "Draft v1 process-local Membership, Support, and replay authority retained for compatibility while consumers migrate to the public TCK-backed StateStore v2 owners",
-          "since": "0.1.0",
-          "stability": "deprecated"
-        },
-        {
-          "group": "compatibility",
-          "name": "support_lease_replay_state_is_current",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.support_state_is_current_v2",
-          "retained_with_reason": "Draft v1 process-local Membership, Support, and replay authority retained for compatibility while consumers migrate to the public TCK-backed StateStore v2 owners",
-          "since": "0.1.0",
-          "stability": "deprecated"
-        },
-        {
           "group": "verification",
           "name": "support_lease_replay_state_payload",
           "package": "pheroos.governance",
@@ -13940,16 +12365,6 @@
           "retained_with_reason": null,
           "since": "0.1.0",
           "stability": "draft"
-        },
-        {
-          "group": "compatibility",
-          "name": "support_lease_revocation_is_authoritative",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.support_state_is_current_v2",
-          "retained_with_reason": "Draft v1 process-local Membership, Support, and replay authority retained for compatibility while consumers migrate to the public TCK-backed StateStore v2 owners",
-          "since": "0.1.0",
-          "stability": "deprecated"
         },
         {
           "group": "verification",
@@ -14062,26 +12477,6 @@
           "stability": "draft"
         },
         {
-          "group": "compatibility",
-          "name": "switch_support_lease",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.prepare_support_switch_v2",
-          "retained_with_reason": "Draft v1 process-local Membership, Support, and replay authority retained for compatibility while consumers migrate to the public TCK-backed StateStore v2 owners",
-          "since": "0.1.0",
-          "stability": "deprecated"
-        },
-        {
-          "group": "compatibility",
-          "name": "transition_distributed_commit_epoch",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.prepare_distributed_epoch_v2",
-          "retained_with_reason": "Draft v1 process-local Distributed issuer, transition, and finality authority retained for compatibility while consumers migrate to the public TCK-backed four-lane StateStore v2 owner; portable codecs remain separate",
-          "since": "0.1.0",
-          "stability": "deprecated"
-        },
-        {
           "group": "verification",
           "name": "validate_commit_wire_record",
           "package": "pheroos.governance",
@@ -14124,56 +12519,6 @@
         {
           "group": "verification",
           "name": "validate_layer_proposal",
-          "package": "pheroos.governance",
-          "remove_after": null,
-          "replacement": null,
-          "retained_with_reason": null,
-          "since": "0.1.0",
-          "stability": "draft"
-        },
-        {
-          "group": "verification",
-          "name": "validate_pheromone_budget_state",
-          "package": "pheroos.governance",
-          "remove_after": null,
-          "replacement": null,
-          "retained_with_reason": null,
-          "since": "0.1.0",
-          "stability": "draft"
-        },
-        {
-          "group": "verification",
-          "name": "validate_pheromone_feedback",
-          "package": "pheroos.governance",
-          "remove_after": null,
-          "replacement": null,
-          "retained_with_reason": null,
-          "since": "0.1.0",
-          "stability": "draft"
-        },
-        {
-          "group": "verification",
-          "name": "validate_pheromone_policy",
-          "package": "pheroos.governance",
-          "remove_after": null,
-          "replacement": null,
-          "retained_with_reason": null,
-          "since": "0.1.0",
-          "stability": "draft"
-        },
-        {
-          "group": "verification",
-          "name": "validate_pheromone_topology",
-          "package": "pheroos.governance",
-          "remove_after": null,
-          "replacement": null,
-          "retained_with_reason": null,
-          "since": "0.1.0",
-          "stability": "draft"
-        },
-        {
-          "group": "verification",
-          "name": "validate_pheromone_trail",
           "package": "pheroos.governance",
           "remove_after": null,
           "replacement": null,
@@ -14382,16 +12727,6 @@
           "stability": "draft"
         },
         {
-          "group": "compatibility",
-          "name": "verify_distributed_commit_finality",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.verified_distributed_commit_finality_input_v2",
-          "retained_with_reason": "Draft v1 process-local Distributed issuer, transition, and finality authority retained for compatibility while consumers migrate to the public TCK-backed four-lane StateStore v2 owner; portable codecs remain separate",
-          "since": "0.1.0",
-          "stability": "deprecated"
-        },
-        {
           "group": "verification",
           "name": "verify_distributed_commit_proposal",
           "package": "pheroos.governance",
@@ -14430,26 +12765,6 @@
           "retained_with_reason": null,
           "since": "0.1.0",
           "stability": "draft"
-        },
-        {
-          "group": "compatibility",
-          "name": "verify_evidence_commit_finality",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.verified_commit_certificate_finality_input_v2",
-          "retained_with_reason": "Draft v1 issuer and process-local current-finality authority retained for compatibility while consumers migrate to the public TCK-backed Decision and Certificate v2 owners; historical codecs remain separate",
-          "since": "0.1.0",
-          "stability": "deprecated"
-        },
-        {
-          "group": "compatibility",
-          "name": "verify_local_commit_finality",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.prepare_commit_decision_successor_v2",
-          "retained_with_reason": "Draft v1 issuer and process-local current-finality authority retained for compatibility while consumers migrate to the public TCK-backed Decision and Certificate v2 owners; historical codecs remain separate",
-          "since": "0.1.0",
-          "stability": "deprecated"
         },
         {
           "group": "verification",
@@ -14520,16 +12835,6 @@
           "retained_with_reason": null,
           "since": "0.1.0",
           "stability": "draft"
-        },
-        {
-          "group": "compatibility",
-          "name": "verify_quorum_witness",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.prepare_distributed_witness_v2",
-          "retained_with_reason": "Draft v1 process-local Distributed issuer, transition, and finality authority retained for compatibility while consumers migrate to the public TCK-backed four-lane StateStore v2 owner; portable codecs remain separate",
-          "since": "0.1.0",
-          "stability": "deprecated"
         },
         {
           "group": "verification",
@@ -14630,16 +12935,6 @@
           "retained_with_reason": null,
           "since": "0.1.0",
           "stability": "draft"
-        },
-        {
-          "group": "compatibility",
-          "name": "witness_verification_is_authoritative",
-          "package": "pheroos.governance",
-          "remove_after": "0.3.0",
-          "replacement": "pheroos.governance.distributed_state_is_current_v2",
-          "retained_with_reason": "Draft v1 process-local Distributed issuer, transition, and finality authority retained for compatibility while consumers migrate to the public TCK-backed four-lane StateStore v2 owner; portable codecs remain separate",
-          "since": "0.1.0",
-          "stability": "deprecated"
         },
         {
           "group": "verification",
@@ -14969,7 +13264,7 @@
       ]
     },
     "pheroos.protocol": {
-      "export_count": 99,
+      "export_count": 89,
       "exports": [
         {
           "group": "record",
@@ -15463,16 +13758,6 @@
         },
         {
           "group": "record",
-          "name": "PheromoneKindProfile",
-          "package": "pheroos.protocol",
-          "remove_after": null,
-          "replacement": null,
-          "retained_with_reason": null,
-          "since": "0.1.0",
-          "stability": "draft"
-        },
-        {
-          "group": "record",
           "name": "ProtocolManifest",
           "package": "pheroos.protocol",
           "remove_after": null,
@@ -15564,36 +13849,6 @@
         {
           "group": "record",
           "name": "SUPPORTED_DEADLINE_OUTCOMES",
-          "package": "pheroos.protocol",
-          "remove_after": null,
-          "replacement": null,
-          "retained_with_reason": null,
-          "since": "0.1.0",
-          "stability": "draft"
-        },
-        {
-          "group": "record",
-          "name": "SUPPORTED_PHEROMONE_DECAY_MODELS",
-          "package": "pheroos.protocol",
-          "remove_after": null,
-          "replacement": null,
-          "retained_with_reason": null,
-          "since": "0.1.0",
-          "stability": "draft"
-        },
-        {
-          "group": "record",
-          "name": "SUPPORTED_PHEROMONE_RESPONSE_MODELS",
-          "package": "pheroos.protocol",
-          "remove_after": null,
-          "replacement": null,
-          "retained_with_reason": null,
-          "since": "0.1.0",
-          "stability": "draft"
-        },
-        {
-          "group": "record",
-          "name": "SUPPORTED_PHEROMONE_SUBJECT_TYPES",
           "package": "pheroos.protocol",
           "remove_after": null,
           "replacement": null,
@@ -15732,26 +13987,6 @@
           "stability": "draft"
         },
         {
-          "group": "verification",
-          "name": "canonical_commit_payload",
-          "package": "pheroos.protocol",
-          "remove_after": null,
-          "replacement": null,
-          "retained_with_reason": null,
-          "since": "0.1.0",
-          "stability": "draft"
-        },
-        {
-          "group": "entrypoint",
-          "name": "canonical_commit_set",
-          "package": "pheroos.protocol",
-          "remove_after": null,
-          "replacement": null,
-          "retained_with_reason": null,
-          "since": "0.1.0",
-          "stability": "draft"
-        },
-        {
           "group": "entrypoint",
           "name": "capability_schema_v2",
           "package": "pheroos.protocol",
@@ -15803,16 +14038,6 @@
         },
         {
           "group": "verification",
-          "name": "commit_payload_fingerprint",
-          "package": "pheroos.protocol",
-          "remove_after": null,
-          "replacement": null,
-          "retained_with_reason": null,
-          "since": "0.1.0",
-          "stability": "draft"
-        },
-        {
-          "group": "verification",
           "name": "commit_policy_authority_payload",
           "package": "pheroos.protocol",
           "remove_after": null,
@@ -15824,36 +14049,6 @@
         {
           "group": "verification",
           "name": "commit_policy_fingerprint",
-          "package": "pheroos.protocol",
-          "remove_after": null,
-          "replacement": null,
-          "retained_with_reason": null,
-          "since": "0.1.0",
-          "stability": "draft"
-        },
-        {
-          "group": "verification",
-          "name": "effective_pheromone_scored_subject_types",
-          "package": "pheroos.protocol",
-          "remove_after": null,
-          "replacement": null,
-          "retained_with_reason": null,
-          "since": "0.1.0",
-          "stability": "draft"
-        },
-        {
-          "group": "verification",
-          "name": "has_hybrid_pheromone_features",
-          "package": "pheroos.protocol",
-          "remove_after": null,
-          "replacement": null,
-          "retained_with_reason": null,
-          "since": "0.1.0",
-          "stability": "draft"
-        },
-        {
-          "group": "verification",
-          "name": "is_scored_pheromone_subject_type",
           "package": "pheroos.protocol",
           "remove_after": null,
           "replacement": null,
@@ -15964,7 +14159,7 @@
       ]
     },
     "pheroos.trace": {
-      "export_count": 38,
+      "export_count": 35,
       "exports": [
         {
           "group": "record",
@@ -16039,16 +14234,6 @@
         {
           "group": "record",
           "name": "InMemoryTraceStore",
-          "package": "pheroos.trace",
-          "remove_after": null,
-          "replacement": null,
-          "retained_with_reason": null,
-          "since": "0.1.0",
-          "stability": "draft"
-        },
-        {
-          "group": "record",
-          "name": "PHEROMONE_CLIP_PAYLOAD_VERSION",
           "package": "pheroos.trace",
           "remove_after": null,
           "replacement": null,
@@ -16247,16 +14432,6 @@
           "stability": "draft"
         },
         {
-          "group": "verification",
-          "name": "canonical_pheromone_clip_payload",
-          "package": "pheroos.trace",
-          "remove_after": null,
-          "replacement": null,
-          "retained_with_reason": null,
-          "since": "0.1.0",
-          "stability": "draft"
-        },
-        {
           "group": "transition",
           "name": "commit_trace_event_id",
           "package": "pheroos.trace",
@@ -16289,16 +14464,6 @@
         {
           "group": "verification",
           "name": "missing_required_events",
-          "package": "pheroos.trace",
-          "remove_after": null,
-          "replacement": null,
-          "retained_with_reason": null,
-          "since": "0.1.0",
-          "stability": "draft"
-        },
-        {
-          "group": "verification",
-          "name": "pheromone_clip_payload_fingerprint",
           "package": "pheroos.trace",
           "remove_after": null,
           "replacement": null,
@@ -16355,10 +14520,10 @@
     "stable"
   ],
   "summary": {
-    "compatibility_surface_count": 59,
-    "diagnostic_code_count": 228,
+    "compatibility_surface_count": 53,
+    "diagnostic_code_count": 227,
     "error_type_count": 6,
-    "export_count": 1408,
+    "export_count": 1232,
     "package_count": 6
   }
 }

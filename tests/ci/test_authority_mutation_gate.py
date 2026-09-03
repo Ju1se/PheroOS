@@ -37,10 +37,10 @@ def test_checked_mutation_manifest_is_exact_locked_and_source_anchored() -> None
     assert manifest_shape_failures(manifest) == []
     assert locked_manifest_sha256(manifest) == LOCKED_MANIFEST_SHA256
     assert tuple(item["id"] for item in manifest["families"]) == FAMILIES
-    assert len(manifest["mutants"]) == len(FAMILIES) == 8
+    assert len(manifest["mutants"]) == len(FAMILIES) == 7
 
 
-def test_all_eight_killed_pass_fixed_p0_and_stable_authority_scores() -> None:
+def test_all_seven_killed_pass_fixed_p0_and_stable_authority_scores() -> None:
     manifest = load_mutation_manifest()
     results = [_result(item, "KILLED") for item in manifest["mutants"]]
 

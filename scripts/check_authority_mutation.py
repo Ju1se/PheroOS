@@ -22,7 +22,7 @@ ROOT = Path(__file__).resolve().parents[1]
 MANIFEST_PATH = ROOT / "docs" / "process" / "authority-mutation-v1.json"
 MANIFEST_VERSION = "pheroos-authority-mutation-v1"
 LOCKED_MANIFEST_SHA256 = (
-    "sha256:04c7804dda707c07da604a4828ab98cb9b66e554ac2668863a0f438304d7fd01"
+    "sha256:3af14c876ac0b8c5cd15e09f5de31a705ab2988d56f9426d0759eeb65a0bb63f"
 )
 MutationState = Literal["KILLED", "SURVIVED", "EQUIVALENT_REVIEWED", "INVALID"]
 STATES: tuple[MutationState, ...] = (
@@ -37,7 +37,6 @@ FAMILIES = (
     "safe_fallback_stop_output_gate",
     "cas_expected_head_revision",
     "replay_duplicate_currentness",
-    "trace_required_lineage",
     "certificate_fingerprint_binding",
     "nonfinite_bool_as_int",
 )
@@ -340,7 +339,7 @@ def _family_failures(value: object) -> list[str]:
         identifier = item.get("id")
         observed.append(identifier if isinstance(identifier, str) else "")
     if tuple(observed) != FAMILIES:
-        failures.append("mutation families must be the fixed ordered eight-family set")
+        failures.append("mutation families must be the fixed ordered seven-family set")
     return failures
 
 

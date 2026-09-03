@@ -6,7 +6,8 @@ from typing import Any
 
 import pytest
 
-import pheroos.governance as governance
+import pheroos.governance as _public_governance
+import pheroos.governance.distributed_commit as distributed_commit
 from pheroos.governance._distributed._certificate_contract import (
     _validate_certificate_proposal_binding,
     _validate_certificate_state_binding,
@@ -76,6 +77,19 @@ from tests.governance.test_distributed_commit import (
     _public_portable_scenario,
     _portable_semantic_conflict,
 )
+
+
+class _ImplementationFacade:
+    """Use retained module implementations after v1 root bindings are removed."""
+
+    def __getattr__(self, name: str) -> object:
+        try:
+            return getattr(_public_governance, name)
+        except AttributeError:
+            return getattr(distributed_commit, name)
+
+
+governance = _ImplementationFacade()
 
 
 @pytest.fixture(scope="module")

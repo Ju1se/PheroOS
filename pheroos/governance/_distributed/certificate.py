@@ -49,9 +49,7 @@ from pheroos.governance._commit_validation import (
     require_commit_text,
 )
 
-from pheroos.governance._legacy.authority_registry import (
-    LEGACY_AUTHORITY_REGISTRY,
-)
+from pheroos.governance._process_state import PROCESS_STATE
 
 from pheroos.governance.authority import AuthorityLevel, can_verify
 
@@ -1172,7 +1170,7 @@ def _register_distributed_certificate_identity(
         certificate.certificate_id,
     )
     fingerprint = distributed_commit_certificate_fingerprint(certificate)
-    with LEGACY_AUTHORITY_REGISTRY.transaction() as registry:
+    with PROCESS_STATE.transaction() as registry:
         existing = registry.get(_LEGACY_DISTRIBUTED_CERTIFICATES_BY_ID, key)
         if existing is not None:
             if distributed_commit_certificate_fingerprint(existing) != fingerprint:

@@ -70,8 +70,6 @@ The checked artifact advertises only active profiles that already have
 registered Conformance checks:
 
 - core v1
-- swarm v1
-- hybrid-swarm v1
 - commit-integrity v1
 - hybrid-commit v1
 - certified-commit v1

@@ -18,9 +18,9 @@ from pheroos.governance import (
     evaluate_layer_coordination,
     layer_action_effect,
     layer_coordination_policy_from_collective,
-    materialize_layer_pheromone_proposals,
     validate_layer_proposal,
 )
+from pheroos.governance.layer_coordination import materialize_layer_pheromone_proposals
 from pheroos.governance.errors import GovernanceError
 from pheroos.governance.layer_coordination import SUPPORTED_LAYER_ACTIONS
 from pheroos.protocol.models import (

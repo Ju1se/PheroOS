@@ -43,9 +43,7 @@ from pheroos.governance._commit_validation import (
     require_commit_text,
 )
 
-from pheroos.governance._legacy.authority_registry import (
-    LEGACY_AUTHORITY_REGISTRY,
-)
+from pheroos.governance._process_state import PROCESS_STATE
 
 from pheroos.governance.authority import AuthorityLevel, can_verify
 
@@ -415,7 +413,7 @@ def verify_quorum_witness(
     fingerprint = witness_verification_fingerprint(verification)
     id_key = (witness.profile, witness.run_id, verification.verification_id)
     nonce_key = (witness.profile, witness.run_id, witness.nonce)
-    with LEGACY_AUTHORITY_REGISTRY.transaction() as registry:
+    with PROCESS_STATE.transaction() as registry:
         by_id = registry.get(_LEGACY_WITNESS_VERIFICATIONS_BY_ID, id_key)
         by_nonce = registry.get(
             _LEGACY_WITNESS_VERIFICATIONS_BY_NONCE,

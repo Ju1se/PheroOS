@@ -1,11 +1,10 @@
-# Draft Hybrid Pheromone v1 Migration
+# Historical Hybrid Pheromone v1 Migration
 
-This note covers the fail-closed draft ABI tightening represented by
-`pheroos-hybrid-swarm-v1`. It applies to external Hybrid consumers. Baseline
-quorum and basic swarm manifests do not acquire Hybrid-only fields or checks.
-The governance-verification tightening itself also applies to bee-swarm and
-ant-colony scout, recruitment, and inhibition inputs; those modes remain on
-their basic swarm profile without acquiring the other Hybrid fields below.
+This note records the former Hybrid Pheromone draft ABI. It is retained for
+historical reference only: `pheroos-hybrid-swarm-v1` is no longer a supported
+public conformance profile, and the implementation is private experimental
+attention code. Baseline manifests remain on `pheroos-core-v1`; attention does
+not create authority.
 
 ## Required consumer changes
 
@@ -55,11 +54,11 @@ their basic swarm profile without acquiring the other Hybrid fields below.
    the commit gate can verify candidate declaration and governance decision
    issuance. All four output gates are mandatory; manifests and
    `OutputContract` records may not disable them.
-7. Import the manifest declaration from
-   `pheroos.protocol.PheromoneKindProfile`. The governance import remains a
-   type-identical compatibility alias during this draft migration window.
-8. Run manifest conformance and require the selected profile to be
-   `pheroos-hybrid-swarm-v1` with all required checks passing.
+7. Historical callers imported the manifest declaration from
+   `pheroos.protocol.PheromoneKindProfile`; current callers must treat the
+   implementation as private and must not rely on a root export.
+8. Do not require a swarm or Hybrid Pheromone manifest profile. Use the current
+   baseline or Commit profile and treat attention state as advisory.
 9. Treat the two exploration declarations as distinct. The bounded
    `pheromone_exploration_floor` is a nonlinear-response baseline;
    `exploration_floor` is additional novelty pressure applied only when
