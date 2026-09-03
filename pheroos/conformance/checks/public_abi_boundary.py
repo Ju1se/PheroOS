@@ -27,14 +27,13 @@ from pheroos.governance.certificate import (
     OutcomeCertificate,
 )
 from pheroos.governance.commit import CommitAssessment
-from pheroos.governance.commit_state import CommitWindowSeal, DecisionOutcome
 from pheroos.governance.distributed_commit import DistributedCommitCertificate
 from pheroos.governance.evidence import EvidenceGraph, EvidenceNode
 from pheroos.governance.hybrid_commit_evaluation import HybridCommitEvaluation
 from pheroos.governance.layer_coordination import LayerProposal
-from pheroos.governance.pheromone import PheromoneTrail
 from pheroos.governance.policy_adjustment import PolicyAdjustmentProposal
 from pheroos.kernel import InputEnvelope
+from pheroos.protocol.models import PheromoneKindProfile
 
 
 def check(root: str | Path | None = None) -> CheckResult:
@@ -110,22 +109,10 @@ def public_type_ownership_problems() -> list[str]:
             "commit_action",
         ),
         (
-            governance.PheromoneKindProfile,
-            protocol.PheromoneKindProfile,
-            "pheroos.protocol.models",
-            "pheromone_kind_profile",
-        ),
-        (
             governance.TraceEvent,
             trace.TraceEvent,
             "pheroos.trace",
             "trace_event",
-        ),
-        (
-            governance.PheromoneTrail,
-            PheromoneTrail,
-            "pheroos.governance.pheromone",
-            "pheromone_trail",
         ),
         (
             governance.LayerProposal,
@@ -144,18 +131,6 @@ def public_type_ownership_problems() -> list[str]:
             CommitAssessment,
             "pheroos.governance.commit",
             "commit_assessment",
-        ),
-        (
-            governance.CommitWindowSeal,
-            CommitWindowSeal,
-            "pheroos.governance.commit_state",
-            "commit_window_seal",
-        ),
-        (
-            governance.DecisionOutcome,
-            DecisionOutcome,
-            "pheroos.governance.commit_state",
-            "decision_outcome",
         ),
         (
             governance.LocalCommitReceipt,
@@ -196,7 +171,7 @@ def public_type_ownership_problems() -> list[str]:
     kind_profile_exports = [
         name for name in governance.__all__ if "KindProfile" in name
     ]
-    if kind_profile_exports != ["PheromoneKindProfile"]:
+    if kind_profile_exports:
         problems.append("ownership:normalized_kind_profile_export")
     return problems
 
@@ -235,7 +210,7 @@ def registry_snapshot_problems() -> list[str]:
 def representative_snapshot_problems() -> list[str]:
     profile_subjects = ["candidate"]
     profile_extensions = {"x-profile": {"values": ["original"]}}
-    kind_profile = protocol.PheromoneKindProfile(
+    kind_profile = PheromoneKindProfile(
         scored_subject_types=profile_subjects,
         extensions=profile_extensions,
     )

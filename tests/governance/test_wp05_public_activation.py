@@ -17,9 +17,9 @@ from pheroos.governance._public_api import (
 
 
 ROOT = Path(__file__).resolve().parents[2]
-EXPECTED_PUBLIC_API_COUNT = 1_068
+EXPECTED_PUBLIC_API_COUNT = 911
 EXPECTED_PUBLIC_API_ORDER_SHA256 = (
-    "607d19b60814e1486080a405460163a94752caa384974625f06738f480b4a85e"
+    "bc2cf49d2b6e68807ecddc3eef11491e0299b5157859ae999c781305c8eb51c4"
 )
 REMOVED_PRE_ACTIVATION_EXPORT = "commit_replay_receipt_v2_from_v1"
 V2_FACADES = (

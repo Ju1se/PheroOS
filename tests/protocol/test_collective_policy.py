@@ -4,14 +4,13 @@ import pytest
 
 from pheroos.protocol import (
     CollectiveDecisionPolicy,
-    PheromoneKindProfile,
     TracePolicy,
     collective_fallback_id,
-    has_hybrid_pheromone_features,
     is_swarm_policy,
     load_capability_manifest,
     validate_capability_manifest,
 )
+from pheroos.protocol.models import PheromoneKindProfile, has_hybrid_pheromone_features
 
 
 @dataclass
@@ -151,30 +150,6 @@ def test_collective_policy_requires_declared_safe_fallback() -> None:
     }
 
     assert "collective_fallback_not_safe" in codes
-
-
-def test_collective_policy_checks_required_swarm_trace_events() -> None:
-    manifest = load_capability_manifest("examples/swarm-protocol/capability.json")
-    protocol = replace(
-        manifest.protocol,
-        trace_policy=TracePolicy(
-            required_events=["block", "commit", "recovery", "output"]
-        ),
-    )
-
-    codes = {
-        item.code
-        for item in validate_capability_manifest(replace(manifest, protocol=protocol))
-    }
-    messages = {
-        item.message
-        for item in validate_capability_manifest(replace(manifest, protocol=protocol))
-    }
-
-    assert "swarm_trace_lineage_incomplete" in codes
-    assert any("pheromone_score" in message for message in messages)
-    assert any("pheromone_clip" in message for message in messages)
-    assert any("pheromone_expire" in message for message in messages)
 
 
 def test_quorum_collective_policy_does_not_require_swarm_trace_events() -> None:
@@ -336,12 +311,8 @@ def test_hybrid_features_require_hybrid_mode_and_trace_lineage() -> None:
 
     diagnostics = validate_capability_manifest(replace(manifest, protocol=protocol))
     codes = {item.code for item in diagnostics}
-    messages = {item.message for item in diagnostics}
-
     assert "collective_hybrid_mode_required" in codes
-    assert "swarm_trace_lineage_incomplete" in codes
-    assert any("pheromone_diffuse" in message for message in messages)
-    assert any("coordination_resolve" in message for message in messages)
+    assert "swarm_trace_lineage_incomplete" not in codes
 
 
 def test_hybrid_mode_cannot_downgrade_to_an_empty_swarm_profile() -> None:
@@ -362,18 +333,6 @@ def test_hybrid_mode_cannot_downgrade_to_an_empty_swarm_profile() -> None:
     assert "collective_hybrid_declaration_incomplete" in {
         item.code for item in diagnostics
     }
-
-
-def test_hybrid_mode_always_activates_hybrid_trace_profile() -> None:
-    manifest = load_capability_manifest("examples/swarm-protocol/capability.json")
-    policy = replace(manifest.protocol.collective_decision_policy, mode="hybrid")
-    protocol = replace(manifest.protocol, collective_decision_policy=policy)
-
-    diagnostics = validate_capability_manifest(replace(manifest, protocol=protocol))
-
-    assert has_hybrid_pheromone_features(policy) is True
-    assert "swarm_trace_lineage_incomplete" in {item.code for item in diagnostics}
-    assert any("pheromone_diffuse" in item.message for item in diagnostics)
 
 
 def test_hybrid_only_declarations_are_rejected_in_basic_swarm_mode() -> None:
@@ -667,11 +626,3 @@ def test_protocol_policy_and_kind_profile_take_defensive_snapshots() -> None:
     assert policy.policy_adjustment_bounds["layer_learned_weight"] == (0.0, 1.0)
     assert policy.extensions["x-policy"]["owner"] == "runtime"
     assert policy.extensions["x-policy"]["record"]["values"] == ("policy:original",)
-
-
-def test_governance_kind_profile_compatibility_export_uses_protocol_canonical_type() -> (
-    None
-):
-    from pheroos.governance import PheromoneKindProfile as GovernanceKindProfile
-
-    assert GovernanceKindProfile is PheromoneKindProfile

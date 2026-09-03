@@ -45,9 +45,7 @@ from pheroos.governance._commit.local_receipt import (
     local_commit_receipt_is_authoritative,
 )
 
-from pheroos.governance._legacy.authority_registry import (
-    LEGACY_AUTHORITY_REGISTRY,
-)
+from pheroos.governance._process_state import PROCESS_STATE
 
 from pheroos.governance.commit_numeric import (
     checked_add,
@@ -170,7 +168,7 @@ def initialize_commit_window_state(
         profile=str(bindings["profile"]),
     )
     assessment_refs: tuple[str, ...] = ()
-    with LEGACY_AUTHORITY_REGISTRY.transaction() as registry:
+    with PROCESS_STATE.transaction() as registry:
         cursor = registry.get(_LEGACY_COMMIT_WINDOW_CURSORS, authority_key)
         if cursor is not None:
             if cursor.base_fingerprint != base_fingerprint:

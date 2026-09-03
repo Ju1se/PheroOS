@@ -4,13 +4,17 @@
 
 [![tests](https://github.com/Ju1se/PheroOS/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/Ju1se/PheroOS/actions/workflows/tests.yml)
 
-PheroOS 是面向受治理、群体原生多智能体运行时的 provider-free 协议核心包。
+PheroOS 是面向受治理多智能体运行时的 provider-free 协议核心包，核心定位是
+authority/commit 语义。
 
 > Agents are not authority. Protocol is authority.
 
 PheroOS 定义外部运行时如何声明能力、隔离作用域、验证智能体输入、形成受治理的决策、
 记录因果谱系并证明兼容性。它不运行智能体循环，不调用模型或工具，不托管 API，也不
 提供数据库。
+
+对外定位是 governed authority/commit protocol。attention 与 pheromone 代码仅作为
+私有实验性实现细节保留，不属于 baseline 公开 ABI，也不构成已证明涌现或群体智能能力的声称。
 
 ## 项目状态
 
@@ -24,8 +28,8 @@ PheroOS 定义外部运行时如何声明能力、隔离作用域、验证智能
 | 许可证 | MIT |
 
 Draft 表示公共形状仍可能通过有迁移说明的变更继续演进，并不表示 reference path 只是
-占位实现。Baseline、Hybrid Pheromone、Optimal Commit、持久权威 contract 及其原子化
-reference path、Trace 与 Conformance 都已经实现并由确定性测试覆盖。在首个稳定 ABI
+占位实现。Baseline、authority/commit、持久权威 contract 及其原子化 reference path、
+Trace 与 Conformance 都已经实现并由确定性测试覆盖。在首个稳定 ABI
 发布之前，使用方应固定精确 commit，以及自己实现的 schema/profile 版本。
 已检入的 Stable Core candidate 仍是
 `draft / promotion_candidate / formal_stable=false`；当前没有任何公共 lifecycle entry
@@ -99,7 +103,7 @@ manifest / adapter / installed artifact
 | `pheroos.protocol` | Manifest、candidate、policy、schema、loading 与 validation | 纯 contract code；不依赖 Kernel、runtime、provider 或 Conformance |
 | `pheroos.kernel` | scope-aware plan、permission、readiness、connection 与 exposure contract | 决定可用能力；不调用工具/provider，也不做领域结论 |
 | `pheroos.drivers` | provider-neutral descriptor 与 `declare -> validate -> register -> probe -> bind -> expose -> invoke -> trace` 生命周期 | 真实 adapter 与 provider SDK 位于 core 之外 |
-| `pheroos.governance` | verification、evidence、quorum、swarm decision、risk、commit、certificate、finality 与 output gate | Agent 和 adaptive layer 可以提议；只有依照已声明 Protocol 行事的 Governance 才能签发 runtime decision authority |
+| `pheroos.governance` | verification、evidence、quorum、collective decision、risk、commit、certificate、finality 与 output gate | Agent 和 adaptive layer 可以提议；只有依照已声明 Protocol 行事的 Governance 才能签发 runtime decision authority |
 | `pheroos.trace` | canonical `TraceEvent`、scoped envelope、validation 与 append-only store contract | 不是 database、queue、event bus 或 monitor daemon |
 | `pheroos.conformance` | Manifest profile、source check、外部 adapter matrix 与 Commit TCK | 确定性、provider-free、network-free |
 | `pheroos.cli` | 本地 versioned-JSON 管理命令 | 只是 thin wrapper；不是 HTTP API 或服务 |
@@ -116,7 +120,7 @@ CLI 只委托公共 facade。Private engine 不构成第二套 ABI。
   quorum input 只有携带匹配的 governance-issued `SignalVerification` 才会生效。
 - Governance 只能提交为当前 target 声明的 candidate；共识失败时选择该 target 已声明
   的 safe fallback。
-- Pheromone 是有界 collective memory 与 attention，不是 evidence、truth、permission、
+- 私有 attention profile 可保持有界 collective memory，但它不是 evidence、truth、permission、
   quorum、certificate 或 output authority。
 - 未知 critical version、非有限数、跨 scope 记录、畸形 authority fact 与陈旧 state
   head 全部 fail closed。
@@ -133,40 +137,14 @@ CLI 只委托公共 facade。Private engine 不构成第二套 ABI。
 
 | 路径 | Manifest 选择条件 | 受治理行为 | Conformance profile | 示例 |
 | --- | --- | --- | --- | --- |
-| Baseline | 未声明 swarm 或 Commit | verified quorum、declared candidate、safe fallback | `pheroos-core-v1` | [`toy-protocol`](examples/toy-protocol/)、[`e2e-protocol`](examples/e2e-protocol/) |
-| Basic swarm | `mode=bee_swarm` 或 `mode=ant_colony` | verified scout、recruitment/inhibition、有界 pheromone memory | `pheroos-swarm-v1` | [`swarm-protocol`](examples/swarm-protocol/) |
-| Hybrid Pheromone v1 | v1 manifest 中的 `mode=hybrid` | diffusion、feedback、nonlinear response、L1-L4 proposal 与有界 adjustment | `pheroos-hybrid-swarm-v1` | [`hybrid-pheromone-protocol`](examples/hybrid-pheromone-protocol/) |
+| Baseline | 未声明 optional attention 或 Commit | verified quorum、declared candidate、safe fallback | `pheroos-core-v1` | [`toy-protocol`](examples/toy-protocol/)、[`e2e-protocol`](examples/e2e-protocol/) |
 | Scoped Hybrid Replay v2 | Capability/Protocol v3 document 选择 `pheroos.protocol.v2` | Store-backed durable replay 与 scoped authority | 精确的 v2 Store、session、replay 与 runtime-integration Conformance | [`hybrid-replay-protocol`](examples/hybrid-replay-protocol/) |
 | Optimal Commit | `collective_commit_policy` | evidence-governed truth、stability、liveness、certificate、可选 distributed finality | assurance-specific Commit profile | [`hybrid-commit-protocol`](examples/hybrid-commit-protocol/)、[`distributed-commit-protocol`](examples/distributed-commit-protocol/) |
 
-Optimal Commit 会根据 assurance 与已声明的 Hybrid attention semantics 选择
+Optimal Commit 会根据 assurance 与已声明的 attention semantics 选择
 `pheroos-commit-integrity-v1`、`pheroos-hybrid-commit-v1`、
-`pheroos-certified-commit-v1` 或 `pheroos-distributed-commit-v1`。
-
-### Hybrid Pheromone：attention 与 collective memory
-
-主要 Draft 路径是由 StateStore 支撑的 Hybrid Replay v2：
-
-```text
-evaluate_hybrid_collective_step_v2(...)
--> build_hybrid_replay_advance_request_v2(...)
--> open_hybrid_replay_authority_session_v2(...)
--> advance_hybrid_replay_state_v2(...)
--> 重启后 rehydrate_hybrid_replay_state_v2(...)
-```
-
-evaluator 会先验证完整 input batch，再执行有界 adjustment、deposit、evaporation、
-diffusion、feedback reinforcement、nonlinear response、L1-L4 coordination、scoring、
-independent-scout gate 与 commit-or-fallback。它返回的非 portable source proof 与精确
-authority context 绑定。只有 StateStore 原子 commit 才能产生 durable replay authority；
-portable snapshot、digest、checkpoint 或同形对象都不能产生 authority。rehydration 会证明
-committed inclusion 与 position，且只有 current head 才能作为下一次 advance 的 parent。
-确定性重启与 fresh-subprocess continuation 见
-[`hybrid-replay-protocol`](examples/hybrid-replay-protocol/)。
-
-`evaluate_hybrid_collective_step(...)`、`HybridReplayState` 与
-`replay_state_from_hybrid_step(...)` 仅作为 Deprecated Draft 兼容面保留；它们描述旧的
-process-local 路径，不是 durable v2 authority 或 restart 主路径。
+`pheroos-certified-commit-v1` 或 `pheroos-distributed-commit-v1`。Attention 仅作为 advisory
+输入，不能创建 evidence、truth、permission 或 authority。
 
 ### Optimal Commit：truth 与 authority
 
@@ -174,7 +152,7 @@ Optimal Commit 严格分离两个 channel：
 
 | Channel | 输入 | 可以影响 | 不能执行 |
 | --- | --- | --- | --- |
-| Exploration/attention | Scout、pheromone、recruitment、inhibition、layer proposal | 搜索优先级、candidate attention、外部 evidence collection | 创建 evidence、改变 commit truth、签发 certificate |
+| Optional attention | 外部 proposal 与有界 memory | 搜索优先级、candidate attention、外部 evidence collection | 创建 evidence、改变 commit truth、签发 certificate |
 | Truth/authority | 已验证的 principal、risk、membership、evidence、counterevidence、challenge、lease、stop、permission、replay 与 prior-window record | Commit metrics、terminal outcome、certificate 与 action gate | 调用 provider 或绕过 declared policy |
 
 Manifest 选择 assurance level：
@@ -297,10 +275,7 @@ pheroos abi diff
 | --- | --- |
 | [`toy-protocol`](examples/toy-protocol/) | 最小 manifest、declared candidate、quorum 与 fallback |
 | [`e2e-protocol`](examples/e2e-protocol/) | 最小 Protocol -> Kernel -> Driver -> Governance -> Trace vertical slice |
-| [`swarm-protocol`](examples/swarm-protocol/) | 基础 verified swarm signal 与 bounded pheromone memory |
-| [`hybrid-pheromone-protocol`](examples/hybrid-pheromone-protocol/) | 完整 Hybrid collective step 与四个 output gate |
 | [`hybrid-replay-protocol`](examples/hybrid-replay-protocol/) | Scoped Hybrid Replay v2、重启与 fresh-process continuation |
-| [`adaptive-pheromone-replay`](examples/adaptive-pheromone-replay/) | 外部 adaptive proposal 与 governance-issued replay state |
 | [`scoped-output-protocol`](examples/scoped-output-protocol/) | Baseline Output v2 activation、current grant 与 atomic output commit |
 | [`runtime-integration-protocol`](examples/runtime-integration-protocol/) | 精确版本的 Driver、authority、Trace、recovery 与 delivery transcript |
 | [`risk-v2-protocol`](examples/risk-v2-protocol/) | Store-backed risk authority 与 restart-safe currentness |
@@ -346,9 +321,7 @@ inert policy，并未成为远程保护。这是 build 与 attestation pipeline�
 ## 文档
 
 - 核心规范：[SPEC.md](SPEC.md)
-- Hybrid Pheromone：[ABI reference](docs/protocol/hybrid-pheromone-abi.md)、
-  [durable Replay v2](docs/protocol/hybrid-replay-v2.md) 与
-  [v1 migration](docs/protocol/hybrid-pheromone-v1-migration.md)
+- 历史 attention profile 仅作为私有 Draft 实现参考保留，不属于支持的公开 ABI。
 - Optimal Commit：[ABI reference](docs/protocol/optimal-commit-abi.md) 与
   [v1 migration](docs/protocol/optimal-commit-v1-migration.md)
 - 项目流程：[development index](docs/process/index.md)、

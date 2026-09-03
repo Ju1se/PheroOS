@@ -7,7 +7,7 @@ from types import MappingProxyType
 
 
 PUBLIC_API_ORDER_SHA256 = (
-    "607d19b60814e1486080a405460163a94752caa384974625f06738f480b4a85e"
+    "bc2cf49d2b6e68807ecddc3eef11491e0299b5157859ae999c781305c8eb51c4"
 )
 PUBLIC_API = MappingProxyType(
     {
@@ -21,7 +21,6 @@ PUBLIC_API = MappingProxyType(
         "AuthorityLevel": ("pheroos.governance.authority", "AuthorityLevel"),
         "Candidate": ("pheroos.governance.candidate", "Candidate"),
         "CandidateSet": ("pheroos.governance.candidate", "CandidateSet"),
-        "CanonicalTarget": ("pheroos.governance.target", "CanonicalTarget"),
         "CollectiveDecisionState": (
             "pheroos.governance.collective",
             "CollectiveDecisionState",
@@ -56,26 +55,17 @@ PUBLIC_API = MappingProxyType(
             "COMMIT_WIRE_VERSION",
         ),
         "CommitAssurance": ("pheroos.governance.commit_state", "CommitAssurance"),
-        "CommitReplayState": ("pheroos.governance.commit_state", "CommitReplayState"),
-        "CommitWindowState": ("pheroos.governance.commit_state", "CommitWindowState"),
         "CommitAction": ("pheroos.governance.stop_signal", "CommitAction"),
-        "DecisionOutcome": ("pheroos.governance.commit_state", "DecisionOutcome"),
         "DecisionOutcomeKind": (
             "pheroos.governance.commit_state",
             "DecisionOutcomeKind",
         ),
         "DecisionPhase": ("pheroos.governance.commit_state", "DecisionPhase"),
-        "DecisionProgress": ("pheroos.governance.commit_state", "DecisionProgress"),
         "ReplayNamespace": ("pheroos.governance.commit_state_v2", "ReplayNamespace"),
         "ReplayReceipt": ("pheroos.governance.commit_state", "ReplayReceipt"),
         "EvidenceEdge": ("pheroos.governance.evidence", "EvidenceEdge"),
         "EvidenceGraph": ("pheroos.governance.evidence", "EvidenceGraph"),
         "EvidenceNode": ("pheroos.governance.evidence", "EvidenceNode"),
-        "HybridCollectiveStep": (
-            "pheroos.governance.collective",
-            "HybridCollectiveStep",
-        ),
-        "HybridReplayState": ("pheroos.governance.collective", "HybridReplayState"),
         "InhibitionSignal": ("pheroos.governance.collective", "InhibitionSignal"),
         "LayerCoordinationPolicy": (
             "pheroos.governance.layer_coordination",
@@ -99,63 +89,10 @@ PUBLIC_API = MappingProxyType(
             "OutputAuthorizationResult",
         ),
         "OutputContract": ("pheroos.governance.output", "OutputContract"),
-        "PHEROMONE_EXTENSION_PREFIXES": (
-            "pheroos.governance.pheromone",
-            "PHEROMONE_EXTENSION_PREFIXES",
-        ),
-        "PHEROMONE_KIND_PROFILE_MAP_VERSION": (
-            "pheroos.governance.pheromone",
-            "PHEROMONE_KIND_PROFILE_MAP_VERSION",
-        ),
-        "PheromoneBatchResult": (
-            "pheroos.governance.pheromone",
-            "PheromoneBatchResult",
-        ),
-        "PheromoneBudgetState": (
-            "pheroos.governance.pheromone",
-            "PheromoneBudgetState",
-        ),
-        "PheromoneDiffusionPolicy": (
-            "pheroos.governance.pheromone",
-            "PheromoneDiffusionPolicy",
-        ),
-        "PheromoneEdge": ("pheroos.governance.pheromone", "PheromoneEdge"),
-        "PheromoneExplorationObservation": (
-            "pheroos.governance.pheromone",
-            "PheromoneExplorationObservation",
-        ),
-        "PheromoneFeedback": (
-            "pheroos.governance.pheromone_feedback",
-            "PheromoneFeedback",
-        ),
-        "PheromoneKindProfile": ("pheroos.protocol.models", "PheromoneKindProfile"),
         "PreparedGovernanceTransition": (
             "pheroos.governance.authority_domain",
             "PreparedGovernanceTransition",
         ),
-        "PheromoneLifecycleRecord": (
-            "pheroos.governance.pheromone",
-            "PheromoneLifecycleRecord",
-        ),
-        "PheromoneNeighborhood": (
-            "pheroos.governance.pheromone",
-            "PheromoneNeighborhood",
-        ),
-        "PheromoneNormalizationRecord": (
-            "pheroos.governance.pheromone",
-            "PheromoneNormalizationRecord",
-        ),
-        "PheromonePolicy": ("pheroos.governance.pheromone", "PheromonePolicy"),
-        "PheromoneReinforcementResult": (
-            "pheroos.governance.pheromone_feedback",
-            "PheromoneReinforcementResult",
-        ),
-        "PheromoneScoreResult": (
-            "pheroos.governance.pheromone",
-            "PheromoneScoreResult",
-        ),
-        "PheromoneSubject": ("pheroos.governance.pheromone", "PheromoneSubject"),
-        "PheromoneTrail": ("pheroos.governance.pheromone", "PheromoneTrail"),
         "PolicyAdjustmentBatchResult": (
             "pheroos.governance.policy_adjustment",
             "PolicyAdjustmentBatchResult",
@@ -175,18 +112,9 @@ PUBLIC_API = MappingProxyType(
         "QuorumDecision": ("pheroos.governance.quorum", "QuorumDecision"),
         "QuorumSignal": ("pheroos.governance.quorum", "QuorumSignal"),
         "RecruitmentSignal": ("pheroos.governance.collective", "RecruitmentSignal"),
-        "RecoveryTrace": ("pheroos.governance.recovery", "RecoveryTrace"),
         "RunScopedPolicyOverlay": (
             "pheroos.governance.policy_adjustment",
             "RunScopedPolicyOverlay",
-        ),
-        "SUPPORTED_PHEROMONE_KINDS": (
-            "pheroos.governance.pheromone",
-            "SUPPORTED_PHEROMONE_KINDS",
-        ),
-        "SUPPORTED_PHEROMONE_SUBJECT_TYPES": (
-            "pheroos.governance.pheromone",
-            "SUPPORTED_PHEROMONE_SUBJECT_TYPES",
         ),
         "ScoutReport": ("pheroos.governance.collective", "ScoutReport"),
         "Signal": ("pheroos.governance.signal", "Signal"),
@@ -199,15 +127,11 @@ PUBLIC_API = MappingProxyType(
         ),
         "StopSignal": ("pheroos.governance.stop_signal", "StopSignal"),
         "StrategyBias": ("pheroos.governance.layer_coordination", "StrategyBias"),
-        "TraceEvent": ("pheroos.governance.trace", "TraceEvent"),
+        "TraceEvent": ("pheroos.trace", "TraceEvent"),
         "WEIGHT_SCALE": ("pheroos.governance.commit_numeric", "WEIGHT_SCALE"),
         "allocate_layer_weights": (
             "pheroos.governance.layer_coordination",
             "allocate_layer_weights",
-        ),
-        "advance_commit_window_state": (
-            "pheroos.governance.commit_state",
-            "advance_commit_window_state",
         ),
         "action_permission_is_authoritative": (
             "pheroos.governance.permission",
@@ -230,18 +154,6 @@ PUBLIC_API = MappingProxyType(
             "apply_policy_adjustment_overlay",
         ),
         "can_verify": ("pheroos.governance.authority", "can_verify"),
-        "canonical_pheromone_kind_profiles": (
-            "pheroos.governance.pheromone",
-            "canonical_pheromone_kind_profiles",
-        ),
-        "canonical_commit_payload": (
-            "pheroos.governance.commit_numeric",
-            "canonical_commit_payload",
-        ),
-        "canonical_commit_set": (
-            "pheroos.governance.commit_numeric",
-            "canonical_commit_set",
-        ),
         "checked_add": ("pheroos.governance.commit_numeric", "checked_add"),
         "checked_multiply": ("pheroos.governance.commit_numeric", "checked_multiply"),
         "checked_subtract": ("pheroos.governance.commit_numeric", "checked_subtract"),
@@ -249,19 +161,7 @@ PUBLIC_API = MappingProxyType(
             "pheroos.governance.collective",
             "candidate_score_lineage",
         ),
-        "clip_pheromone_deposit_strength": (
-            "pheroos.governance.pheromone",
-            "clip_pheromone_deposit_strength",
-        ),
-        "clip_pheromone_strength": (
-            "pheroos.governance.pheromone",
-            "clip_pheromone_strength",
-        ),
         "ceil_scaled_count": ("pheroos.governance.commit_numeric", "ceil_scaled_count"),
-        "collect_pheromone_source_diversity": (
-            "pheroos.governance.pheromone",
-            "collect_pheromone_source_diversity",
-        ),
         "commit_candidate": ("pheroos.governance.quorum", "commit_candidate"),
         "commit_schema": ("pheroos.governance.schema", "commit_schema"),
         "commit_replay_state_fingerprint": (
@@ -271,14 +171,6 @@ PUBLIC_API = MappingProxyType(
         "commit_replay_state_contains": (
             "pheroos.governance.commit_state",
             "commit_replay_state_contains",
-        ),
-        "commit_replay_state_is_authoritative": (
-            "pheroos.governance.commit_state",
-            "commit_replay_state_is_authoritative",
-        ),
-        "commit_replay_state_is_current": (
-            "pheroos.governance.commit_state",
-            "commit_replay_state_is_current",
         ),
         "commit_replay_state_matches": (
             "pheroos.governance.commit_state",
@@ -296,34 +188,9 @@ PUBLIC_API = MappingProxyType(
             "pheroos.governance.commit_state",
             "commit_window_state_fingerprint",
         ),
-        "commit_window_state_is_authoritative": (
-            "pheroos.governance.commit_state",
-            "commit_window_state_is_authoritative",
-        ),
         "commit_window_state_payload": (
             "pheroos.governance.commit_state",
             "commit_window_state_payload",
-        ),
-        "commit_payload_fingerprint": (
-            "pheroos.governance.commit_numeric",
-            "commit_payload_fingerprint",
-        ),
-        "deposit_pheromone": ("pheroos.governance.pheromone", "deposit_pheromone"),
-        "deposit_pheromone_trails": (
-            "pheroos.governance.pheromone",
-            "deposit_pheromone_trails",
-        ),
-        "diffuse_pheromone_trails": (
-            "pheroos.governance.pheromone",
-            "diffuse_pheromone_trails",
-        ),
-        "diffuse_pheromone_trails_with_records": (
-            "pheroos.governance.pheromone",
-            "diffuse_pheromone_trails_with_records",
-        ),
-        "diffusion_policy_from_collective": (
-            "pheroos.governance.pheromone",
-            "diffusion_policy_from_collective",
         ),
         "evaluate_collective_decision": (
             "pheroos.governance.collective",
@@ -332,18 +199,6 @@ PUBLIC_API = MappingProxyType(
         "evaluate_collective_decision_step": (
             "pheroos.governance.collective",
             "evaluate_collective_decision_step",
-        ),
-        "evaluate_hybrid_collective_step": (
-            "pheroos.governance.collective",
-            "evaluate_hybrid_collective_step",
-        ),
-        "hybrid_collective_step_is_authoritative": (
-            "pheroos.governance.collective",
-            "hybrid_collective_step_is_authoritative",
-        ),
-        "hybrid_replay_state_is_authoritative": (
-            "pheroos.governance.collective",
-            "hybrid_replay_state_is_authoritative",
         ),
         "evaluate_layer_coordination": (
             "pheroos.governance.layer_coordination",
@@ -357,26 +212,9 @@ PUBLIC_API = MappingProxyType(
             "pheroos.governance.quorum",
             "evaluate_quorum_decision",
         ),
-        "evaporate_trails": ("pheroos.governance.pheromone", "evaporate_trails"),
-        "evaporate_trails_with_records": (
-            "pheroos.governance.pheromone",
-            "evaporate_trails_with_records",
-        ),
-        "is_extension_pheromone_value": (
-            "pheroos.governance.pheromone",
-            "is_extension_pheromone_value",
-        ),
         "issue_action_permission": (
             "pheroos.governance.permission",
             "issue_action_permission",
-        ),
-        "initialize_commit_replay_state": (
-            "pheroos.governance.commit_state",
-            "initialize_commit_replay_state",
-        ),
-        "initialize_commit_window_state": (
-            "pheroos.governance.commit_state",
-            "initialize_commit_window_state",
         ),
         "layer_coordination_policy_from_collective": (
             "pheroos.governance.layer_coordination",
@@ -385,10 +223,6 @@ PUBLIC_API = MappingProxyType(
         "layer_action_effect": (
             "pheroos.governance.layer_coordination",
             "layer_action_effect",
-        ),
-        "materialize_layer_pheromone_proposals": (
-            "pheroos.governance.layer_coordination",
-            "materialize_layer_pheromone_proposals",
         ),
         "multiply_scaled": ("pheroos.governance.commit_numeric", "multiply_scaled"),
         "require_authority_integer": (
@@ -423,44 +257,11 @@ PUBLIC_API = MappingProxyType(
             "pheroos.governance.principal",
             "principal_verification_payload",
         ),
-        "normalize_legacy_pheromone_trail": (
-            "pheroos.governance.pheromone",
-            "normalize_legacy_pheromone_trail",
-        ),
-        "observe_pheromone_exploration": (
-            "pheroos.governance.pheromone",
-            "observe_pheromone_exploration",
-        ),
         "output_authorized": ("pheroos.governance.output", "output_authorized"),
         "output_gate_lineage": ("pheroos.governance.output", "output_gate_lineage"),
-        "pheromone_lineage": ("pheroos.governance.pheromone", "pheromone_lineage"),
-        "pheromone_policy_from_collective": (
-            "pheroos.governance.pheromone",
-            "pheromone_policy_from_collective",
-        ),
-        "pheromone_subject_id": (
-            "pheroos.governance.pheromone",
-            "pheromone_subject_id",
-        ),
-        "pheromone_subject_type": (
-            "pheroos.governance.pheromone",
-            "pheromone_subject_type",
-        ),
-        "reinforce_pheromone_trails": (
-            "pheroos.governance.pheromone_feedback",
-            "reinforce_pheromone_trails",
-        ),
-        "reinforce_pheromone_trails_with_records": (
-            "pheroos.governance.pheromone_feedback",
-            "reinforce_pheromone_trails_with_records",
-        ),
         "resolve_stop_signal": (
             "pheroos.governance.stop_signal",
             "resolve_stop_signal",
-        ),
-        "record_commit_replay_receipts": (
-            "pheroos.governance.commit_state",
-            "record_commit_replay_receipts",
         ),
         "replay_receipt_fingerprint": (
             "pheroos.governance.commit_state",
@@ -470,31 +271,11 @@ PUBLIC_API = MappingProxyType(
             "pheroos.governance.commit_state",
             "replay_receipt_payload",
         ),
-        "restart_commit_window_epoch": (
-            "pheroos.governance.commit_state",
-            "restart_commit_window_epoch",
-        ),
-        "replay_state_from_hybrid_step": (
-            "pheroos.governance.collective",
-            "replay_state_from_hybrid_step",
-        ),
         "require_scaled_integer": (
             "pheroos.governance.commit_numeric",
             "require_scaled_integer",
         ),
         "score_candidates": ("pheroos.governance.collective", "score_candidates"),
-        "score_pheromone_trails": (
-            "pheroos.governance.pheromone",
-            "score_pheromone_trails",
-        ),
-        "score_pheromone_trails_result": (
-            "pheroos.governance.pheromone",
-            "score_pheromone_trails_result",
-        ),
-        "score_pheromone_trails_with_breakdown": (
-            "pheroos.governance.pheromone",
-            "score_pheromone_trails_with_breakdown",
-        ),
         "select_terminal_outcome_kind": (
             "pheroos.governance.commit_semantics",
             "select_terminal_outcome_kind",
@@ -536,26 +317,6 @@ PUBLIC_API = MappingProxyType(
             "pheroos.governance.layer_coordination",
             "validate_layer_proposal",
         ),
-        "validate_pheromone_budget_state": (
-            "pheroos.governance.pheromone",
-            "validate_pheromone_budget_state",
-        ),
-        "validate_pheromone_feedback": (
-            "pheroos.governance.pheromone_feedback",
-            "validate_pheromone_feedback",
-        ),
-        "validate_pheromone_policy": (
-            "pheroos.governance.pheromone",
-            "validate_pheromone_policy",
-        ),
-        "validate_pheromone_topology": (
-            "pheroos.governance.pheromone",
-            "validate_pheromone_topology",
-        ),
-        "validate_pheromone_trail": (
-            "pheroos.governance.pheromone",
-            "validate_pheromone_trail",
-        ),
         "validate_policy_adjustment_proposal": (
             "pheroos.governance.policy_adjustment",
             "validate_policy_adjustment_proposal",
@@ -572,10 +333,6 @@ PUBLIC_API = MappingProxyType(
             "pheroos.governance.layer_coordination",
             "validate_strategy_bias",
         ),
-        "decision_outcome_is_authoritative": (
-            "pheroos.governance.commit_state",
-            "decision_outcome_is_authoritative",
-        ),
         "decision_outcome_fingerprint": (
             "pheroos.governance.commit_state",
             "decision_outcome_fingerprint",
@@ -583,10 +340,6 @@ PUBLIC_API = MappingProxyType(
         "decision_outcome_payload": (
             "pheroos.governance.commit_state",
             "decision_outcome_payload",
-        ),
-        "decision_progress_is_authoritative": (
-            "pheroos.governance.commit_state",
-            "decision_progress_is_authoritative",
         ),
         "decision_progress_fingerprint": (
             "pheroos.governance.commit_state",
@@ -611,10 +364,6 @@ PUBLIC_API = MappingProxyType(
         ),
         "ChallengeCoverage": ("pheroos.governance.challenge", "ChallengeCoverage"),
         "ChallengeResult": ("pheroos.governance.challenge", "ChallengeResult"),
-        "CommitThresholdSnapshot": (
-            "pheroos.governance.risk",
-            "CommitThresholdSnapshot",
-        ),
         "CounterevidenceDisposition": (
             "pheroos.governance.observation",
             "CounterevidenceDisposition",
@@ -632,10 +381,6 @@ PUBLIC_API = MappingProxyType(
             "pheroos.governance.support_lease",
             "EligiblePrincipalCluster",
         ),
-        "EligiblePrincipalSnapshot": (
-            "pheroos.governance.support_lease",
-            "EligiblePrincipalSnapshot",
-        ),
         "EvidenceBinding": ("pheroos.governance.evidence_binding", "EvidenceBinding"),
         "EvidenceGroupContribution": (
             "pheroos.governance.evidence_binding",
@@ -650,7 +395,6 @@ PUBLIC_API = MappingProxyType(
             "pheroos.governance.observation",
             "ObservationPolarity",
         ),
-        "RiskAssessment": ("pheroos.governance.risk", "RiskAssessment"),
         "RiskBand": ("pheroos.governance.risk_v2", "RiskBand"),
         "SourceDomainContribution": (
             "pheroos.governance.evidence_binding",
@@ -660,7 +404,6 @@ PUBLIC_API = MappingProxyType(
             "pheroos.governance.support_lease",
             "SupportEquivocationFinding",
         ),
-        "SupportLease": ("pheroos.governance.support_lease", "SupportLease"),
         "SupportLeaseEvaluation": (
             "pheroos.governance.support_lease",
             "SupportLeaseEvaluation",
@@ -672,10 +415,6 @@ PUBLIC_API = MappingProxyType(
         "SupportLeaseProposal": (
             "pheroos.governance.support_lease",
             "SupportLeaseProposal",
-        ),
-        "SupportLeaseRevocation": (
-            "pheroos.governance.support_lease",
-            "SupportLeaseRevocation",
         ),
         "SupportLeaseStatus": (
             "pheroos.governance.support_lease",
@@ -710,10 +449,6 @@ PUBLIC_API = MappingProxyType(
         "commit_threshold_snapshot_fingerprint": (
             "pheroos.governance.risk",
             "commit_threshold_snapshot_fingerprint",
-        ),
-        "commit_threshold_snapshot_is_authoritative": (
-            "pheroos.governance.risk",
-            "commit_threshold_snapshot_is_authoritative",
         ),
         "commit_threshold_snapshot_matches": (
             "pheroos.governance.risk",
@@ -750,10 +485,6 @@ PUBLIC_API = MappingProxyType(
         "eligible_principal_snapshot_fingerprint": (
             "pheroos.governance.support_lease",
             "eligible_principal_snapshot_fingerprint",
-        ),
-        "eligible_principal_snapshot_is_authoritative": (
-            "pheroos.governance.support_lease",
-            "eligible_principal_snapshot_is_authoritative",
         ),
         "eligible_principal_snapshot_matches": (
             "pheroos.governance.support_lease",
@@ -803,22 +534,9 @@ PUBLIC_API = MappingProxyType(
             "pheroos.governance.support_lease",
             "expire_support_lease",
         ),
-        "issue_commit_threshold_snapshot": (
-            "pheroos.governance.risk",
-            "issue_commit_threshold_snapshot",
-        ),
         "issue_counterevidence_disposition": (
             "pheroos.governance.observation",
             "issue_counterevidence_disposition",
-        ),
-        "issue_eligible_principal_snapshot": (
-            "pheroos.governance.support_lease",
-            "issue_eligible_principal_snapshot",
-        ),
-        "issue_risk_assessment": ("pheroos.governance.risk", "issue_risk_assessment"),
-        "issue_support_lease": (
-            "pheroos.governance.support_lease",
-            "issue_support_lease",
         ),
         "observation_attestation_fingerprint": (
             "pheroos.governance.observation",
@@ -836,17 +554,9 @@ PUBLIC_API = MappingProxyType(
             "pheroos.governance.evidence_binding",
             "rebuild_evidence_binding_roots",
         ),
-        "revoke_support_lease": (
-            "pheroos.governance.support_lease",
-            "revoke_support_lease",
-        ),
         "risk_assessment_fingerprint": (
             "pheroos.governance.risk",
             "risk_assessment_fingerprint",
-        ),
-        "risk_assessment_is_authoritative": (
-            "pheroos.governance.risk",
-            "risk_assessment_is_authoritative",
         ),
         "risk_assessment_matches": (
             "pheroos.governance.risk",
@@ -865,10 +575,6 @@ PUBLIC_API = MappingProxyType(
             "pheroos.governance.support_lease",
             "support_lease_fingerprint",
         ),
-        "support_lease_is_authoritative": (
-            "pheroos.governance.support_lease",
-            "support_lease_is_authoritative",
-        ),
         "support_lease_payload": (
             "pheroos.governance.support_lease",
             "support_lease_payload",
@@ -885,10 +591,6 @@ PUBLIC_API = MappingProxyType(
             "pheroos.governance.support_lease",
             "support_lease_revocation_fingerprint",
         ),
-        "support_lease_revocation_is_authoritative": (
-            "pheroos.governance.support_lease",
-            "support_lease_revocation_is_authoritative",
-        ),
         "support_lease_revocation_matches": (
             "pheroos.governance.support_lease",
             "support_lease_revocation_matches",
@@ -900,10 +602,6 @@ PUBLIC_API = MappingProxyType(
         "support_lease_status": (
             "pheroos.governance.support_lease",
             "support_lease_status",
-        ),
-        "switch_support_lease": (
-            "pheroos.governance.support_lease",
-            "switch_support_lease",
         ),
         "verified_challenge_fingerprint": (
             "pheroos.governance.challenge",
@@ -945,11 +643,6 @@ PUBLIC_API = MappingProxyType(
             "pheroos.governance.observation",
             "verify_observation_attestation",
         ),
-        "ATTENTION_AUTHORITY_SCOPE": (
-            "pheroos.governance.attention",
-            "ATTENTION_AUTHORITY_SCOPE",
-        ),
-        "ATTENTION_CHANNEL": ("pheroos.governance.attention", "ATTENTION_CHANNEL"),
         "CERTIFICATE_HASH_ALGORITHM": (
             "pheroos.governance.certificate",
             "CERTIFICATE_HASH_ALGORITHM",
@@ -965,10 +658,6 @@ PUBLIC_API = MappingProxyType(
         "EVIDENCE_COMMIT_CERTIFICATE_VERSION": (
             "pheroos.governance.certificate",
             "EVIDENCE_COMMIT_CERTIFICATE_VERSION",
-        ),
-        "HYBRID_ATTENTION_PROFILE": (
-            "pheroos.governance.attention",
-            "HYBRID_ATTENTION_PROFILE",
         ),
         "HYBRID_COMMIT_BINDING_PROFILE": (
             "pheroos.governance.hybrid_commit",
@@ -1002,19 +691,6 @@ PUBLIC_API = MappingProxyType(
             "pheroos.governance.certificate",
             "OUTCOME_CERTIFICATE_VERSION",
         ),
-        "AttentionBreakdown": ("pheroos.governance.attention", "AttentionBreakdown"),
-        "AttentionCandidatePriority": (
-            "pheroos.governance.attention",
-            "AttentionCandidatePriority",
-        ),
-        "AttentionReopenEligibility": (
-            "pheroos.governance.attention",
-            "AttentionReopenEligibility",
-        ),
-        "AttentionSubjectPriority": (
-            "pheroos.governance.attention",
-            "AttentionSubjectPriority",
-        ),
         "CandidateClaimBinding": ("pheroos.governance.commit", "CandidateClaimBinding"),
         "CandidateCommitInput": ("pheroos.governance.commit", "CandidateCommitInput"),
         "CandidateCommitMetrics": (
@@ -1039,32 +715,15 @@ PUBLIC_API = MappingProxyType(
             "pheroos.governance.commit_state",
             "CommitFinalityStatus",
         ),
-        "CommitFinalityVerification": (
-            "pheroos.governance.commit_state",
-            "CommitFinalityVerification",
-        ),
-        "CommitLivenessInput": (
-            "pheroos.governance.commit_state",
-            "CommitLivenessInput",
-        ),
         "CommitOutputAction": ("pheroos.governance.output", "CommitOutputAction"),
         "CommitOutputAuthorization": (
             "pheroos.governance.output",
             "CommitOutputAuthorization",
         ),
         "CommitReasonCode": ("pheroos.governance.commit", "CommitReasonCode"),
-        "CommitWindowSeal": ("pheroos.governance.commit_state", "CommitWindowSeal"),
-        "EligibleMembershipEpochState": (
-            "pheroos.governance.support_lease",
-            "EligibleMembershipEpochState",
-        ),
         "EvidenceCommitCertificate": (
             "pheroos.governance.historical_certificate",
             "EvidenceCommitCertificate",
-        ),
-        "ExplorationDirective": (
-            "pheroos.governance.attention",
-            "ExplorationDirective",
         ),
         "HybridCommitAttentionStatus": (
             "pheroos.governance.hybrid_commit",
@@ -1093,31 +752,11 @@ PUBLIC_API = MappingProxyType(
         "HybridCommitStep": ("pheroos.governance.hybrid_commit", "HybridCommitStep"),
         "LocalCommitReceipt": ("pheroos.governance.certificate", "LocalCommitReceipt"),
         "OutcomeCertificate": ("pheroos.governance.certificate", "OutcomeCertificate"),
-        "RiskAssessmentChainState": (
-            "pheroos.governance.risk",
-            "RiskAssessmentChainState",
-        ),
         "SupportLeaseReplayReceipt": (
             "pheroos.governance.support_lease",
             "SupportLeaseReplayReceipt",
         ),
-        "SupportLeaseReplayState": (
-            "pheroos.governance.support_lease",
-            "SupportLeaseReplayState",
-        ),
         "assess_optimal_commit": ("pheroos.governance.commit", "assess_optimal_commit"),
-        "attention_breakdown_fingerprint": (
-            "pheroos.governance.attention",
-            "attention_breakdown_fingerprint",
-        ),
-        "attention_breakdown_is_authoritative": (
-            "pheroos.governance.attention",
-            "attention_breakdown_is_authoritative",
-        ),
-        "attention_breakdown_payload": (
-            "pheroos.governance.attention",
-            "attention_breakdown_payload",
-        ),
         "authorize_terminal_execution": (
             "pheroos.governance.output",
             "authorize_terminal_execution",
@@ -1170,10 +809,6 @@ PUBLIC_API = MappingProxyType(
             "pheroos.governance.commit_state",
             "commit_finality_verification_fingerprint",
         ),
-        "commit_finality_verification_is_authoritative": (
-            "pheroos.governance.commit_state",
-            "commit_finality_verification_is_authoritative",
-        ),
         "commit_finality_verification_payload": (
             "pheroos.governance.commit_state",
             "commit_finality_verification_payload",
@@ -1181,10 +816,6 @@ PUBLIC_API = MappingProxyType(
         "commit_liveness_input_fingerprint": (
             "pheroos.governance.commit_state",
             "commit_liveness_input_fingerprint",
-        ),
-        "commit_liveness_input_is_authoritative": (
-            "pheroos.governance.commit_state",
-            "commit_liveness_input_is_authoritative",
         ),
         "commit_liveness_input_payload": (
             "pheroos.governance.commit_state",
@@ -1206,53 +837,17 @@ PUBLIC_API = MappingProxyType(
             "pheroos.governance.commit_state",
             "commit_window_seal_fingerprint",
         ),
-        "commit_window_seal_for_state": (
-            "pheroos.governance.commit_state",
-            "commit_window_seal_for_state",
-        ),
-        "commit_window_seal_is_authoritative": (
-            "pheroos.governance.commit_state",
-            "commit_window_seal_is_authoritative",
-        ),
-        "commit_window_seal_is_current": (
-            "pheroos.governance.commit_state",
-            "commit_window_seal_is_current",
-        ),
-        "commit_window_seal_matches_receipt": (
-            "pheroos.governance.commit_state",
-            "commit_window_seal_matches_receipt",
-        ),
         "commit_window_seal_payload": (
             "pheroos.governance.commit_state",
             "commit_window_seal_payload",
-        ),
-        "commit_window_state_is_current": (
-            "pheroos.governance.commit_state",
-            "commit_window_state_is_current",
         ),
         "deliver_terminal_outcome": (
             "pheroos.governance.output",
             "deliver_terminal_outcome",
         ),
-        "derive_attention_breakdown": (
-            "pheroos.governance.attention",
-            "derive_attention_breakdown",
-        ),
-        "derive_exploration_directive": (
-            "pheroos.governance.attention",
-            "derive_exploration_directive",
-        ),
         "eligible_membership_epoch_state_fingerprint": (
             "pheroos.governance.support_lease",
             "eligible_membership_epoch_state_fingerprint",
-        ),
-        "eligible_membership_epoch_state_is_authoritative": (
-            "pheroos.governance.support_lease",
-            "eligible_membership_epoch_state_is_authoritative",
-        ),
-        "eligible_membership_epoch_state_is_current": (
-            "pheroos.governance.support_lease",
-            "eligible_membership_epoch_state_is_current",
         ),
         "eligible_membership_epoch_state_payload": (
             "pheroos.governance.support_lease",
@@ -1274,29 +869,9 @@ PUBLIC_API = MappingProxyType(
             "pheroos.governance.historical_certificate",
             "evidence_commit_certificate_payload",
         ),
-        "evaluate_hybrid_attention_step": (
-            "pheroos.governance.attention",
-            "evaluate_hybrid_attention_step",
-        ),
-        "evaluate_hybrid_commit_evaluation": (
-            "pheroos.governance.hybrid_commit",
-            "evaluate_hybrid_commit_evaluation",
-        ),
         "evaluate_hybrid_commit_step": (
             "pheroos.governance.hybrid_commit",
             "evaluate_hybrid_commit_step",
-        ),
-        "exploration_directive_fingerprint": (
-            "pheroos.governance.attention",
-            "exploration_directive_fingerprint",
-        ),
-        "exploration_directive_is_authoritative": (
-            "pheroos.governance.attention",
-            "exploration_directive_is_authoritative",
-        ),
-        "exploration_directive_payload": (
-            "pheroos.governance.attention",
-            "exploration_directive_payload",
         ),
         "hybrid_attention_projection": (
             "pheroos.governance.hybrid_commit",
@@ -1342,45 +917,13 @@ PUBLIC_API = MappingProxyType(
             "pheroos.governance.hybrid_commit",
             "hybrid_commit_truth_projection",
         ),
-        "initialize_risk_assessment_chain": (
-            "pheroos.governance.risk",
-            "initialize_risk_assessment_chain",
-        ),
-        "initialize_support_lease_replay_state": (
-            "pheroos.governance.support_lease",
-            "initialize_support_lease_replay_state",
-        ),
         "issue_commit_evaluation_context": (
             "pheroos.governance.commit",
             "issue_commit_evaluation_context",
         ),
-        "issue_commit_liveness_input": (
-            "pheroos.governance.commit_state",
-            "issue_commit_liveness_input",
-        ),
-        "issue_evidence_commit_certificate": (
-            "pheroos.governance.certificate",
-            "issue_evidence_commit_certificate",
-        ),
-        "issue_local_commit_receipt": (
-            "pheroos.governance.certificate",
-            "issue_local_commit_receipt",
-        ),
-        "issue_outcome_certificate": (
-            "pheroos.governance.certificate",
-            "issue_outcome_certificate",
-        ),
         "local_commit_receipt_fingerprint": (
             "pheroos.governance.certificate",
             "local_commit_receipt_fingerprint",
-        ),
-        "local_commit_receipt_is_authoritative": (
-            "pheroos.governance.certificate",
-            "local_commit_receipt_is_authoritative",
-        ),
-        "local_commit_receipt_matches": (
-            "pheroos.governance.certificate",
-            "local_commit_receipt_matches",
         ),
         "local_commit_receipt_payload": (
             "pheroos.governance.certificate",
@@ -1398,10 +941,6 @@ PUBLIC_API = MappingProxyType(
             "pheroos.governance.certificate",
             "outcome_certificate_from_payload",
         ),
-        "outcome_certificate_is_authoritative": (
-            "pheroos.governance.certificate",
-            "outcome_certificate_is_authoritative",
-        ),
         "outcome_certificate_payload": (
             "pheroos.governance.certificate",
             "outcome_certificate_payload",
@@ -1414,33 +953,13 @@ PUBLIC_API = MappingProxyType(
             "pheroos.governance.commit",
             "rebuild_commit_assessment_roots",
         ),
-        "reduce_commit_liveness": (
-            "pheroos.governance.commit_state",
-            "reduce_commit_liveness",
-        ),
-        "reset_commit_window_state": (
-            "pheroos.governance.commit_state",
-            "reset_commit_window_state",
-        ),
         "risk_assessment_chain_state_fingerprint": (
             "pheroos.governance.risk",
             "risk_assessment_chain_state_fingerprint",
         ),
-        "risk_assessment_chain_state_is_authoritative": (
-            "pheroos.governance.risk",
-            "risk_assessment_chain_state_is_authoritative",
-        ),
-        "risk_assessment_chain_state_is_current": (
-            "pheroos.governance.risk",
-            "risk_assessment_chain_state_is_current",
-        ),
         "risk_assessment_chain_state_payload": (
             "pheroos.governance.risk",
             "risk_assessment_chain_state_payload",
-        ),
-        "risk_assessment_is_latest": (
-            "pheroos.governance.risk",
-            "risk_assessment_is_latest",
         ),
         "support_lease_replay_receipt_payload": (
             "pheroos.governance.support_lease",
@@ -1450,14 +969,6 @@ PUBLIC_API = MappingProxyType(
             "pheroos.governance.support_lease",
             "support_lease_replay_state_fingerprint",
         ),
-        "support_lease_replay_state_is_authoritative": (
-            "pheroos.governance.support_lease",
-            "support_lease_replay_state_is_authoritative",
-        ),
-        "support_lease_replay_state_is_current": (
-            "pheroos.governance.support_lease",
-            "support_lease_replay_state_is_current",
-        ),
         "support_lease_replay_state_payload": (
             "pheroos.governance.support_lease",
             "support_lease_replay_state_payload",
@@ -1465,14 +976,6 @@ PUBLIC_API = MappingProxyType(
         "verify_evidence_commit_certificate": (
             "pheroos.governance.historical_certificate",
             "verify_evidence_commit_certificate",
-        ),
-        "verify_evidence_commit_finality": (
-            "pheroos.governance.certificate",
-            "verify_evidence_commit_finality",
-        ),
-        "verify_local_commit_finality": (
-            "pheroos.governance.certificate",
-            "verify_local_commit_finality",
         ),
         "verify_outcome_certificate": (
             "pheroos.governance.certificate",
@@ -1534,10 +1037,6 @@ PUBLIC_API = MappingProxyType(
             "pheroos.governance.distributed_commit",
             "DistributedCommitProposal",
         ),
-        "DistributedCommitState": (
-            "pheroos.governance.distributed_commit",
-            "DistributedCommitState",
-        ),
         "DistributedFinalityDecision": (
             "pheroos.governance.distributed_commit",
             "DistributedFinalityDecision",
@@ -1591,10 +1090,6 @@ PUBLIC_API = MappingProxyType(
             "pheroos.governance.distributed_commit",
             "distributed_commit_certificate_from_payload",
         ),
-        "distributed_commit_certificate_is_current_final": (
-            "pheroos.governance.distributed_commit",
-            "distributed_commit_certificate_is_current_final",
-        ),
         "distributed_commit_certificate_payload": (
             "pheroos.governance.distributed_commit",
             "distributed_commit_certificate_payload",
@@ -1615,10 +1110,6 @@ PUBLIC_API = MappingProxyType(
             "pheroos.governance.distributed_commit",
             "distributed_commit_proposal_from_payload",
         ),
-        "distributed_commit_proposal_is_authoritative": (
-            "pheroos.governance.distributed_commit",
-            "distributed_commit_proposal_is_authoritative",
-        ),
         "distributed_commit_proposal_payload": (
             "pheroos.governance.distributed_commit",
             "distributed_commit_proposal_payload",
@@ -1631,14 +1122,6 @@ PUBLIC_API = MappingProxyType(
             "pheroos.governance.distributed_commit",
             "distributed_commit_state_from_payload",
         ),
-        "distributed_commit_state_is_authoritative": (
-            "pheroos.governance.distributed_commit",
-            "distributed_commit_state_is_authoritative",
-        ),
-        "distributed_commit_state_is_current": (
-            "pheroos.governance.distributed_commit",
-            "distributed_commit_state_is_current",
-        ),
         "distributed_commit_state_payload": (
             "pheroos.governance.distributed_commit",
             "distributed_commit_state_payload",
@@ -1650,10 +1133,6 @@ PUBLIC_API = MappingProxyType(
         "distributed_finality_decision_from_payload": (
             "pheroos.governance.distributed_commit",
             "distributed_finality_decision_from_payload",
-        ),
-        "distributed_finality_decision_is_authoritative": (
-            "pheroos.governance.distributed_commit",
-            "distributed_finality_decision_is_authoritative",
         ),
         "distributed_finality_decision_payload": (
             "pheroos.governance.distributed_commit",
@@ -1678,26 +1157,6 @@ PUBLIC_API = MappingProxyType(
         "epoch_transition_decision_ref": (
             "pheroos.governance.distributed_commit",
             "epoch_transition_decision_ref",
-        ),
-        "evaluate_distributed_finality": (
-            "pheroos.governance.distributed_commit",
-            "evaluate_distributed_finality",
-        ),
-        "initialize_distributed_commit_state": (
-            "pheroos.governance.distributed_commit",
-            "initialize_distributed_commit_state",
-        ),
-        "issue_distributed_commit_certificate": (
-            "pheroos.governance.distributed_commit",
-            "issue_distributed_commit_certificate",
-        ),
-        "issue_distributed_commit_proposal": (
-            "pheroos.governance.distributed_commit",
-            "issue_distributed_commit_proposal",
-        ),
-        "issue_epoch_transition_certificate": (
-            "pheroos.governance.distributed_commit",
-            "issue_epoch_transition_certificate",
         ),
         "portable_membership_root": (
             "pheroos.governance.distributed_commit",
@@ -1739,25 +1198,9 @@ PUBLIC_API = MappingProxyType(
             "pheroos.governance.distributed_commit",
             "quorum_witness_signing_root",
         ),
-        "record_witness_verifications": (
-            "pheroos.governance.distributed_commit",
-            "record_witness_verifications",
-        ),
-        "register_distributed_commit_certificate": (
-            "pheroos.governance.distributed_commit",
-            "register_distributed_commit_certificate",
-        ),
-        "transition_distributed_commit_epoch": (
-            "pheroos.governance.distributed_commit",
-            "transition_distributed_commit_epoch",
-        ),
         "verify_distributed_commit_certificate": (
             "pheroos.governance.distributed_commit",
             "verify_distributed_commit_certificate",
-        ),
-        "verify_distributed_commit_finality": (
-            "pheroos.governance.distributed_commit",
-            "verify_distributed_commit_finality",
         ),
         "verify_distributed_commit_proposal": (
             "pheroos.governance.distributed_commit",
@@ -1770,10 +1213,6 @@ PUBLIC_API = MappingProxyType(
         "verify_portable_witness_verification": (
             "pheroos.governance.distributed_commit",
             "verify_portable_witness_verification",
-        ),
-        "verify_quorum_witness": (
-            "pheroos.governance.distributed_commit",
-            "verify_quorum_witness",
         ),
         "witness_replay_receipt": (
             "pheroos.governance.distributed_commit",
@@ -1798,10 +1237,6 @@ PUBLIC_API = MappingProxyType(
         "witness_verification_from_payload": (
             "pheroos.governance.distributed_commit",
             "witness_verification_from_payload",
-        ),
-        "witness_verification_is_authoritative": (
-            "pheroos.governance.distributed_commit",
-            "witness_verification_is_authoritative",
         ),
         "witness_verification_payload": (
             "pheroos.governance.distributed_commit",
@@ -4005,7 +3440,6 @@ PUBLIC_API = MappingProxyType(
 )
 COMPATIBILITY_MODULES = MappingProxyType(
     {
-        "attention": "pheroos.governance.attention",
         "atomic_evaluation": "pheroos.governance.atomic_evaluation",
         "authority": "pheroos.governance.authority",
         "authority_domain": "pheroos.governance.authority_domain",
@@ -4039,12 +3473,9 @@ COMPATIBILITY_MODULES = MappingProxyType(
         "observation": "pheroos.governance.observation",
         "output": "pheroos.governance.output",
         "permission": "pheroos.governance.permission",
-        "pheromone": "pheroos.governance.pheromone",
-        "pheromone_feedback": "pheroos.governance.pheromone_feedback",
         "policy_adjustment": "pheroos.governance.policy_adjustment",
         "principal": "pheroos.governance.principal",
         "quorum": "pheroos.governance.quorum",
-        "recovery": "pheroos.governance.recovery",
         "replay": "pheroos.governance.replay",
         "risk": "pheroos.governance.risk",
         "risk_v2": "pheroos.governance.risk_v2",
@@ -4054,8 +3485,6 @@ COMPATIBILITY_MODULES = MappingProxyType(
         "stop_signal": "pheroos.governance.stop_signal",
         "support_lease": "pheroos.governance.support_lease",
         "support_v2": "pheroos.governance.support_v2",
-        "target": "pheroos.governance.target",
-        "trace": "pheroos.governance.trace",
     }
 )
 

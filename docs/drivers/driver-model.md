@@ -67,7 +67,8 @@ Driver ABI changes should follow the public API and ABI lifecycle rules.
 The additive, Kernel-independent request/result/reply wire and restartable
 idempotency store are specified in [Driver Invocation ABI v2](invocation-v2.md).
 
-`DriverHealth` and the five specialized descriptor subclasses remain Draft
+`DriverProbeResult` is the canonical readiness result; specialized descriptor
+subclasses are not part of the public ABI
 compatibility surfaces only. New integrations use `DriverProbeResult` and the
 canonical `DriverDescriptor`; their removal gates are recorded in the
 [architecture removal ledger](../process/removal-ledger.md).

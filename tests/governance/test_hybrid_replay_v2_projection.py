@@ -14,19 +14,21 @@ from pheroos.governance import (
     AuthorityLevel,
     Candidate,
     CandidateSet,
-    HybridReplayState,
     LayerProposal,
+    PolicyAdjustmentProposal,
+    ScoutReport,
+    verify_signal_input,
+)
+from pheroos.governance._pheromone.records import (
     PheromoneEdge,
-    PheromoneFeedback,
     PheromoneNeighborhood,
     PheromoneSubject,
     PheromoneTrail,
-    PolicyAdjustmentProposal,
-    ScoutReport,
-    evaluate_hybrid_collective_step,
-    replay_state_from_hybrid_step,
-    verify_signal_input,
 )
+from pheroos.governance.pheromone_feedback import PheromoneFeedback
+from pheroos.governance._swarm.pipeline import evaluate_hybrid_collective_step
+from pheroos.governance._swarm.records import HybridReplayState
+from pheroos.governance._swarm.replay import replay_state_from_hybrid_step
 from pheroos.governance._hybrid_replay_v2.contracts import (
     HybridReplayAdvanceRequestV2,
     HybridReplaySnapshotV2,

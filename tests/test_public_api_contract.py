@@ -14,24 +14,24 @@ import pheroos.trace as trace
 
 EXPECTED_PUBLIC_API = {
     "pheroos.protocol": (
-        99,
-        "b1fb302d39161462380dd63f3e66993604e1b464a9a8bdd095580b201aa07213",
+        89,
+        "6ae86e1295fe5fbde7101cbbe735e7dba0df6d54bf887b3bb7629ff0388fab57",
     ),
     "pheroos.governance": (
-        1068,
-        "d3edea818e2fa962ad7d3907c86b3b7fecd96fbeca5172a7148b00bd34667327",
+        911,
+        "f5a405d147f99a7ee7148776cac8220ad09fda24f8e10f9bc1e412263160a919",
     ),
     "pheroos.kernel": (
         31,
         "54505137a3a46f76e0268f760996df7ed2f296abaaf99644c98b0be1ca547be3",
     ),
     "pheroos.drivers": (
-        54,
-        "aa02e021b652d26e5cc1dcdef8413ef57b7165ed03a3fbda9e1b9fda54719791",
+        48,
+        "153545c0217d2d1ab1b13cf9a8ed8437817fcf50b2cdefab2c73ec9cc31ad1bb",
     ),
     "pheroos.trace": (
-        38,
-        "87cc4cdd905bfa6ea469c2083297dd4a2828f2a69d087802c7195dc093cebdd5",
+        35,
+        "a5f9e202ac1296e5d73fe2064b4d1a66555d424988c29eb7fd5b0ebc44ec303b",
     ),
     "pheroos.conformance": (
         118,
@@ -113,11 +113,8 @@ def test_canonical_public_types_are_owned_by_their_declared_surfaces() -> None:
     assert governance.CommitAction is protocol.CommitAction
     assert protocol.CommitAssurance.__module__ == "pheroos.protocol.commit_models"
     assert protocol.CommitAction.__module__ == "pheroos.protocol.commit_models"
-    assert governance.PheromoneKindProfile is protocol.PheromoneKindProfile
-    assert protocol.PheromoneKindProfile.__module__ == "pheroos.protocol.models"
     assert governance.TraceEvent is trace.TraceEvent
     assert trace.TraceEvent.__module__ == "pheroos.trace"
-    assert governance.PheromoneTrail.__module__ == "pheroos.governance.pheromone"
     assert (
         governance.LayerProposal.__module__ == "pheroos.governance.layer_coordination"
     )
@@ -125,11 +122,7 @@ def test_canonical_public_types_are_owned_by_their_declared_surfaces() -> None:
         governance.PolicyAdjustmentProposal.__module__
         == "pheroos.governance.policy_adjustment"
     )
-    assert governance.HybridCollectiveStep.__module__ == "pheroos.governance.collective"
-    assert governance.HybridReplayState.__module__ == "pheroos.governance.collective"
     assert governance.CommitAssessment.__module__ == "pheroos.governance.commit"
-    assert governance.CommitWindowSeal.__module__ == "pheroos.governance.commit_state"
-    assert governance.DecisionOutcome.__module__ == "pheroos.governance.commit_state"
     assert governance.LocalCommitReceipt.__module__ == "pheroos.governance.certificate"
     assert governance.EvidenceCommitCertificate.__module__ == (
         "pheroos.governance.certificate"

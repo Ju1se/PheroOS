@@ -12,29 +12,33 @@ from pheroos.governance import (
     CandidateSet,
     EvidenceGraph,
     EvidenceNode,
-    HybridReplayState,
     InhibitionSignal,
     LayerPerformanceSnapshot,
     LayerProposal,
     OutputContract,
-    PheromoneEdge,
-    PheromoneExplorationObservation,
-    PheromoneFeedback,
-    PheromoneNeighborhood,
-    PheromoneSubject,
-    PheromoneTrail,
     PolicyAdjustmentProposal,
     RecruitmentSignal,
     RunScopedPolicyOverlay,
     ScoutReport,
     StopResolution,
     StrategyBias,
-    evaluate_hybrid_collective_step,
     evaluate_output_authorization,
+    verify_signal_input,
+)
+from pheroos.governance._pheromone.records import (
+    PheromoneEdge,
+    PheromoneExplorationObservation,
+    PheromoneNeighborhood,
+    PheromoneSubject,
+    PheromoneTrail,
+)
+from pheroos.governance.pheromone_feedback import PheromoneFeedback
+from pheroos.governance._swarm.pipeline import evaluate_hybrid_collective_step
+from pheroos.governance._swarm.records import HybridReplayState
+from pheroos.governance._swarm.replay import (
     hybrid_collective_step_is_authoritative,
     hybrid_replay_state_is_authoritative,
     replay_state_from_hybrid_step,
-    verify_signal_input,
 )
 from pheroos.governance.errors import GovernanceError
 from pheroos.protocol import (

@@ -6,18 +6,20 @@ from pheroos.governance import (
     EvidenceNode,
     InhibitionSignal,
     OutputContract,
-    PheromoneTrail,
     RecruitmentSignal,
     ScoutReport,
     StopResolution,
-    deposit_pheromone,
-    evaporate_trails,
     evaluate_collective_decision,
     output_authorized,
-    pheromone_policy_from_collective,
-    score_pheromone_trails_result,
     score_candidates,
     verify_signal_input,
+)
+from pheroos.governance.pheromone import (
+    PheromoneTrail,
+    deposit_pheromone,
+    evaporate_trails,
+    pheromone_policy_from_collective,
+    score_pheromone_trails_result,
 )
 from pheroos.protocol import load_capability_manifest, validate_capability_manifest
 from pheroos.trace import InMemoryTraceStore, TraceEvent

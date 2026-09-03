@@ -5,9 +5,9 @@ from typing import Any
 from pheroos.governance import (
     PolicyAdjustmentProposal,
     apply_policy_adjustment_overlay,
-    pheromone_policy_from_collective,
     validate_policy_adjustment_proposals,
 )
+from pheroos.governance.pheromone import pheromone_policy_from_collective
 from pheroos.protocol.models import CapabilityManifest
 from pheroos.trace import TraceEvent
 

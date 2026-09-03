@@ -8,41 +8,45 @@ from pheroos.governance import (
     InhibitionSignal,
     LayerCoordinationPolicy,
     LayerProposal,
+    PolicyAdjustmentProposal,
+    RecruitmentSignal,
+    ScoutReport,
+    evaluate_collective_decision,
+    evaluate_collective_decision_step,
+    evaluate_layer_coordination,
+    score_candidates,
+    verify_signal_input,
+)
+from pheroos.governance.pheromone import (
     PheromoneDiffusionPolicy,
     PheromoneEdge,
-    PheromoneFeedback,
-    PheromoneKindProfile,
     PheromoneNeighborhood,
     PheromonePolicy,
     PheromoneSubject,
     PheromoneTrail,
-    PolicyAdjustmentProposal,
-    RecruitmentSignal,
-    ScoutReport,
-    candidate_score_lineage,
     clip_pheromone_deposit_strength,
     clip_pheromone_strength,
     collect_pheromone_source_diversity,
     deposit_pheromone,
     diffuse_pheromone_trails,
     evaporate_trails,
-    evaluate_collective_decision,
-    evaluate_collective_decision_step,
-    evaluate_layer_coordination,
     pheromone_subject_id,
     pheromone_subject_type,
-    reinforce_pheromone_trails,
-    score_candidates,
     score_pheromone_trails,
     score_pheromone_trails_with_breakdown,
     pheromone_lineage,
-    validate_pheromone_feedback,
-    validate_policy_adjustment_proposal,
     validate_pheromone_trail,
     validate_pheromone_topology,
-    validate_score_breakdown,
-    verify_signal_input,
 )
+from pheroos.governance._swarm.scoring import candidate_score_lineage
+from pheroos.governance._swarm.scoring import validate_score_breakdown
+from pheroos.governance.pheromone_feedback import (
+    PheromoneFeedback,
+    reinforce_pheromone_trails,
+    validate_pheromone_feedback,
+)
+from pheroos.governance.policy_adjustment import validate_policy_adjustment_proposal
+from pheroos.protocol.models import PheromoneKindProfile
 from pheroos.governance.errors import GovernanceError
 from pheroos.governance._pheromone.records import PheromoneLifecycleRecord
 from pheroos.governance._swarm.trace import _clip_causal_lineage

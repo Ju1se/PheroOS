@@ -24,7 +24,7 @@ from pheroos.protocol.models import (
     effective_pheromone_scored_subject_types,
     is_scored_pheromone_subject_type,
 )
-from pheroos.trace import canonical_pheromone_clip_payload
+from pheroos.trace._pheromone_receipts import canonical_pheromone_clip_payload
 
 from pheroos.governance._pheromone.diffusion import *
 from pheroos.governance._pheromone.invariants import *

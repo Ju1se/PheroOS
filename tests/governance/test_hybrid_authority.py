@@ -17,7 +17,8 @@ from pheroos.governance import (
     verify_signal_input,
 )
 from pheroos.governance.errors import GovernanceError
-from pheroos.protocol import CollectiveDecisionPolicy, PheromoneKindProfile
+from pheroos.protocol import CollectiveDecisionPolicy
+from pheroos.protocol.models import PheromoneKindProfile
 
 
 TARGET = "decision:hybrid"

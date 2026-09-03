@@ -22,7 +22,7 @@ from pheroos.governance.pheromone import (
     pheromone_subject_id,
     pheromone_subject_type,
 )
-from pheroos.trace import pheromone_clip_payload_fingerprint
+from pheroos.trace._pheromone_receipts import pheromone_clip_payload_fingerprint
 
 
 HYBRID_ATTENTION_PROFILE = "pheroos-hybrid-attention-v1"

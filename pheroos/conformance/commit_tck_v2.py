@@ -31,9 +31,9 @@ from pheroos.governance.historical_certificate import (
     verify_evidence_commit_certificate,
 )
 from pheroos.protocol import (
-    commit_payload_fingerprint,
     validate_capability_manifest,
 )
+from pheroos.protocol.commit_wire import commit_payload_fingerprint
 from pheroos.protocol.manifest import capability_manifest_from_dict
 from pheroos.trace import TraceEvent, commit_trace_event_id
 

@@ -10,13 +10,10 @@ from pheroos.conformance.checks import (
     commit_authority_boundary,
     commit_policy_contract,
     layer_coordination_policy,
-    pheromone_kind_profile,
-    pheromone_subject_scoring,
     policy_adjustment_bounds,
     principal_attestation_contract,
 )
 from pheroos.conformance.report import CheckResult
-from pheroos.governance import pheromone_policy_from_collective
 from pheroos.protocol import load_capability_manifest
 from pheroos.protocol.manifest import capability_manifest_from_dict
 
@@ -117,116 +114,6 @@ def test_layer_checker_surfaces_an_injected_materialization_regression(
         target=target,
         policy=policy,
     ) == ["action_materialization:propose_pheromone"]
-
-
-@pytest.mark.parametrize(
-    ("kind", "injected_score"),
-    (("negative", 1.0), ("positive", -1.0)),
-)
-def test_kind_checker_surfaces_injected_pressure_sign_regressions(
-    monkeypatch: pytest.MonkeyPatch,
-    kind: str,
-    injected_score: float,
-) -> None:
-    manifest = _hybrid_manifest()
-    collective = manifest.protocol.collective_decision_policy
-    assert collective is not None
-    policy = pheromone_policy_from_collective(collective)
-    candidates = pheromone_kind_profile.candidate_set(manifest)
-    target = pheromone_kind_profile.active_target(manifest)
-    candidate_id = pheromone_kind_profile.exercise_candidate_id(manifest)
-    assert candidate_id is not None
-    monkeypatch.setattr(
-        pheromone_kind_profile,
-        "score_pheromone_trails_result",
-        lambda **_kwargs: SimpleNamespace(
-            kind_breakdown={candidate_id: {kind: injected_score}}
-        ),
-    )
-
-    assert pheromone_kind_profile._kind_subject_score_problems(
-        kind=kind,
-        profile=policy.kind_profiles[kind],
-        subject_type="candidate",
-        subject_types=("candidate",),
-        competitive_singleton=False,
-        candidates=candidates,
-        candidate_id=candidate_id,
-        target=target,
-        policy=policy,
-        strength=1.0,
-    ) == [f"{kind}_candidate_pressure"]
-
-
-def test_kind_checker_surfaces_an_injected_ttl_regression(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    manifest = _hybrid_manifest()
-    collective = manifest.protocol.collective_decision_policy
-    assert collective is not None
-    policy = pheromone_policy_from_collective(collective)
-    target = pheromone_kind_profile.active_target(manifest)
-    candidate_id = pheromone_kind_profile.exercise_candidate_id(manifest)
-    assert candidate_id is not None
-    profile = policy.kind_profiles["positive"]
-    monkeypatch.setattr(
-        pheromone_kind_profile,
-        "evaporate_trails",
-        lambda trails, *_args, **_kwargs: list(trails),
-    )
-
-    assert pheromone_kind_profile._kind_ttl_problems(
-        kind="positive",
-        profile=profile,
-        subject_types=("candidate",),
-        candidate_id=candidate_id,
-        target=target,
-        policy=policy,
-        strength=1.0,
-    ) == ["positive_profile_ttl"]
-
-
-def test_subject_checker_surfaces_injected_evidence_scoring(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    manifest = _hybrid_manifest()
-
-    def injected_score(*, candidate_set, policy, trails):
-        del policy
-        score = 1.0 if trails else 0.0
-        return {candidate.id: score for candidate in candidate_set.candidates}
-
-    monkeypatch.setattr(
-        pheromone_subject_scoring,
-        "score_pheromone_trails",
-        injected_score,
-    )
-    monkeypatch.setattr(
-        pheromone_subject_scoring,
-        "_collect_subject_scores",
-        lambda **_kwargs: {},
-    )
-
-    result = pheromone_subject_scoring.check_hybrid(manifest)
-
-    assert result.ok is False
-    assert result.detail == "evidence_subject_scored"
-
-
-def test_subject_checker_surfaces_an_injected_binding_bypass(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    manifest = _hybrid_manifest()
-    monkeypatch.setattr(
-        pheromone_subject_scoring,
-        "validate_pheromone_trail",
-        lambda *_args, **_kwargs: None,
-    )
-
-    result = pheromone_subject_scoring.check_hybrid(manifest)
-
-    assert result.ok is False
-    assert result.detail == "undeclared_candidate_binding"
 
 
 def test_policy_checker_totalizes_an_injected_impossible_guard(

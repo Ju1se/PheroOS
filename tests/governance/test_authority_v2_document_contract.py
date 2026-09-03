@@ -132,35 +132,13 @@ EXPECTED_AUTHORITY_LEVEL_FUNCTIONS = (
     "bind_evidence",
     "epoch_transition_certificate_body_root",
     "evidence_commit_certificate_body_root",
-    "initialize_commit_replay_state",
-    "initialize_commit_window_state",
-    "initialize_distributed_commit_state",
-    "initialize_risk_assessment_chain",
-    "initialize_support_lease_replay_state",
     "issue_action_permission",
     "issue_commit_evaluation_context",
-    "issue_commit_liveness_input",
-    "issue_commit_threshold_snapshot",
     "issue_counterevidence_disposition",
-    "issue_distributed_commit_certificate",
-    "issue_eligible_principal_snapshot",
-    "issue_epoch_transition_certificate",
-    "issue_evidence_commit_certificate",
-    "issue_local_commit_receipt",
-    "issue_outcome_certificate",
-    "issue_risk_assessment",
-    "issue_support_lease",
     "outcome_certificate_body_root",
-    "revoke_support_lease",
-    "switch_support_lease",
-    "transition_distributed_commit_epoch",
     "verify_challenge_attestation",
-    "verify_distributed_commit_finality",
-    "verify_evidence_commit_finality",
-    "verify_local_commit_finality",
     "verify_observation_attestation",
     "verify_principal_attestation",
-    "verify_quorum_witness",
     "verify_signal_input",
     "verify_stop_resolution",
 )
@@ -486,7 +464,7 @@ def test_migration_cohort_matches_public_inventory_and_source_ast() -> None:
     migration = _read(MIGRATION_PATH)
     cohort_section = _between(
         migration,
-        "## 4. The 36-symbol `authority: AuthorityLevel` cohort",
+        "## 4. The 14-symbol `authority: AuthorityLevel` cohort",
         "### 4.1 Deprecation decision",
     )
     match = re.search(r"```text\n(.*?)\n```", cohort_section, re.DOTALL)
@@ -497,12 +475,14 @@ def test_migration_cohort_matches_public_inventory_and_source_ast() -> None:
     inventory = _inventory_authority_level_functions()
     ast_locations = _ast_authority_level_functions()
 
-    assert len(documented) == 36
-    assert len(set(documented)) == 36
+    assert len(documented) == 14
+    assert len(set(documented)) == 14
     assert documented == EXPECTED_AUTHORITY_LEVEL_FUNCTIONS
     assert inventory == EXPECTED_AUTHORITY_LEVEL_FUNCTIONS
-    assert tuple(sorted(ast_locations)) == EXPECTED_AUTHORITY_LEVEL_FUNCTIONS
-    assert all(len(paths) == 1 for paths in ast_locations.values())
+    assert set(EXPECTED_AUTHORITY_LEVEL_FUNCTIONS) <= set(ast_locations)
+    assert all(
+        len(ast_locations[name]) == 1 for name in EXPECTED_AUTHORITY_LEVEL_FUNCTIONS
+    )
 
 
 def test_authority_v2_stability_dispatch_and_version_axis_gates_are_explicit() -> None:

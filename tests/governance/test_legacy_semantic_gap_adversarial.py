@@ -42,7 +42,7 @@ from pheroos.governance.distributed_commit import (
 )
 from pheroos.governance.errors import GovernanceError
 from pheroos.governance.schema import validate_commit_wire_record
-from pheroos.protocol import canonical_commit_payload
+from pheroos.protocol.commit_wire import canonical_commit_payload
 from tests.governance import test_commit_liveness as liveness_fixture
 from tests.governance import test_commit_output_actions as output_fixture
 from tests.governance import test_commit_window as window_fixture

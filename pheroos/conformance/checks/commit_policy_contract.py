@@ -15,9 +15,9 @@ from pheroos.protocol import (
     collective_fallback_id,
     commit_manifest_fingerprint,
     commit_policy_fingerprint,
-    has_hybrid_pheromone_features,
     validate_capability_manifest,
 )
+from pheroos.protocol.models import has_hybrid_pheromone_features
 
 
 def check(manifest: CapabilityManifest) -> CheckResult:

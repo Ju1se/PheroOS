@@ -1,5 +1,5 @@
 {
-  "artifact_root": "sha256:f4d336c82586e50f294f60ac80783fcedd74369710b52538cbc662d706cd11a9",
+  "artifact_root": "sha256:a0eeac3520073f44b0389e8cabacfaa4cc9128e87a0f4f13413b709f79018305",
   "artifact_version": "pheroos-stable-python-api-v1",
   "budgets": {
     "closure": 128,
@@ -828,16 +828,6 @@
                   "kind": "POSITIONAL_OR_KEYWORD",
                   "name": "path",
                   "required": true
-                },
-                {
-                  "annotation": "str | Path | None",
-                  "default": {
-                    "kind": "value",
-                    "value": null
-                  },
-                  "kind": "KEYWORD_ONLY",
-                  "name": "root",
-                  "required": false
                 }
               ],
               "return": "ConformanceReport"
@@ -12377,7 +12367,7 @@
       ]
     },
     "pheroos.protocol": {
-      "closure_count": 36,
+      "closure_count": 35,
       "exports": [
         {
           "binding": "pheroos.protocol.AuthorityDiagnosticCodeV2",
@@ -13551,9 +13541,7 @@
           "lifecycle_stability": "draft",
           "membership": "dependency",
           "public_bases": [],
-          "references": [
-            "pheroos.protocol.PheromoneKindProfile"
-          ],
+          "references": [],
           "shape": {
             "aliases": [],
             "attribute": "CollectiveDecisionPolicy",
@@ -15835,199 +15823,6 @@
                   },
                   "kind": "POSITIONAL_OR_KEYWORD",
                   "name": "requires_publication_permission",
-                  "required": false
-                },
-                {
-                  "annotation": "dict[str, Any]",
-                  "default": {
-                    "kind": "dataclass-factory"
-                  },
-                  "kind": "POSITIONAL_OR_KEYWORD",
-                  "name": "extensions",
-                  "required": false
-                }
-              ],
-              "return": "None"
-            }
-          }
-        },
-        {
-          "binding": "pheroos.protocol.PheromoneKindProfile",
-          "canonical_binding": "pheroos.protocol.PheromoneKindProfile",
-          "constant_dependencies": [],
-          "exception_references": [],
-          "lifecycle_group": "record",
-          "lifecycle_stability": "draft",
-          "membership": "dependency",
-          "public_bases": [],
-          "references": [],
-          "shape": {
-            "aliases": [
-              "pheroos.governance.PheromoneKindProfile",
-              "pheroos.protocol.PheromoneKindProfile"
-            ],
-            "attribute": "PheromoneKindProfile",
-            "binding_owner": "pheroos.protocol.models",
-            "dataclass": {
-              "fields": [
-                {
-                  "annotation": "float",
-                  "default": {
-                    "kind": "value",
-                    "value": 1.0
-                  },
-                  "init": true,
-                  "kw_only": false,
-                  "name": "weight"
-                },
-                {
-                  "annotation": "float | None",
-                  "default": {
-                    "kind": "value",
-                    "value": null
-                  },
-                  "init": true,
-                  "kw_only": false,
-                  "name": "evaporation_rate"
-                },
-                {
-                  "annotation": "int | None",
-                  "default": {
-                    "kind": "value",
-                    "value": null
-                  },
-                  "init": true,
-                  "kw_only": false,
-                  "name": "ttl_steps"
-                },
-                {
-                  "annotation": "str",
-                  "default": {
-                    "kind": "value",
-                    "value": "linear"
-                  },
-                  "init": true,
-                  "kw_only": false,
-                  "name": "response_model"
-                },
-                {
-                  "annotation": "int",
-                  "default": {
-                    "kind": "value",
-                    "value": 0
-                  },
-                  "init": true,
-                  "kw_only": false,
-                  "name": "priority"
-                },
-                {
-                  "annotation": "bool",
-                  "default": {
-                    "kind": "value",
-                    "value": false
-                  },
-                  "init": true,
-                  "kw_only": false,
-                  "name": "can_suppress_positive"
-                },
-                {
-                  "annotation": "list[str]",
-                  "default": {
-                    "factory": "builtins:list",
-                    "kind": "factory"
-                  },
-                  "init": true,
-                  "kw_only": false,
-                  "name": "scored_subject_types"
-                },
-                {
-                  "annotation": "dict[str, Any]",
-                  "default": {
-                    "factory": "builtins:dict",
-                    "kind": "factory"
-                  },
-                  "init": true,
-                  "kw_only": false,
-                  "name": "extensions"
-                }
-              ],
-              "frozen": true,
-              "kw_only": false
-            },
-            "identity": "pheroos.protocol.models:PheromoneKindProfile",
-            "kind": "dataclass",
-            "members": [],
-            "name": "PheromoneKindProfile",
-            "owner": "pheroos.protocol.models",
-            "signature": {
-              "parameters": [
-                {
-                  "annotation": "float",
-                  "default": {
-                    "kind": "value",
-                    "value": 1.0
-                  },
-                  "kind": "POSITIONAL_OR_KEYWORD",
-                  "name": "weight",
-                  "required": false
-                },
-                {
-                  "annotation": "float | None",
-                  "default": {
-                    "kind": "value",
-                    "value": null
-                  },
-                  "kind": "POSITIONAL_OR_KEYWORD",
-                  "name": "evaporation_rate",
-                  "required": false
-                },
-                {
-                  "annotation": "int | None",
-                  "default": {
-                    "kind": "value",
-                    "value": null
-                  },
-                  "kind": "POSITIONAL_OR_KEYWORD",
-                  "name": "ttl_steps",
-                  "required": false
-                },
-                {
-                  "annotation": "str",
-                  "default": {
-                    "kind": "value",
-                    "value": "linear"
-                  },
-                  "kind": "POSITIONAL_OR_KEYWORD",
-                  "name": "response_model",
-                  "required": false
-                },
-                {
-                  "annotation": "int",
-                  "default": {
-                    "kind": "value",
-                    "value": 0
-                  },
-                  "kind": "POSITIONAL_OR_KEYWORD",
-                  "name": "priority",
-                  "required": false
-                },
-                {
-                  "annotation": "bool",
-                  "default": {
-                    "kind": "value",
-                    "value": false
-                  },
-                  "kind": "POSITIONAL_OR_KEYWORD",
-                  "name": "can_suppress_positive",
-                  "required": false
-                },
-                {
-                  "annotation": "list[str]",
-                  "default": {
-                    "kind": "dataclass-factory"
-                  },
-                  "kind": "POSITIONAL_OR_KEYWORD",
-                  "name": "scored_subject_types",
                   "required": false
                 },
                 {
@@ -19993,7 +19788,7 @@
     "roots": 48
   },
   "summary": {
-    "closure_count": 122,
+    "closure_count": 121,
     "constant_dependency_count": 9,
     "governance_closure_count": 37,
     "governance_root_count": 11,

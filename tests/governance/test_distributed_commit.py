@@ -11,7 +11,8 @@ import weakref
 
 import pytest
 
-import pheroos.governance as governance
+import pheroos.governance as _public_governance
+import pheroos.governance.distributed_commit as distributed_commit
 from pheroos.governance.authority import AuthorityLevel
 from pheroos.governance.certificate import (
     EvidenceCommitCertificate,
@@ -114,6 +115,19 @@ from pheroos.protocol.commit_models import (
 from pheroos.protocol.commit_wire import commit_policy_fingerprint
 from tests.governance import test_commit_certificate as certificate_fixture
 from tests.governance import test_commit_engine as engine_fixture
+
+
+class _ImplementationFacade:
+    """Use retained module implementations after v1 root bindings are removed."""
+
+    def __getattr__(self, name: str) -> object:
+        try:
+            return getattr(_public_governance, name)
+        except AttributeError:
+            return getattr(distributed_commit, name)
+
+
+governance = _ImplementationFacade()
 
 
 def _fingerprint(label: str) -> str:
@@ -567,7 +581,7 @@ def _public_membership(
         )
         for index in range(1, 5)
     )
-    snapshot, epoch_state = governance.issue_eligible_principal_snapshot(
+    snapshot, epoch_state = issue_eligible_principal_snapshot(
         principals,
         snapshot_id=f"membership:{label}",
         profile=DISTRIBUTED_COMMIT_PROFILE_VERSION,

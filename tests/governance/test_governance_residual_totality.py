@@ -7,7 +7,7 @@ from typing import Any, cast
 
 import pytest
 
-import pheroos.governance as legacy_governance
+import pheroos.governance.distributed_commit as distributed_commit
 from pheroos.governance import _risk_policy as risk_policy
 from pheroos.governance._authority_session_v2 import contracts as session_contracts
 from pheroos.governance._commit_evidence_owner_v2 import (
@@ -173,7 +173,7 @@ def test_legacy_distributed_epoch_replay_rejects_corrupt_cached_state(
 ) -> None:
     bundle = _public_portable_scenario("residual:epoch-replay")
     captured: dict[str, object] = {}
-    transition = legacy_governance.transition_distributed_commit_epoch
+    transition = distributed_commit.transition_distributed_commit_epoch
 
     def recording_transition(*args: object, **kwargs: object) -> object:
         captured["args"] = args
@@ -181,18 +181,18 @@ def test_legacy_distributed_epoch_replay_rejects_corrupt_cached_state(
         return transition(*args, **kwargs)
 
     monkeypatch.setattr(
-        legacy_governance,
+        distributed_commit,
         "transition_distributed_commit_epoch",
         recording_transition,
     )
     _transition_public_bundle(bundle)
     monkeypatch.setattr(
-        legacy_governance,
+        distributed_commit,
         "transition_distributed_commit_epoch",
         transition,
     )
 
-    parent_ref = legacy_governance.distributed_commit_state_fingerprint(bundle.state)
+    parent_ref = distributed_commit.distributed_commit_state_fingerprint(bundle.state)
     cursor = object.__getattribute__(bundle.state, "_cursor")
     request_ref, _ = cursor.transitions[parent_ref]
     monkeypatch.setattr(
@@ -251,7 +251,7 @@ def test_legacy_distributed_witness_replay_rejects_corrupt_cached_state(
     )
 
     parent = cast(Any, captured["state"])
-    parent_ref = legacy_governance.distributed_commit_state_fingerprint(parent)
+    parent_ref = distributed_commit.distributed_commit_state_fingerprint(parent)
     cursor = object.__getattribute__(parent, "_cursor")
     request_ref, _ = cursor.transitions[parent_ref]
     cursor.transitions[parent_ref] = (request_ref, object())

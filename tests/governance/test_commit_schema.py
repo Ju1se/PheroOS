@@ -23,7 +23,8 @@ from pheroos.governance.permission import (
     issue_action_permission,
 )
 from pheroos.governance.schema import commit_schema, validate_commit_wire_record
-from pheroos.protocol import CommitAction, canonical_commit_payload
+from pheroos.protocol import CommitAction
+from pheroos.protocol.commit_wire import canonical_commit_payload
 from tests.governance.test_commit_engine import _scenario
 
 

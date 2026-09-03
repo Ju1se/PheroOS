@@ -1,0 +1,1181 @@
+# Receptor-Gated Ligand Field G0-G3 Qualification Report
+
+状态：历史检查点快照；当时 G0、G1 通过，G2、G3 阻断；仅工程资格验证，
+不构成 H1-H6 结果
+
+检查点起始日期：2026-07-28；本次续审日期：2026-07-29
+
+> **历史状态说明（2026-08-11）**：本文中的“通过”只描述上述 7 月检查点，
+> 不是当前 gate 状态，也不是执行授权。后续源码、qualification artifacts 和
+> 预注册合同已经发生变化；当前 external research harness 的 fail-closed 诊断为
+> `G0=failed`、`G1=failed`，且 `current_execution_eligible=false`。任何当前状态
+> 判断都必须重新运行现行 verifier，不能引用本历史报告替代现场验证。
+
+> **本地续审补记（2026-08-12）**：external lab 的 inactive V4 路径已加入
+> exact-one repository-identity sidecar 与 leaf V4 readiness diagnostic。它只把
+> synthetic local blocker 从 20 减到 19；`status="g0_unresolved"`，G3、G0、
+> execution、claims、proof、superiority 与 authority 仍为 false。随后加入的
+> qualification-builder negative control 在调用比较器前校验 caller V4 lock 与
+> exact-four artifact pack，但 native builder contract 仍从 active on-disk V3 lock
+> 取得 preregistration data，caller raw V4 lock 不进入 child contract。因此
+> `qualification_builder_replayed=false`，对应 blocker 不关闭。其 supplied-mode
+> report 也不证明 child/source-fence/subprocess 实际执行，或 network、credential、
+> write absence；这些 attestation/absence 字段均保持 false。
+>
+> 当前 fixed-file comparator 的现场结果为 4/4 Q/S/G/manifest artifacts drift、
+> 10 个 minimal leaf differences、`local_exact_builder_replay=false`；G3、G0 与
+> claims 仍为 false。修正后的 negative-control 与相邻 V2/V3/V4 契约共 177 项
+> tests 全部通过。这是 fail-closed 工程证据，不是 baseline outcome，也不是任何
+> RG-LF 相对优势或劣势的实验观察；不得据此 refreeze 或进入 G4+。
+>
+> 同日另形成 external lab 的 inactive Builder V2 前向设计候选：
+> `docs/g0-qualification-builder-v2-preregistration-candidate.md`，本地内容
+> SHA-256 为
+> `3b331a05588a8e8fd992175e2e03f92b6a4ae4f1e3653d71c941e6d8f60d4aa9`。
+> 该哈希不是外部时间戳、见证或预注册；没有对应实现、激活或 target replay，
+> 也没有 blocker closure；19 项 V4 blockers 与全部 gate/claim 边界保持不变。
+>
+> 对应的 external-lab inactive 平台可行性审计为
+> `docs/g0-qualification-builder-v2-platform-feasibility-audit.md`，本地内容
+> SHA-256 为
+> `460dd89ea865921a02a78c60dcdf3d673961c0afe35f6e03052ea7d4024c019a`。
+> 它判定当前 native macOS 不适合作为目标 Builder V2 证据平台；本机选中的
+> Docker Desktop endpoint 不可达，默认机制即便可运行也不足以证明完整隔离。
+> dedicated measured Linux appliance/VM 仅被保留为待外部冻结、provider-free
+> synthetic qualification 的候选类别，并未选型、配置、实现或实测。该审计不
+> 签发 `execution_inconclusive` 等 live receipt，不改变 19 blockers、G3/G0、
+> API/执行授权或任何 H1-H6/优越性结论。
+>
+> 同日 external lab 又加入一个 inactive、pure-memory 的 exact-fifteen
+> top-level binding candidate：十个 candidate payload、一个 repository-identity
+> sidecar 和四个 qualification payload。它能从调用者提供的 bytes 重算 raw
+> hashes 与已有 local joins，但不是完整 evidence-DAG leaf census，也不排除
+> contract、bytes 与 caller pins 被同步替换的 coherent universe。policy/pin
+> provenance、historical events、production storage、qualification outcome、
+> G3/G0、execution 与 claims 均保持 false。V4 evaluator 不消费该 candidate，
+> 因而 `aggregate_artifact_completeness_contract_absent` 及其余 18 blockers 全部
+> 保持开放；这项工程工作不更新 H1-H5，也不能打开 H6。
+>
+> 后续 evidence-DAG/trust-bootstrap 续审又把当前 V1 候选缺口定义为 76 个
+> 结构节点：63 个非 aggregate 要求、7 个动态 family、5 个
+> opaque-preimage family，以及一个不增加 requirement 数量的 aggregate
+> reference-classification 节点。语义复核后，该分类明确区分 internal native、
+> five-study cross joins、native-derived 与 G0 zero-now provider references；
+> model/prompt/tool/tokenizer 的未类型化 digest 文本保持为单独 unresolved family，
+> 不再误称为已验证的 opaque cryptographic roots。
+> 它确认 active V4 lock 声明 12 个 core artifacts，而现有 core-profile pack
+> 只有 9 个，缺 Hybrid Replay manifest 与 Commit TCK v1/v2；external source
+> 还必须在 pinned commit 动态枚举，不能冻结为字面数量。现有 19 项 inventory
+> 也被逐项归类为 G0、G3、G4 或 G7 要求，避免把后续 gate 误作 G0 前置而形成
+> gate cycle，但没有删除或关闭任何 blocker。该目录只能证明当前 V1 定义的
+> 闭合重建，`semantic_exhaustiveness_verified=false`，不能声称已经穷尽所有证据。
+> 它还没有枚举 G1、G2、G5、G6 的 controller、simulator、pilot、confirmatory、
+> measurement/inference 与最终 claim-evaluation 证据，因此根节点已明确为
+> selected partial set，`complete_g0_to_g8_evidence_dag_verified=false`。
+>
+> 同一续审新增 closed `CeremonyPolicyV1` 与带固定 signature-context literal 的
+> unsigned checkpoint ABI。它明确 future trust chain 必须终止在 repository-external
+> checkpoint digest 或 witness-key policy；caller 同时替换 coherent universe
+> 与 comparison pins 时，本地 structural verification 仍可成立，因此 pin
+> independence、signature、substitution exclusion、external ceremony、storage、
+> gates、execution、claims 和 authority 全部保持 false。两个新模块均未接入
+> V4；16 项 catalog/trust 对抗测试通过。其本地 receipt 还把真实性、独立持久化
+> 与 hostile in-process tamper resistance 明确保持为 false，不构成 G0 evidence
+> closure。固定 signature-context literal 只为未来签名验证提供域标签；当前
+> unsigned verifier 不排除 cross-protocol/checkpoint replay，也不验证所引用的
+> artifact bytes/native joins 或 anchor→execution ancestry。
+>
+> 随后的最小 P0 切片新增独立 `g0_core_artifact_evidence_v1.py`，不修改历史
+> exact-nine ABI。它从 caller-pinned Git commit 原生读取 12 项 core bytes，重算
+> commit/blob OID、raw SHA、content/identity roots，并与 canonical V4 lock 及全部
+> caller pins 三方联结；receipt 恢复必须重放 Git/lock/pack/pins。红队指出初版只
+> 重算 commit 与最终 blob、未逐层重算中间 tree OID；现已从 commit root tree
+> 开始逐层读取、重算并严格解析 path component，替代 tree-bytes 攻击会拒绝。
+> 新增 12 项测试与原 exact-nine 15 项回归合计 27/27 通过。不过这只是 inactive
+> local candidate：
+> production materialization、independent pin provenance、repository identity、
+> receipt authenticity/persistence/tamper resistance、V4/ten-role/aggregate 接线、
+> G0、execution 与 claims 仍为 false。
+>
+> 随后新增 inactive `g0_full12_ten_role_join_v1.py`，只连接本地 full-12、
+> exact-nine 与 ten-role 视图：它重放 full-12/profile Git+lock verifier，执行
+> ten-role typed rematerialization，并逐项比较 exact-nine 的 payload、length、
+> SHA-256、Git blob OID、mode 与 entry-set root。真实 pinned Commit TCK v1 为
+> 737,510 bytes，因此 full-12 verifier 的有限单成员上限调整为 1 MiB；经红队
+> 指出“读后检查”风险后，现先用 `cat-file -s` 拒绝超限对象，再读取并核对实际
+> body length；复审后又把 commit/tree/blob 统一改为单进程、有 stdout/stderr
+> 上限的 `cat-file --batch` 读取，并把剩余 total budget 传入下一成员读取。
+> 16 项 full-12 测试与 5 项 join 专项测试通过。receipt 明确保持
+> source-snapshot/generic-receipt events 未重放、complete ten-role native replay
+> 为 false、coherent caller-controlled universe 未排除、authenticity/trusted pins/
+> production materialization/V4/G0/claims/authority 全部为 false。这是工程兼容性
+> 证据，不是 H1-H5 观察，也不支持 RG-LF 优越性。
+>
+> 下一项 inactive 续审没有伪造 metric preimage resolver。新增的
+> `g0_hypothesis_metric_preimage_audit_v1.py` 只对当前 synthetic fixtures
+> 进行 pure-memory 负向审计：它重放 supplied `FrozenHypothesisDesignV1`
+> 与 `MetricRegistryV1`，验证 69↔69 的 `metric_id` 双射，并观察到 69/69
+> 个 opaque design metric roots 均不等于该 supplied registry 中对应的
+> typed roots。这个结果只说明这些 registry candidates 不是那些 design
+> roots；它不证明不存在其他 typed preimage，不知道 design root derivation，
+> 不证明 metric semantic equivalence，也没有加载 production frozen study
+> bytes。detached self-digest 可被整体重封，必须用 typed inputs 重新审计；
+> authenticity/provenance/coherent-substitution exclusion、ArtifactStore、V4、
+> G0、execution、H1-H5、claims、superiority 与 authority 仍全部为 false。
+> 15 项专项对抗测试通过，19 blockers 不变。
+>
+> 继续新增的 inactive
+> `g0_hypothesis_treatment_config_schema_audit_v1.py` 也不是 resolver。它只对
+> supplied exact `FrozenHypothesisDesignV1` 做 canonical typed replay，并在当前
+> synthetic fixture 中观察到 31 个 treatment arms（7 个 system、24 个
+> mechanism/ablation）、31 个 observed unique config roots 与 47 个 factor-level
+> occurrences。它机械证明的范围仅是：exact `TreatmentArmV1` serialized fields
+> 没有 explicit typed config-preimage field 或 explicit root-derivation field。
+> 31 个 config roots 恰好唯一不是 V1 invariant；合法设计可让不同 arm 共享根，
+> 审计会如实报告 30 个 unique roots。Factor inventory 也不是 controller config
+> 或 config-root preimage。本 slice 没有 supplied typed candidate registry、没有
+> candidate-root comparison、没有 artifact bytes 或 production study inputs，因而
+> external preimage 是否存在、normative derivation rule、factory/plugin/runtime
+> semantics 全部保持 unknown/false。Detached receipt 必须对 typed source 重审；
+> V4 未集成，19 条 blocker、G0、execution、H1-H5、claim、superiority 与 authority
+> 均未改变。专项 14/14 与相邻 86/86 tests 通过；这仍只是工程负向证据。
+>
+> 下一项 inactive `g0_hypothesis_contrast_reference_audit_v1.py` 继续坚持负向
+> 边界。它对 supplied exact design、eligibility、metric registry 与 V2 method
+> plan 做 canonical replay，并显式重跑公共 method-plan verifier。当前 synthetic
+> fixture 中，169 个 unique opaque contrast roots 对应 335 次 selector references：
+> 152 个 roots 出现两次、7 个出现三次、10 个仅一次；语义引用分类为 152 个
+> ordinary paired、7 个 required-ablation paired、6 个 factorial-linked 与 4 个
+> unresolved composite。335 是 reference multiplicity，不是 artifact count。
+> 6 个 supplied `FactorialContrastV2` object roots 均不等于其 linked design root，
+> 且与全部 169 roots 交集为零；这只是 supplied candidate identity mismatch，
+> 不是 resolver、全局 preimage nonexistence 或 semantic inequivalence proof。
+> Paired/composite candidate registry、root derivation、design coefficient freeze、
+> method closure 与 production bytes 全部仍为 false。当前双向 root commitments
+> 下尚未定义 hash-cycle-free replacement rule；这不证明未来 stable-ID 或单向
+> migration 不可能。专项 18/18、含 method/design 相邻回归 155/155 通过；V4 未消费此审计，19 条
+> blockers、G0、execution、H1-H5、claims、science、superiority 与 authority 不变。
+>
+> 第四项 design-family 负向续审
+> `g0_model_cohort_roster_contract_gap_audit_v1.py` 不引入 model contracts。它只
+> canonical replay supplied hypothesis design、condition design、G0 manifest 与
+> method plan，并验证 method→hypothesis、manifest→condition、manifest→method
+> 三条显式 root joins。当前 synthetic fixture 有 7 次 population cohort
+> references / 4 个 unique cohort roots、69 个经 population 间接绑定的 endpoints，
+> 以及 96 次 template roster references / 2 个 unique roster roots；每个 roster
+> 覆盖 48 templates、6 tasks 与 8 budget layers。当前 cohort/roster root sets
+> 交集为零，但将 roster root 人为改成 cohort root 的反例仍保持 membership 与
+> sampling closure 为 false。因为没有 supplied typed model artifact/roster/cohort/
+> population-roster binding，zero-provider G0 manifest 不是 model freeze，观察到
+> minimum-three-model-family rule 也不等于已满足。Condition schema 还没有 explicit
+> track/distribution binding axes。本四输入审计不含 eligibility/registry，因此
+> public method-plan recomputation 诚实保持 false。ID 与 root 字段是各自独立排序
+> 的 inventories，tuple 位置明确不构成 identity binding。红队唯一 P2 已由显式
+> false 字段和反例测试封闭。专项 21/21、当前相邻 147/147 通过；
+> production、replication、sampling、V4、19 blockers、G0、execution、provider/LLM、
+> H1-H5、claims、science、superiority 与 authority 均不变。
+>
+> 第五项 inactive `g0_attack_condition_strata_contract_gap_audit_v1.py`
+> 继续拒绝把 opaque roots、平衡性或文本标签相等解释成攻击语义。它 canonical
+> replay supplied exact hypothesis design、condition design、G0 manifest 与 V2
+> method plan，并只验证 method→design、manifest→condition、manifest→method
+> 三条声明 joins。当前 synthetic fixture 有 96 次 template references / 2 个
+> attack-condition roots；每个 root 覆盖 48 templates、6 tasks、6 task clusters
+> 与 8 budget layers。另有 7 个 populations 的 42 次 textual-stratum references /
+> 6 个 unique labels，且这 6 个 labels 与 sampling-frame、H6 inventories 文本相等。
+> 2 个 roots 与 6 个 labels 不能靠 tuple 位置配对，文本集合相等也不是 semantic
+> binding。root swap、single shared root、12 个 task×split roots、arbitrary root 与
+> G2-looking root 的反例均保持 binding false。没有 typed attack artifact/preimage、
+> derivation、payload、transform、randomization semantics、population binding 或
+> sampling closure。独立红队为 P0=0、P1=0；唯一 P2 是缺少对称 hostile
+> `H6CompoundRulesV2` subclass 反例，现已补入 exact-type 测试。V4、19 blockers、
+> G0、execution、provider/LLM、H1-H5、claims、science、superiority 与 authority
+> 均不变。
+>
+> 第六项 inactive `g0_metric_code_root_contract_gap_audit_v1.py` 只证明声明的
+> code-root identity propagation，不证明代码本身。它 exact-replay supplied
+> hypothesis design、metric registry、V2 method plan 与 G0 manifest，重算 blocked
+> eligibility，调用 public method verifier，并验证 registry↔method↔manifest 的
+> analysis/statistical-plan joins。当前 synthetic fixture 有 69 次 evaluator-root
+> references 与 4 次 analysis-root references：合计 73 次 direct occurrences、70
+> 个 unique roots，analysis/evaluator intersection 为 0。manifest source 的
+> `analysis_source_root` 当前恰好等于 registry root，但 V1 schema 没有声明该
+> normative join，因此 source-only drift 只被盘点而不拒绝。duplicate evaluator、
+> analysis/evaluator overlap、coherent evaluator/analysis substitutions 都证明
+> uniqueness、disjointness 和 equality 不是 executable semantics。没有 code
+> artifact/bytes/preimage、derivation algorithm、executable snapshot、semantic 或
+> correctness evidence。独立红队为 P0=0、P1=0；其 P2 指出初版 7-type token scan
+> 名称过宽，现已收窄为“仅对列出的 7 个 schemas 与声明的 scope/preimage token
+> 交集做机械扫描”，并增加 arbitrary-name bypass 反例；它明确不是 recursive-schema
+> 或任意字段名 absence proof。V4、19 blockers、G0、execution、provider/LLM、H1-H5、
+> claims、science、superiority 与 authority 均不变。
+>
+> 第七项 inactive `g0_condition_text_digest_contract_gap_audit_v1.py`
+> 处理 evidence-DAG 中单列的 untyped-text family，而不把它误称为已验证 opaque
+> roots。它 exact-replay supplied condition design 与 G0/E0 manifest，验证
+> manifest randomization root→condition design join，并保持 zero-provider、
+> zero-budget。V1 中名为 `model_artifact_hash`、`prompt_hash`、`tool_hash`、
+> `tokenizer_hash` 的四字段实际上只要求 exact non-empty `str` 且
+> `strip()==value`；没有 Unicode normalization、control-character exclusion、
+> digest algorithm/canonicalization、preimage 或 derivation contract。当前
+> synthetic fixture 有 96 templates、384 paired occurrences、9 个 unique texts，
+> canonical SHA-root 与 raw-64-hex occurrence/unique 均为 0/0。arbitrary text、
+> all-shared text、canonical-looking SHA、raw hex、cross-family collision 与 coherent
+> whole-cell substitution 的反例均不能产生 digest 或 semantic evidence。该 audit
+> 不消费 catalog、ArtifactStore、V4、production input、provider/API/LLM 或 outcome；
+> G0、execution、H1-H5、claims、science、superiority 与 authority 全部不变。
+>
+> 第八项 inactive `g0_environment_task_preimage_contract_gap_audit_v1.py`
+> 将 manifest family 收窄到 environment/task 的六个 selectors，避免把已有
+> 独立 resolver 的 controller/cost/policy 路径一概标成 unresolved。它
+> exact-replay supplied `ConditionDesignV1` 与 G0/E0 `ExperimentManifestV1`，
+> 要求 provider forbidden、零 provider、零 provider budget，并把
+> `tasks.randomization_root == ConditionDesignV1.root` 保留为单独 typed identity
+> join，不计入 opaque inventory。当前 synthetic fixture 有五个 root-shaped
+> values / 五个 unique roots，加一个 `container_image_digest=not_applicable`。
+> swap、arbitrary replacement、shared root、ID/version drift 与 coherent
+> condition/manifest substitution 都不能提升为 preimage、bytes、derivation、
+> availability、reproducibility、task semantics、trusted provenance、production
+> evidence、V4/G0、execution、claim、science、superiority 或 authority。该 audit
+> 也明确未进行 global、repository 或 external-registry preimage search。
+>
+> 最终 receipt self-consistency 修正后，candidate 自身 10 项 tests 与
+> ArtifactStore/claim/qualification-join/V4 组合 89 项 tests 均通过。该窄修正前
+> 紧邻的完整 external-lab suite 共运行 1,099 项，其中 1,097 通过；唯一 failure
+> 与唯一 error 均保留了既有 frozen-qualification drift：当前 Q builder 不匹配
+> frozen Q bytes，且 active V3 lock 的 expected SHA/root 与当前四个 edited
+> qualification artifacts 不匹配。最终窄修正涉及的模块已由随后 89 项组合回归
+> 覆盖；没有把完整 suite 误报为最终全绿，也没有为追求 green 而 refreeze。
+> `prereg-verify` 仍以五项 top-level failures 退出 1，active lock SHA-256 仍为
+> `432b633ab5c554805e1e1025f6e3e53ab23c7a61bc611b8f0cbeda24dcb60939`，
+> `config/prereg.lock-next.json` 仍不存在。
+>
+> 上述边界收紧后的组合回归最初为 105/105；加入 full-12 与 exact-nine 相邻
+> 回归后，扩大后的组合回归为 132/132 通过。紧邻其前的完整 external-lab
+> suite 共运行 1,115 项，其中 1,113 通过；唯一 failure 与唯一 error 仍是同一
+> 既有 frozen-qualification drift，未通过 refreeze 消除。`prereg-verify` 仍以
+> 同五项 top-level failures 退出 1，因此这些新增结构测试不是 G0 pass。
+> 最终现场 worktree source root 为
+> `sha256:95a653e25be0a4e7fe1b181bbe51158b32c60787d0cb5604e2dc9a153b305aed`；
+> 这是可变的本地诊断值，不是已冻结或可信 pin。
+>
+> 上述八项 inactive negative audits 与 P2 收紧后的最新现场复核中，八项专项合计
+> 151/151；environment/task 专项 16/16、direct 相邻组 51/51、更宽相邻组
+> 113/113；condition-text immediate 相邻组 35/35、更宽相邻组 97/97，attack/strata
+> 相邻组 90/90、metric-code 相邻组 97/97、contrast
+> 相邻组 104/104、cohort/roster 更宽相邻组 147/147 通过。
+> `prereg-verify` 仍退出 1，并返回 `passed=false`、
+> `current_execution_eligible=false` 与同五项 failures。当前 mutable worktree
+> source root 已变为
+> `sha256:75c5009f6f2d04e10a92cd20d3d138faaba89cdebe8aaf5e812675e2ce1e3734`；
+> 它取代上面的 `95a653...` 与中间态 `592a2c...`、`4babb0...`、`75aa559...`、
+> `aa2b0f...`
+> 作为最新本地诊断，但仍不是
+> frozen/trusted pin。V4 专项仍为 11/11 通过且未消费这些 audits。
+> 最终有界回归矩阵还分别通过：ArtifactStore/claim/qualification-join 68/68、
+> catalog 11/11、full-12/ten-role join 5/5、ten-role assembler 21/21。
+> 这些集合有重叠，不能相加。更宽的 qualification 组合在 source-only child
+> process 中耗时过长而被中断，因此本 checkpoint 不宣称新的 complete-suite
+> pass；上面的 1,115-test 结果仍只是一份历史 snapshot。精确命令保留在交互式
+> checkpoint，而不是 immutable test receipt；这些计数只是本地工程观察，不是
+> registered evidence。
+>
+> 随后停止继续堆叠负向 audit，转向一个可推进但仍不激活的 G0 正向切片。
+> external lab 新增 lock-independent full-12 prelock Git verifier，并新增
+> `ProvisionalPreregistrationLockPlanV1`：前者不接收 completed V4、lock root/SHA
+> 或 qualification commitments；后者把该 core receipt 与 native external-source
+> receipt 联结，冻结 future V4 partial object、cycle-free qualification binding，
+> 并把四个 qualification records 与两个 aggregate roots 固定为六个
+> `not_materialized` slots，完全不放 placeholder hashes/roots/bytes。机械完成测试
+> 证明只向 partial `implementation` 填入这六组 outputs 即可构造合法
+> `PreregistrationLockNextV1`，且 completion 前后 qualification binding 完全相同；
+> provisional bytes 与 completed V4 bytes 由独立 closed schemas 双向拒绝。
+>
+> Detached plan parsing 不证明 Git replay；严格 verifier 会重放两侧 Git receipts
+> 并校验整份 plan 的 caller-pinned root/SHA。branch refs、baseline/historical commit
+> existence/ancestry、worktree cleanliness、pin provenance、repository identity、
+> coherent-universe substitution exclusion、qualification outputs、completed/active
+> V4、G0、execution、claims、science、superiority 与 authority 均显式保持 false。
+> 没有生成 production provisional artifact，也没有创建
+> `config/prereg.lock-next.json`。专项 12/12；与 prelock/post-lock core、source、
+> V4、qualification-join 相邻组合 54/54；
+> catalog/full12-ten-role/ten-role/qualification/aggregate/trust 相邻组合 68/68。
+> 最新 `prereg-verify` 仍以同五项 top-level failures 退出 1，返回
+> `passed=false`、`current_execution_eligible=false`；mutable worktree source root
+> 更新为 `sha256:f998d8fba0a0bf478a6dc32c17451cf153052db1f55afd00f4bf480aa58397ea`，
+> committed root 仍为
+> `sha256:9e3b1884fce7185e910b1d953c0ab1c1c7e690791e9ced2396429cb410352061`。
+> 现有 production builder 仍消费 active V3 binding；V4-bound Builder V2 仍只是
+> design candidate。并且当前 cycle-free qualification binding 不含 split/smoke，
+> output bytes 与这些 controls 的独立 join 尚未实现。因此“六槽位可语法完成”绝不
+> 等于 genuine qualification materialization/replay。上述仍只是本地工程诊断，
+> 不是 registered evidence、G0 pass 或 H1-H5 结果。
+>
+> 同日完成阶段语义审计后，external lab 新增 inactive
+> `G0AcceptanceContractV2` selected-partial candidate。它从现有 V1 catalog
+> 精确选择 66 个 G0 nodes（prebundle/publication/external ceremony/decision
+> 分别 49/9/6/2），只把这些 nodes 所携带的 12 个 blocker 映射为
+> `not_observed` blocker slots；这 12 项不是 66 个 nodes 的逐项 evidence
+> observations，也不是完整 G0 census。合同另列出 8 个已知但不在这 12 slots
+> 内的 G0 obligations：plan/profile/active-lock consistency、Builder V2 roots
+> 独立 precommit、qualification target-pack 的受控生产 materialization 与
+> provenance、split/smoke joins、66-node evidence observations，以及独立
+> semantic-exhaustiveness review。`g0_acceptance_requirement_inventory_complete`、
+> `all_g0_requirement_evidence_observed`、split/smoke joins 与
+> `downstream_gate_dependency_chain_verified` 全部保持 false。
+>
+> 该 candidate 纠正了两个阶段歧义。第一，G0 chronology 是 hypotheses 必须先于
+> external experiment harness 与被测 controller 的实现；arm execution 另须晚于
+> active G0 closure，不能把“无实现先于假设”弱化为“无 execution 先于假设”。
+> 第二，G0 冻结 initial MESI 与单次 dev-only adjustment rule；post-pilot final
+> MESI/N 属 G4，且必须先于读取 confirmatory labels/outcomes。Builder chronology
+> 也拆成：G0 前冻结 contract/source/runtime/isolation/control/test-vector roots；
+> G0 prebundle target bytes 仍需生产 materialization provenance；active G0
+> closure 后才可 measured isolated replay，后者与 baseline qualification gate
+> outcome 均属于 G3，而不是 task outcomes。
+>
+> 另有 16 个 typed deferred records 保留 G1-G8 顺序，包括 G5 H2-H4 sealed
+> mechanism outcomes、G6 opaque provider authorization 与 H1/H5 closed-loop、
+> G7 independent replication、G8 scope-limited claim gate。Source catalog 仍缺
+> G1/G2/G5/G6 的完整 nodes，因此这只是 declared order，不是完整 dependency DAG。
+> Candidate root 为
+> `sha256:41f0150b68e669c32506771dcd6d08a6d748fe1542139ddd8c6b67dfd5e28889`，
+> canonical-byte SHA-256 为
+> `8d6d943d2060e972b57e66981db54bdb5dc26a8a4d3a61584c757cff6ace3a0e`；
+> 二者只是本地 candidate identifiers，不是 independently published trusted pins。
+> 红队曾复现 mutable plan + self-consistent caller pins 的同步替换；最终实现改为
+> immutable typed plan record，并由 verifier 额外强制 frozen candidate pins，且
+> exact-int 检查拒绝 `provider_calls=false` 冒充 numeric zero。专项 12/12，邻近
+> acceptance/catalog/aggregate/provisional-plan/V4 组合 50/50；独立最终复核未发现
+> P1/P2。没有序列化 production candidate、没有 Builder replay、API key、network、
+> provider call、external registration、lock activation、gate change 或科研结论。
+> 在上述代码与文档落定后的最终只读 `prereg-verify` 仍以退出码 1 拒绝执行，
+> `passed=false`、`current_execution_eligible=false`，失败类别保持为五项：core
+> worktree clean、external worktree clean、implementation source root、
+> mode-sensitive binding、qualification artifact bindings。此时 mutable external
+> source root 为
+> `sha256:1fcb6871184ca1a8577f8d13e78cdccc8f9f10cc589a6773d946fe267bb8626f`，
+> committed root 仍为
+> `sha256:9e3b1884fce7185e910b1d953c0ab1c1c7e690791e9ced2396429cb410352061`；
+> `config/prereg.lock-next.json` 与 serialized G0 acceptance artifact 均不存在。
+
+## 1. 客观结论
+
+当前证据没有证明 receptor-gated ligand field（RG-LF，实验 arm `R`）优于 full
+communication（`F`）、scalar PheroOS（`P`）、static sparse（`S`）、
+blackboard（`B`）、BM25 retrieval（`Q`）或 learned graph pruning（`G`）。
+
+研究稿中的 H1-H5 仍是设计良好、可证伪的机制假设，H6 仍是系统级 claim gate；
+它们都不是实验结论。“最合适方向”在科研严谨度上只能解释为“理论动机很强的候选
+架构”，不能解释为已证实的最优架构。
+
+本历史检查点在当时的准确解释是：
+
+- G0 的边界与预注册验证通过；
+- G1 的 zero-authority controller contract 与确定性重放通过；
+- G2 已形成可持久化、内容寻址的局部证据，但完整 scale task-state replay 和全部
+  intent 的外部隔离 A/B 尚未完成，因此 G2 总 gate 阻断；
+- G3 除 G2 前置条件外，还存在 `P` durable lifecycle、尚未 materialize/激活的
+  methodology descriptors 与 actual cost ledger 阻断；inactive G3 draft 已选择
+  sweep budget 和 S/G size policy，但尚无 implementation、receipt 或 gate effect；
+- `full_smoke_authorized=false`，provider canary、pilot 和 confirmatory LLM run
+  均未获授权；
+- `hypothesis_conclusions={}`，`comparative_superiority_conclusion=null`；
+- controller execution、evaluator call、provider call、outcome read、credential use
+  和 network use 均为零。
+
+API key 不是开始实验的充分条件，当前阶段也不需要 API key。历史检查点当时把
+G0-G3 通过后执行 G4 provider canary 作为旧方法；这不是现行操作规则。现行 harness
+还要求 G0-G5 全部通过并获得 opaque G6 authorization receipt，才可配置 provider
+canary。正式 provider 配置还必须同时冻结 model/version、endpoint、采样参数、
+quota、timeout、retry、价格快照和 cost ledger 规则。
+
+## 2. 冻结身份与证据边界
+
+### 2.1 Protocol-core
+
+- branch：`codex/receptor-ligand-field-experiments`
+- protocol baseline：
+  `e447d2c96c40b69bb7f98613e23556be7bbe3d76`
+- active preregistration commit：
+  `3cba9f7f19c6bceb8a6ea545a6ea51b7833446ab`
+- 当前局部 G2 evidence 所绑定的 core checkpoint：
+  `cfb61386df14a8fbda3504698a45cac18eef9b36`
+- active profile：
+  `docs/process/receptor-ligand-field-experiment-profile-v0.6.md`
+- active profile SHA-256：
+  `b1a7aa84664baacdf683af406aa4e88b118ef45b001986e7f438c5d31715a979`
+- effective profile chain root：
+  `sha256:f77b0da288a73b5e5ce2554c38d4ea1af95fcb4759646f64103d84e80a51b739`
+- preregistration lock root：
+  `sha256:1b459d9d9043c47d21c4d2a1e61a72bc31a151a0454bba2a960ded3340f17d18`
+
+`v0.7` 是 review draft，不是 active profile，也没有进入 preregistration lock。
+
+### 2.2 External research lab
+
+- branch：`codex/receptor-ligand-field-lab`
+- scoped G2 evidence commit：
+  `b584bd3`
+- refrozen baseline artifact commit：
+  `2f1d473a6edb9fba61ccfa39d7214b0d688e44d7`
+- source-tree root：
+  `sha256:9e3b1884fce7185e910b1d953c0ab1c1c7e690791e9ced2396429cb410352061`
+- baseline qualification artifact-set root：
+  `sha256:33be52932afba00d461d29016efa6fb6cd2218d6435c0dd470155adc63c4bf7a`
+- baseline qualification manifest root：
+  `sha256:a9bd29870d3d6b25abf1494e43b7d0dd605912156dba639af531a5d04d411eb6`
+
+冻结 baseline roots：
+
+| Artifact | Root |
+| --- | --- |
+| Q BM25 golden fixture | `sha256:bf66679dc498e9f4a79c3f8576632904c2865621e8f6a1f82ee87c89b5ae1603` |
+| S matched-density fixture | `sha256:f43d2426123eef64933a945e1fc5e371261351048c006fcda9f1037094523238` |
+| G Decimal-34 checkpoints | `sha256:7e84caef5fe25f42e5c19194df248a203ee53942b194549bbaea4a8bfca9692e` |
+| Qualification manifest | `sha256:a9bd29870d3d6b25abf1494e43b7d0dd605912156dba639af531a5d04d411eb6` |
+
+### 2.3 历史检查点内容寻址证据
+
+局部 G2 bundle 位于 external lab 的
+`artifacts/g2-partial-cfb6138-2f1d473/`：
+
+- manifest root：
+  `sha256:4f1f2f40ec9b4f45282ba004a7261eb40877696121cf1d3af78e58c0d1cbb2b3`
+- artifact-set root：
+  `sha256:314b8db4de80f16d66dc1d97b4aecfd2e3d67ac74c419ec3ff43017eef1c9116`
+- verification receipt：
+  `sha256:1dcc4dd0daff24a653da0f376c2d40adf1b716445723c7f29da6934080da8e6f`
+
+fail-closed qualification run 位于
+`runs/g0-g3-cfb6138-2f1d473/`：
+
+- qualification root：
+  `sha256:26e8ed58cb424d9ae5f33f2760614fccceb79e83f26af533227a925323d3aa41`
+- independently reverified trace head：
+  `sha256:19014e9164db4d156bf98a745d0b50247a1921cc06d7818eb13a4096a2263de4`
+
+这些目录被 Git ignore 排除。bundle 在当时证明局部 artifact 的完整性和绑定关系，但不
+证明 loaded-code identity、publication/crash durability provenance、full-scale
+replay、provider effects、hypothesis outcome 或 comparative superiority。
+
+## 3. 历史检查点 Gate 结果
+
+下表仅描述 2026-07-28/29 检查点；不描述当前 gate 状态，也不是现行执行授权。
+
+| Gate | 历史检查点状态 | 当时证据或阻断 |
+| --- | --- | --- |
+| G0 Boundary/Prereg | 通过 | branch、ancestor、immutable Git blobs、active v0.6 profile、prereg lock、core boundary、external source tree 和 refrozen baseline artifacts 通过严格验证 |
+| G1 Controller Contract | 通过 | typed closed log、diagnostic-only oracle/random、zero authority、sidecar firewall、deterministic replay 和 secret-free subprocess environment 通过 |
+| G2 Deterministic Simulator | 阻断 | 5/7 components 在其明确限定的 scope 内资格化；full scale T1-T7 task state 为 0/980 intents，全部 7,252 intents 的外部隔离 A/B 为 0/7,252 |
+| G3 Baseline Qualification | 阻断 | G2 前置未通过；`P` durable diffusion replay 失败；inactive amendment 尚未 materialize descriptor set 或激活；actual natural/iso/sweep ledger 未接入 |
+
+`qualify-baselines` 的退出码为 `2`，这是预期的 fail-closed gate refusal，不是 `R`
+的 outcome failure，也不能解释为任一 arm 的优劣。
+
+## 4. G2 局部资格证据
+
+冻结 planning geometry 为：
+
+- 112 smoke/attack environments × 8 budgets × 7 arms = 6,272 intents；
+- 140 scale environments × 7 arms = 980 intents；
+- 共 252 environments、7,252 distinct arm-budget intents；
+- scale tiers：
+  `(4,100)`、`(16,1000)`、`(64,10000)`、`(256,100000)`、
+  `(1024,100000)`，每个 episode 50 steps。
+
+七个 component 必须逐项解释：
+
+| Component | 覆盖 | 状态 | 严格 scope |
+| --- | ---: | --- | --- |
+| Lazy matrix enumeration | 252 env / 7,252 intents | qualified | 只证明 v0.5 geometry 与 active v0.6 labels 的 planning records |
+| Attack label firewall v0.6 | 252 env / 7,252 intents | qualified | 112 smoke manifests materialized；140 scale labels lazy；same-module fresh recomputation，不主张 independent implementation diversity |
+| T4 smoke transitions v3 | 16 env / 896 intents / 320 steps | qualified | transcript、matrix binding 与 relational suffix A/B；896 links 仅是环境适用性，不是 arm/budget execution；共享同一 state-machine implementation |
+| Compact record-backed smoke | 112 env / 6,272 intents | qualified | 20-step prefix records、selected/dropped full partition、ACL digest 与 receipt |
+| Scale eligibility program | 140 env / 980 intents | qualified | 5,910,800 event projections、38,192 receiver records；只证明 eligibility program，不证明 task state 或 full-scale replay |
+| Full scale task-state replay | 0 / 980 intents | blocked | 缺少 T1-T7 state preimages/replay，尤其缺少 T4 worker/job/failure/recovery/dependency/deadline state |
+| All-intent external A/B | 0 / 7,252 intents | blocked | 缺少隔离 workspace/process 的 byte-exact per-step episode/environment/topology/prefix/eligibility/state/cost/trace attestation |
+
+当前 intent evidence links 共 22,652 条：
+
+```text
+7,252 lazy matrix links
++ 7,252 attack-label links
++   896 T4 applicability links
++ 6,272 compact smoke links
++   980 scale-eligibility links
+= 22,652
+```
+
+这不是 22,652 次 controller execution，也不是 22,652 个 outcome。局部 bundle
+明确记录：
+
+```text
+controller_execution_count = 0
+evaluator_call_count = 0
+provider_call_count = 0
+outcome_read_count = 0
+authority_scope = none
+commit_authority = false
+output_authority = false
+publication_authority = false
+network_used = false
+```
+
+因此当前 G2 的正确表述是“局部 evidence integrity 与限定 mechanics 资格化”，不是
+“G2 passed”，更不是“实验完成”。
+
+## 5. v0.7 review draft
+
+`v0.7` 用于设计完整 scale state、独立 verifier、negative fixtures、resource
+supervision 和 A/B materialization contract。它当前只有设计 inventory：
+
+- profile bytes：119,802
+- profile SHA-256：
+  `bbea97c5c360853a12c00bf1983f07beb7eac8f401ad3adc8f3b433d84d270e6`
+- companion bytes：62,097
+- companion SHA-256：
+  `322365b8eb50d5479329fde2a734901e8bd96ce48bcfe1afa177588d38788360`
+- fixture inputs：12；
+- positive fixtures：3；
+- negative fixtures：56；
+- fixture input set root：
+  `sha256:0227f38c34f9d50b81b257675065e73ab1c18e02fff684ca851603b3d963aed8`
+- positive fixture set root：
+  `sha256:2a0e9ff10b6e2d5e2e42bebe77dd9c32f871a48638ad4d41a796995d1ce1613e`
+- negative fixture set root：
+  `sha256:ae57ce3f050c4f1560026ecb198cb274adfee6ffcf49282fb4520ecf6e12f4e5`
+- semantic manifest root：
+  `sha256:dfbb83daea99bedc25e91c07f10aa301f42fba93808d57d9e6aaf395ae33feca`
+
+Companion 明确冻结：
+
+```text
+activation_ready = false
+artifact_bytes_compiled = false
+runner_implemented = false
+receipt_artifact_bytes_present = false
+```
+
+原 text-level 独立二审确实关闭了五个 `duplicate` transform、cross-variant code
+precedence、base-artifact total order、schema/geometry/resource predicate domains
+和 process measurement constructor，并独立重算了 companion roots、positive inputs、
+expected receipts 和 commitments。它当时报告的 `P0=P1=P2=P3=0` 只覆盖所选
+design assertions；后续 executable materialization audit 已证明该结论不能解释为
+“完整 materialization contract 无歧义”。
+
+新的 [v0.7 materialization audit finding](receptor-ligand-field-v0.7-materialization-audit-finding.md)
+发现：
+
+- `BaseMaterializationV1` 没有 exact outer schema、field set、byte contract 和
+  root labels；
+- `PositiveTransactionProductV1` 没有 exact post-closure object contract；
+- `/raw_ndjson_bytes` 没有 canonical JSON encoding；
+- `profile_defined_root_pairs` 没有 71-record exact locator oracle；
+- `MaterializationReviewInputIdentityV1` 没有绑定上述完整合同；
+- 两个 intended whole-document `apply-transform` 的 operation/precondition 共四个
+  pointer 使用 `path="/"`，与 RFC 6901 document root `""` 不一致；
+- supervisor 的 R7 attack matrix 尚未完整实现。
+
+两个独立 materializer 的局部测试均曾通过，却产生不兼容的 base objects，并共同把
+positive payload 错投影成 `fixture_input`。一个 transport-only fake double 还能以
+任意 IDs、空 root pairs 和 `E-FAKE` code 达成内部 equality。Public supervisor 现已
+加入 `blocked-underspecified-v1` stop-line；当前正确状态是 fail-closed NO-GO，而不是
+materialization pass。
+
+该拒绝已在 clean immutable candidate commit
+`5c1d2a92b8a257955aa287df674f6d1a32d1f424` 上运行并封存；refusal manifest root 是
+`sha256:758fd1e0978da8712a144571ffabd9b1574ba7b7deb1554714fc38b5ac980e22`，
+fresh-process reread 为 `verified=true`。
+
+新的
+[V2 closure design](receptor-ligand-field-v0.7-materialization-v2-closure-design.md)
+进一步确定 normative contract 与 golden oracle 必须分层，避免 profile hash 与
+golden payload root 循环；official A/B 不得挂载 oracle。该文件仍只是 unsealed
+design，不是 pass。
+
+最终 closure-design 交叉复核固定在该设计文件：
+
+```text
+raw_sha256 =
+  sha256:1f408183703528066de3545d776e7b7d9f7884610fde8e74a785d7fb60f337d0
+independent_read_only_review_paths = 3
+residual_undeclared_P0 = 0
+residual_undeclared_P1 = 0
+residual_undeclared_P2 = 0
+```
+
+三路复核先后暴露并关闭了 source-freeze 内容寻址、Oracle/Identity
+mix-and-match、closure-review count、main-component tree join、receipt
+source-boundary 和 Manifest/SealEvidence 回边。这里的 residual `0` 只表示没有再
+发现未登记的内部矛盾；设计文件第 13 节当时列出的 18 项 implementation P1 仍全部开放，
+不构成 contract freeze、materialization pass、G2/G3 通过或 activation evidence。
+
+后续
+[V2 authoring checkpoint](receptor-ligand-field-v0.7-materialization-v2-authoring-checkpoint.md)
+选择 deterministic companion-first amendment，把 71-record design review 与
+10,446-record runtime actual chain 分相，并用 external authoring helper 复现四个
+RFC 6901 pointer correction。独立代码复核在修复 canonical byte/object
+`false == 0` 类型混淆后，对该 helper 的声明边界得到
+`P0=P1=P2=P3=0`；targeted tests 为 `19 passed, 9 subtests passed`。该 residual zero
+只覆盖 authoring helper，不覆盖正式合同或 evidence。
+
+后续 external authoring commit `cbca3c31184067645b1de8ffa280672ec4390b2c`
+把 exact four-pointer counterfactual 投影为 12 Base、3 positive、56 negative 的
+71-record machine inventory。它绑定 69 个 operation、literal constructor/view/
+stage-code/precondition/receipt/recipe roots，并以 exact source bytes 和 expected-byte
+join 拒绝同形篡改；combined tests 为 `32 passed, 12 subtests passed`。但其每条
+record 仍明确携带 unresolved normative leaves，故不是 descriptor registry、
+Main、GoldenOracle、materialization evidence 或 P1 count reduction。
+
+后续 external authoring commit `28ce671dcbd86cb5ebf173f64dc1d42a46e01497`
+把 56 个 negative records 的未知 judge input 机器化为 ambiguity audit。独立审计
+确认 constructor/view materialization 为 `0/12`，operation/reseal/judge/receipt
+actual execution 为 `0/56`；audit 只固定 41 structured、3 raw-NDJSON、6 source、
+6 process 候选 families、14-cell matrix、5 个 closed facts 和 9 个 blockers。
+只有三条 raw-NDJSON
+source-selection rules 可唯一识别，但 Base/C1/runtime joins 仍开放；因此 audit
+固定 `53` 项 source ambiguity、`final_projection_count=0` 和所有 execution/
+materialization/receipt count 为零。Combined tests 为
+`47 passed, 16 subtests passed`，两路独立 code review 均为
+`P0=P1=P2=P3=0`；该 residual zero 只覆盖 ambiguity-audit 的声明边界。
+
+后续 external authoring commits `d954daad0bb9f52fcdf182b53a2426e0532ed341`
+和 `d58ad290b21d340203d3e324a27d3cbceea18d87`
+把 12 个 current Base parameter instances 绑定到 exact companion/inventory
+bytes、双 order ordinal、canonical parameter roots 和 106-node path-specific
+type fingerprints。Audit 明确固定 `exact_instance_count=12`、
+`normative_schema_count=0`、constructor/view/Base materialization count 全为零，
+并把 environment expansion、suite/pair domain、跨 v0.6/v0.7 label
+name/classification、source literal-order-to-sorted-view、process cross-field/
+OS-evidence envelope 记录为六项 blockers。Combined tests 为
+`61 passed, 31 subtests passed`，独立 code review 为
+`P0=P1=P2=P3=0`；该 residual zero 只覆盖 exact-instance audit 的声明边界，不表示
+constructor schema、Base payload、G2 或实验完成。Source parameter literal array
+与 normalized Unicode-sorted file map 是必须并存的两层；开放项是 exact
+array-to-map projection，而不是选择其中一个 order。
+
+后续
+[Base schema closure audit](receptor-ligand-field-v0.7-base-schema-closure-audit.md)
+确认六类 reusable schemas/projections 均未闭合，并把 T7 labels 从“样本冲突”推进为
+provenance 结论：active v0.6 与 v0.7 no-estimand-change 条款唯一支持 intrinsic
+为空、两个 positions 均 mandatory；companion 的 split 是 blocking draft defect。
+审计只记录 A correction 及 B estimand-changing counterfactual 的 primary companion
+root blast radius，没有修改任何 active 或 candidate contract，因此不降低 G2/G3
+blocker。
+
+后续 external authoring commits
+`6707c028dfec9fae7fdc166788e2dd7b5e56ac21`、
+`d6e4d05c0b7db80b802394091de32efc11c929ba` 与
+[T7 A1 counterfactual audit](receptor-ligand-field-v0.7-t7-a1-counterfactual-audit.md)
+把建议的 preserve-event-34 A1 变成 exact in-memory byte/root evidence。Static
+RFC 6901 resolution 证明 source locator index 0 与 A1 locator index 1 都指向
+event 34；这不是 operation 或 judge execution。旧 71-record inventory、56-record
+negative audit 和 12-record Base audit 均对 A1 source fail closed，且另外两个
+T7 disjointness negative relations 仍未覆盖。Machine report 保持 final C1、
+amendment、write、activation、provider/network、execution 和 authority 为
+false/zero；因此 G2/G3 继续 blocked。
+
+后续 external authoring commit
+`f3af7f68ea6724942ceaf1c180b58c2a2017f07d` 与
+[six-family constructor resolution matrix audit](receptor-ligand-field-v0.7-constructor-resolution-matrix-audit.md)
+把六类 constructor research 整理为 90 条 claims：31 `PROVEN`、13
+`DERIVABLE`、45 `OPEN`、1 `CONFLICT`。唯一 conflict 由 exact four-pointer
+membership、active v0.6 intrinsic-empty 规则和 draft v0.7 semantic bridge
+共同绑定。Audit 同时固定 v0.7 draft、A1 unselected、rule locator/semantic
+entailment/schema/projection/execution/observation/authority counts 为零；因此它不把
+author-reviewed interpretation 伪称为 normative proof，也不降低 G2/G3 blocker。
+
+再后续 external authoring commit
+`ea73fe1add86529884adbf0ece7f6622fe4e3fa9` 与
+[environment evidence overlay audit](receptor-ligand-field-v0.7-environment-evidence-overlay-audit.md)
+为 environment 的 15/15 rules、20/20 source-ref edges 绑定 26 个 exact
+Markdown/RFC 6901/absence-domain locators；global coverage 明确保留为 15/90、
+`false`。Overlay 为 55,432 bytes，root 为
+`sha256:abb8c6eee795b8dc1076d0f35c5289e615988ba790e813af0e6c2abe5c5b273c`。
+它不回写原 63,776-byte audit；machine/normative semantic proof、schema、
+projection、execution、materialization、observation、provider 与 outcome 的相关
+counts 仍为 0，`network_used=false`、`authority_scope=none`。Strict-integer
+relation 明确记为 bound source 不支持 Python `type(value) is int`。
+
+再后续 external authoring commit
+`5a9f9f8500aeafb8655692adcb3610bf99cc7e69` 与
+[suite evidence overlay audit](receptor-ligand-field-v0.7-suite-evidence-overlay-audit.md)
+为 suite 的 15/15 rules、22/22 source-ref edges 绑定 25 个 exact locators；
+global coverage 仍是该 artifact 自己的 15/90、`false`。Overlay 为 54,745 bytes，
+root 为
+`sha256:792829d3cf1fd4989f7d7f5f3b00aecc61b8ce030f1e8934e3f32f888c0f693b`。
+它明确拒绝把 row-major ordinal formula、suite error assignment、literal trace
+和三个 storage alternatives 当成 source-entailment，并固定
+`unsupported_bound_source_count=4`。Report-policy blocker list 另由
+`unresolved_set_root` 固定；proof/schema/projection/execution/materialization/
+provider/outcome/authority 仍为零/false/none。Environment artifact 保持
+byte-identical；该 environment/suite pair 也没有 combined
+overlay-set/global-coverage claim。
+
+再后续 external authoring commit
+`00e6ba609ee8cda617004a503741f108c0b8b70c` 与
+[replica-pair evidence overlay audit](receptor-ligand-field-v0.7-replica-pair-evidence-overlay-audit.md)
+为 replica-pair 的 14/14 rules、23/23 source-ref edges 绑定 41 个 exact
+locators；global coverage 仍是该 artifact 自己的 14/90、`false`。Overlay 为
+69,838 bytes，root 为
+`sha256:953c8abc4629415fbfcb53405bd2d92caa722a968f9c256e0a3bfdf57517013b`。
+它保留 4 `PROVEN`、1 `DERIVABLE`、9 `OPEN`，并固定七条
+source-unsupported propositions。`PAIR-PROJECT-TWO-BY-SEVEN` 没有 derivation
+AST 或 replay；actual-evidence rule 继续 OPEN。Proof/schema/projection/execution/
+materialization/provider/outcome/authority 仍为零/false/none。
+
+在该 slice 当时存在的 environment、suite、replica-pair 是三个独立 sidecars；
+不存在 overlay-set artifact，因此没有发布 combined numerator、coverage fraction
+或 global-complete claim，也没有借此降低 G2/G3 blocker。
+
+再后续 external authoring commit
+`ccc38d65a89df79929aae4b14566a7be1d810435` 与
+[labels evidence overlay audit](receptor-ligand-field-v0.7-labels-evidence-overlay-audit.md)
+为 labels 的 16/16 rules、34/34 source-ref edges 绑定 46 个 exact locators；
+global coverage 仍是该 artifact 自己的 16/90、`false`。Overlay 为 78,044 bytes，
+root 为
+`sha256:881a36a51ae14db6d4dd5df3069a1faf9453204cc5b7ea86e27817963ba075de`。
+它保留 5 `PROVEN`、3 `DERIVABLE`、7 `OPEN`、1
+`CONFLICT/conflict-witness`，并固定八条 source-unsupported propositions。唯一
+conflict 的 two direct witnesses 保持 premise；两个 v0.7 names-bridge locators
+只是 semantic context，A1 不是 conflict premise，且仍未选择。这是 preserved
+frozen author-reviewed classification，不是 machine semantic entailment。三条
+`DERIVABLE` 没有 derivation AST 或 replay。Proof/schema/projection/execution/
+materialization/provider/outcome/authority 仍为零/false/none。
+
+Environment、suite、replica-pair、labels 是四个独立 sidecars；当前仍不存在
+overlay-set artifact。因此不得发布 combined numerator 或 coverage fraction，也
+不得借此降低 G2/G3 blocker。
+
+再后续 external authoring commit
+`c1233a2bf7f71ae013973783fcb8f2612cfa1b09` 与
+[source evidence overlay audit](receptor-ligand-field-v0.7-source-evidence-overlay-audit.md)
+为 source 的 16/16 rules、27/27 source-ref edges 绑定 37 个 exact locators；
+global coverage 仍是该 artifact 自己的 16/90、`false`。它保留 6 `PROVEN`、
+2 `DERIVABLE`、8 `OPEN`、0 `CONFLICT`，并固定八条
+source-unsupported propositions。两条 `DERIVABLE` 均没有 derivation AST 或
+replay。
+
+Source overlay 的七个 exact anchors 是：
+
+```text
+bytes = 69160
+RAW =
+  sha256:c9f8607496eb565e2f13e55842b22f46520293e322c787cc4214e371d679226f
+overlay_root =
+  sha256:cae3c99002f146b89fd8ac8c551782ce108a6c3199715488f6b75e5844f80999
+source_set_root =
+  sha256:81553b90b8912f9846974705da7f35687e1f13baaea9517cf147cb2f7df8b039
+locator_set_root =
+  sha256:22fb4114e662e9b53a06aec93242067f2736c02e1ed1609be5964e67e56c9f5a
+classification_review_set_root =
+  sha256:215860f96261637c774365aa73140cddc863f2a426227e4a7583c2427c151ee1
+unresolved_set_root =
+  sha256:94d5002c1cd826442ba603d91befc4aae5b08ff10c5df2edf69eae884d3d42f2
+```
+
+17 个 Markdown、10 个 JSON-pointer 与 10 个 whole-source locators 的 roles 为
+12 premise、5 integrity-context、10 semantic-context、10 absence-domain；
+source 分布为 v0.7 `10`、plan `3`、V2 design `14`、A1 `5`、A1 audit `5`。
+Actual Git/source-freeze 与 loaded-runtime identity 的 absence 只由人工
+whole-source review 维持 OPEN 边界，不是 machine absence proof 或 actual
+evidence。此前 common engine 及四个 family sidecars 保持 byte-identical，原
+resolution audit 不变。在该 source slice 当时，五个 scoped sidecars 仍没有
+overlay-set，因此不得发布 combined numerator 或 coverage fraction。
+Proof/schema/projection/execution/
+materialization/actual/provider/outcome/authority 仍为零/false/none，G2/G3 继续
+blocked。
+
+再后续 external authoring commit
+`8d4c4d3221b95180f5b2d159b6855eeb0b755dee` 与
+[process evidence overlay audit](receptor-ligand-field-v0.7-process-evidence-overlay-audit.md)
+为 process 的 14/14 rules、23/23 source-ref edges 绑定 42 个 exact locators；
+global coverage 仍是该 artifact 自己的 14/90、`false`。它保留 5 `PROVEN`、
+3 `DERIVABLE`、6 `OPEN`、0 `CONFLICT`，并固定五条
+source-unsupported propositions。三条 `DERIVABLE` 均没有 derivation AST、
+input/output roots 或 replay；只有 current RSS relation 有 conditional synthetic
+formula 的 source support，仍不是执行证据。
+
+Process overlay 的七个 exact anchors 是：
+
+```text
+bytes = 71805
+RAW =
+  sha256:5e988e74e20114b6cd3418b67f3a5da26b486155920ff0f48e3d0ff33db07ac9
+overlay_root =
+  sha256:bb9c2e148bb3da4685d95fffcaba81a93e6d9677b0f717b2b470854664995a58
+source_set_root =
+  sha256:81553b90b8912f9846974705da7f35687e1f13baaea9517cf147cb2f7df8b039
+locator_set_root =
+  sha256:907ad0b1fed2abc2c0f51ab85f054c67111e7f604530b583922d2654ba7d2c3e
+classification_review_set_root =
+  sha256:9aad694d0ce76baf4f3d9a97dbe3234178238d5c985ebc1aae52754ae63c7573
+unresolved_set_root =
+  sha256:7cf7c728147619e5db31141be936af71da7c801ee9e9ae9aee447ed83a4b3616
+```
+
+20 个 Markdown、14 个 JSON-pointer 与 8 个 whole-source locators 的 roles 为
+20 premise、4 integrity-context、10 semantic-context、8 absence-domain；
+source 分布为 v0.7 `17`、V2 design `11`、A1 `10`、A1 audit `4`。Whole-source
+absence review 只维持 actual Observation/execution 的 OPEN 边界，不是 machine
+absence proof。Synthetic A1 parameter object 也不是 child supervisor、clock、
+OS、rusage、wait4、source/process identity 或 judge-input evidence。此前 common
+engine 及五个 family sidecars 保持 byte-identical，原 resolution audit 不变。六个
+scoped sidecars 在该 process slice 当时仍没有 overlay-set，因此该 slice 不发布
+combined numerator 或 coverage fraction。Proof/schema/projection/execution/
+materialization/actual/provider/outcome/authority 仍为零/false/none，G2/G3 继续
+blocked。
+
+再后续 external authoring commit
+`4c7993d09391977b892958dc0962e9a62f200d1b` 与
+[six-family evidence overlay-set audit](receptor-ligand-field-v0.7-six-family-evidence-overlay-set-audit.md)
+把六个 exact children 绑定为 6-family ordered union：90/90 rule-review
+bindings、149/149 rule × source-ref edges、217 locator bindings、93
+source-aware physical selectors。允许发布的 complete claim 只限 structural
+rule-review 与 edge coverage，不是 global semantic/locator closure。
+
+Set 保留 31 `PROVEN`、13 `DERIVABLE`、45 `OPEN`、1 `CONFLICT` 和 33 条
+source-unsupported propositions；全部 13 条 `DERIVABLE` 都未 replay，唯一
+conflict 仍属于 labels。Artifact 为 688,038 bytes：
+
+```text
+RAW =
+  sha256:657218e20176dff13b5049dc71be4be068762fd931e34808894de54212e3c542
+overlay_set_root =
+  sha256:b59de963e86845a19a282fe2e21b5eaf1bc3e35c651c02fa9a8bbae31b485201
+```
+
+原 resolution audit 的 locator/proof counts 与六个 child 的
+`global_rule_coverage_complete=false` 均不变。Machine/normative semantic proof、
+schema、projection、execution、materialization、actual observation、provider、
+outcome、network、authority 与 independence 仍为零/false/none；Main、
+GoldenOracle、G2/G3、R0-R8 和 API key 继续 NO-GO。
+
+再后续 external authoring commits
+`4889971e846ab166c0c79a569ce4b42b26b9ff5a`、
+`2fa2363f4291e6a63e910307280be726024aa4a1` 与
+[environment-config projection candidate audit](receptor-ligand-field-v0.7-environment-config-projection-candidate-audit.md)
+完成第一个 environment E0 source-dependent candidate。Exact 六参数加显式双 Root
+context 投影为 all-and-only 15-field config 和
+`H("g2-v07-environment-key-v1", complete config)`；七个 review records 与完整
+140-record runtime parameter domain 形成 147 个 scoped synthetic records、
+140 个 unique configs/keys。
+
+Final candidate 为 283,741 bytes：
+
+```text
+RAW =
+  sha256:ef43aeddd52311abe70d97478e063e4d6389a8b97c3ca4525ebc16406ed83200
+contract_root =
+  sha256:cf0be4b05f6255a26e0eed1a504afd3a615015c4b577eb65d971ad0789e0888a
+attack_case_set_root =
+  sha256:dcb67a31919a36592c6e818f00df12625d5034a18c4da0f57633e22576900bf5
+```
+
+77 条 executable candidate cases 是 5 个合法 controls 加 72 个拒绝 mutations，
+不是 77 个 rejected attacks。三轮红队依次发现并关闭 Python `false == 0` /
+`int == equal-float`、result object 非 exact-string key 和 input/source mapping
+非 exact-string key 三类漏洞。最终两路独立复核为 `P0=P1=P2=0`，308/308 roots
+重算为 0 mismatch；该 residual zero 只覆盖 E0 candidate 的内部声明边界。
+
+Whole-file source identity 不证明 section/row semantic entailment；source-independent
+implementation、normative schema/projection/public `E-CONFIG` precedence、actual
+sealing roots/runtime、Base/re-chain、Main/Golden 和 G2/G3 仍为 zero/false/blocked。
+因此该 slice 不授权 provider，也不产生 H1-H6 或 comparative-superiority 结果。
+
+同一红队复核发现八 actor design/promotion SourceFreeze 不包含 runtime producer P
+和 independent verifier V。该项作为第 19 个显式 P1 加入；runtime RA/RB 是同一 P
+source 的两个 process identities，不能被误写成两个 source-independent actors。
+
+在新 V2 contract 与独立 golden oracle 被内容寻址、绑定到新 phase identity 并从 R0
+重跑前，activation
+blocker 包括：
+
+1. 先冻结 exact base/positive payload、root-pair registry、RFC 6901 root pointer
+   和 byte encoding；
+2. 从 12 个 constructors 实际生成 base views；
+3. 在 bootstrap candidate 生成前冻结 bootstrap A0/B0、official A1/B1、
+   supervisor、fresh reader 与两名 closure reviewers 的八份 source，并封存
+   Manifest/SealEvidence；在任一 child 启动前原子封存同时包含 A0/B0 的 launch-intent
+   batch；只由 bootstrap pair 生成 golden candidate，只由 official pair 参加后续
+   R0-R8；
+4. 保存并复算全部 preconditions、observed codes、receipts、source roots 与
+   content-addressed artifacts；
+5. 完成 R7 closed attack matrix并证明 zero authority、zero outcome read、
+   zero network，以及“冻结检测程序未发现禁止共享通道”；不得把该结果表述为不可观测
+   历史独立性的证明；
+6. 在 runtime-review 前另行冻结 producer P、verifier V、runtime supervisor 和
+   runtime fresh reader 的 source manifest，并证明 same-source RA/RB process
+   isolation。
+
+该 audit compiler 例外只存在于隔离 candidate commit，永久不得 merge、copy、import
+或生成到 future active runtime；它不能执行 140 个 full-scale task states 或 980 个
+controller intents，也不能计为 G2 coverage。
+
+在该二审完成以前，禁止把 `activation_ready` 改为 true，禁止 lock migration、
+v0.7 runner/reducer 实现或借此宣称 G2 通过。
+
+## 6. G3 客观审计
+
+### 6.1 Sweep budget 是 P0 级 fairness blocker
+
+当前 `tasks._budget` 对 sweep ratios 实际返回的 cap 都为零，且 runner 没有替代的
+非零 budget schedule。若直接执行 sweep，所有 arm 会在一个退化的零预算设计上比较，
+formal experiment 将无效。必须先冻结每个 task/size/regime 的非零、可复算、跨 arm
+一致的 budget mapping 与拒绝规则。
+
+Inactive `receptor-ligand-field-g3-methodological-amendment-v0.1.md` 已拟定 exact
+natural/iso/六档 sweep schedule、full pre-cap ranking 和 common reducer；它的
+implementation/lock/descriptor controls 仍为 false/null。因此该设计选择消除了“该选
+哪种方法”的歧义，但没有消除 active gate blocker。
+
+### 6.2 S/G scale policy 尚不公平
+
+`S` 的冻结图只在 4-agent corpus 上选择；用于 16-agent cell 时，12/16 agents 会被
+系统性隔离。`G` 继承相同的 graph/distribution 约束。必须在 G3 amendment 中选择并
+冻结以下一种策略：
+
+- 限定 `S/G` 只参与其 graph 有效的 size；
+- 或预注册 size-specific graph family，并在 train/dev 上重新冻结；
+- 或明确定义可跨 size 外推且对所有 arm 公平的 graph construction。
+
+在此之前，不能把 `S/G` 的 scale 结果当作架构效应。
+
+同一 inactive amendment 选择 N=4/N=16 size-specific qualification，N>=64 只允许
+OOD cost mechanics 且 `outcome_qualified=false`。在 exact S/G artifacts、migration
+receipts、source lock 和完整 replay materialize 以前，该选择仍不是资格证据。
+
+### 6.3 `P` durable lifecycle 仍不闭合
+
+External `P` 每 step 恢复 state；core 路径会先 evaporate trail。现有 diffusion ID
+没有绑定 transition step、parent receipt 或 before/after payload，同一 ID 对不同
+decayed strength 会被 Hybrid Replay v2 拒绝。
+
+合法修复需要 versioned lifecycle receipt，其 identity 至少绑定 step、parent head 和
+transition，其 payload 至少绑定 before/after strength、policy、topology 与 replay
+lineage。这会涉及 schema/migration/Trace/Conformance/TCK；当前研究 branch 的严格
+约束禁止修改这些 production surfaces。因此不得用 zero decay、删除 diffusion、复用
+旧 ID、最小 scalar substitute 或静默外部 shim 伪装成 `P` 通过。应保留 blocker，
+或另行取得明确 authority 后通过新版本 contract/新 controller ID 处理。
+
+这同时是一个 architecture P0：在当前 authority 下，G3 `P` 的 faithful durable
+multistep replay 尚未证明可达。下一步只能先研究一种完全 external、仍使用现有 ABI，
+并通过既有 lifecycle/Trace/Conformance/TCK 的忠实路线；如果该路线不能成立，必须
+停止当前 G3 `P` 实现并进入另行授权的 versioned core governance。External shim、
+scalar substitute 或弱化 replay identity 都不能作为 qualification evidence。
+
+### 6.4 Cost contract 尚未成为 actual ledger
+
+59-field closed schema 的 self-check 已通过，但 natural/iso/sweep 的 per-run actual
+ledger 尚未接入。Inactive amendment 已提出 expected slots、attempt/occurrence、
+physical ownership、complete membership、allocation conservation、observation profile
+和 independent verifier contracts；这些 contracts 尚未 machine-materialize 或执行。
+当前实际证据仍缺：
+
+- controller 与 shared cost 的唯一归属及防重复记账；
+- observation provenance 与 completeness binding；
+- sweep cell、environment、intent、run、trace 的完整关联；
+- failure/retry/timeout/partial work 的 actual receipts；
+- `G` training amortization 的非整数分摊规则及守恒检查；
+- 独立 verifier 对 ledger、applicability 和 aggregate 的重算。
+
+因此任何“同等成本下更优”或“更省成本”的结论当前都不成立。
+
+## 7. 验证记录
+
+已执行并保留的验证包括：
+
+- external lab full suite：262 tests，260 passed；两个失败发生在 refreeze 前，分别是
+  预期的旧 artifact exact-replay mismatch 与 dirty/lock refusal；
+- refreeze 后针对上述两个失败的 exact artifact replay 与 harness/prereg boundary
+  tests 均单独通过；不把两次运行拼接伪称为一次 `262/262`；
+- active profile identity：7/7；
+- Attack evidence：8/8；
+- T4 evidence：21/21；
+- scale eligibility：15/15；
+- CLI/process secret-free environment：12/12；
+- prereg hardening：5/5；
+- fail-closed partial bundle persistence/tamper/TOCTOU/quarantine：16/16，
+  运行约 642.7 秒；
+- unified heavy selection 中 4 个真实 tests 通过；命令另含一个不存在的 selector，
+  已按原样记录，不伪称该 selector 通过；
+- baseline frozen artifacts 在 refreeze 后 targeted exact rebuild 通过；
+- provider-contract checks 通过，`network_used=false`；
+- bundle roots、counts、positive receipts 与 trace chain 均经独立重算；
+- V2 authoring helper：19 tests、9 subtests、19 unittest 和 Ruff 全部通过；其
+  read-only RFC 6901 counterfactual 为 `62093` bytes、
+  `sha256:93e62153972cc5db557ccb60c4f48ac52519e4271c3a7d59ffc9e6e5daa69795`；
+  该项不是 profile/companion mutation 或 materialization evidence。
+- 四组 V2 authoring helpers 联合验证：61 tests、31 subtests、61 unittest 和
+  Ruff 全部通过；Python 3.12、3.13、3.14 各自通过新增的 14 项 Base parameter
+  audit tests。该项只证明 exact-instance audit 的声明边界，不证明 normative
+  constructor schema 或 materialization。
+- 加入 T7 A1 counterfactual 后，五组 V2 authoring helpers 最新联合验证为
+  76 tests、49 subtests、76 unittest；Python 3.12、3.13、3.14 各自通过 15 项
+  T7 A1 tests，两个新增文件的 targeted Ruff 与 `py_compile` 通过，两路独立
+  post-fix review 均为 `P0=P1=P2=P3=0`。Audit 明确
+  `event_34_preservation_basis=static-rfc6901-copy-locator-resolution-only`，
+  不把静态 locator identity 伪称为执行证据。
+- 加入 six-family resolution matrix 后，六组 V2 authoring helpers 联合验证为
+  88 tests、64 subtests、88 unittest；Python 3.12、3.13、3.14 各自通过
+  12 项 resolution-audit tests，targeted Ruff、`py_compile` 与 `git diff --check`
+  通过，三路独立 code/semantic/tamper review 均为 `P0=P1=P2=P3=0`。
+  固定 audit 为 63,776 bytes，root 为
+  `sha256:c1b3b94ff07221a953c7373f77465f28f0f39df86cb1efd05dd19c4a12557669`；
+  locator 与 semantic-entailment proof count 仍为零。
+- 加入 environment evidence overlay 后，七组 V2 authoring helpers 联合
+  `104` 个 unittest 全部通过；targeted overlay 为
+  `16 passed, 35 subtests passed`，Python 3.12、3.13、3.14 各通过 16 项 tests，
+  Ruff、`py_compile` 与 `git diff --check` 通过，最终独立 review 为
+  `P0=P1=P2=P3=0`。Overlay 固定
+  15/15 environment rules、20/20 source-ref edges、26 locators 和 global 15/90
+  false；machine/normative proof、schema/projection/execution 的相关 counts 仍为
+  0，`network_used=false`、`authority_scope=none`。
+- 加入 common family engine 与 suite evidence overlay 后，九组 V2 authoring
+  helpers 联合 `121` 个 unittest 全部通过；suite 为 `10/10`，common+suite 为
+  `17/17`，environment+common+suite 为 `33/33`。Python 3.12、3.13、3.14
+  各通过 17 项 common+suite tests，`py_compile`、88-column scan 和
+  `git diff --check` 通过；两轮独立 locator/code/semantic re-review 最终为
+  `P0=P1=P2=P3=0`。Suite 固定 25 locators/22 edges、5 `PROVEN`、1
+  `DERIVABLE`、9 `OPEN`、4 source-unsupported propositions；所有 proof、
+  schema、projection、execution、materialization、provider、outcome 和 authority
+  边界保持零/false/none。
+- 加入 replica-pair evidence overlay 后，replica-pair 专项 `13/13`、
+  common+environment+suite+replica-pair `46/46`、全部 V2 authoring-pattern
+  `134/134` 通过；`py_compile`、88-codepoint/display-width scan 与
+  `git diff --check` 通过，最终独立 code/semantic/tamper review 为
+  `P0=P1=P2=P3=0`。独立 verifier 重算 126 项 roots/hashes，`0 mismatch`。
+  Replica-pair 固定 41 locators/23 edges、4 `PROVEN`、1 `DERIVABLE`、9 `OPEN`
+  与 7 source-unsupported propositions；所有 execution/provider/authority
+  边界保持零/false/none。`134/134` 不是 full external discovery。
+- 加入 labels evidence overlay 后，labels 专项 `18/18`、
+  common+environment+suite+replica-pair+labels `64/64`、全部 V2
+  authoring-pattern `152/152` 通过；分别包含 33、127、191 个 subtests。
+  Targeted Ruff、module mypy、`py_compile`、88-codepoint/display-width scan 与
+  `git diff --check` 通过；两次独立标准库 root recomputation 与 anchored build
+  validation 一致，最终只读 red-team 报告 0 defects。Labels 固定
+  46 locators/34 edges、5 `PROVEN`、3
+  `DERIVABLE`、7 `OPEN`、1 preserved `CONFLICT` 与 8 source-unsupported
+  propositions；所有 execution/provider/authority 边界保持零/false/none。
+  `152/152` 不是 full external discovery。
+- 加入 source evidence overlay 后，source 专项 `16/16`、
+  common+environment+suite+replica-pair+labels+source `80/80`、全部 V2
+  authoring-pattern `168/168` 通过；分别包含 35、162、226 个 subtests。
+  Targeted Ruff、module mypy、`py_compile`、88-codepoint/display-width scan 与
+  `git diff --check` 通过，independent final anchor/code/semantic/tamper
+  red-team 通过。Source 固定 37 locators/27 edges、6 `PROVEN`、2
+  `DERIVABLE`、8 `OPEN` 与 8 source-unsupported propositions；两条
+  `DERIVABLE` 均无 AST/replay，actual Git/runtime absence 仍只是人工
+  whole-source review。所有 proof/schema/projection/execution/materialization/
+  actual/provider/outcome/authority 边界保持零/false/none。`80/80` 与
+  `168/168` 都不是 full external discovery。
+- 加入 process evidence overlay 后，process 专项 `16/16`、
+  common+environment+suite+replica-pair+labels+source+process `96/96`、全部
+  V2 authoring-pattern `184/184` 通过；分别包含 37、199、263 个 subtests。
+  Targeted Ruff、module mypy、`py_compile`、88-codepoint/display-width scan 与
+  `git diff --check` 通过，两次 independent final
+  anchor/code/semantic/tamper red-team 通过。Process 固定 42 locators/23 edges、
+  5 `PROVEN`、3 `DERIVABLE`、6 `OPEN` 与 5 source-unsupported
+  propositions；三条 `DERIVABLE` 均无 AST/input/output roots/replay，actual
+  Observation/execution 仍为 OPEN/0。所有 proof/schema/projection/execution/
+  materialization/actual/provider/outcome/authority 边界保持零/false/none。
+  `96/96` 与 `184/184` 都不是 full external discovery；该 slice 未运行完整
+  external discovery，不能宣称 full suite green。
+- 加入 six-family overlay-set 后，targeted set `18/18`、
+  common+six families+set `114/114`、全部 V2 authoring-pattern `202/202`
+  通过；分别包含 127、326、390 个 subtests。Ruff、module mypy、
+  `compileall`、88-codepoint/display-width scan、`git diff --check` 和 anchored
+  read-only audit 通过。Set 只固定 90/90 structural reviews、149/149 structural
+  edges、217 locator bindings 和 93 physical selectors；它不关闭 semantic/
+  locator、schema、projection、trace、execution 或 actual-evidence gaps。本
+  slice 没有运行 full external discovery，`202/202` 不能表述为 full suite
+  green。
+- 加入 environment-config E0 candidate 及三轮 strict-exactness hardening 后，
+  targeted E0 为 `31 passed, 256 subtests passed`，全部 V2
+  authoring-pattern 为 `233 passed, 646 subtests passed`。Ruff、module/test
+  mypy、`compileall`、88-column scan 与 `git diff --check` 通过。两路最终
+  red-team 对 parameter/context/primary-source/result object 的 scalar 和 key-type
+  confusion 攻击均 fail closed；独立重算 308/308 roots 为 0 mismatch。77-case
+  corpus 恰为 5 controls、72 rejected mutations，actual runtime attack count
+  为 0。该 focused/V2-pattern 结果不是 full external discovery，也不证明
+  normative projection、G2/G3 或任何 hypothesis。
+- 此前 suite-overlay external commit
+  `5a9f9f8500aeafb8655692adcb3610bf99cc7e69` 上的 full unittest discovery 运行
+  383 项、
+  1885.990 秒，保留为 1 failure + 1 error 的非绿色结果。Q rebuild 与 frozen Q
+  只在 canonical/authoring `external_source_tree_root` 及其派生
+  `artifact_root` 不同；canonical `2f1d473` worktree 中两者 exact-equal。
+  另一项是 prereg gate 正确拒绝 authoring branch，并观察到运行时尚未提交的 core
+  docs。该结果与 source/branch freeze 隔离解释一致，并显示 gates 按设计拒绝；
+  不计作 suite 语义回归，也不被改写为 full-suite pass。可归因于该 suite slice 的
+  验证仍是 17/17 focused 与 121/121 V2 tests；该历史 discovery 不是
+  `ccc38d65...` labels commit 的 full discovery。
+- Authoring branch 的 Q exact-rebuild refusal 是 frozen source-root isolation：
+  canonical `2f1d473...` 绑定
+  `sha256:9e3b1884fce7185e910b1d953c0ab1c1c7e690791e9ced2396429cb410352061`，
+  而在 resolution/overlay module 之前的 authoring parent `d6e4d05...` 已是
+  `sha256:2a9907610d4ab19d83bb39e26038b3fcc019d90bed3dde09c3f48bc3928b0710`。
+  它不是 active Q baseline defect；不得在 authoring branch refreeze artifact
+  来掩盖该隔离。同一 test 配对复现为 canonical
+  `1 passed in 48.96s`、authoring `1 failed in 49.02s`。
+
+上述验证只支持工程资格声明，不支持 H1-H6 或相对性能结论。
+
+## 8. Credential 与 provider policy
+
+本检查点没有读取、保存或使用 provider credential，也没有发起网络请求。任何曾经
+粘贴到聊天、issue、terminal history 或 log 的 key 都视为已暴露，必须撤销；不得
+复用。
+
+现行 harness 只有在 G0-G5 全部通过并获得 opaque G6 authorization receipt 后，
+才可使用新轮换且从未出现在记录中的 credential。
+允许的本地环境变量名为：
+
+```text
+PHEROOS_MINIMAX_API_KEY
+PHEROOS_ZHIPU_API_KEY
+```
+
+Key 不得写入 Git、`.env`、Trace、report、command argument 或 fixture。子进程默认
+使用 secret-free environment；只有通过现行 G0-G5 且持有有效 opaque G6 receipt
+的 provider adapter 进程可按最小范围继承对应变量。
+
+## 9. 下一执行顺序
+
+后续仍只做 provider-free gate work：
+
+1. 六类独立 evidence overlays 与 six-family overlay-set 的 structural
+   locator-union 子问题已完成；environment E0 的 source-dependent candidate
+   也已内部闭合。三轮 source-only E1 preregistration 都在 implementation 前被
+   blind review 拒绝，因此下一步先关闭 source selectors、typed facts、
+   artifact/replay、refusal 与 acyclic comparison/join 五组 normative contracts；
+   之后才允许 distinct implementation/source tree 重建 E0。还需完成
+   row-to-source entailment、public error precedence、positive
+   closure/transition mapping、两项 RFC 6901 correction、71-record descriptor
+   registry 和独立 golden oracle。Structural set 与 E0 candidate 都不替代 exact
+   Base projections、nested schemas、semantic proofs 或 traces；冻结 official
+   A/B source 时不得向其暴露 oracle；
+2. 只有 materialization、source-independence 和全部 root 二审通过后，才形成新的
+   activation candidate；profile activation 与 prereg lock migration 仍需单独审阅；
+3. 在不含 executable source 的独立 methodology candidate 中 materialize G3 meta
+   schema、完整 descriptor set、guarded dependency SCC graph 和
+   source-independent qualification receipt；只有 exact review/activation 通过后才
+   产生 implementation authority；
+4. 在 external lab 的隔离 implementation commit 中实现 v0.7
+   producer/verifier/resource-supervisor 与已激活的 G3 contracts；先冻结独立 runtime
+   source manifest，令 RA/RB 共享 producer P source 但隔离 process namespace，再重建
+   N=4/N=16 S/G artifacts；随后单独审阅 source-lock migration；
+5. 在最终 locked source 上依次重跑 G0、G1 和完整 G2：140 个 scale task-state
+   replays、980 intents，以及全部 7,252 intents 的隔离 A/B；不得复用旧 source 的
+   G2 receipt；
+6. G2 aggregate 通过后，用 sealed T1 的 `F` + shared
+   generator/common eligibility 作为最小 G3 vertical
+   slice，执行 natural、iso 和预注册的 6 个 sweep cells，生成 canonical actual
+   ledger 与独立 verifier receipt；
+7. 再扩展到 `S/B/Q/G/R`；对 `P` 先完成 external-only faithful replay
+   reachability research。若现有 ABI 下不可达，则继续 blocked，并转入另行授权的
+   versioned governance，不得用 shim 或 scalar substitute；保留任何 failure、
+   null 或 negative result；
+8. G0-G5 全部通过且 opaque G6 receipt 可验证以前，不读取 API key，不运行
+   provider canary 或 confirmatory LLM experiment；G4 pilot 仍必须保持 provider-free。

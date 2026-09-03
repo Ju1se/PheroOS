@@ -5,11 +5,7 @@ from dataclasses import replace
 
 import pytest
 
-from pheroos.conformance.checks import (
-    pheromone_behavior,
-    pheromone_subject_scoring,
-    score_breakdown_contract,
-)
+from pheroos.conformance.checks import score_breakdown_contract
 from pheroos.conformance.report import CheckResult
 from pheroos.conformance.profile import profile_for_manifest
 from pheroos.conformance.runner import MANIFEST_CHECKS, safe_check
@@ -22,11 +18,7 @@ from pheroos.protocol.models import (
 from pheroos.protocol.validation import validate_capability_manifest
 
 
-CHECKS = (
-    score_breakdown_contract.check,
-    pheromone_behavior.check,
-    pheromone_subject_scoring.check,
-)
+CHECKS = (score_breakdown_contract.check,)
 
 
 @pytest.mark.parametrize(

@@ -22,12 +22,9 @@ from pheroos.conformance.profile import (
     COMMIT_AUTHORITY_CHECKS,
     COMMIT_INTEGRITY_PROFILE,
     COMMIT_STRUCTURAL_CHECKS,
-    CORE_PROFILE,
     DISTRIBUTED_COMMIT_PROFILE,
     HYBRID_ATTENTION_CHECKS,
     HYBRID_COMMIT_PROFILE,
-    HYBRID_SWARM_PROFILE,
-    SWARM_PROFILE,
     profile_for_manifest,
 )
 from pheroos.conformance.runner import MANIFEST_CHECKS, safe_check
@@ -126,41 +123,6 @@ def test_formal_commit_registry_is_complete_and_unique() -> None:
         for name in profile.required_checks
         if name in FORMAL_COMMIT_CHECKS
     }
-
-
-def test_legacy_profiles_remain_structurally_unchanged() -> None:
-    assert CORE_PROFILE.required_checks == (
-        "manifest_schema",
-        "candidate_declaration",
-        "quorum_policy",
-        "recovery_policy",
-        "output_contract",
-        "trace_contract",
-        "driver_contract",
-        "kernel_contract",
-        "extension_contract",
-    )
-    assert SWARM_PROFILE.required_checks == (
-        *CORE_PROFILE.required_checks,
-        "collective_policy",
-        "safe_fallback_collective",
-        "score_breakdown_contract",
-        "pheromone_policy",
-        "pheromone_behavior",
-        "swarm_trace_contract",
-    )
-    assert HYBRID_SWARM_PROFILE.required_checks == (
-        *SWARM_PROFILE.required_checks,
-        "pheromone_subject_scoring",
-        "pheromone_kind_profile",
-        "pheromone_diffusion",
-        "pheromone_reinforcement",
-        "pheromone_response_model",
-        "layer_coordination_policy",
-        "policy_adjustment_bounds",
-        "hybrid_trace_contract",
-        "hybrid_authority_boundary",
-    )
 
 
 def test_direct_commit_checks_execute_public_contracts() -> None:

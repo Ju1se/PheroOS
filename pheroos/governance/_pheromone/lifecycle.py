@@ -6,7 +6,7 @@ from dataclasses import field
 from dataclasses import replace
 from pheroos.governance.candidate import CandidateSet
 from pheroos.governance.errors import GovernanceError
-from pheroos.trace import canonical_pheromone_clip_payload
+from pheroos.trace._pheromone_receipts import canonical_pheromone_clip_payload
 from types import MappingProxyType
 from typing import Any
 import math

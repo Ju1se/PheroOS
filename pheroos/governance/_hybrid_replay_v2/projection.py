@@ -50,11 +50,9 @@ from pheroos.governance._swarm.records import HybridCollectiveStep, HybridReplay
 from pheroos.governance.candidate import Candidate, CandidateSet
 from pheroos.governance.errors import GovernanceError
 from pheroos.protocol.models import CollectiveDecisionPolicy, PheromoneKindProfile
-from pheroos.trace import (
-    PHEROMONE_CLIP_PAYLOAD_VERSION,
-    TraceEvent,
-    canonical_pheromone_clip_payload,
-)
+from pheroos.trace import TraceEvent
+from pheroos.trace._lineage_types import PHEROMONE_CLIP_PAYLOAD_VERSION
+from pheroos.trace._pheromone_receipts import canonical_pheromone_clip_payload
 
 
 _LAYERS = ("evolutionary", "learned", "metacognitive", "reactive")

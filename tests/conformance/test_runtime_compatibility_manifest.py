@@ -71,8 +71,6 @@ EXPECTED_OPTIONAL_PROFILES = {
     "core",
     "distributed-commit",
     "hybrid-commit",
-    "hybrid-swarm",
-    "swarm",
 }
 EXPECTED_OPTIONAL_CAPABILITIES = {
     "governance-authority-session-v2",
@@ -198,7 +196,7 @@ def test_baseline_exact_claim_does_not_require_hybrid_or_commit_profiles() -> No
     assert report.selected_optional_capabilities == ()
 
 
-@pytest.mark.parametrize("profile_id", ["hybrid-swarm", "hybrid-commit"])
+@pytest.mark.parametrize("profile_id", ["hybrid-commit"])
 def test_optional_profile_is_checked_only_after_explicit_selection(
     profile_id: str,
 ) -> None:

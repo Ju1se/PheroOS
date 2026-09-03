@@ -2,6 +2,11 @@
 
 PheroOS protocol-core is designed for external implementations to extend behavior without coupling protocol-core to app runtimes, providers, dashboards, or domain workflows.
 
+The current public contract is governed authority/commit. The collective and
+pheromone material in this document is historical/private extension guidance;
+it does not define a supported swarm profile or impose swarm conformance on
+baseline implementations.
+
 ## Extension Principles
 
 - Extend through declared ABI surfaces.
@@ -23,7 +28,8 @@ Extensions may add manifest fields when they are:
 - tested
 - compatible with baseline protocols that do not opt in
 
-Swarm-specific fields should apply only when `collective_decision_policy.mode` declares a swarm mode.
+Legacy collective fields are advisory and must not select a public swarm
+profile or impose additional conformance requirements.
 
 Manifest extensions should use the explicit `extensions` object or namespaced keys such as `x-*` and `ext.*`.
 
@@ -78,7 +84,7 @@ Allowed examples:
 
 - baseline governed protocol
 - governed e2e vertical slice
-- swarm-native collective behavior
+- optional private attention/collective behavior
 - provider-free driver lifecycle examples
 
 Disallowed examples:
@@ -119,7 +125,7 @@ When an extension is optional:
   skip/N/A is not an active compatibility result
 - examples should be added separately rather than rewriting baseline examples
 
-## Pheromone Extension Example
+## Historical/private pheromone extension example
 
 The pheromone layer is an example of an acceptable protocol-core extension:
 

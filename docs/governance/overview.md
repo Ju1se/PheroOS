@@ -5,6 +5,11 @@
 Governance decides what is allowed. Agents may propose facts, signals, reports,
 and candidates; governance authority is required to verify and commit.
 
+The public positioning is governed authority/commit. The former swarm and
+pheromone semantics below are retained as private, historical implementation
+profiles only; baseline and Commit conformance do not require them, and they
+are not evidence of emergent swarm intelligence.
+
 ## Owned Surface
 
 - target-scoped candidate sets and decisions; target declarations remain owned
@@ -16,7 +21,7 @@ and candidates; governance authority is required to verify and commit.
 - candidate sets
 - quorum decisions
 - recovery decisions and canonical `TraceEvent(event_type="recovery")`
-  lineage; `RecoveryTrace` is compatibility-only
+  lineage; recovery records use the canonical `pheroos.trace.TraceEvent`
 - output contracts
 - governance lineage and a type-identical `TraceEvent` compatibility export
 - deterministic collective decision steps
@@ -187,7 +192,7 @@ complete application runtime.
 The complete Draft semantics are documented in
 [the Optimal Commit ABI](../protocol/optimal-commit-abi.md).
 
-## Swarm Semantics
+## Historical/private swarm semantics
 
 Bee-swarm behavior is represented by independent scout reports, recruitment
 signals, inhibition signals, consensus thresholds, and safe fallback.
@@ -195,13 +200,14 @@ signals, inhibition signals, consensus thresholds, and safe fallback.
 Ant-colony behavior is represented by traceable pheromone memory, evaporation,
 bounded contribution, source diversity, and deterministic scoring.
 
-These concepts are protocol semantics, not a swarm runtime.
+These concepts are retained implementation details, not a supported public
+swarm profile or a swarm runtime.
 
 ## Internal Composition
 
 The public Governance modules are cohesive facades over one-way private
-engines. Commit state, support, certificates, distributed finality, Hybrid
-evaluation, swarm orchestration, and pheromone lifecycle each have one
+engines. Commit state, support, certificates, distributed finality, optional
+attention evaluation, and private pheromone lifecycle each have one
 implementation owner. Facades preserve public identity and signatures; private
 engines do not import the aggregate facade, form cycles, dynamically register
 services, or share hidden mutable authority.

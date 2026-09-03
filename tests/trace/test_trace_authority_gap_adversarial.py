@@ -10,11 +10,11 @@ import pytest
 
 from pheroos.trace import (
     TraceEvent,
-    canonical_pheromone_clip_payload,
     commit_trace_event_id,
     make_commit_trace_event,
     replay_commit_trace,
 )
+from pheroos.trace._pheromone_receipts import canonical_pheromone_clip_payload
 from pheroos.trace.commit_contracts import (
     commit_trace_required_fields,
     validate_commit_trace_event,

@@ -14,17 +14,25 @@ The project is currently pre-stable. Until the first stable ABI release, entries
   callers must construct the explicit portable record and obtain authority only
   through StateStore-backed prepare, session, commit, and rehydration. The v1
   receipt ABI itself remains available under the declared compatibility window.
+- Removed the zero-consumer D-06–D-14 compatibility cohort before the first
+  published release: the process-local authority registry, deprecated driver
+  descriptor subtypes, `DriverHealth`, `CanonicalTarget`, `RecoveryTrace`, the
+  hybrid commit evaluation alias, the `run_conformance(root=...)` parameter,
+  the `pheroos.governance.trace` module, and legacy exception wrappers.
+- Removed all 55 pheromone-named public ABI exports. The working attention and
+  pheromone implementations remain private, opt-in internals; they are not
+  required by the baseline conformance contract and do not establish a claim
+  of emergent swarm intelligence. The three lifecycle helpers whose binding
+  owner was the same pheromone module are private for the same reason.
+- Removed the protocol-level requirement that swarm-mode manifests enumerate
+  the former swarm trace lineage events; optional private attention inputs no
+  longer become a baseline validation gate.
 
 ### Deprecated
 
-- Recorded the exact 86-name WP-05 legacy authority cohort as Deprecated with
-  fully qualified, public, StateStore-backed v2 replacements and an earliest
-  removal version of `0.3.0`. The cohort covers process-local Hybrid replay,
-  Commit replay/window/finality, Risk, Membership/Support, certificate/local
-  finality, and Distributed authority entrypoints only. Portable historical
-  records, codecs, body-root helpers, and independent verification remain
-  Draft data surfaces. No legacy implementation or registry is physically
-  removed by this lifecycle change.
+- The remaining attention/pheromone implementation modules are private Draft
+  internals. Any future public attention contract requires a separately
+  versioned ABI and conformance decision.
 
 ### Added
 

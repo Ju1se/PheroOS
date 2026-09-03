@@ -14,19 +14,11 @@ the invariant being checked.
 - collective policy
 - safe collective fallback
 - score breakdown contract
-- pheromone policy
-- pheromone behavior
-- pheromone subject scoring
-- pheromone kind profile
-- pheromone diffusion
-- pheromone reinforcement
-- pheromone response model
 - layer coordination policy
 - policy adjustment bounds
 - recovery policy
 - output contract
 - trace contract
-- swarm trace contract
 - hybrid trace contract
 - hybrid authority boundary
 - driver contract
@@ -76,22 +68,16 @@ Source checks are intentionally separate from manifest checks:
 
 Baseline governed protocols are not required to declare swarm behavior.
 
-Swarm-specific checks apply only when a manifest declares a swarm collective
-mode.
-
-Pheromone behavior checks are no-op passes when pheromone is not enabled and
-active deterministic ABI checks when a manifest declares pheromone-enabled
-swarm behavior.
-
-Hybrid pheromone checks apply when a swarm manifest declares at least one hybrid
-feature: diffusion, feedback reinforcement, nonlinear response, layer
-coordination, or policy-adjustment bounds.
+Collective and pheromone fields are parsed as optional attention inputs, but no
+manifest profile requires swarm behavior. The former swarm and pheromone
+conformance checks are not part of the public profile set and are retained
+only in repository history.
 
 Commit checks apply only when a manifest declares `collective_commit_policy`.
 Once selected, every required Commit check returns PASS or FAIL. An active
 Commit check cannot be skipped or reported as N/A. A manifest without the
-declaration remains on its legacy core, swarm, or Hybrid Swarm profile and is
-not forced to adopt Commit Integrity.
+declaration remains on `pheroos-core-v1` and is not forced to adopt Commit
+Integrity.
 
 ## Profiles
 
@@ -99,13 +85,9 @@ Conformance reports include the profile version that was applied.
 
 - `pheroos-manifest-v1` applies to manifest validation.
 - `pheroos-core-v1` applies to baseline governed protocols.
-- `pheroos-swarm-v1` applies when a manifest declares swarm collective behavior.
-- `pheroos-hybrid-swarm-v1` applies when a swarm manifest declares hybrid
-  pheromone behavior.
 - `pheroos-commit-integrity-v1` applies to advisory Commit declarations and to
-  evidence-bound declarations without Hybrid attention.
 - `pheroos-hybrid-commit-v1` applies when evidence-bound Commit Integrity and
-  Hybrid attention are both declared.
+  attention inputs are both declared.
 - `pheroos-certified-commit-v1` applies when portable certified assurance is
   declared.
 - `pheroos-distributed-commit-v1` applies when distributed assurance is
@@ -255,23 +237,10 @@ events remain non-authoritative. Private-engine graph tests reject cycles,
 aggregate-facade back-imports, dynamic service registries, and duplicate
 algorithm owners without making private module paths part of the public ABI.
 
-Hybrid conformance proves that pheromone remains collective memory rather than
-authority: it cannot create candidates, evidence, quorum, fallback bypasses, or
-output permission. Learned and evolutionary layers may propose bounded changes,
-but only governance can commit a declared candidate or use the declared safe
-fallback.
-
-The legacy Hybrid swarm profile's trace check executes
-`evaluate_hybrid_collective_step(...)` with
-inputs derived from the active manifest, validates the canonical events field by
-field, reconstructs candidate and pheromone category/kind/subject scores, and
-causally replays deposit, evaporation/expiry, diffusion, and reinforcement into
-the scored active-trail snapshot with the same shared source/round budgets. It
-also reconstructs coordination from proposals, strategy biases, all six
-performance-snapshot metrics, and accepted adjustment bounds before comparing
-confidence, weights, conflicts, resolution, fallback, and layer score effects.
-Both consensus and safe-fallback decision paths are replayed. A declared event
-name or self-consistent reported output is not proof that a transition happened.
+Attention remains advisory: it cannot create candidates, evidence, quorum,
+fallback bypasses, or output permission. The former swarm trace and pheromone
+behavior checks are retained only in repository history; standalone v2 replay
+and commit TCKs remain the executable conformance paths.
 
 Durable Hybrid Replay v2 is a separate active adapter contract. It proves
 StateStore-backed inclusion/currentness, exact retry, atomic state-plus-Trace,

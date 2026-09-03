@@ -25,6 +25,175 @@ database, dashboard, or application deployment workflows.
   is the active, non-normative Goal execution plan for authority trust roots,
   durable replay/finality, a Stable Core ABI, engineering quality gates,
   release governance, and an external reference runtime.
+- [receptor-ligand-field-comparative-study-plan.md](receptor-ligand-field-comparative-study-plan.md)
+  is the preregistration draft for comparing a receiver-gated ligand field
+  against full, sparse, blackboard, retrieval-routing, learned-pruning, and
+  current scalar-pheromone controls without changing Commit truth or importing
+  an experiment runtime into protocol-core.
+- [receptor-ligand-field-vnext-architecture-research.md](receptor-ligand-field-vnext-architecture-research.md)
+  is the non-normative architecture research baseline that combines insect
+  receptor saturation, input-gain control, social-insect recruitment,
+  cross-inhibition, congestion feedback, multi-agent dependence, supersession,
+  and conservative attention allocation into candidate vNext formulas and
+  ABI/TCK guidance. It activates no profile and changes no current protocol
+  semantics.
+- [receptor-ligand-field-experiment-profile-v0.1.md](receptor-ligand-field-experiment-profile-v0.1.md)
+  is the preserved first G0 draft, superseded before any arm execution after an
+  independent design audit found baseline and mass-conservation ambiguities.
+- [receptor-ligand-field-experiment-profile-v0.2.md](receptor-ligand-field-experiment-profile-v0.2.md)
+  is the preserved first executable G0-G3 freeze, superseded after the first
+  qualification run found executable-fidelity and public-label leakage
+  blockers without reading sealed outcomes.
+- [receptor-ligand-field-experiment-profile-v0.3.md](receptor-ligand-field-experiment-profile-v0.3.md)
+  is the preserved G1-G3 qualification amendment: it freezes manifest-declared topology,
+  a ground-truth label firewall, typed logs and diagnostics, strong-baseline
+  qualification, complete-cost requirements, and corrected provider canaries;
+  it was superseded before outcome-bearing execution when dynamic topology
+  epochs required a separate frozen contract.
+- [receptor-ligand-field-experiment-profile-v0.4.md](receptor-ligand-field-experiment-profile-v0.4.md)
+  is the preserved topology-epoch qualification amendment. It froze canonical,
+  prefix-causal eight-ligand epochs and an exact T4 graph-shift fixture, and was
+  superseded before outcome-bearing execution by the complete G2 environment
+  and intent-matrix freeze.
+- [receptor-ligand-field-experiment-profile-v0.5.md](receptor-ligand-field-experiment-profile-v0.5.md)
+  is the preserved G2 deterministic-environment and intent-matrix amendment. It
+  froze the T4 scheduler state machine, sealed prefix boundary, compact scale
+  eligibility, exact smoke/attack/budget/scale counts, and fresh-process replay,
+  and was superseded before G2 qualification when attack-label ambiguity was
+  found.
+- [receptor-ligand-field-experiment-profile-v0.6.md](receptor-ligand-field-experiment-profile-v0.6.md)
+  is the active G2 attack-label firewall amendment. It separates
+  variable-severity injection, task-intrinsic challenge, mandatory probes, and
+  T4 environment stress without changing the 7,252-intent matrix or any
+  protocol-core ABI.
+- [receptor-ligand-field-experiment-profile-v0.7.md](receptor-ligand-field-experiment-profile-v0.7.md)
+  is a draft for review, not an active profile. It proposes the G2 full-scale
+  typed generator/reducer, six-root replay, streaming artifact,
+  independent-verifier, supervisor, negative-fixture, timeout, and RSS
+  contracts and normatively binds the v0.7 fixture companion below. Its current
+  review bytes cannot be activated; v0.6 remains active until reviewed profile
+  and companion activation-candidate bytes are committed, hashed, and migrated
+  together into the external lock.
+- [receptor-ligand-field-experiment-profile-v0.7-fixtures.json](receptor-ligand-field-experiment-profile-v0.7-fixtures.json)
+  is the canonical draft companion for v0.7. It freezes 12 literal input
+  constructors, three positive T4 branch recipes, 56 negative recipes, and
+  their semantic set roots. It remains a design inventory with
+  `activation_ready=false`; it is not independently active and cannot be
+  changed or locked separately from the reviewed v0.7 profile bytes.
+- [receptor-ligand-field-v0.7-materialization-plan.md](receptor-ligand-field-v0.7-materialization-plan.md)
+  is the review-only, provider-free plan for two disposable, source-independent
+  audit compilers to materialize and cross-check the exact v0.7 `12/3/56`
+  inventory before any activation decision. It does not implement a runner,
+  migrate a lock, or make v0.7 active.
+- [receptor-ligand-field-v0.7-materialization-audit-finding.md](receptor-ligand-field-v0.7-materialization-audit-finding.md)
+  records the executable NO-GO finding: the V1 identity does not bind unique
+  base/positive payload contracts, so the public review remains fail-closed
+  until a content-addressed V2 contract and complete oracle are frozen.
+- [receptor-ligand-field-v0.7-materialization-v2-closure-design.md](receptor-ligand-field-v0.7-materialization-v2-closure-design.md)
+  records the unsealed V2 closure architecture: a normative contract and
+  independent golden oracle are separated to avoid content-address cycles,
+  RFC 6901 root semantics are made explicit, and official A/B source remains
+  oracle-blind. It is a NO-GO design checkpoint, not an activation artifact.
+- [receptor-ligand-field-v0.7-materialization-v2-authoring-checkpoint.md](receptor-ligand-field-v0.7-materialization-v2-authoring-checkpoint.md)
+  records the provider-free V2 authoring refinement: deterministic
+  profile/companion amendment, design-versus-runtime actual-chain phase
+  separation, byte-first SourceFreeze structural checks, an authoring-only
+  71-record identity inventory, a 56-record negative judge-input ambiguity
+  audit, an authoring-only 12-Base exact-instance parameter audit with
+  `normative_schema_count=0`, and the newly exposed runtime-source phase
+  blocker. It preserves the NO-GO and grants no materialization, activation,
+  or experiment authority.
+- [receptor-ligand-field-v0.7-base-schema-closure-audit.md](receptor-ligand-field-v0.7-base-schema-closure-audit.md)
+  records the six-family Base schema closure NO-GO, the T7 companion/protocol
+  classification conflict and its counterfactual root blast radius, and the
+  exact distinction between current-instance facts and reusable constructor
+  contracts. It changes no profile, companion, lock, or runtime.
+- [receptor-ligand-field-v0.7-t7-a1-counterfactual-audit.md](receptor-ligand-field-v0.7-t7-a1-counterfactual-audit.md)
+  records the exact in-memory T7 A1 correction candidate, static event-34
+  locator preservation, content-addressed root blast radius, downstream
+  invalidation, incomplete negative coverage, and zero-authority verification.
+  It selects no final C1 and changes no profile, companion, lock, or runtime.
+- [receptor-ligand-field-v0.7-constructor-resolution-matrix-audit.md](receptor-ligand-field-v0.7-constructor-resolution-matrix-audit.md)
+  records the six-family, 90-claim research resolution matrix over exact
+  document/four-pointer/A1 bytes. It separates PROVEN, DERIVABLE, OPEN, and
+  CONFLICT claims while fixing locator, semantic-entailment, schema,
+  projection, execution, and observation counts at zero, with
+  `authority_scope=none`.
+- [receptor-ligand-field-v0.7-environment-evidence-overlay-audit.md](receptor-ligand-field-v0.7-environment-evidence-overlay-audit.md)
+  records the first scoped evidence overlay: 15/15 environment rules,
+  20/20 source-ref edges, and 26 exact locators, while global coverage remains
+  15/90 and false. It leaves the original 63,776-byte audit untouched, marks
+  strict-integer Python semantics unsupported by the bound source, and keeps
+  semantic-proof, schema, projection, and execution counts at zero, with
+  `network_used=false` and `authority_scope=none`.
+- [receptor-ligand-field-v0.7-suite-evidence-overlay-audit.md](receptor-ligand-field-v0.7-suite-evidence-overlay-audit.md)
+  records the independent suite-family overlay: 15/15 rules, 22/22 source-ref
+  edges, and 25 exact locators, while global coverage remains 15/90 and false.
+  It marks four frozen target propositions as unsupported by their bound
+  sources, binds the report blocker policy, and creates no suite schema,
+  projection, 980-record materialization, execution, provider use, or
+  authority.
+- [receptor-ligand-field-v0.7-replica-pair-evidence-overlay-audit.md](receptor-ligand-field-v0.7-replica-pair-evidence-overlay-audit.md)
+  records the independent replica-pair overlay: 14/14 rules, 23/23 source-ref
+  edges, and 41 exact locators, with 4 PROVEN, 1 DERIVABLE, 9 OPEN, and 7
+  source-unsupported propositions. Its own global coverage remains 14/90 and
+  false; no overlay-set or combined coverage is claimed. It creates no pair
+  schema, projection, materialization, execution, provider use, or authority
+  and does not lower the G2/G3 blockers.
+- [receptor-ligand-field-v0.7-labels-evidence-overlay-audit.md](receptor-ligand-field-v0.7-labels-evidence-overlay-audit.md)
+  records the independent labels overlay: 16/16 rules, 34/34 source-ref
+  edges, and 46 exact locators, with 5 PROVEN, 3 DERIVABLE, 7 OPEN, 1
+  preserved CONFLICT, and 8 source-unsupported propositions. Its own global
+  coverage remains 16/90 and false; no overlay-set or combined coverage is
+  claimed. It creates no machine or normative semantic proof, label schema,
+  projection, materialization, execution, provider use, or authority and does
+  not lower the G2/G3 blockers.
+- [receptor-ligand-field-v0.7-source-evidence-overlay-audit.md](receptor-ligand-field-v0.7-source-evidence-overlay-audit.md)
+  records the independent source overlay: 16/16 rules, 27/27 source-ref
+  edges, and 37 exact locators, with 6 PROVEN, 2 DERIVABLE, 8 OPEN, and 8
+  source-unsupported propositions. Its own global coverage remains 16/90 and
+  false; no overlay-set or combined coverage is claimed. Whole-source
+  absence domains do not prove actual Git or runtime identity, and the
+  overlay creates no semantic proof, source schema, projection, execution,
+  provider use, or authority.
+- [receptor-ligand-field-v0.7-process-evidence-overlay-audit.md](receptor-ligand-field-v0.7-process-evidence-overlay-audit.md)
+  records the independent process overlay: 14/14 rules, 23/23 source-ref
+  edges, and 42 exact locators, with 5 PROVEN, 3 DERIVABLE, 6 OPEN, and 5
+  source-unsupported propositions. Its own global coverage remains 14/90 and
+  false; the later overlay-set does not promote that child-level flag.
+  Synthetic A1 literals and conditional RSS formula do not prove actual OS
+  observation, derivation replay, schema closure, execution, provider use, or
+  authority.
+- [receptor-ligand-field-v0.7-six-family-evidence-overlay-set-audit.md](receptor-ligand-field-v0.7-six-family-evidence-overlay-set-audit.md)
+  records the ordered, content-addressed structural union of all six scoped
+  overlays: 90/90 rule-review bindings, 149/149 rule × source-ref edges, 217
+  locator bindings, and 93 source-aware physical selectors. Only scoped
+  structural rule-review and edge coverage is complete; semantic/locator
+  closure, schemas, projections, traces, execution, actual evidence,
+  independence, provider use, and authority remain unproved or zero.
+- [receptor-ligand-field-v0.7-environment-config-projection-candidate-audit.md](receptor-ligand-field-v0.7-environment-config-projection-candidate-audit.md)
+  records the first environment-config E0 vertical slice: six exact
+  parameters plus two explicit roots project to all 15 candidate config
+  fields and a cryptographic environment key over seven review and 140
+  runtime-domain parameter records. It is source-dependent, synthetic and
+  non-normative; actual roots/runtime, Base/re-chain, Main/Golden, G2/G3,
+  provider use and comparative conclusions remain blocked.
+- [receptor-ligand-field-v0.7-e1-prereg-qualification-audit.md](receptor-ligand-field-v0.7-e1-prereg-qualification-audit.md)
+  preserves three source-only E1 preregistration attempts and blind reviews.
+  All three are rejected before implementation; five executable-contract P1
+  groups remain, so normative source-neutral closure must precede another E1
+  attempt. The bundle contains no E1 code, output, provider use, G2/G3 result,
+  or comparative conclusion.
+- [receptor-ligand-field-g3-methodological-amendment-v0.1.md](receptor-ligand-field-g3-methodological-amendment-v0.1.md)
+  is an inactive G3 review draft for common budget schedules, complete
+  pre-cap ranking, size-qualified S/G artifacts, and Cost Ledger v2. It grants
+  no implementation or lock-migration authority, leaves P and aggregate G3
+  blocked, and contains no H1-H6 result.
+- [receptor-ligand-field-g0-g3-qualification-report.md](receptor-ligand-field-g0-g3-qualification-report.md)
+  records the current external qualification checkpoint: G0/G1 passed,
+  G2/G3 remain blocked by the full simulator matrix, P durable replay, and
+  actual cost ledgers; no provider network request or H1-H6 conclusion was
+  authorized.
 - [stable-core-consumer.md](../protocol/stable-core-consumer.md) defines the
   public-facade, strict-typing, aggregate-journey, and external-adapter boundary
   for the Draft Stable promotion candidate without claiming formal stability.

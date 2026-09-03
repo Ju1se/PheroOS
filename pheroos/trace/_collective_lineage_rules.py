@@ -19,13 +19,13 @@ from pheroos.trace._lineage_types import TraceEventView
 LineageRule = Callable[[TraceEventView, frozenset[str]], None]
 
 
-def apply_swarm_lineage_rule(
+def apply_collective_lineage_rule(
     event: TraceEventView,
     required_fields: frozenset[str],
 ) -> bool:
-    """Apply the one declared swarm rule in immutable ABI order."""
+    """Validate private Hybrid replay lineage without registering swarm ABI."""
 
-    for event_types, rule in _SWARM_LINEAGE_RULES:
+    for event_types, rule in _COLLECTIVE_LINEAGE_RULES:
         if event.event_type in event_types:
             rule(event, required_fields)
             return True
@@ -198,7 +198,7 @@ def _validate_output(
         )
 
 
-_SWARM_LINEAGE_RULES: tuple[tuple[frozenset[str], LineageRule], ...] = (
+_COLLECTIVE_LINEAGE_RULES: tuple[tuple[frozenset[str], LineageRule], ...] = (
     (frozenset({"explore"}), _validate_explore),
     (frozenset({"scout_report"}), _validate_scout_report),
     (frozenset({"recruit", "inhibit"}), _validate_recruitment_signal),

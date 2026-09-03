@@ -4,6 +4,11 @@ PheroOS protocol-core defines the ABI boundary for external multi-agent runtimes
 
 It does not implement the runtime.
 
+The public positioning is governed authority/commit. The collective and
+pheromone workflow described later is a retained private/historical profile;
+it does not select a public swarm profile or create a requirement for
+baseline conformance.
+
 The Draft exact version-composition artifact and evaluator are documented in
 [Runtime Compatibility Manifest v1](../conformance/runtime-compatibility-v1.md).
 That manifest does not replace the named implementation TCKs or grant output
@@ -464,7 +469,7 @@ non-empty scout identity, evidence identity, provenance, and trace identity;
 duplicate scouts are rejected after verification and cannot satisfy the
 independent-scout gate.
 
-## Pheromone Workflow
+## Historical/private attention and pheromone workflow
 
 Pheromone is bounded collective memory.
 
@@ -597,10 +602,9 @@ protocol-core validates and recomputes the coordination state inside the full
 step. This prevents learned, evolutionary, reactive, or metacognitive layers
 from injecting final scores or commits.
 
-The manifest declaration type is
-`pheroos.protocol.PheromoneKindProfile`. The
-`pheroos.governance.PheromoneKindProfile` compatibility export is the same
-type; runtimes should use the protocol owner for new imports.
+The former manifest declaration type `PheromoneKindProfile` is retained only
+inside the private historical implementation. It is not a current public
+Protocol or Governance export, and external runtimes must not depend on it.
 
 For scoring, an empty built-in kind profile inherits the policy-wide
 `pheromone_scored_subject_types`. A namespaced extension kind does not inherit
@@ -632,16 +636,13 @@ gate. Safe-fallback decisions pass through the same four gates.
 
 ## Compatibility
 
-Baseline protocols do not need swarm behavior.
+Baseline protocols do not need swarm behavior. Collective and pheromone fields
+are optional attention inputs and do not select a public swarm profile. A
+manifest without `collective_commit_policy` remains on `pheroos-core-v1`;
+attention is advisory and cannot create authority. Commit manifests may opt into
+the Hybrid Commit profile when attention inputs are present.
 
-Swarm-specific validation and conformance apply only when a manifest declares a swarm collective mode.
-
-Hybrid declarations select `pheroos-hybrid-swarm-v1`, which composes the core,
-swarm, and Hybrid checks. Basic swarm manifests remain on
-`pheroos-swarm-v1`, and baseline governed manifests remain on
-`pheroos-core-v1` without Hybrid-only fields.
-
-See [hybrid-pheromone-v1-migration.md](hybrid-pheromone-v1-migration.md) for the
-draft Hybrid v1 consumer migration sequence.
+The former Hybrid Pheromone migration note is retained as a historical record,
+not as a supported external consumer contract.
 
 External runtimes should use conformance to prove that their manifests and ABI usage remain compatible with protocol-core.

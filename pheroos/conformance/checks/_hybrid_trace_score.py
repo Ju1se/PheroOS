@@ -5,14 +5,16 @@ from typing import Any
 
 from pheroos.conformance.checks._manifest import candidate_set
 from pheroos.governance import (
-    PheromoneTrail,
     PolicyAdjustmentProposal,
     apply_policy_adjustment_overlay,
+    validate_policy_adjustment_proposals,
+)
+from pheroos.governance.pheromone import (
+    PheromoneTrail,
     collect_pheromone_source_diversity,
     observe_pheromone_exploration,
     pheromone_policy_from_collective,
     score_pheromone_trails_result,
-    validate_policy_adjustment_proposals,
 )
 from pheroos.protocol.models import (
     CapabilityManifest,

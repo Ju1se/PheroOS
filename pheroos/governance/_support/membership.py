@@ -5,7 +5,7 @@ from pheroos.governance._commit_validation import (
     require_commit_step,
     require_commit_text,
 )
-from pheroos.governance._legacy.authority_registry import LEGACY_AUTHORITY_REGISTRY
+from pheroos.governance._process_state import PROCESS_STATE
 from pheroos.governance.authority import AuthorityLevel, can_verify
 from pheroos.governance.errors import GovernanceError
 from pheroos.governance.principal import (
@@ -132,7 +132,7 @@ def issue_eligible_principal_snapshot(
     )
     snapshot_fingerprint = _membership_snapshot(snapshot)
     authority_key = _membership_epoch_authority_key(snapshot)
-    with LEGACY_AUTHORITY_REGISTRY.transaction() as registry:
+    with PROCESS_STATE.transaction() as registry:
         cursor = registry.get(_LEGACY_MEMBERSHIP_EPOCH_CURSORS, authority_key)
         if cursor is not None:
             if cursor.request_fingerprint != snapshot_fingerprint:

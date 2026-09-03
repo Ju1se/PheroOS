@@ -46,9 +46,9 @@ ROOT = Path(__file__).resolve().parents[2]
 V1_ARTIFACT = ROOT / "pheroos" / "conformance" / "tck" / "commit-integrity-v1.json"
 V2_ARTIFACT = ROOT / "pheroos" / "conformance" / "tck" / "commit-integrity-v2.json"
 SPEC_ADAPTER = "pheroos.conformance.commit_tck_v2_spec_adapter"
-V1_FILE_SHA256 = "9255ed7e1298841baaaeee8b139a7ba86df457493dd30d6d7312ce600a1d41e3"
+V1_FILE_SHA256 = "2c2872b4135d8881b41b61d0028f0c3164da7f5d5068d5b036421016f2ea0343"
 V1_SEMANTIC_ROOT = (
-    "sha256:0e9cd7fd56087d5cc4987d5a7ed056ed6649512c30ee486685e3dbd45e8b7abe"
+    "sha256:376c3dc76fc469e7b77bcba81d32a65f40aec0507669a8e35b3cd61c88e7d2bb"
 )
 V2_FILE_SHA256 = "0cb38415b5429aec17235eff9ea55867afe44d11be8669e80397277c206af00b"
 

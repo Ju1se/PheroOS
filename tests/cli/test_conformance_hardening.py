@@ -82,8 +82,8 @@ def test_installed_console_script_and_public_imports_are_cwd_independent(
             sys.executable,
             "-c",
             (
-                "from pheroos.governance import evaluate_hybrid_collective_step; "
-                "from pheroos.protocol import PheromoneKindProfile; "
+                "from pheroos.governance import evaluate_hybrid_commit_step; "
+                "from pheroos.protocol import CommitAction; "
                 "from pheroos.trace import TraceEvent"
             ),
         ],

@@ -6,7 +6,7 @@ from dataclasses import replace
 from pheroos.governance._validation import is_nonblank_string
 from pheroos.governance.candidate import CandidateSet
 from pheroos.governance.errors import GovernanceError
-from pheroos.trace import canonical_pheromone_clip_payload
+from pheroos.trace._pheromone_receipts import canonical_pheromone_clip_payload
 from typing import Any
 import math
 from pheroos.governance._pheromone.invariants import (

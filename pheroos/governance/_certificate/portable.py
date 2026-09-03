@@ -42,7 +42,7 @@ from pheroos.governance._commit.local_receipt import (
     local_commit_receipt_is_authoritative,
     local_commit_receipt_payload,
 )
-from pheroos.governance._legacy.authority_registry import LEGACY_AUTHORITY_REGISTRY
+from pheroos.governance._process_state import PROCESS_STATE
 from pheroos.governance.authority import AuthorityLevel, can_verify
 from pheroos.governance.commit import CommitAssessment, CommitEvaluationContext
 from pheroos.governance.commit_state import (
@@ -309,7 +309,7 @@ def _register_portable_evidence_certificate(
         discriminator=EVIDENCE_COMMIT_CERTIFICATE_DISCRIMINATOR,
         record_id=certificate.certificate_id,
     )
-    with LEGACY_AUTHORITY_REGISTRY.transaction() as registry:
+    with PROCESS_STATE.transaction() as registry:
         existing = registry.get(_LEGACY_CERTIFICATE_IDENTITIES, key)
         if existing is not None:
             existing_ref, existing_record = existing

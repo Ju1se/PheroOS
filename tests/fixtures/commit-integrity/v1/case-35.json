@@ -447,13 +447,13 @@
   },
   "expected": {
     "metrics": {
-      "required_check_count": 35,
-      "registered_check_count": 35,
+      "required_check_count": 28,
+      "registered_check_count": 28,
       "missing_check_count": 0,
       "skipped_check_count": 0
     },
     "roots": {
-      "active_check_set_root": "sha256:66991e8a20a6fd8678c8f96cf869a8885cf889df881a16e65f3f0aa9b94ff0ce"
+      "active_check_set_root": "sha256:c28e15428bf41fb7294a4402c16b3c7366c8a960c0faf55c8062933423d2e233"
     },
     "progress": null,
     "outcome": {

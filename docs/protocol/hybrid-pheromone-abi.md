@@ -1,4 +1,10 @@
-# PheroOS Hybrid Pheromone ABI Final Plan
+# Historical PheroOS Hybrid Pheromone ABI Plan
+
+> This document is retained as a historical implementation reference. The
+> Hybrid Pheromone ABI is not a supported public profile, its conformance
+> checks were removed before the first published release, and its remaining
+> implementation is private advisory attention code. It must not be read as a
+> claim of swarm intelligence or as a requirement for external conformance.
 
 This document is the implementation reference for the PheroOS hybrid pheromone
 enhancement track. It is intended for Goal-mode execution.
@@ -679,7 +685,9 @@ permission, or commit authority.
 
 ## 10. Conformance
 
-Add profile: `pheroos-hybrid-swarm-v1`.
+No public profile is added by this historical plan. The former
+`pheroos-hybrid-swarm-v1` profile is retired; any retained attention execution
+is private and advisory.
 
 Activation conditions:
 
@@ -868,8 +876,9 @@ reference behavior:
   fallback, evidence, and output-authorization boundaries.
 - Trace ABI includes hybrid lifecycle event types on the canonical
   `TraceEvent`.
-- Conformance includes `pheroos-hybrid-swarm-v1` and checks for hybrid
-  pheromone behavior, trace lineage, and authority boundaries.
+- The former Hybrid Pheromone conformance profile and its swarm-specific checks
+  are retired. Baseline and Commit profiles remain the supported conformance
+  paths; attention cannot create authority.
 - `examples/hybrid-pheromone-protocol` provides the provider-free, network-free,
   domain-neutral example.
 

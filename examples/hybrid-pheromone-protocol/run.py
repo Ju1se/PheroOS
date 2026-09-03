@@ -11,19 +11,21 @@ from pheroos.governance import (
     EvidenceGraph,
     EvidenceNode,
     LayerProposal,
-    OutputContract,
-    PheromoneEdge,
-    PheromoneFeedback,
-    PheromoneNeighborhood,
-    PheromoneSubject,
-    PheromoneTrail,
     PolicyAdjustmentProposal,
-    ScoutReport,
-    StopResolution,
-    evaluate_hybrid_collective_step,
     evaluate_output_authorization,
     verify_signal_input,
 )
+from pheroos.governance._swarm.pipeline import evaluate_hybrid_collective_step
+from pheroos.governance._swarm.signals import ScoutReport
+from pheroos.governance._pheromone.records import (
+    PheromoneEdge,
+    PheromoneNeighborhood,
+    PheromoneSubject,
+    PheromoneTrail,
+)
+from pheroos.governance.pheromone_feedback import PheromoneFeedback
+from pheroos.governance.output import OutputContract
+from pheroos.governance.stop_signal import StopResolution
 from pheroos.protocol import (
     collective_fallback_id,
     load_capability_manifest,

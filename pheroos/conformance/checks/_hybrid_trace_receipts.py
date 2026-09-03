@@ -3,8 +3,10 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Any
 
-from pheroos.governance import HybridReplayState, hybrid_replay_state_is_authoritative
-from pheroos.trace import TraceEvent, pheromone_clip_payload_fingerprint
+from pheroos.governance._swarm.records import HybridReplayState
+from pheroos.governance._swarm.replay import hybrid_replay_state_is_authoritative
+from pheroos.trace import TraceEvent
+from pheroos.trace._pheromone_receipts import pheromone_clip_payload_fingerprint
 
 
 def replay_trace_problems(

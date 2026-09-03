@@ -19312,13 +19312,13 @@
       },
       "expected": {
         "metrics": {
-          "required_check_count": 35,
-          "registered_check_count": 35,
+          "required_check_count": 28,
+          "registered_check_count": 28,
           "missing_check_count": 0,
           "skipped_check_count": 0
         },
         "roots": {
-          "active_check_set_root": "sha256:66991e8a20a6fd8678c8f96cf869a8885cf889df881a16e65f3f0aa9b94ff0ce"
+          "active_check_set_root": "sha256:c28e15428bf41fb7294a4402c16b3c7366c8a960c0faf55c8062933423d2e233"
         },
         "progress": null,
         "outcome": {
@@ -20416,7 +20416,7 @@
         "roots": {
           "matrix_root": "sha256:08caf416f0df6d09f283244ceec2afa02c4fb468c59ab3f03fc27a566506c735",
           "schema_root": "sha256:357a071a7f659d3e8f5c34cc6fb8af8ea49ff5243dda51fc947fd9e6a8a0bd5e",
-          "artifact_root": "sha256:0e9cd7fd56087d5cc4987d5a7ed056ed6649512c30ee486685e3dbd45e8b7abe"
+          "artifact_root": "sha256:376c3dc76fc469e7b77bcba81d32a65f40aec0507669a8e35b3cd61c88e7d2bb"
         },
         "progress": null,
         "outcome": {

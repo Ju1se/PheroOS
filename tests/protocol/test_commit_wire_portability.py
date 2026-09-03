@@ -12,7 +12,7 @@ from typing import cast
 
 import pytest
 
-from pheroos.protocol import (
+from pheroos.protocol.commit_wire import (
     CommitWireError,
     canonical_commit_payload,
     commit_payload_fingerprint,
@@ -50,7 +50,7 @@ def test_canonical_root_is_independent_of_cwd_hash_seed_and_mapping_order(
     tmp_path: Path,
 ) -> None:
     code = """
-from pheroos.protocol import commit_payload_fingerprint
+from pheroos.protocol.commit_wire import commit_payload_fingerprint
 payload = dict([('ready', True), ('items', ['x', 'y']), ('alpha', 1)])
 print(commit_payload_fingerprint(payload, schema='pheroos-tck-vector-v1', profile='pheroos-commit-integrity-v1'))
 """

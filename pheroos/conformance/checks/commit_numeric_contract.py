@@ -6,17 +6,19 @@ from pheroos.conformance.report import CheckResult
 from pheroos.governance import (
     MAX_AUTHORITY_INTEGER,
     WEIGHT_SCALE,
-    canonical_commit_payload,
-    canonical_commit_set,
     checked_add,
     checked_multiply,
     checked_subtract,
     ceil_scaled_count,
-    commit_payload_fingerprint,
     multiply_scaled,
     require_authority_integer,
     require_scaled_integer,
     scaled_ratio,
+)
+from pheroos.governance.commit_numeric import (
+    canonical_commit_payload,
+    canonical_commit_set,
+    commit_payload_fingerprint,
 )
 from pheroos.governance.errors import GovernanceError
 from pheroos.protocol import CapabilityManifest

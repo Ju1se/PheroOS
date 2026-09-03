@@ -12,7 +12,8 @@ from typing import Any
 
 from pheroos.conformance.checks._manifest import candidate_set as candidate_set
 from pheroos.conformance.report import CheckResult
-from pheroos.governance import HybridReplayState, PheromoneTrail
+from pheroos.governance._swarm.records import HybridReplayState
+from pheroos.governance.pheromone import PheromoneTrail
 from pheroos.governance.quorum import QuorumDecision
 from pheroos.protocol.models import CapabilityManifest
 from pheroos.trace import TraceEvent

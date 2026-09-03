@@ -13,17 +13,19 @@ from pheroos.governance import (
     InhibitionSignal,
     LayerPerformanceSnapshot,
     LayerProposal,
-    PheromoneEdge,
-    PheromoneFeedback,
-    PheromoneNeighborhood,
-    PheromoneSubject,
-    PheromoneTrail,
     PolicyAdjustmentProposal,
     RecruitmentSignal,
     ScoutReport,
     StrategyBias,
     verify_signal_input,
 )
+from pheroos.governance._pheromone.records import (
+    PheromoneEdge,
+    PheromoneNeighborhood,
+    PheromoneSubject,
+    PheromoneTrail,
+)
+from pheroos.governance.pheromone_feedback import PheromoneFeedback
 from pheroos.governance._authority_v2 import InMemoryGovernanceStateStoreV2
 from pheroos.governance.authority_session_v2 import (
     GovernanceIssuerGrantV2,

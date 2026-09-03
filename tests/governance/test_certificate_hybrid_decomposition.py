@@ -175,10 +175,6 @@ def test_hybrid_pipeline_contains_the_only_total_algorithm() -> None:
     assert len(public_entry.body) == 2
     assert isinstance(public_entry.body[-1], ast.Return)
 
-    deprecated = inspect.getsource(evaluation_facade.evaluate_hybrid_commit_evaluation)
-    assert "DeprecationWarning" in deprecated
-    assert "_evaluate_hybrid_commit_step(request)" in deprecated
-
 
 def test_certificate_and_evaluation_facades_are_thin() -> None:
     certificate_source = (GOVERNANCE / "certificate.py").read_text(encoding="utf-8")

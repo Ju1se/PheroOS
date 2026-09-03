@@ -54,11 +54,8 @@ from pheroos.trace.validation import (
     EVENT_LINEAGE_CONTRACTS as _EVENT_LINEAGE_CONTRACTS,
     EXTENSION_EVENT_PREFIXES as _EXTENSION_EVENT_PREFIXES,
     LAYER_SNAPSHOT_FIELDS as _LAYER_SNAPSHOT_FIELDS,
-    PHEROMONE_CLIP_PAYLOAD_VERSION as _PHEROMONE_CLIP_PAYLOAD_VERSION,
     VALID_EVENT_TYPES as _VALID_EVENT_TYPES,
-    canonical_pheromone_clip_payload as _canonical_pheromone_clip_payload,
     is_extension_event_type as _is_extension_event_type,
-    pheromone_clip_payload_fingerprint as _pheromone_clip_payload_fingerprint,
     required_lineage_fields as _required_lineage_fields,
     validate_event_lineage as _validate_event_lineage,
 )
@@ -72,8 +69,6 @@ TraceStore = _TraceStore
 InMemoryTraceStore = _InMemoryTraceStore
 make_commit_trace_event = _make_commit_trace_event
 missing_required_events = _missing_required_events
-canonical_pheromone_clip_payload = _canonical_pheromone_clip_payload
-pheromone_clip_payload_fingerprint = _pheromone_clip_payload_fingerprint
 is_extension_event_type = _is_extension_event_type
 required_lineage_fields = _required_lineage_fields
 validate_event_lineage = _validate_event_lineage
@@ -82,7 +77,6 @@ validate_event_lineage = _validate_event_lineage
 # inventory continues to attribute them to ``pheroos.trace``.
 EVENT_LINEAGE_CONTRACTS = MappingProxyType(dict(_EVENT_LINEAGE_CONTRACTS))
 EXTENSION_EVENT_PREFIXES = tuple(_EXTENSION_EVENT_PREFIXES)
-PHEROMONE_CLIP_PAYLOAD_VERSION = str(_PHEROMONE_CLIP_PAYLOAD_VERSION)
 VALID_EVENT_TYPES = frozenset(_VALID_EVENT_TYPES)
 # Private schema-builder compatibility bindings.  They intentionally remain
 # outside ``__all__`` as before.
@@ -96,7 +90,6 @@ __all__ = [
     "COMMIT_TRACE_PAYLOAD_VERSION",
     "CommitTraceReplay",
     "EVENT_LINEAGE_CONTRACTS",
-    "PHEROMONE_CLIP_PAYLOAD_VERSION",
     "SCOPED_TRACE_EVENT_SCHEMA_ID",
     "SCOPED_TRACE_EVENT_VERSION",
     "SCOPED_TRACE_APPEND_RECEIPT_VERSION_V2",
@@ -119,12 +112,10 @@ __all__ = [
     "ScopedTraceStoreV2",
     "EXTENSION_EVENT_PREFIXES",
     "VALID_EVENT_TYPES",
-    "canonical_pheromone_clip_payload",
     "commit_trace_event_id",
     "is_extension_event_type",
     "make_commit_trace_event",
     "missing_required_events",
-    "pheromone_clip_payload_fingerprint",
     "required_lineage_fields",
     "scoped_trace_event_schema",
     "replay_commit_trace",

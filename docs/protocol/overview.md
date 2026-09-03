@@ -8,10 +8,12 @@ boundaries are described in [extension-points.md](extension-points.md).
 External runtime composition is described in
 [runtime-integration.md](runtime-integration.md). The type-closed Draft
 promotion-candidate boundary for external consumers is documented in
-[stable-core-consumer.md](stable-core-consumer.md). The normative swarm-memory
-contract is [hybrid-pheromone-abi.md](hybrid-pheromone-abi.md). The implemented
-Draft Optimal Commit evolution that separates Hybrid attention and memory from
-commit authority is specified in [optimal-commit-abi.md](optimal-commit-abi.md).
+[stable-core-consumer.md](stable-core-consumer.md). The former swarm-memory
+contract in [hybrid-pheromone-abi.md](hybrid-pheromone-abi.md) is retained for
+historical reference only; it is not a supported public profile or a
+conformance requirement. The implemented Draft Optimal Commit evolution that
+keeps optional attention inputs separate from commit authority is specified in
+[optimal-commit-abi.md](optimal-commit-abi.md).
 Migration rules live in the corresponding Hybrid and Optimal Commit migration
 documents. Completed execution plans remain as short link-compatible history
 stubs and are not active specifications.
@@ -120,10 +122,10 @@ CLI, examples, app runtime modules, provider frameworks, or tools.
 - Writer fact creation is not permitted.
 - Agent fact creation is denied when the evidence policy forbids it.
 - Trace policy includes lineage for block, commit, recovery, and output decisions.
-- Swarm trace policy includes collective lineage when swarm behavior is declared.
-- Hybrid pheromone policy fields are bounded when declared: subject scoring,
-  kind profiles, diffusion, feedback, nonlinear response, layer coordination,
-  and policy-adjustment bounds.
+- Trace policy includes lineage for every event required by the selected
+  baseline or Commit profile.
+- Legacy collective and pheromone fields, when encountered, are bounded
+  advisory inputs only; no public profile requires swarm or pheromone behavior.
 - An activated collective commit policy binds a declared target and safe
   fallback, exact evidence/risk/window rules, bounded liveness, certificate
   mode, and any distributed fault model without changing baseline manifests.

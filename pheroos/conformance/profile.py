@@ -16,12 +16,9 @@ from pheroos.protocol.models import (
     SUPPORTED_PROTOCOL_VERSIONS,
     CapabilityManifest,
     has_hybrid_pheromone_features,
-    is_swarm_policy,
 )
 
 CORE_PROFILE_VERSION = "pheroos-core-v1"
-SWARM_PROFILE_VERSION = "pheroos-swarm-v1"
-HYBRID_SWARM_PROFILE_VERSION = "pheroos-hybrid-swarm-v1"
 MANIFEST_PROFILE_VERSION = "pheroos-manifest-v1"
 SOURCE_PROFILE_VERSION = "pheroos-source-v3"
 
@@ -59,37 +56,6 @@ CORE_PROFILE = ConformanceProfile(
     ),
 )
 
-SWARM_PROFILE = ConformanceProfile(
-    name="swarm",
-    version=SWARM_PROFILE_VERSION,
-    required_checks=(
-        *CORE_PROFILE.required_checks,
-        "collective_policy",
-        "safe_fallback_collective",
-        "score_breakdown_contract",
-        "pheromone_policy",
-        "pheromone_behavior",
-        "swarm_trace_contract",
-    ),
-)
-
-HYBRID_SWARM_PROFILE = ConformanceProfile(
-    name="hybrid-swarm",
-    version=HYBRID_SWARM_PROFILE_VERSION,
-    required_checks=(
-        *SWARM_PROFILE.required_checks,
-        "pheromone_subject_scoring",
-        "pheromone_kind_profile",
-        "pheromone_diffusion",
-        "pheromone_reinforcement",
-        "pheromone_response_model",
-        "layer_coordination_policy",
-        "policy_adjustment_bounds",
-        "hybrid_trace_contract",
-        "hybrid_authority_boundary",
-    ),
-)
-
 COMMIT_AUTHORITY_CHECKS = (
     "commit_policy_contract",
     "commit_numeric_contract",
@@ -122,13 +88,6 @@ COMMIT_STRUCTURAL_CHECKS = (
 
 HYBRID_ATTENTION_CHECKS = (
     "collective_policy",
-    "pheromone_policy",
-    "pheromone_behavior",
-    "pheromone_subject_scoring",
-    "pheromone_kind_profile",
-    "pheromone_diffusion",
-    "pheromone_reinforcement",
-    "pheromone_response_model",
     "layer_coordination_policy",
     "policy_adjustment_bounds",
 )
@@ -197,10 +156,6 @@ def profile_for_manifest(manifest: CapabilityManifest) -> ConformanceProfile:
     commit_policy = manifest.protocol.collective_commit_policy
     if commit_policy is not None:
         return _commit_profile(manifest, commit_policy)
-    if has_hybrid_pheromone_features(manifest.protocol.collective_decision_policy):
-        return HYBRID_SWARM_PROFILE
-    if is_swarm_policy(manifest.protocol.collective_decision_policy):
-        return SWARM_PROFILE
     return CORE_PROFILE
 
 

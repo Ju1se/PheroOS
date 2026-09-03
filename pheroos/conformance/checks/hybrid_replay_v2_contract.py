@@ -22,11 +22,6 @@ from pheroos.conformance.checks.authority_store_v2_contract import (
 from pheroos.conformance.report import CheckResult
 from pheroos.governance import (
     AuthorityLevel,
-    PheromoneEdge,
-    PheromoneFeedback,
-    PheromoneNeighborhood,
-    PheromoneSubject,
-    PheromoneTrail,
     PolicyAdjustmentProposal,
     ScoutReport,
     HybridReplayAdvanceRequestV2,
@@ -40,6 +35,13 @@ from pheroos.governance import (
     rehydrate_hybrid_replay_state_v2,
     verify_signal_input,
 )
+from pheroos.governance.pheromone import (
+    PheromoneEdge,
+    PheromoneNeighborhood,
+    PheromoneSubject,
+    PheromoneTrail,
+)
+from pheroos.governance.pheromone_feedback import PheromoneFeedback
 from pheroos.governance.authority_session_v2 import (
     GovernanceIssuerCapabilityV2,
     GovernanceIssuerGrantV2,
@@ -65,7 +67,6 @@ from pheroos.protocol import (
     CandidateSpec,
     CollectiveDecisionPolicy,
     EvidencePolicy,
-    PheromoneKindProfile,
     QuorumPolicy,
     ScopedAuthorityPolicyV2,
     ScopedProtocolManifestV2,
@@ -73,6 +74,7 @@ from pheroos.protocol import (
     TracePolicy,
     required_swarm_trace_events,
 )
+from pheroos.protocol.models import PheromoneKindProfile
 from pheroos.protocol.authority_v2 import AuthorityDiagnosticCodeV2
 
 

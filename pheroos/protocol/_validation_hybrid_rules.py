@@ -21,8 +21,6 @@ from pheroos.protocol.models import (
     collective_fallback_id,
     effective_pheromone_scored_subject_types,
     has_hybrid_pheromone_features,
-    is_swarm_policy,
-    required_swarm_trace_events,
 )
 
 
@@ -237,7 +235,6 @@ def _validate_hybrid_lineage(
             safe_candidates=safe_candidates,
         )
     )
-    diagnostics.extend(_validate_swarm_trace(protocol, policy))
     return diagnostics
 
 
@@ -339,23 +336,3 @@ def _validate_collective_fallback(
             )
         ]
     return []
-
-
-def _validate_swarm_trace(
-    protocol: ProtocolManifest,
-    policy: CollectiveDecisionPolicy,
-) -> list[ValidationDiagnostic]:
-    if not is_swarm_policy(policy):
-        return []
-    missing = sorted(
-        required_swarm_trace_events(policy) - set(protocol.trace_policy.required_events)
-    )
-    if not missing:
-        return []
-    return [
-        validation_error(
-            "swarm_trace_lineage_incomplete",
-            f"trace policy missing swarm events: {', '.join(missing)}",
-            "protocol.trace_policy",
-        )
-    ]

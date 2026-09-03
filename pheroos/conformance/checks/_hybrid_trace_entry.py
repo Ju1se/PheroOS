@@ -4,10 +4,8 @@ from dataclasses import dataclass
 from typing import Any, cast
 
 from pheroos.conformance.report import CheckResult
-from pheroos.governance import (
-    HybridReplayState,
-    replay_state_from_hybrid_step,
-)
+from pheroos.governance._swarm.records import HybridReplayState
+from pheroos.governance._swarm.replay import replay_state_from_hybrid_step
 from pheroos.governance.quorum import QuorumDecision
 from pheroos.protocol.models import (
     CapabilityManifest,

@@ -6,7 +6,7 @@ from pheroos.governance._commit_validation import (
     require_commit_step,
     require_commit_text,
 )
-from pheroos.governance._legacy.authority_registry import LEGACY_AUTHORITY_REGISTRY
+from pheroos.governance._process_state import PROCESS_STATE
 from pheroos.governance.authority import AuthorityLevel, can_verify
 from pheroos.governance.commit_numeric import commit_payload_fingerprint
 from pheroos.governance.errors import GovernanceError
@@ -276,7 +276,7 @@ def initialize_support_lease_replay_state(
         schema="pheroos-support-lease-replay-base-v1",
         profile=normalized_profile,
     )
-    with LEGACY_AUTHORITY_REGISTRY.transaction() as registry:
+    with PROCESS_STATE.transaction() as registry:
         cursor = registry.get(_LEGACY_SUPPORT_REPLAY_CURSORS, authority_key)
         if cursor is not None:
             if cursor.base_fingerprint != base_fingerprint:

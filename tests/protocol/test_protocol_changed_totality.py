@@ -28,7 +28,6 @@ from pheroos.protocol import (
     PROTOCOL_SCHEMA_V3,
     CollectiveCommitPolicy,
     DistributedCommitPolicy,
-    PheromoneKindProfile,
     RecoveryProtocol,
     ScopedCapabilityManifestV2,
     TargetSpec,
@@ -37,6 +36,7 @@ from pheroos.protocol import (
     read_capability_manifest,
     validate_capability_manifest,
 )
+from pheroos.protocol.models import PheromoneKindProfile
 
 
 ROOT = Path(__file__).resolve().parents[2]

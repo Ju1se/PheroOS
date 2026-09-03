@@ -74,19 +74,11 @@ def test_wp05_initial_inventory_counts_and_nested_surfaces_are_explicit() -> Non
     assert counts == {
         "cursor_types": 6,
         "legacy_namespaces": 14,
-        "registry_importers": 14,
+        "registry_importers": 0,
         "sentinel_only_issuance_candidates": 40,
         "store_rehydratable_opaque_tokens": 5,
     }
-    assert (
-        "pheroos/governance/_distributed/certificate.py"
-        in inventory["registry_importers"]
-    )
-    assert (
-        "pheroos/governance/_commit_state/liveness.py"
-        not in inventory["registry_importers"]
-    )
-    assert "pheroos/governance/_support/lease.py" not in inventory["registry_importers"]
+    assert inventory["registry_importers"] == []
     assert {entry["namespace"] for entry in inventory["legacy_namespaces"]} >= {
         "legacy.commit.window_cursors",
         "legacy.distributed.epoch_certificates_by_id",
@@ -182,7 +174,10 @@ def test_every_observed_authority_surface_is_an_upper_bound(
     )
 
 
-@pytest.mark.parametrize("category", INVENTORY_KEYS)
+@pytest.mark.parametrize(
+    "category",
+    tuple(category for category in INVENTORY_KEYS if category != "registry_importers"),
+)
 def test_removal_requires_checked_artifact_tightening(category: str) -> None:
     checked = build_inventory()
     reduced = deepcopy(checked)
@@ -202,7 +197,7 @@ def test_writer_accepts_shrink_then_refuses_restoration(
     target = tmp_path / "legacy-authority-inventory-v1.json"
     write_inventory(target, observed=current)
     reduced = deepcopy(current)
-    _remove_first_entry(reduced, "registry_importers")
+    _remove_first_entry(reduced, "legacy_namespaces")
 
     write_inventory(target, observed=reduced)
 
@@ -298,7 +293,7 @@ def test_cli_check_is_read_only_and_clean() -> None:
     )
 
     assert completed.returncode == 0, completed.stdout + completed.stderr
-    assert "registry_importers=14" in completed.stdout
+    assert "registry_importers=0" in completed.stdout
     assert "sentinel_only_issuance_candidates=40" in completed.stdout
     assert "store_rehydratable_opaque_tokens=5" in completed.stdout
     assert INVENTORY_PATH.read_bytes() == before

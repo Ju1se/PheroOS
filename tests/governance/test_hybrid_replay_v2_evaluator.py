@@ -10,9 +10,9 @@ import pheroos.governance._swarm.pipeline as hybrid_pipeline
 
 from pheroos.governance import (
     PolicyAdjustmentProposal,
-    evaluate_hybrid_collective_step,
-    replay_state_from_hybrid_step,
 )
+from pheroos.governance._swarm.pipeline import evaluate_hybrid_collective_step
+from pheroos.governance._swarm.replay import replay_state_from_hybrid_step
 from pheroos.governance._authority_session_v2.contracts import (
     GovernanceDomainRetirementRequestV2,
     GovernanceIssuerOperationV2,

@@ -13,25 +13,27 @@ from pheroos.governance import (
     AuthorityLevel,
     EvidenceGraph,
     EvidenceNode,
-    HybridReplayState,
     InhibitionSignal,
     LayerPerformanceSnapshot,
     LayerProposal,
     OutputContract,
-    PheromoneEdge,
-    PheromoneFeedback,
-    PheromoneNeighborhood,
-    PheromoneSubject,
-    PheromoneTrail,
     PolicyAdjustmentProposal,
     RecruitmentSignal,
     ScoutReport,
     StopResolution,
     StrategyBias,
-    evaluate_hybrid_collective_step,
     evaluate_output_authorization,
     verify_signal_input,
 )
+from pheroos.governance._swarm.pipeline import evaluate_hybrid_collective_step
+from pheroos.governance._swarm.records import HybridReplayState
+from pheroos.governance.pheromone import (
+    PheromoneEdge,
+    PheromoneNeighborhood,
+    PheromoneSubject,
+    PheromoneTrail,
+)
+from pheroos.governance.pheromone_feedback import PheromoneFeedback
 from pheroos.protocol.models import (
     CapabilityManifest,
     collective_fallback_id,

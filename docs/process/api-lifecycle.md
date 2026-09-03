@@ -83,12 +83,14 @@ public StateStore-backed owner and reusable v2 Conformance matrix now exist.
 Other trusted-host v1 issuers remain Draft until the same per-symbol gate is
 met. No v1 implementation is physically removed by lifecycle metadata.
 
-### WP-05 durable-authority deprecation boundary
+### WP-05 durable-authority lifecycle closure
 
-WP-05 records an exact 86-name Governance cohort as Deprecated. The cohort is
-not selected by a name wildcard. It is the reviewed set of process-local state,
-sentinel-issued records, issuers/transitions, and currentness/authority checks
-covered by these public v2 matrices:
+WP-05 recorded an exact 86-name Governance cohort as Deprecated. Before the
+first published release, the bounded D-06 through D-14 cleanup removed that
+zero-consumer cohort from the public facade and lifecycle artifact. The cohort
+was not selected by a name wildcard: it was the reviewed set of process-local
+state, sentinel-issued records, issuers/transitions, and currentness/authority
+checks covered by these public v2 matrices:
 
 - `run_governance_hybrid_replay_conformance_v2`
 - `run_governance_commit_replay_conformance_v2`
@@ -238,15 +240,12 @@ portable grant revocation because lifecycle denial is part of that executable
 journey. Neither root exposes an opaque capability or session. This evidence
 does not change `draft / promotion_candidate / formal_stable=false`.
 
-WP-01 reserves scoped authority v2 as a new semantic/profile family rather
+WP-01 reserved scoped authority v2 as a new semantic/profile family rather
 than mutating the current Draft surface. The exact IDs and state model are in
-the [authority decision](../protocol/authority-v2-decision.md). A v1 issuer is
-marked Deprecated only after its session-bound replacement exists, is
-exported, has lifecycle metadata, and passes the v2 negative/conformance
-matrix; WP-05 closes that gate for the 86-name cohort above and no broader
-set. The
-[migration contract](../protocol/authority-v2-migration.md) fixes `0.3.0` as
-the earliest possible removal, not a promised removal date.
+the [authority decision](../protocol/authority-v2-decision.md). The migration
+contract remains the historical record for the v2 replacements; its former
+`0.3.0` removal window was superseded for this unreleased package by the
+explicit D-06 through D-14 cleanup.
 
 ## Change Rules
 
@@ -286,36 +285,12 @@ After the first stable ABI release, public API removals should provide:
 Compatibility aliases are acceptable when they reduce migration cost without creating a second incompatible ABI object.
 
 The current Draft public removal ledger is machine-readable in the lifecycle
-artifact. The complete D-01 through D-18 architecture disposition and
-non-public migration gates are recorded in
-[removal-ledger.md](removal-ledger.md):
+artifact. The complete D-01 through D-18 architecture disposition and the
+bounded cleanup decision are recorded in [removal-ledger.md](removal-ledger.md):
 
-| Compatibility surface | Replacement | Earliest removal |
-| --- | --- | --- |
-| five specialized Driver descriptor subclasses | `pheroos.drivers.DriverDescriptor` | `0.3.0` |
-| `pheroos.drivers.DriverHealth` | `pheroos.drivers.DriverProbeResult` | `0.3.0` |
-| `pheroos.governance.CanonicalTarget` | `pheroos.protocol.TargetSpec` | `0.3.0` |
-| `pheroos.governance.RecoveryTrace` | `pheroos.trace.TraceEvent(event_type="recovery")` | `0.3.0` |
-| `pheroos.governance.evaluate_hybrid_commit_evaluation` | `pheroos.governance.evaluate_hybrid_commit_step` | `0.3.0` |
-| `run_conformance(..., root=...)` parameter only | `run_source_conformance(core_root)` for source proof | `0.3.0` |
-| `pheroos.governance.trace` module alias | `pheroos.trace` | `0.3.0` |
-| three Governance commit-codec wrappers | the same names under `pheroos.protocol` | `0.3.0` |
-| 6 Hybrid process-local step/replay authority surfaces | Hybrid Replay v2 owner/evaluator/currentness/advance | `0.3.0` |
-| 27 Commit replay/window/seal/liveness/finality authority surfaces | Commit Replay v2 and Commit Decision v2 owners | `0.3.0` |
-| 11 Risk/threshold authority surfaces | Risk v2 owner | `0.3.0` |
-| 17 Membership/Support/replay authority surfaces | Membership and Support v2 owners | `0.3.0` |
-| 8 local-receipt/certificate/current-finality authority surfaces | Commit Decision and Commit Certificate v2 owners | `0.3.0` |
-| 17 Distributed issuer/transition/current-finality authority surfaces | four-lane Distributed Commit v2 owner | `0.3.0` |
-
-`run_conformance` itself is not deprecated. It remains the manifest
-conformance entrypoint; only its ignored `root` compatibility parameter is
-scheduled for removal.
-
-The WP-05 counts above describe lifecycle entries, not files deleted. Their v1
-implementations remain available for the declared Draft compatibility window,
-and portable historical readers may remain beyond it. Actual removal is owned
-by the non-skippable physical-removal Goal and requires release/consumer
-evidence at or after the earliest removal version.
+The D-06 through D-14 compatibility cohort was removed before the first
+published release. The manifest entrypoint remains `run_conformance(path)`;
+source-boundary proof uses `run_source_conformance(core_root)`.
 
 ## Versioning
 
