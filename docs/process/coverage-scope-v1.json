@@ -248,7 +248,6 @@
           "tests/governance/test_distributed_commit_v2_operations.py",
           "tests/governance/test_distributed_commit_v2_public_api.py",
           "tests/governance/test_distributed_v2_residual_totality.py",
-          "tests/governance/test_distributed_v2_totality.py",
           "tests/governance/test_hybrid_commit_separation.py",
           "tests/governance/test_hybrid_replay_v2_numeric.py",
           "tests/governance/test_hybrid_replay_v2_operations_semantic_gaps.py",
@@ -267,6 +266,12 @@
           "tests/governance/test_support_v2_public_semantics.py",
           "tests/governance/test_wp05_public_activation.py",
           "tests/trace/test_authority_contract_totality.py"
+        ]
+      },
+      {
+        "name": "governance-distributed-totality",
+        "pytest_targets": [
+          "tests/governance/test_distributed_v2_totality.py"
         ]
       },
       {
@@ -361,6 +366,18 @@
           "tests/conformance/test_support_v2_contract.py",
           "tests/conformance/test_swarm_protocol_conformance.py",
           "tests/conformance/test_trace_store_contract.py"
+        ]
+      },
+      {
+        "name": "conformance-finality-reference",
+        "pytest_targets": [
+          "tests/conformance/test_commit_finality_v2_reference_contract.py"
+        ]
+      },
+      {
+        "name": "conformance-finality-independent",
+        "pytest_targets": [
+          "tests/conformance/test_commit_finality_v2_independent_contract.py"
         ]
       },
       {

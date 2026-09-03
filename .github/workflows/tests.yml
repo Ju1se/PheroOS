@@ -29,10 +29,13 @@ jobs:
           - governance-1
           - governance-2
           - governance-3
+          - governance-distributed-totality
           - governance-4
           - trace-1
           - trace-2
           - conformance-1
+          - conformance-finality-reference
+          - conformance-finality-independent
           - conformance-2
           - conformance-runtime
           - ecosystem
@@ -492,10 +495,13 @@ jobs:
           - governance-1
           - governance-2
           - governance-3
+          - governance-distributed-totality
           - governance-4
           - trace-1
           - trace-2
           - conformance-1
+          - conformance-finality-reference
+          - conformance-finality-independent
           - conformance-2
           - conformance-runtime
           - ecosystem
