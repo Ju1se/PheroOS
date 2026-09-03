@@ -218,7 +218,7 @@
       }
     },
     "tests": {
-      "collected": 5834
+      "collected": 5833
     },
     "toolchain": {
       "ci_constraints_sha256": "9a2d83e622db4e0d189d03348d8699b329f6fc97dc93af7686d6cf270ce73370",
