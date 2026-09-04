@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pheroos-bench"
+version = "0.1.0"
+description = "A small, reproducible benchmark for PheroOS governed authority and commit protocol experiments."
+requires-python = ">=3.12"
+dependencies = [
+  "numpy>=2.0,<3.0",
+  "pheroos @ git+https://github.com/Ju1se/PheroOS.git@4f292de799b01e57bdbb87e915191f310d219579"
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0.0"]
+
+[project.scripts]
+pheroos-bench = "pheroos_bench.run:main"
+pheroos-bench-e2 = "pheroos_bench.e2_run:main"
+pheroos-bench-e3-verdict = "pheroos_bench.e3_verdict:main"
+pheroos-bench-e3-llm = "pheroos_bench.e3_llm:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]

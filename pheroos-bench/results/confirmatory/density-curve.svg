@@ -1,0 +1,160 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="650" viewBox="0 0 960 650">
+<title>PheroOS field benchmark density sweep</title>
+<rect width="100%" height="100%" fill="white"/>
+<text x="78" y="30" font-family="sans-serif" font-size="20" fill="#222">PheroOS field benchmark — density sweep</text>
+<text x="78" y="51" font-family="sans-serif" font-size="12" fill="#555">40 paired confirmatory seeds per density; pilot excluded</text>
+<rect x="78" y="70" width="852" height="215" fill="none" stroke="#bbb"/>
+<text x="78" y="58" font-family="sans-serif" font-size="14" fill="#222">Final path regret (lower is better)</text>
+<line x1="78" y1="285.0" x2="930" y2="285.0" stroke="#eee"/>
+<text x="70" y="289.0" text-anchor="end" font-family="sans-serif" font-size="11" fill="#555">0.00</text>
+<line x1="78" y1="242.0" x2="930" y2="242.0" stroke="#eee"/>
+<text x="70" y="246.0" text-anchor="end" font-family="sans-serif" font-size="11" fill="#555">0.11</text>
+<line x1="78" y1="199.0" x2="930" y2="199.0" stroke="#eee"/>
+<text x="70" y="203.0" text-anchor="end" font-family="sans-serif" font-size="11" fill="#555">0.22</text>
+<line x1="78" y1="156.0" x2="930" y2="156.0" stroke="#eee"/>
+<text x="70" y="160.0" text-anchor="end" font-family="sans-serif" font-size="11" fill="#555">0.33</text>
+<line x1="78" y1="113.0" x2="930" y2="113.0" stroke="#eee"/>
+<text x="70" y="117.0" text-anchor="end" font-family="sans-serif" font-size="11" fill="#555">0.44</text>
+<line x1="78" y1="70.0" x2="930" y2="70.0" stroke="#eee"/>
+<text x="70" y="74.0" text-anchor="end" font-family="sans-serif" font-size="11" fill="#555">0.55</text>
+<text transform="translate(16 178) rotate(-90)" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#222">normalized regret</text>
+<line x1="78.0" y1="285" x2="78.0" y2="290" stroke="#777"/>
+<text x="78.0" y="305" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#555">0.05</text>
+<line x1="220.0" y1="285" x2="220.0" y2="290" stroke="#777"/>
+<text x="220.0" y="305" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#555">0.10</text>
+<line x1="362.0" y1="285" x2="362.0" y2="290" stroke="#777"/>
+<text x="362.0" y="305" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#555">0.15</text>
+<line x1="504.0" y1="285" x2="504.0" y2="290" stroke="#777"/>
+<text x="504.0" y="305" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#555">0.20</text>
+<line x1="646.0" y1="285" x2="646.0" y2="290" stroke="#777"/>
+<text x="646.0" y="305" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#555">0.25</text>
+<line x1="788.0" y1="285" x2="788.0" y2="290" stroke="#777"/>
+<text x="788.0" y="305" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#555">0.30</text>
+<line x1="930.0" y1="285" x2="930.0" y2="290" stroke="#777"/>
+<text x="930.0" y="305" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#555">0.35</text>
+<text x="504" y="323" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#222">agent density ρ = agents / graph nodes</text>
+<rect x="78" y="385" width="852" height="215" fill="none" stroke="#bbb"/>
+<text x="78" y="373" font-family="sans-serif" font-size="14" fill="#222">Communication ratio vs centralized (lower is better)</text>
+<line x1="78" y1="600.0" x2="930" y2="600.0" stroke="#eee"/>
+<text x="70" y="604.0" text-anchor="end" font-family="sans-serif" font-size="11" fill="#555">0.00</text>
+<line x1="78" y1="557.0" x2="930" y2="557.0" stroke="#eee"/>
+<text x="70" y="561.0" text-anchor="end" font-family="sans-serif" font-size="11" fill="#555">0.60</text>
+<line x1="78" y1="514.0" x2="930" y2="514.0" stroke="#eee"/>
+<text x="70" y="518.0" text-anchor="end" font-family="sans-serif" font-size="11" fill="#555">1.20</text>
+<line x1="78" y1="471.0" x2="930" y2="471.0" stroke="#eee"/>
+<text x="70" y="475.0" text-anchor="end" font-family="sans-serif" font-size="11" fill="#555">1.80</text>
+<line x1="78" y1="428.0" x2="930" y2="428.0" stroke="#eee"/>
+<text x="70" y="432.0" text-anchor="end" font-family="sans-serif" font-size="11" fill="#555">2.40</text>
+<line x1="78" y1="385.0" x2="930" y2="385.0" stroke="#eee"/>
+<text x="70" y="389.0" text-anchor="end" font-family="sans-serif" font-size="11" fill="#555">3.00</text>
+<text transform="translate(16 492) rotate(-90)" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#222">bytes / centralized bytes</text>
+<line x1="78.0" y1="600" x2="78.0" y2="605" stroke="#777"/>
+<text x="78.0" y="620" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#555">0.05</text>
+<line x1="220.0" y1="600" x2="220.0" y2="605" stroke="#777"/>
+<text x="220.0" y="620" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#555">0.10</text>
+<line x1="362.0" y1="600" x2="362.0" y2="605" stroke="#777"/>
+<text x="362.0" y="620" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#555">0.15</text>
+<line x1="504.0" y1="600" x2="504.0" y2="605" stroke="#777"/>
+<text x="504.0" y="620" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#555">0.20</text>
+<line x1="646.0" y1="600" x2="646.0" y2="605" stroke="#777"/>
+<text x="646.0" y="620" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#555">0.25</text>
+<line x1="788.0" y1="600" x2="788.0" y2="605" stroke="#777"/>
+<text x="788.0" y="620" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#555">0.30</text>
+<line x1="930.0" y1="600" x2="930.0" y2="605" stroke="#777"/>
+<text x="930.0" y="620" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#555">0.35</text>
+<text x="504" y="638" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#222">agent density ρ = agents / graph nodes</text>
+<line x1="78" y1="226.7" x2="930" y2="226.7" stroke="#e45756" stroke-dasharray="4 4"/>
+<text x="926" y="222.7" text-anchor="end" font-family="sans-serif" font-size="11" fill="#e45756">absolute floor 0.15</text>
+<line x1="78" y1="549.8" x2="930" y2="549.8" stroke="#e45756" stroke-dasharray="4 4"/>
+<text x="926" y="545.8" text-anchor="end" font-family="sans-serif" font-size="11" fill="#e45756">communication gate 0.70</text>
+<polyline points="78.0,268.5 220.0,271.0 362.0,280.0 504.0,282.7 646.0,283.4 788.0,283.3 930.0,283.1" fill="none" stroke="#54a24b" stroke-width="2.4"/>
+<polyline points="78.0,528.3 220.0,528.3 362.0,528.3 504.0,528.3 646.0,528.3 788.0,528.3 930.0,528.3" fill="none" stroke="#54a24b" stroke-width="2.4"/>
+<circle cx="78.0" cy="268.5" r="3" fill="#54a24b"/>
+<circle cx="78.0" cy="528.3" r="3" fill="#54a24b"/>
+<circle cx="220.0" cy="271.0" r="3" fill="#54a24b"/>
+<circle cx="220.0" cy="528.3" r="3" fill="#54a24b"/>
+<circle cx="362.0" cy="280.0" r="3" fill="#54a24b"/>
+<circle cx="362.0" cy="528.3" r="3" fill="#54a24b"/>
+<circle cx="504.0" cy="282.7" r="3" fill="#54a24b"/>
+<circle cx="504.0" cy="528.3" r="3" fill="#54a24b"/>
+<circle cx="646.0" cy="283.4" r="3" fill="#54a24b"/>
+<circle cx="646.0" cy="528.3" r="3" fill="#54a24b"/>
+<circle cx="788.0" cy="283.3" r="3" fill="#54a24b"/>
+<circle cx="788.0" cy="528.3" r="3" fill="#54a24b"/>
+<circle cx="930.0" cy="283.1" r="3" fill="#54a24b"/>
+<circle cx="930.0" cy="528.3" r="3" fill="#54a24b"/>
+<polyline points="78.0,233.0 220.0,257.9 362.0,267.6 504.0,269.1 646.0,245.7 788.0,261.0 930.0,265.5" fill="none" stroke="#e45756" stroke-width="2.4"/>
+<polyline points="78.0,459.4 220.0,442.0 362.0,425.8 504.0,409.4 646.0,404.5 788.0,404.6 930.0,405.6" fill="none" stroke="#e45756" stroke-width="2.4"/>
+<circle cx="78.0" cy="233.0" r="3" fill="#e45756"/>
+<circle cx="78.0" cy="459.4" r="3" fill="#e45756"/>
+<circle cx="220.0" cy="257.9" r="3" fill="#e45756"/>
+<circle cx="220.0" cy="442.0" r="3" fill="#e45756"/>
+<circle cx="362.0" cy="267.6" r="3" fill="#e45756"/>
+<circle cx="362.0" cy="425.8" r="3" fill="#e45756"/>
+<circle cx="504.0" cy="269.1" r="3" fill="#e45756"/>
+<circle cx="504.0" cy="409.4" r="3" fill="#e45756"/>
+<circle cx="646.0" cy="245.7" r="3" fill="#e45756"/>
+<circle cx="646.0" cy="404.5" r="3" fill="#e45756"/>
+<circle cx="788.0" cy="261.0" r="3" fill="#e45756"/>
+<circle cx="788.0" cy="404.6" r="3" fill="#e45756"/>
+<circle cx="930.0" cy="265.5" r="3" fill="#e45756"/>
+<circle cx="930.0" cy="405.6" r="3" fill="#e45756"/>
+<polyline points="78.0,265.1 220.0,264.4 362.0,264.1 504.0,264.5 646.0,264.9 788.0,264.6 930.0,264.5" fill="none" stroke="#4c78a8" stroke-width="2.4"/>
+<polyline points="78.0,600.0 220.0,600.0 362.0,600.0 504.0,600.0 646.0,600.0 788.0,600.0 930.0,600.0" fill="none" stroke="#4c78a8" stroke-width="2.4"/>
+<circle cx="78.0" cy="265.1" r="3" fill="#4c78a8"/>
+<circle cx="78.0" cy="600.0" r="3" fill="#4c78a8"/>
+<circle cx="220.0" cy="264.4" r="3" fill="#4c78a8"/>
+<circle cx="220.0" cy="600.0" r="3" fill="#4c78a8"/>
+<circle cx="362.0" cy="264.1" r="3" fill="#4c78a8"/>
+<circle cx="362.0" cy="600.0" r="3" fill="#4c78a8"/>
+<circle cx="504.0" cy="264.5" r="3" fill="#4c78a8"/>
+<circle cx="504.0" cy="600.0" r="3" fill="#4c78a8"/>
+<circle cx="646.0" cy="264.9" r="3" fill="#4c78a8"/>
+<circle cx="646.0" cy="600.0" r="3" fill="#4c78a8"/>
+<circle cx="788.0" cy="264.6" r="3" fill="#4c78a8"/>
+<circle cx="788.0" cy="600.0" r="3" fill="#4c78a8"/>
+<circle cx="930.0" cy="264.5" r="3" fill="#4c78a8"/>
+<circle cx="930.0" cy="600.0" r="3" fill="#4c78a8"/>
+<polyline points="78.0,100.3 220.0,99.7 362.0,98.0 504.0,99.6 646.0,99.8 788.0,99.1 930.0,100.5" fill="none" stroke="#8c8c8c" stroke-width="2.4"/>
+<polyline points="78.0,600.0 220.0,600.0 362.0,600.0 504.0,600.0 646.0,600.0 788.0,600.0 930.0,600.0" fill="none" stroke="#8c8c8c" stroke-width="2.4"/>
+<circle cx="78.0" cy="100.3" r="3" fill="#8c8c8c"/>
+<circle cx="78.0" cy="600.0" r="3" fill="#8c8c8c"/>
+<circle cx="220.0" cy="99.7" r="3" fill="#8c8c8c"/>
+<circle cx="220.0" cy="600.0" r="3" fill="#8c8c8c"/>
+<circle cx="362.0" cy="98.0" r="3" fill="#8c8c8c"/>
+<circle cx="362.0" cy="600.0" r="3" fill="#8c8c8c"/>
+<circle cx="504.0" cy="99.6" r="3" fill="#8c8c8c"/>
+<circle cx="504.0" cy="600.0" r="3" fill="#8c8c8c"/>
+<circle cx="646.0" cy="99.8" r="3" fill="#8c8c8c"/>
+<circle cx="646.0" cy="600.0" r="3" fill="#8c8c8c"/>
+<circle cx="788.0" cy="99.1" r="3" fill="#8c8c8c"/>
+<circle cx="788.0" cy="600.0" r="3" fill="#8c8c8c"/>
+<circle cx="930.0" cy="100.5" r="3" fill="#8c8c8c"/>
+<circle cx="930.0" cy="600.0" r="3" fill="#8c8c8c"/>
+<polyline points="78.0,270.8 220.0,271.0 362.0,279.9 504.0,282.9 646.0,283.8 788.0,283.6 930.0,283.2" fill="none" stroke="#f58518" stroke-width="2.4"/>
+<polyline points="78.0,458.4 220.0,456.7 362.0,455.9 504.0,454.7 646.0,454.8 788.0,454.7 930.0,454.7" fill="none" stroke="#f58518" stroke-width="2.4"/>
+<circle cx="78.0" cy="270.8" r="3" fill="#f58518"/>
+<circle cx="78.0" cy="458.4" r="3" fill="#f58518"/>
+<circle cx="220.0" cy="271.0" r="3" fill="#f58518"/>
+<circle cx="220.0" cy="456.7" r="3" fill="#f58518"/>
+<circle cx="362.0" cy="279.9" r="3" fill="#f58518"/>
+<circle cx="362.0" cy="455.9" r="3" fill="#f58518"/>
+<circle cx="504.0" cy="282.9" r="3" fill="#f58518"/>
+<circle cx="504.0" cy="454.7" r="3" fill="#f58518"/>
+<circle cx="646.0" cy="283.8" r="3" fill="#f58518"/>
+<circle cx="646.0" cy="454.8" r="3" fill="#f58518"/>
+<circle cx="788.0" cy="283.6" r="3" fill="#f58518"/>
+<circle cx="788.0" cy="454.7" r="3" fill="#f58518"/>
+<circle cx="930.0" cy="283.2" r="3" fill="#f58518"/>
+<circle cx="930.0" cy="454.7" r="3" fill="#f58518"/>
+<line x1="78" y1="621" x2="98" y2="621" stroke="#54a24b" stroke-width="3"/>
+<text x="103" y="625" font-family="sans-serif" font-size="11" fill="#222">centralized_online</text>
+<line x1="283" y1="621" x2="303" y2="621" stroke="#e45756" stroke-width="3"/>
+<text x="308" y="625" font-family="sans-serif" font-size="11" fill="#222">field_local</text>
+<line x1="453" y1="621" x2="473" y2="621" stroke="#4c78a8" stroke-width="3"/>
+<text x="478" y="625" font-family="sans-serif" font-size="11" fill="#222">greedy_local</text>
+<line x1="623" y1="621" x2="643" y2="621" stroke="#8c8c8c" stroke-width="3"/>
+<text x="648" y="625" font-family="sans-serif" font-size="11" fill="#222">random_local</text>
+<line x1="793" y1="621" x2="813" y2="621" stroke="#f58518" stroke-width="3"/>
+<text x="818" y="625" font-family="sans-serif" font-size="11" fill="#222">stateless_local_aggregate</text>
+</svg>
