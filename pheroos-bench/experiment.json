@@ -1,0 +1,61 @@
+{
+  "experiment_id": "pheroos-field-e1",
+  "status": "confirmatory",
+  "core_dependency": {
+    "name": "pheroos",
+    "version": "0.1.0",
+    "git_commit": "4f292de799b01e57bdbb87e915191f310d219579",
+    "git_tree": "f65cba2d9d4392ce814f3cb81ac83513cc03d71a"
+  },
+  "environment": {
+    "graph_nodes": 300,
+    "route_cells": 64,
+    "steps": 500,
+    "shock_step": 250,
+    "resource_fault": {"start": 300, "steps": 30, "agent_fraction": 0.25},
+    "coordinator_outage": {"start": 330, "steps": 30},
+    "field_store_shards": 4,
+    "field_store_outage": {"start": 330, "steps": 30, "failed_shards": [0]},
+    "local_control_outage": {"start": 330, "steps": 30, "failed_resource_fraction": 0.25},
+    "failure_budget": 0.25
+  },
+  "density": {
+    "definition": "agents / graph_nodes",
+    "values": [0.05, 0.10, 0.15, 0.20, 0.25, 0.30, 0.35]
+  },
+  "seeds": {"pilot": [11, 29, 47, 83], "confirmatory_start": 1000, "confirmatory_count": 40},
+  "arms": [
+    "random_local",
+    "greedy_local",
+    "stateless_local_aggregate",
+    "centralized_online",
+    "field_local"
+  ],
+  "exploration": {"policy": "none", "epsilon": 0.0, "applies_to": "all_arms"},
+  "codec": {
+    "name": "canonical-json-v1",
+    "sort_keys": true,
+    "separators": [",", ":"],
+    "ensure_ascii": true,
+    "count": "every encoded observation, action, field deposit, field read, and coordinator message"
+  },
+  "decision_rule": {
+    "primary": "path_regret_vs_stateless_local_aggregate",
+    "quality_additive_floor_vs_centralized": 0.05,
+    "quality_absolute_floor": 0.15,
+    "communication_ratio_max_vs_centralized": 0.70,
+    "recovery_ratio_max_vs_centralized": 0.75,
+    "required_adjacent_passing_density_points": 2,
+    "confidence": 0.95,
+    "retain_swarm_claim_only_if": "field meets all three floors at two adjacent densities and beats stateless_local_aggregate on primary endpoint",
+    "rename_if": "no adjacent density pair meets the complete gate"
+  },
+  "pilot": {
+    "allowed": true,
+    "densities": [0.10, 0.30],
+    "seed_count": 4,
+    "purpose": "calibrate normalized regret scale only",
+    "counts_toward_verdict": false,
+    "must_be_discarded": true
+  }
+}

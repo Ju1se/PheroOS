@@ -1,0 +1,129 @@
+{
+  "abort_on_failure": "sys.exit(1)",
+  "all_cells_passed": true,
+  "cells": {
+    "N100_p0.02": {
+      "N": 100,
+      "ci_halfwidth": 0.004566660524999988,
+      "ci_high": 0.18638554159999998,
+      "ci_low": 0.17725222055,
+      "informed_fraction": 0.02,
+      "median_solitary_minus_oracle": 0.1812464366,
+      "paired_count": 40,
+      "passed": true
+    },
+    "N100_p0.05": {
+      "N": 100,
+      "ci_halfwidth": 0.003826043875000004,
+      "ci_high": 0.1811133792,
+      "ci_low": 0.17346129145,
+      "informed_fraction": 0.05,
+      "median_solitary_minus_oracle": 0.17745501875,
+      "paired_count": 40,
+      "passed": true
+    },
+    "N100_p0.10": {
+      "N": 100,
+      "ci_halfwidth": 0.0038810144749999997,
+      "ci_high": 0.17157197205,
+      "ci_low": 0.1638099431,
+      "informed_fraction": 0.1,
+      "median_solitary_minus_oracle": 0.16790713655,
+      "paired_count": 40,
+      "passed": true
+    },
+    "N100_p0.20": {
+      "N": 100,
+      "ci_halfwidth": 0.0037672143999999963,
+      "ci_high": 0.1524409758,
+      "ci_low": 0.144906547,
+      "informed_fraction": 0.2,
+      "median_solitary_minus_oracle": 0.14885859075000002,
+      "paired_count": 40,
+      "passed": true
+    },
+    "N1600_p0.02": {
+      "N": 1600,
+      "ci_halfwidth": 0.003920782075000018,
+      "ci_high": 0.18682174140000002,
+      "ci_low": 0.17898017724999998,
+      "informed_fraction": 0.02,
+      "median_solitary_minus_oracle": 0.18305847985,
+      "paired_count": 40,
+      "passed": true
+    },
+    "N1600_p0.05": {
+      "N": 1600,
+      "ci_halfwidth": 0.0038019670999999977,
+      "ci_high": 0.1811027076,
+      "ci_low": 0.1734987734,
+      "informed_fraction": 0.05,
+      "median_solitary_minus_oracle": 0.17745348575,
+      "paired_count": 40,
+      "passed": true
+    },
+    "N1600_p0.10": {
+      "N": 1600,
+      "ci_halfwidth": 0.0035836850999999975,
+      "ci_high": 0.17157101295,
+      "ci_low": 0.16440364275,
+      "informed_fraction": 0.1,
+      "median_solitary_minus_oracle": 0.1681498238,
+      "paired_count": 40,
+      "passed": true
+    },
+    "N1600_p0.20": {
+      "N": 1600,
+      "ci_halfwidth": 0.0032078922250000086,
+      "ci_high": 0.1525075388,
+      "ci_low": 0.14609175435,
+      "informed_fraction": 0.2,
+      "median_solitary_minus_oracle": 0.1494285151,
+      "paired_count": 40,
+      "passed": true
+    },
+    "N400_p0.02": {
+      "N": 400,
+      "ci_halfwidth": 0.004039228924999999,
+      "ci_high": 0.18682118315000001,
+      "ci_low": 0.17874272530000002,
+      "informed_fraction": 0.02,
+      "median_solitary_minus_oracle": 0.1826946371,
+      "paired_count": 40,
+      "passed": true
+    },
+    "N400_p0.05": {
+      "N": 400,
+      "ci_halfwidth": 0.003827037724999996,
+      "ci_high": 0.1811030185,
+      "ci_low": 0.17344894305,
+      "informed_fraction": 0.05,
+      "median_solitary_minus_oracle": 0.17746410315,
+      "paired_count": 40,
+      "passed": true
+    },
+    "N400_p0.10": {
+      "N": 400,
+      "ci_halfwidth": 0.003645374950000002,
+      "ci_high": 0.1715705395,
+      "ci_low": 0.1642797896,
+      "informed_fraction": 0.1,
+      "median_solitary_minus_oracle": 0.16791170935,
+      "paired_count": 40,
+      "passed": true
+    },
+    "N400_p0.20": {
+      "N": 400,
+      "ci_halfwidth": 0.0033263705749999872,
+      "ci_high": 0.15250745405,
+      "ci_low": 0.14585471290000002,
+      "informed_fraction": 0.2,
+      "median_solitary_minus_oracle": 0.14931453020000002,
+      "paired_count": 40,
+      "passed": true
+    }
+  },
+  "experiment": "pheroos-couzin-e2",
+  "status": "PASS_ADMISSION",
+  "treatment_executed": false
+}

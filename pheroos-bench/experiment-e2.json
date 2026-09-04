@@ -1,0 +1,129 @@
+{
+  "experiment": "pheroos-couzin-e2",
+  "frozen": true,
+  "supersedes": null,
+  "note": "Geometry changed from ring to line because direction is not a transferable quantity when the population spans the ring. See prediction.md section 1.",
+
+  "geometry": {
+    "kind": "line",
+    "wraparound": false,
+    "route_count": 128,
+    "route_count_rationale": "64 caused window clipping at the right edge once agents spread to r*+55; clipping is position-dependent bias. Window width and cost distribution unchanged.",
+    "window_width": 16,
+    "window_offsets": [-7, 8],
+    "window_clipping": "none_by_construction",
+    "position_bounds": [7, 119],
+    "boundary": "absorbing"
+  },
+
+  "costs": {
+    "optimum": 0.80,
+    "others": "Uniform(0.95, 1.05)",
+    "unique_optimum": true,
+    "r_star": "uniform_per_seed in [16, 24]",
+    "noise": "none",
+    "static_across_run": true
+  },
+
+  "initialization": {
+    "rule": "one_sided_line_v1",
+    "informed": "r* + 1 + (informed_rank mod 7)",
+    "uninformed": "r* + 8 + floor(48 * uninformed_rank / uninformed_count)",
+    "M": 48,
+    "M_rationale": "calibrated on solitary only; regret 0.1829, stumble-onto-r* 5.5%. Declared calibration, not a treatment peek.",
+    "invariants": [
+      "every agent position > r*  =>  all directions are -1  =>  direction is transferable",
+      "informed window contains r* at t=0",
+      "uninformed window excludes r* at t=0",
+      "r_star_exclusion is initial_only"
+    ]
+  },
+
+  "direction": {
+    "definition": "sign(target_position - own_position)",
+    "informed_target": "r* (hidden hint)",
+    "uninformed_target": "argmin cost over own visible window",
+    "zero_allowed": true
+  },
+
+  "topology": {
+    "kind": "random_4_regular",
+    "degree": 4,
+    "static": true,
+    "graph_seed": "seed ^ 0x4E1607",
+    "connected": true,
+    "retry_on": ["self_loop", "multi_edge", "disconnected"],
+    "same_graph_across_arms": true
+  },
+
+  "omega": { "informed": 0.8, "uninformed": 0.2 },
+
+  "arms": {
+    "oracle":       { "role": "admission_only", "knows": "r*" },
+    "solitary":     { "role": "admission_and_secondary", "neighbor_term": "off" },
+    "naive_gossip": { "role": "primary_control",
+                      "rule": "copy best_route of one uniformly random neighbor; move via sign(target - position); copied route only steers, never executed outside window" },
+    "couzin":       { "role": "treatment",
+                      "rule": "combined = omega*own_direction + (1-omega)*mean(neighbor_directions); move via sign(combined)" }
+  },
+
+  "timing": { "steps": 500, "update": "synchronous_snapshot" },
+
+  "scan": {
+    "N": [100, 400, 1600],
+    "informed_fraction": [0.02, 0.05, 0.10, 0.20]
+  },
+
+  "endpoints": {
+    "primary":   "paired(global_regret_couzin - global_regret_naive_gossip)",
+    "secondary": ["paired(global_regret_couzin - global_regret_solitary)",
+                  "bytes", "messages", "steps_to_first_r_star_adoption"],
+    "global_regret": {
+      "normalization": "(mean_cost - 0.80) / 0.80",
+      "window": "last_50_steps",
+      "aggregation": "mean_over_agents_and_steps",
+      "reference": "global optimum r*, NOT per-agent visible optimum"
+    }
+  },
+
+  "seeds": {
+    "count": 40,
+    "paired_across_arms": true,
+    "paired_items": ["route_costs", "r_star", "informed_set", "graph", "gossip_neighbor_choice"],
+    "bootstrap_resamples": 10000,
+    "confidence": 0.95,
+    "method": "paired_percentile_bootstrap"
+  },
+
+  "codec": {
+    "id": "fixed-width-binary-v1",
+    "record": "sender:uint16 | step:uint16 | value:uint16",
+    "bytes_per_record": 6,
+    "couzin_value": "encoded direction {-1,0,+1}",
+    "gossip_value": "route id 0..127",
+    "all_neighbor_messages_counted": true,
+    "free_writes": "none",
+    "known_asymmetry": "equal payload, unequal information content: gossip 7 bits vs couzin log2(3)=1.58 bits. Recorded, not corrected."
+  },
+
+  "admission": {
+    "arms": ["solitary", "oracle"],
+    "per_cell": true,
+    "check": "median(solitary_regret - oracle_regret) > 10 * ci_halfwidth(paired_diff(solitary, oracle))",
+    "on_fail": "sys.exit(1)",
+    "abort_means": "treatment arms not executed, no verdict produced"
+  },
+
+  "gate": {
+    "primary": "upper bound of 95% CI of paired(couzin - gossip) < 0 in at least 2 adjacent informed_fraction cells at the same N",
+    "scale_prediction": "the smallest passing informed_fraction is non-increasing in N",
+    "on_total_fail": "record as negative result; do not adjust thresholds; do not rerun"
+  },
+
+  "discipline": {
+    "single_run": true,
+    "thresholds_frozen_before_run": true,
+    "prediction_frozen_before_run": true,
+    "treatment_arms_never_simulated_during_design": true
+  }
+}

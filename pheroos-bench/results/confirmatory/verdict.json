@@ -1,0 +1,152 @@
+{
+  "adjacent_density_gate": false,
+  "confirmatory_only": true,
+  "counts_toward_verdict": true,
+  "density_results": {
+    "0.05": {
+      "checks": {
+        "communication": false,
+        "primary_field_vs_stateless": false,
+        "quality_absolute": true,
+        "quality_additive": false,
+        "recovery": true
+      },
+      "communication_ratio_ci_high": 1.9638343160155143,
+      "communication_ratio_median": 1.9604110742911016,
+      "passed": false,
+      "primary_improvement_ci_low": -0.12042326,
+      "quality_absolute_floor": 0.15,
+      "quality_additive_gap_ci_high": 0.10871998,
+      "quality_additive_gap_median": 0.09154702,
+      "quality_central_median": 0.0423337,
+      "quality_field_median": 0.13388072,
+      "recovery_ratio_ci_high": 0.0,
+      "recovery_ratio_median": 0.0
+    },
+    "0.10": {
+      "checks": {
+        "communication": false,
+        "primary_field_vs_stateless": false,
+        "quality_absolute": true,
+        "quality_additive": true,
+        "recovery": true
+      },
+      "communication_ratio_ci_high": 2.2136141655180652,
+      "communication_ratio_median": 2.204109059619137,
+      "passed": false,
+      "primary_improvement_ci_low": -0.03847676000000001,
+      "quality_absolute_floor": 0.15,
+      "quality_additive_gap_ci_high": 0.038881795000000004,
+      "quality_additive_gap_median": 0.033573175,
+      "quality_central_median": 0.036092075,
+      "quality_field_median": 0.06966525,
+      "recovery_ratio_ci_high": 0.0,
+      "recovery_ratio_median": 0.0
+    },
+    "0.15": {
+      "checks": {
+        "communication": false,
+        "primary_field_vs_stateless": false,
+        "quality_absolute": true,
+        "quality_additive": true,
+        "recovery": true
+      },
+      "communication_ratio_ci_high": 2.4396440224210227,
+      "communication_ratio_median": 2.4298899570796237,
+      "passed": false,
+      "primary_improvement_ci_low": -0.033303105,
+      "quality_absolute_floor": 0.15,
+      "quality_additive_gap_ci_high": 0.03299313,
+      "quality_additive_gap_median": 0.031654524999999996,
+      "quality_central_median": 0.012988880000000001,
+      "quality_field_median": 0.044643405,
+      "recovery_ratio_ci_high": 0.0,
+      "recovery_ratio_median": 0.0
+    },
+    "0.20": {
+      "checks": {
+        "communication": false,
+        "primary_field_vs_stateless": false,
+        "quality_absolute": true,
+        "quality_additive": true,
+        "recovery": true
+      },
+      "communication_ratio_ci_high": 2.674716499089546,
+      "communication_ratio_median": 2.6588722490675885,
+      "passed": false,
+      "primary_improvement_ci_low": -0.041003910000000005,
+      "quality_absolute_floor": 0.15,
+      "quality_additive_gap_ci_high": 0.037965,
+      "quality_additive_gap_median": 0.034851454999999996,
+      "quality_central_median": 0.005932,
+      "quality_field_median": 0.040783454999999996,
+      "recovery_ratio_ci_high": 0.0,
+      "recovery_ratio_median": 0.0
+    },
+    "0.25": {
+      "checks": {
+        "communication": false,
+        "primary_field_vs_stateless": false,
+        "quality_absolute": true,
+        "quality_additive": false,
+        "recovery": true
+      },
+      "communication_ratio_ci_high": 2.739176122837368,
+      "communication_ratio_median": 2.7261575276394234,
+      "passed": false,
+      "primary_improvement_ci_low": -0.10267901499999998,
+      "quality_absolute_floor": 0.15,
+      "quality_additive_gap_ci_high": 0.10313762,
+      "quality_additive_gap_median": 0.09693446,
+      "quality_central_median": 0.004122485,
+      "quality_field_median": 0.101056945,
+      "recovery_ratio_ci_high": 0.0,
+      "recovery_ratio_median": 0.0
+    },
+    "0.30": {
+      "checks": {
+        "communication": false,
+        "primary_field_vs_stateless": false,
+        "quality_absolute": true,
+        "quality_additive": false,
+        "recovery": true
+      },
+      "communication_ratio_ci_high": 2.730940052454653,
+      "communication_ratio_median": 2.7250675598310607,
+      "passed": false,
+      "primary_improvement_ci_low": -0.06426420000000001,
+      "quality_absolute_floor": 0.15,
+      "quality_additive_gap_ci_high": 0.06287858,
+      "quality_additive_gap_median": 0.05715372,
+      "quality_central_median": 0.004454645,
+      "quality_field_median": 0.061608365,
+      "recovery_ratio_ci_high": 0.0,
+      "recovery_ratio_median": 0.0
+    },
+    "0.35": {
+      "checks": {
+        "communication": false,
+        "primary_field_vs_stateless": false,
+        "quality_absolute": true,
+        "quality_additive": true,
+        "recovery": true
+      },
+      "communication_ratio_ci_high": 2.720175482461261,
+      "communication_ratio_median": 2.7114349444973356,
+      "passed": false,
+      "primary_improvement_ci_low": -0.047984240000000004,
+      "quality_absolute_floor": 0.15,
+      "quality_additive_gap_ci_high": 0.04842471500000001,
+      "quality_additive_gap_median": 0.045198685,
+      "quality_central_median": 0.00497675,
+      "quality_field_median": 0.050175435000000004,
+      "recovery_ratio_ci_high": 0.0,
+      "recovery_ratio_median": 0.0
+    }
+  },
+  "experiment_id": "pheroos-field-e1",
+  "passing_density_points": [],
+  "pilot_is_excluded": true,
+  "rename_required_if_no_adjacent_pair": true,
+  "status": "FAIL_RENAME_REQUIRED"
+}
