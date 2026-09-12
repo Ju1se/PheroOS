@@ -40,6 +40,21 @@ Trace 与 Conformance 都已经实现并由确定性测试覆盖。在首个稳�
 [消费候选合同](docs/protocol/stable-core-consumer.md) 开始并固定版本。
 该候选不构成 Stable 兼容性保证。
 
+## 外部 runtime 与实验记录
+
+G0/G1 mock runtime 已独立发布在
+[Ju1se/pheroos-runtime](https://github.com/Ju1se/pheroos-runtime)。
+对本仓库执行 clone 或 pull 不会自动下载那个独立仓库。
+获取 G1 源码与测试需单独 clone `https://github.com/Ju1se/pheroos-runtime.git`；
+`g1-mock-v1` 标识原先通过验收的 G1 实现。
+
+[校正版计划全文](pheroos-bench/docs/reviewed-runtime-plan.md) 已在本仓库保存，
+可离线阅读，并标注原始来源和版本。已有交付分别见
+[G1 验收数据](https://github.com/Ju1se/pheroos-runtime/tree/g1-mock-v1/results)、
+[G2/R0 结果](pheroos-bench/results/r0/RESULTS.md) 和
+[Mac/WSL2 复现说明](https://github.com/Ju1se/pheroos-runtime/blob/main/docs/replication.md)。
+计划仍为研究提案，G1 与 R0 分别是 mock 工程验收和测量仪器验证。
+
 ## 快速开始
 
 从源码克隆并安装：
