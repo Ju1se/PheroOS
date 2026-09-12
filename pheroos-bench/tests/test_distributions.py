@@ -130,3 +130,35 @@ print(json.dumps([str(Path(e2_run.__file__).resolve()), e2_run._code_fingerprint
         digest.update(path.read_bytes())
     assert fingerprint == digest.hexdigest()
     assert fingerprint != hashlib.sha256(b"").hexdigest()
+
+    # Exercise the new CLI from the artifact, without site/editable fallback,
+    # credentials, or model calls. This catches missing installed E3 modules.
+    env["PYTHONPATH"] = str(target)
+    output = _run(
+        [
+            sys.executable,
+            "-S",
+            "-c",
+            """
+import json
+from pathlib import Path
+from pheroos_bench import e3_llm, e3_verdict
+assert e3_verdict.ESTIMAND == "paired_item_mean_v1"
+def no_calls(**kwargs):
+    raise AssertionError("dry-run must never call a provider")
+e3_llm._post_json = no_calls
+items = Path("preview-items.jsonl")
+items.write_text(json.dumps({"question": "1+1?", "answer": "2"}) + "\\n")
+assert e3_llm.main([
+    "--items", str(items), "--dry-run", "--n", "4",
+    "--repetitions", "3", "--api-key-env", ""
+]) == 0
+""",
+        ],
+        tmp_path,
+        env,
+    )
+    preview = json.loads(output)
+    assert preview["dry_run"] is True
+    assert preview["call_count"] == 12
+    assert preview["monetary_upper_bound"] is None

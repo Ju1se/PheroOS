@@ -1,4 +1,4 @@
-"""Pre-registered E3 admission and verdict calculations.
+"""Explicitly versioned E3 admission and verdict calculations.
 
 This module is deliberately provider-free.  The runner that produces raw LLM
 records lives outside this statistical boundary; records only need an item,
@@ -14,8 +14,19 @@ import random
 import sys
 from collections import defaultdict
 from pathlib import Path
-from statistics import median
+from statistics import mean, median
 from typing import Any, Iterable
+
+
+ESTIMAND = "paired_item_mean_v1"
+
+
+class AdmissionRejected(SystemExit):
+    """Keep a failed admission diagnostic while preserving the nonzero exit."""
+
+    def __init__(self, report: dict[str, Any]) -> None:
+        super().__init__(1)
+        self.report = report
 
 
 def _as_float(value: Any) -> float:
@@ -65,6 +76,11 @@ def _validate_records(
     rows: list[dict[str, Any]], config: dict[str, Any], *, phase: str
 ) -> list[str]:
     """Check the declared experiment grid before looking at any outcome."""
+    if config.get("statistics", {}).get("estimand") != ESTIMAND:
+        raise ValueError(
+            f"statistics.estimand must explicitly declare {ESTIMAND!r}; "
+            "legacy median configurations require a new, prospectively frozen plan"
+        )
     confirmatory = phase == "confirmatory"
     if confirmatory and (
         config.get("status") != "frozen" or _has_pilot_placeholder(config)
@@ -196,20 +212,40 @@ def paired_percentile_ci(
     confidence: float = 0.95,
     resamples: int = 10_000,
     seed: int = 37,
+    statistic: str = "median",
+    strata: list[str] | None = None,
 ) -> tuple[float, float]:
-    """Percentile bootstrap CI over already-paired item differences."""
+    """Two-sided item bootstrap; median is retained for historical diagnostics.
+
+    New E3 success gates explicitly select ``mean``. Repetitions are averaged
+    within items before resampling: they are not independent extra items.
+    """
 
     if not differences:
         raise ValueError("cannot bootstrap an empty sample")
     if not 0.0 < confidence < 1.0:
         raise ValueError("confidence must be in (0, 1)")
-    if resamples <= 0:
-        raise ValueError("resamples must be positive")
+    _positive_int(resamples)
+    if statistic not in ("mean", "median"):
+        raise ValueError("statistic must be mean or median")
+    differences = [_as_float(value) for value in differences]
+    estimate = (
+        (lambda draw: math.fsum(draw) / len(draw)) if statistic == "mean" else median
+    )
+    if strata is not None and len(strata) != len(differences):
+        raise ValueError("strata must identify every paired item")
+    groups: dict[str, list[float]] = defaultdict(list)
+    for value, group in zip(differences, strata or ["all"] * len(differences)):
+        groups[group].append(value)
     rng = random.Random(seed)
     estimates = []
     for _ in range(resamples):
-        draw = [differences[rng.randrange(len(differences))] for _ in differences]
-        estimates.append(median(draw))
+        draw = [
+            values[rng.randrange(len(values))]
+            for values in groups.values()
+            for _ in values
+        ]
+        estimates.append(estimate(draw))
     alpha = (1.0 - confidence) / 2.0
     return percentile(estimates, alpha), percentile(estimates, 1.0 - alpha)
 
@@ -234,7 +270,7 @@ def _metric_variance_by_arm_across_cells(
 def assert_nonzero_cell_variance(
     rows: list[dict[str, Any]], metric: str = "quality"
 ) -> None:
-    """Reject a flat arm/cell metric; flat controls are a broken instrument."""
+    """Preserve the existing flat-cell rejection, not a validated power check."""
 
     variances = _metric_variance_by_arm_across_cells(rows, metric)
     flat = sorted(arm for arm, variance in variances.items() if variance <= 0.0)
@@ -243,25 +279,80 @@ def assert_nonzero_cell_variance(
 
 
 def _ci_payload(
-    differences: list[float], *, seed: int, config: dict[str, Any]
+    differences: list[float],
+    *,
+    seed: int,
+    config: dict[str, Any],
+    strata: list[str] | None = None,
 ) -> dict[str, Any]:
     statistics = config.get("statistics", {})
     confidence = float(statistics.get("confidence", 0.95))
-    resamples = int(statistics.get("bootstrap_resamples", 10_000))
+    resamples = _positive_int(statistics.get("bootstrap_resamples", 10_000))
     lo, hi = paired_percentile_ci(
-        differences, confidence=confidence, resamples=resamples, seed=seed
+        differences,
+        confidence=confidence,
+        resamples=resamples,
+        seed=seed,
+        statistic="mean",
+        strata=strata,
+    )
+    median_lo, median_hi = paired_percentile_ci(
+        differences,
+        confidence=confidence,
+        resamples=resamples,
+        seed=seed,
+        statistic="median",
+        strata=strata,
     )
     return {
         "n_items": len(differences),
-        "median": median(differences),
+        "estimand": ESTIMAND,
+        "mean": mean(differences),
         "ci_low": lo,
         "ci_high": hi,
         "ci_halfwidth": (hi - lo) / 2.0,
+        "ci_status": (
+            "INSUFFICIENT_RESOLUTION"
+            if math.isclose(lo, hi, rel_tol=0.0, abs_tol=1e-12)
+            else "OK"
+        ),
+        "confidence": confidence,
+        "interval": "two_sided_percentile",
+        "nominal_directional_alpha": (1.0 - confidence) / 2.0,
+        "median_robustness": {
+            "median": median(differences),
+            "ci_low": median_lo,
+            "ci_high": median_hi,
+            "used_for_success": False,
+        },
+    }
+
+
+def _descriptive(rows: list[dict[str, Any]], config: dict[str, Any]) -> dict[str, Any]:
+    """Report realized cost; a shared cap does not establish equal expenditure."""
+    unit = config["budget"]["unit"]
+    grouped: dict[tuple[str, str], list[dict[str, Any]]] = defaultdict(list)
+    for row in rows:
+        grouped[(row["cell"], row["arm"])].append(row)
+    return {
+        "budget_unit": unit,
+        "cap_per_item_arm_repetition": config["budget"]["cap_per_item"],
+        "by_cell_arm": [
+            {
+                "cell": cell,
+                "arm": arm,
+                "n_records": len(values),
+                "quality_mean": mean(row["quality"] for row in values),
+                "spend_total": sum(row[unit] for row in values),
+                "spend_mean": mean(row[unit] for row in values),
+            }
+            for (cell, arm), values in sorted(grouped.items())
+        ],
     }
 
 
 def admission(rows: list[dict[str, Any]], config: dict[str, Any]) -> dict[str, Any]:
-    """Run the unchanged admission gate separately for every benchmark."""
+    """Use the same paired-mean estimand for the gap and its uncertainty."""
     static_arm = _validate_records(rows, config, phase="admission")[0]
     if config["admission"]["arms_run"] not in (
         ["single", "static_homog at max N"],
@@ -273,26 +364,33 @@ def admission(rows: list[dict[str, Any]], config: dict[str, Any]) -> dict[str, A
         selected = [row for row in rows if row["cell"] == cell]
         differences = paired_item_differences(selected, static_arm, "single")
         ci = _ci_payload(differences, seed=10_301, config=config)
-        static_median = median(_item_arm_means(selected, arm=static_arm).values())
-        single_median = median(_item_arm_means(selected, arm="single").values())
-        gap = static_median - single_median
-        passed = gap > 10.0 * ci["ci_halfwidth"]
+        gap = ci["mean"]
+        resolved = ci["ci_status"] == "OK"
+        passed = resolved and gap > 10.0 * ci["ci_halfwidth"]
         cells[cell] = {
-            "status": "PASS_ADMISSION" if passed else "FAIL_ADMISSION",
+            "status": (
+                "INSUFFICIENT_RESOLUTION"
+                if not resolved
+                else "PASS_ADMISSION"
+                if passed
+                else "FAIL_ADMISSION"
+            ),
             "paired": ci,
-            "static_median": static_median,
-            "single_median": single_median,
-            "median_gap": gap,
+            "mean_gap": gap,
         }
-    if any(cell["status"] != "PASS_ADMISSION" for cell in cells.values()):
-        raise SystemExit(1)
-    return {
-        "status": "PASS_ADMISSION",
+    passed = all(cell["status"] == "PASS_ADMISSION" for cell in cells.values())
+    result = {
+        "status": "PASS_ADMISSION" if passed else "FAIL_ADMISSION",
+        "estimand": ESTIMAND,
         "arms": ["single", static_arm],
         "cells": cells,
         "treatment_executed": False,
-        "rule": "median(static_quality) - median(single_quality) > 10 * ci_halfwidth(paired_diff)",
+        "rule": "nonzero CI width and mean(paired_diff) > 10 * ci_halfwidth(paired_diff)",
+        "descriptive": _descriptive(rows, config),
     }
+    if not passed:
+        raise AdmissionRejected(result)
+    return result
 
 
 def verdict(rows: list[dict[str, Any]], config: dict[str, Any]) -> dict[str, Any]:
@@ -307,7 +405,10 @@ def verdict(rows: list[dict[str, Any]], config: dict[str, Any]) -> dict[str, Any
             "treatment records must include adaptive_K and adaptive_random"
         )
     primary_differences = paired_item_differences(rows, "adaptive_K", "adaptive_random")
-    primary = _ci_payload(primary_differences, seed=10_401, config=config)
+    strata = [cell for cell, _ in sorted(_item_arm_means(rows, arm="adaptive_K"))]
+    primary = _ci_payload(
+        primary_differences, seed=10_401, config=config, strata=strata
+    )
 
     co_primary: dict[str, Any] = {}
     for index, arm in enumerate(static_arms):
@@ -315,15 +416,17 @@ def verdict(rows: list[dict[str, Any]], config: dict[str, Any]) -> dict[str, Any
             paired_item_differences(rows, "adaptive_K", arm),
             seed=10_500 + index,
             config=config,
+            strata=strata,
         )
     adaptive_quality = _item_arm_means(rows, arm="adaptive_K")
     floor = _as_float(config["endpoints"]["quality_floor"])
     if not 0 <= floor <= 1:
         raise ValueError("quality floor must be in [0, 1]")
-    floor_pass = median(list(adaptive_quality.values())) >= floor
-    primary_pass = primary["ci_low"] > 0.0
+    floor_pass = mean(adaptive_quality.values()) >= floor
+    primary_pass = primary["ci_status"] == "OK" and primary["ci_low"] > 0.0
     co_primary_pass = bool(co_primary) and all(
-        result["ci_low"] > 0.0 for result in co_primary.values()
+        result["ci_status"] == "OK" and result["ci_low"] > 0.0
+        for result in co_primary.values()
     )
     passed = primary_pass and co_primary_pass and floor_pass
     secondary = {}
@@ -332,18 +435,26 @@ def verdict(rows: list[dict[str, Any]], config: dict[str, Any]) -> dict[str, Any
             paired_item_differences(rows, "adaptive_K", "single"),
             seed=10_601,
             config=config,
+            strata=strata,
         )
+    unresolved = any(
+        result["ci_status"] != "OK" for result in [primary, *co_primary.values()]
+    )
     return {
-        "status": "PASS" if passed else "FAIL",
+        "status": "INCONCLUSIVE" if unresolved else "PASS" if passed else "FAIL",
+        "estimand": ESTIMAND,
         "primary": primary,
         "co_primary": co_primary,
         "secondary": secondary,
         "quality_floor": {
+            "mean": mean(adaptive_quality.values()),
             "median": median(list(adaptive_quality.values())),
+            "statistic": "mean",
             "floor": floor,
             "pass": floor_pass,
         },
         "counts_toward_verdict": True,
+        "descriptive": _descriptive(rows, config),
     }
 
 
@@ -358,7 +469,7 @@ def _load_rows(path: Path) -> list[dict[str, Any]]:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        description="Evaluate the preregistered E3 statistics"
+        description="Evaluate explicitly versioned E3 statistics"
     )
     parser.add_argument("--phase", choices=("admission", "verdict"), required=True)
     parser.add_argument("--input", type=Path, required=True)
@@ -367,14 +478,20 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     config = json.loads(args.config.read_text(encoding="utf-8"))
     rows = _load_rows(args.input)
-    result = (
-        admission(rows, config) if args.phase == "admission" else verdict(rows, config)
-    )
+    exit_code = 0
+    try:
+        result = (
+            admission(rows, config)
+            if args.phase == "admission"
+            else verdict(rows, config)
+        )
+    except AdmissionRejected as exc:
+        result, exit_code = exc.report, 1
     rendered = json.dumps(result, indent=2, sort_keys=True) + "\n"
     if args.output:
         args.output.write_text(rendered, encoding="utf-8")
     sys.stdout.write(rendered)
-    return 0
+    return exit_code
 
 
 if __name__ == "__main__":
