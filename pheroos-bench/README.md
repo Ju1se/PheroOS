@@ -83,6 +83,12 @@ collection aborts.
 
 ## R0 instrument checks
 
+The [full reviewed runtime/research plan](docs/reviewed-runtime-plan.md) is a
+versioned planning snapshot. The separate [G0/G1 runtime repository](https://github.com/Ju1se/pheroos-runtime)
+contains its implementation and acceptance data; it must be cloned separately.
+Use the [Mac/WSL2 replication guide](https://github.com/Ju1se/pheroos-runtime/blob/main/docs/replication.md)
+to reproduce the fixed G1 and R0 versions in separate package environments.
+
 The [R0 data contract](R0-data-contract.md) adds a separate
 `r_paired_world_mean_v1` instrument-only entry. It pairs independent worlds,
 averages repetitions within worlds, retains legitimate flat cells, and aborts

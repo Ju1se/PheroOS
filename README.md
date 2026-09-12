@@ -46,6 +46,22 @@ ordinary consumers should start with the 37-root, 121-symbol
 [consumer candidate](docs/protocol/stable-core-consumer.md) and pin its version.
 The candidate is not a Stable compatibility guarantee.
 
+## External runtime and experiment records
+
+The G0/G1 mock runtime is published separately at
+[Ju1se/pheroos-runtime](https://github.com/Ju1se/pheroos-runtime).
+Cloning or pulling this repository does not download that independent repository.
+Clone `https://github.com/Ju1se/pheroos-runtime.git` for its source and tests;
+`g1-mock-v1` identifies the previously verified G1 implementation.
+
+The [full reviewed plan](pheroos-bench/docs/reviewed-runtime-plan.md) is preserved
+here for offline reading, with its original source and revision. Follow
+[G1 acceptance](https://github.com/Ju1se/pheroos-runtime/tree/g1-mock-v1/results),
+[G2/R0 results](pheroos-bench/results/r0/RESULTS.md) and the
+[Mac/WSL2 replication guide](https://github.com/Ju1se/pheroos-runtime/blob/main/docs/replication.md)
+for completed evidence and reproduction steps. The plan remains a research
+proposal; G1 and R0 are mock engineering and instrument checks.
+
 ## Quick Start
 
 Clone and install from source:
