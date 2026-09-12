@@ -6,6 +6,10 @@ public conformance profile, and the implementation is private experimental
 attention code. Baseline manifests remain on `pheroos-core-v1`; attention does
 not create authority.
 
+These migration steps applied to the pre-cleanup 0.1.0 Draft path, not today's
+removed facade bindings. Use the [current support matrix](current-support.md)
+for supported contracts; the steps below preserve historical evidence.
+
 ## Required consumer changes
 
 1. Validate manifests before typed mapping. Remove unknown non-namespaced

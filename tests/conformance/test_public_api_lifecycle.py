@@ -690,6 +690,50 @@ def test_lifecycle_rejects_invalid_entry_fields_and_transitions() -> None:
     )
 
 
+def test_parameter_lifecycle_rejects_removed_or_malformed_parameter_metadata() -> None:
+    lifecycle = build_public_api_lifecycle(ROOT)
+    identity = "entry:pheroos.conformance.run_conformance"
+
+    def problems_for(parameters):
+        malformed = deepcopy(lifecycle)
+        entry = _entries(malformed, "pheroos.conformance")["run_conformance"]
+        entry["parameter_lifecycle"] = parameters
+        return set(public_api_lifecycle_problems(malformed))
+
+    assert f"{identity}:parameter_lifecycle" in problems_for({})
+    assert {
+        f"{identity}:parameter_invalid",
+        f"{identity}:parameter_fields",
+    } <= problems_for([None, {"name": "path"}])
+
+    # The registry must validate parameter migrations even when no current
+    # export is deprecated. Removing root= did not remove this contract.
+    removed = {
+        "name": "root",
+        "stability": "deprecated",
+        "replacement": "pheroos.conformance.run_source_conformance",
+        "remove_after": DEFAULT_REMOVE_AFTER,
+    }
+    assert f"{identity}:parameter_orphan:root" in problems_for([removed])
+
+    declared = {**removed, "name": "path"}
+    assert not any("parameter_" in problem for problem in problems_for([declared]))
+    malformed = {
+        "name": "",
+        "stability": "draft",
+        "replacement": "not-a-reference",
+        "remove_after": "invalid",
+    }
+    assert {
+        f"{identity}:parameter_name",
+        f"{identity}:parameter_orphan:",
+        f"{identity}:parameter_stability",
+        f"{identity}:parameter_remove_after",
+        f"{identity}:parameter_replacement",
+        f"{identity}:parameter_duplicate",
+    } <= problems_for([malformed, declared, deepcopy(declared)])
+
+
 def test_lifecycle_rejects_invalid_compatibility_diagnostic_and_error_registries() -> (
     None
 ):

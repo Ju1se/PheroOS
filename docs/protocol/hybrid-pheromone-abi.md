@@ -5,6 +5,9 @@
 > checks were removed before the first published release, and its remaining
 > implementation is private advisory attention code. It must not be read as a
 > claim of swarm intelligence or as a requirement for external conformance.
+> Applies to the pre-cleanup 0.1.0 Draft design; the
+> [current support matrix](current-support.md) supersedes its public-support
+> descriptions and execution direction. The body below is historical evidence.
 
 This document is the implementation reference for the PheroOS hybrid pheromone
 enhancement track. It is intended for Goal-mode execution.

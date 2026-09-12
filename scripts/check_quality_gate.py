@@ -15,6 +15,7 @@ PROVENANCE_JOB = "provenance"
 QUALITY_GATE_JOB = "quality-gate"
 REQUIRED_VALIDATION_JOBS = (
     "python-tests",
+    "bench-tests",
     "lint-and-typing",
     "schema-version-drift",
     "public-abi-shape-drift",

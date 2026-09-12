@@ -11,11 +11,14 @@ import zipfile
 
 from scripts.check_ci_supply_chain import (
     ACTION_PINS,
+    BENCH_CONSTRAINT_DIGEST,
+    BENCH_CONSTRAINTS,
     CONSTRAINTS,
     RELEASE_CANDIDATE_ACTION_PINS,
     RELEASE_CANDIDATE_WORKFLOW,
     REQUIRED_JOBS,
     audit,
+    audit_bench_constraints,
     audit_release_candidate_workflow,
     parse_hashed_requirements,
 )
@@ -41,6 +44,21 @@ def _write_distribution_pair(directory: Path, *, version: str = "0.1.0") -> None
 
 
 class SupplyChainPolicyTests(unittest.TestCase):
+    def test_benchmark_lock_is_separate_hash_closed_and_digest_bound(self) -> None:
+        constraints = BENCH_CONSTRAINTS.read_bytes()
+        digest = BENCH_CONSTRAINT_DIGEST.read_text(encoding="utf-8")
+
+        self.assertEqual(audit_bench_constraints(constraints, digest), [])
+        self.assertEqual(set(parse_hashed_requirements(constraints)), {"numpy"})
+        self.assertNotIn("numpy", parse_hashed_requirements(CONSTRAINTS.read_bytes()))
+        self.assertTrue(audit_bench_constraints(constraints, "0" * 64))
+        self.assertTrue(
+            audit_bench_constraints(constraints.replace(b"--hash=", b"#"), digest)
+        )
+        self.assertTrue(
+            audit_bench_constraints(constraints.replace(b"numpy==", b"other=="), digest)
+        )
+
     def test_workflow_constraints_actions_and_permissions_are_closed(self) -> None:
         self.assertEqual(audit(), [])
 

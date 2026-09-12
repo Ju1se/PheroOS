@@ -6,8 +6,7 @@ from pathlib import Path
 from typing import Any
 
 
-ROOT = Path(__file__).resolve().parents[2]
-CONFIG_PATH = ROOT / "experiment.json"
+CONFIG_PATH = Path(__file__).resolve().parent / "data" / "experiment.json"
 
 
 @dataclass(frozen=True)

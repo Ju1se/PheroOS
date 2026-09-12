@@ -13,7 +13,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["pytest>=8.0.0"]
+dev = ["pytest>=8.0.0", "build>=1.3.0,<2"]
 
 [project.scripts]
 pheroos-bench = "pheroos_bench.run:main"
@@ -23,3 +23,10 @@ pheroos-bench-e3-llm = "pheroos_bench.e3_llm:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.package-data]
+"pheroos_bench" = ["data/*.json"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]

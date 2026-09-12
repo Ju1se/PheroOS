@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "pheroos"
 version = "0.1.0"
-description = "Open swarm-native multi-agent operating protocol core for governed agent runtimes."
+description = "Governed authority and commit protocol core for multi-agent runtimes."
 readme = "README.md"
 requires-python = ">=3.12"
 license = "MIT"
@@ -33,7 +33,7 @@ dev = [
 pheroos = "pheroos.cli.main:main"
 
 [tool.setuptools.packages.find]
-include = ["pheroos*"]
+include = ["pheroos", "pheroos.*"]
 
 [tool.setuptools.package-data]
 "pheroos" = ["py.typed"]

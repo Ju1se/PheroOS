@@ -1,0 +1,6 @@
+# Benchmark-only CI wheels for Ubuntu x86_64 / CPython 3.12-3.14.
+# Install alongside ci-constraints.txt; do not add these to core runtime dependencies.
+numpy==2.4.6 \
+    --hash=sha256:90f9849678c75fe7afa2d348ac842c168b0a4d3d61919687216dfc547976d853 \
+    --hash=sha256:a7830bab239b79cda9c08c2da014761cafb48da6150e1da17ac06283f43b6089 \
+    --hash=sha256:a2c306dea656c12c68f51f4cea133cbe78ca7435eb28c735eac1d3ebe73be6e8

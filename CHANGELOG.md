@@ -6,6 +6,32 @@ The project is currently pre-stable. Until the first stable ABI release, entries
 
 ## Unreleased
 
+### Audited maintenance fixes
+
+- Aligned README, SPEC, contributor guidance, and the current support matrix
+  with governed authority/commit positioning. All 1,232 exports remain Draft;
+  the 37-root, 121-symbol consumer candidate is not formally Stable. Historical
+  private-attention plans do not reintroduce public swarm requirements.
+- Excluded the separately packaged `pheroos-bench` from core package discovery.
+  Bench wheel/sdist now include byte-identical E1/E2 configuration resources;
+  installed E2 source fingerprinting no longer hashes an empty source path.
+  Existing experiment configs and results are unchanged. Historical admission
+  fingerprints cannot authorize treatment with this changed harness.
+- Added independent bench tests to the Python 3.12–3.14 CI validation gate with
+  a separate NumPy wheel lock; core runtime dependencies remain empty.
+- Restored negative tests for retained Conformance checks that lost coverage
+  when legacy compatibility test files were removed. Coverage ratio baselines
+  and the core implementation are unchanged.
+- Fixed E3 request headers, usage accounting, model-version checks, benchmark
+  identity, and admission arm naming. Invalid/incomplete experiment grids,
+  missing static controls, unknown costs, exceeded budgets, and pilot records
+  are rejected before a confirmatory verdict. Unlabeled items are rejected
+  before model calls, and the declared `single` secondary comparator remains
+  report-only. Gates are unchanged; old records
+  without provenance are not automatically migrated. See the
+  [E3 data contract](pheroos-bench/E3-data-contract.md). No model calls or new
+  confirmatory experiments were run as part of these fixes.
+
 ### Removed
 
 - Withdrew the unshipped Draft helper

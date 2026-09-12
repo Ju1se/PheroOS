@@ -14,12 +14,9 @@ from .e2_simulation import run_once
 from .e2_stats import summarize_admission, summarize_treatment
 
 
-ROOT = Path(__file__).resolve().parents[2]
-
-
 def _code_fingerprint() -> str:
     digest = hashlib.sha256()
-    for path in sorted((ROOT / "src" / "pheroos_bench").glob("e2_*.py")):
+    for path in sorted(Path(__file__).resolve().parent.glob("e2_*.py")):
         digest.update(path.name.encode("utf-8"))
         digest.update(path.read_bytes())
     return digest.hexdigest()

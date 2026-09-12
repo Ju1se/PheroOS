@@ -1,5 +1,12 @@
 # PheroOS Production Readiness Hardening — Goal Execution Plan
 
+当前适用说明（2026-09-09）：本文保留 2026-07 的 `0.1.0` Draft 计划与逐次执行证据；
+下文状态、导出数量、swarm/Hybrid 表述和远程授权均对应所标 checkpoint，不代表当前支持
+承诺或今天的操作授权。当前支持范围由[支持矩阵](../protocol/current-support.md)、实际
+API/lifecycle 清单和 profile selector 核对；原公开 pheromone/swarm 合同已在后续清理中
+退出，Scoped Hybrid Replay v2 与 Hybrid Commit 的公开 Draft authority 合同继续保留。
+历史数字和实验结果不在此追改。
+
 状态：Core Goal local execution complete（WP-00 至 WP-11 completed；exact
 `v0.1.0` pre-promotion rehearsal 绑定 candidate `88a117b` 并完成独立 staging
 verification；WP-07B、WP-12、WP-13 保持 `planned`，未执行远程
