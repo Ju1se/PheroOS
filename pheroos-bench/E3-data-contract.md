@@ -1,8 +1,10 @@
 # E3 data contract
 
-Status: implementation/data-integrity repair, not a new preregistration.
-No pilot values, thresholds, frozen E1/E2 configs, or historical results are
-changed by this repair. Synthetic passing fixtures are not experimental evidence.
+Status: versioned estimand and collection repair, not a new preregistration.
+`paired_item_mean_v1` changes the statistic used by admission, superiority and
+the quality floor. It requires a new prospective analysis plan. Frozen E1/E2
+configs and historical results remain unchanged. Synthetic fixtures and power
+diagnostics are not experimental evidence.
 
 ## Required configuration
 
@@ -15,6 +17,7 @@ E3 calibration. Before collecting records, declare:
 | `arms.static_homog.N` | Nonempty list of distinct positive sizes. |
 | `arms.static_diverse.N` | The same list, or `"same set as static_homog"`. |
 | `statistics.repetitions_per_item_per_arm` | Positive integer; repetition IDs are `0..R-1`. |
+| `statistics.estimand` | Must explicitly be `paired_item_mean_v1`; absent or legacy methods are rejected, not silently reinterpreted. |
 | `statistics.confidence`, `statistics.bootstrap_resamples` | Declared bootstrap settings; existing defaults remain 0.95 and 10,000. |
 | `model.provider_model_string` | Exact returned model/version string, not a silent alias substitution. |
 | `budget.unit`, `budget.cap_per_item` | `tokens` or `dollars`, and a positive cap for each item/arm/repetition. All control-plane costs count. |
@@ -23,9 +26,33 @@ E3 calibration. Before collecting records, declare:
 
 Admission may precede treatment calibration, but its own item grid, repetitions,
 maximum static size, model and budget must already be explicit. It evaluates
-each declared benchmark separately with the existing paired-item bootstrap
-gate. Any failed benchmark raises `SystemExit(1)`; no successful admission
-output is emitted. This statistical CLI does not dispatch treatment.
+each declared benchmark separately. The point estimate is the mean paired
+item difference, and the interval bootstraps that same mean. The retained gate
+requires a nondegenerate interval and a gap greater than ten interval
+halfwidths. Any failed benchmark raises `AdmissionRejected`, a `SystemExit(1)`
+subclass carrying the report. The CLI prints and optionally saves that report
+before exiting 1. This statistical CLI does not dispatch treatment.
+
+## Estimand and uncertainty
+
+First average repetitions within each `(cell, item_id, arm)`, subtract the two
+arm means within each item, then average those differences. Each item has equal
+weight: benchmarks contribute in proportion to their declared item counts.
+Repetitions do not count as extra independent items. Confirmatory intervals
+resample paired items within benchmark strata while retaining each stratum's
+size; admission evaluates each benchmark on its own.
+
+The primary and every co-primary use two-sided percentile intervals, normally
+95%, and require a lower bound strictly above zero. The corresponding nominal
+directional alpha is 0.025; this is not a guarantee of finite-sample calibration.
+The median and its interval are robustness diagnostics only. The quality floor
+also uses the mean across item means. Intervals with endpoints within `1e-12`
+are marked `INSUFFICIENT_RESOLUTION`. Any such primary/co-primary interval gives
+an `INCONCLUSIVE` verdict and cannot pass automatically.
+
+Reports disclose actual quality and cost by benchmark and arm, including sums
+and means. A shared cap does not establish equal expenditure: the research
+question is quality under the same cap, not demonstrated quality per token.
 
 ## Required records
 
@@ -51,8 +78,9 @@ from pairing. Admission and pilot records cannot enter a confirmatory verdict.
 
 The primary comparison remains adaptive K versus adaptive random. Co-primary
 success still requires beating every declared static arm; the quality floor
-and cross-cell variance assertion remain in force. Validation changes which
-records are admissible, not these statistical thresholds.
+and cross-cell variance assertion remain in force. Gate constants are retained,
+but the versioned mean statistic changes their interpretation and needs
+prospective calibration.
 
 ## Collection and migration
 
@@ -67,16 +95,47 @@ to a fresh output directory. Every record includes its phase; the filename is
 not permission to use pilot data for admission. Run single and maximum-N static
 collection explicitly, then supply their combined grid to the admission CLI.
 
+Preview the item/arm/repetition call count with `--dry-run`; it needs no API key
+and performs no model/tokenizer calls or output-directory writes. Live CLI
+collection requires both `--output` and an explicit positive `--max-calls`;
+Python callers must supply `run(max_calls=...)`. A plan above this limit fails
+before dispatch. The limit is per invocation, not across separate runs.
+`max_tokens` bounds completion tokens only. The preview reports unknown input,
+total-token and monetary upper bounds as null.
+
+Credentials and request bodies pass to curl over stdin rather than process
+arguments. Only one worker-sized batch is submitted at a time. A failed batch
+is drained to preserve returned usage and stops later submissions. Aborted
+collection writes diagnostics and available receipts, not aggregate evidence
+eligible for admission. Already dispatched requests can still incur charges.
+
 Missing/inconsistent provider usage and model drift abort collection. Paid POSTs
 are not automatically retried: a missing response is unknown spend, not a free
 failed attempt. An aborted run is incomplete and may already have incurred
 charges; it must not be treated as zero cost or successful evidence. The runner
 is not an API billing ledger or a hard pre-call monetary budget enforcer.
 
-Older records lacking phase, model or accounting evidence are rejected. Do not
+Older configurations without the estimand version and records lacking phase,
+model or accounting evidence are rejected. Do not
 backfill these fields from assumptions or relabel void pilot as confirmatory.
 Keep them as historical evidence; any authorized new collection uses a new
 directory and an explicitly reviewed configuration. Data validation alone
 cannot prove a single run, dataset provenance, provider immutability, or that
 adaptive-random stopping was sampled independently; those remain preregistration
 and runner evidence requirements.
+
+## Known limitations before freezing
+
+- Ten times a 95% interval halfwidth is about 19.6 standard errors under a
+  normal approximation. This gate needs its own justification and joint power
+  analysis; correcting the estimand does not validate its feasibility.
+- The retained cross-cell variance assertion rejects a single-benchmark
+  confirmatory run and can reject valid arms whose benchmark means coincide.
+  It is an uncalibrated design constraint, not proof that a control works.
+- Adaptive-K, the independent random stopping distribution, calibrated quality
+  floor and full joint success power are not implemented/frozen here.
+- Input pricing and a pre-dispatch monetary limit are unresolved. Unknown
+  failed-request spend cannot be reconstructed from a call-count limit.
+
+See the [unfrozen prediction draft](results/e3/prediction.md) and its offline
+synthetic sensitivity evidence for assumptions and outstanding decisions.

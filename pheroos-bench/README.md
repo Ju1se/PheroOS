@@ -70,6 +70,17 @@ records. The current runner implements **admission and void pilot only**; it
 does not implement adaptive treatment or establish a confirmatory result.
 Tests use synthetic records and mocked HTTP calls, never paid provider calls.
 
+New analyses explicitly declare `statistics.estimand="paired_item_mean_v1"`.
+Admission and superiority intervals use paired item means; zero-width
+intervals cannot automatically pass. Existing median-based results must retain
+their original method. The [prediction draft](results/e3/prediction.md) is
+**not frozen** and lists the remaining design decisions.
+
+Use `pheroos-bench-e3-llm --items items.jsonl --dry-run` to preview one arm
+without provider calls. Live collection requires `--output` and `--max-calls`.
+This is a call-count limit, not a dollar limit; actual usage is retained when
+collection aborts.
+
 ## Package checks
 
 From this directory:
