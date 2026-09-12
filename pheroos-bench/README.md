@@ -1,14 +1,16 @@
 # PheroOS governed authority/commit protocol benchmark
 
-This sibling repository is the executable experiment harness for PheroOS
-governed authority and commit protocol experiments. It is intentionally small,
-provider-free, and independent of protocol-core. E1 records a negative result
+This separately packaged harness is maintained under `pheroos-bench/` in the
+PheroOS repository. It is not part of the protocol-core distribution. E1/E2
+are deterministic, provider-free simulations; the opt-in E3 runner makes
+model API calls and belongs only to this research package. E1 records a negative result
 for one historical candidate-field implementation; it makes no claim of
 emergent or swarm intelligence.
 
 The dependency is pinned to the exact PheroOS commit recorded in
-`experiment.json`. For local development against the checkout used to create
-the lock, run with `PYTHONPATH=/Users/scottxie/Desktop/multi-agent`.
+`experiment.json`; it is not an instruction to substitute the latest core.
+The wheel and sdist include byte-identical copies of the frozen E1/E2 configs.
+The original files and historical results remain unchanged.
 
 ```bash
 python -m venv .venv
@@ -34,7 +36,7 @@ the centralized arm loses its coordinator, the field arm loses shard 0, and the
 matched local controls lose the same agent quarter; failed field writes remain
 counted. No replication is assumed.
 
-The current PheroOS Hybrid profile is not presented as a sixth arm: protocol-core
+The historical PheroOS Hybrid scoring path is not presented as a sixth arm: protocol-core
 has no local `sense()` ABI, and this harness does not invent one or substitute a
 batch evaluator. The field arm was an explicit candidate implementation under
 test, and its negative result is recorded in `results/E1-negative-result.md`.
@@ -47,12 +49,37 @@ The independent Couzin experiment is frozen in `experiment-e2.json` with its
 pre-run prediction at `results/e2/prediction.md`. It must be run in two phases:
 
 ```bash
-PYTHONPATH=/Users/scottxie/Desktop/multi-agent \
-  python -m pheroos_bench.e2_run --phase admission --output results/e2/admission --workers 4
-PYTHONPATH=/Users/scottxie/Desktop/multi-agent \
-  python -m pheroos_bench.e2_run --phase treatment --output results/e2/treatment --workers 4
+python -m pheroos_bench.e2_run --phase admission --output results/e2/admission --workers 4
+python -m pheroos_bench.e2_run --phase treatment --output results/e2/treatment --workers 4
 ```
 
 Treatment refuses to run unless every admission cell passed and the frozen
 config and source fingerprint are unchanged. The admission phase aborts with
 `sys.exit(1)` on any failed cell and produces no treatment verdict.
+
+Packaging fixes change the E2 source fingerprint, not its frozen config or
+historical results. The current runner must not resume treatment against a
+historical admission fingerprint; reproduce historical runs at their recorded
+tag instead. These commands describe the phases, not authorization to rerun a
+closed experiment or overwrite its evidence.
+
+## E3 records and validation
+
+See [E3 data contract](E3-data-contract.md) before collecting or evaluating
+records. The current runner implements **admission and void pilot only**; it
+does not implement adaptive treatment or establish a confirmatory result.
+Tests use synthetic records and mocked HTTP calls, never paid provider calls.
+
+## Package checks
+
+From this directory:
+
+```bash
+python -m pip install -e '.[dev]'
+python -m pytest -q
+```
+
+CI installs hash-locked test dependencies separately from the core. Tests build
+both distributions in clean temporary trees, install them outside the source
+directory, load both default configs, and compare the installed E2 fingerprint
+with the source fingerprint. They do not run a full experiment.

@@ -106,6 +106,66 @@ def test_missing_or_unclassified_needs_fail_closed() -> None:
     assert any("unclassified" in error for error in extra_errors)
 
 
+@pytest.mark.parametrize("result", ["failure", "cancelled", "skipped", "pending"])
+def test_benchmark_failure_blocks_the_aggregate_gate(result: str) -> None:
+    assert "bench-tests" in REQUIRED_VALIDATION_JOBS
+    errors = evaluate_quality_gate(
+        _needs(provenance="skipped", overrides={"bench-tests": result}),
+        event_name="pull_request",
+        ref="refs/pull/43/merge",
+        repository=CANONICAL_REPOSITORY,
+    )
+
+    assert any("bench-tests" in error and "success" in error for error in errors)
+
+
+@pytest.mark.parametrize(
+    ("current", "replacement"),
+    (
+        ("      - bench-tests\n", ""),
+        ('python-version: ["3.12", "3.13", "3.14"]', 'python-version: ["3.12"]'),
+        ('          PIP_NO_INDEX: "1"\n', ""),
+        ("--require-hashes --only-binary=:all:", "--only-binary=:all:"),
+        ("--no-deps --no-build-isolation -e ./pheroos-bench", "-e ./pheroos-bench"),
+    ),
+)
+def test_benchmark_job_is_required_and_its_delivery_checks_cannot_drift(
+    current: str,
+    replacement: str,
+) -> None:
+    workflow = WORKFLOW.read_text(encoding="utf-8")
+    job = "quality-gate" if current == "      - bench-tests\n" else "bench-tests"
+    mutated = _replace_in_job(workflow, job, current, replacement)
+
+    assert mutated != workflow
+    assert audit_workflow(mutated)
+
+
+def test_provenance_cannot_skip_benchmark_validation() -> None:
+    workflow = WORKFLOW.read_text(encoding="utf-8")
+    mutated = _replace_in_job(workflow, "provenance", "      - bench-tests\n", "")
+
+    assert mutated != workflow
+    assert any("provenance needs" in error for error in audit_workflow(mutated))
+
+
+def test_benchmark_lock_and_editable_install_are_not_allowed_in_core_jobs() -> None:
+    workflow = WORKFLOW.read_text(encoding="utf-8")
+    for command in (
+        "python -m pip install --require-hashes --only-binary=:all: "
+        "-r requirements/bench-constraints.txt",
+        "python -m pip install --no-deps --no-build-isolation -e ./pheroos-bench",
+    ):
+        mutated = _replace_in_job(
+            workflow,
+            "python-tests",
+            "python -m pip install --no-deps --no-build-isolation -e .",
+            command,
+        )
+        assert mutated != workflow
+        assert any("hashed lock" in error for error in audit_workflow(mutated))
+
+
 @pytest.mark.parametrize("result", ["success", "failure", "cancelled", "pending"])
 def test_pull_request_rejects_any_provenance_result_other_than_skipped(
     result: str,

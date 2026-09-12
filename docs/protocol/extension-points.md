@@ -7,6 +7,22 @@ pheromone material in this document is historical/private extension guidance;
 it does not define a supported swarm profile or impose swarm conformance on
 baseline implementations.
 
+The [current support matrix](current-support.md) binds this guidance to exact
+versions and verification entries. All public interfaces remain Draft.
+
+## Ownership of New Behavior
+
+| Owner | Responsibility |
+| --- | --- |
+| Protocol-core | Protocol and capability declarations, Governance, Trace, versioned compatibility contracts |
+| External runtime | Scheduling, execution, cancellation, retry, run recovery, external effects |
+| External adapters, initially alongside runtime if useful | Concrete model, tool, and storage integrations |
+| Independent `pheroos-bench/` package | Datasets, experiments, controls, measurements, and statistics |
+
+A new backend should primarily change its adapter. A new experimental method
+should primarily change bench. Shared repository location does not make bench
+part of the core distribution or allow core imports of its dependencies.
+
 ## Extension Principles
 
 - Extend through declared ABI surfaces.
@@ -44,7 +60,7 @@ Governance extensions may add deterministic primitives for:
 - quorum or collective decision semantics
 - recovery behavior
 - output authorization boundaries
-- pheromone or collective memory behavior
+- proposal/authority separation for optional advisory inputs
 
 Governance extensions must not call model providers, tools, servers, databases, or queues.
 
@@ -55,6 +71,25 @@ Driver extensions may add generic capability descriptors or lifecycle-compatible
 Provider-specific drivers should live outside protocol-core and implement the generic driver ABI.
 
 Driver declarations in manifests are provider-neutral. `config_ref` may name an external configuration reference, but protocol-core must not resolve that reference or read secrets from it.
+
+### Store and Replacement Acceptance
+
+Use the existing public `GovernanceStateStoreV2`, `DriverInvocationStoreV2`,
+and `ScopedTraceStoreV2` contracts for external backends. A replacement must:
+
+- import only public interfaces, with no private reference implementation imports;
+- install the package and execute from outside its source directory;
+- pass the same exact-version Conformance adapter contract as the reference;
+- replace the injected implementation without changing consumer business logic.
+
+Existing [distribution tests](../../tests/packaging/test_stable_candidate_distributions.py)
+already inject the independent stdlib Store into the
+[candidate consumer](../../tests/typing/stable_consumer.py). The
+[Runtime Integration tests](../../tests/conformance/test_runtime_integration_v1_contract.py)
+exercise reference and independent adapters. Reuse these acceptance paths for
+a real external backend; they do not by themselves prove production storage or
+provider behavior. Expand an abstraction only when a concrete second
+implementation exposes a contract gap.
 
 ### Trace ABI
 
@@ -125,17 +160,15 @@ When an extension is optional:
   skip/N/A is not an active compatibility result
 - examples should be added separately rather than rewriting baseline examples
 
-## Historical/private pheromone extension example
+## Historical/private attention
 
-The pheromone layer is an example of an acceptable protocol-core extension:
+The former pheromone path illustrates an earlier Draft design. Its scoring
+implementation remains private, and the former swarm conformance requirements
+and pheromone exports have been removed. Retained fixtures do not create a
+public extension point. Future public attention behavior needs a versioned
+contract and concrete consumer; research algorithms belong in bench.
 
-- protocol declares policy fields and schema shape
-- governance implements deterministic reference semantics
-- trace records provider-neutral lineage
-- conformance proves compatibility and boundaries
-- examples remain provider-free
-
-Pheromone remains collective memory. It is not evidence, quorum, permission, or output authority.
+Private attention is not evidence, quorum, permission, or output authority.
 
 ## Optimal Commit Extension Boundary
 

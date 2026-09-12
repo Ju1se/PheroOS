@@ -6,6 +6,7 @@ from pathlib import Path
 import shutil
 import subprocess
 import sys
+import zipfile
 
 import pytest
 
@@ -62,6 +63,22 @@ def distribution_artifacts(
     tmp_path_factory: pytest.TempPathFactory,
 ) -> dict[str, Path]:
     output = tmp_path_factory.mktemp("stable-distributions")
+    # Build the deliverable inputs in isolation: a stale build/lib from an
+    # earlier package-discovery rule must not enter the tested artifact.
+    source = tmp_path_factory.mktemp("stable-build-source")
+    shutil.copytree(
+        ROOT / "pheroos",
+        source / "pheroos",
+        ignore=shutil.ignore_patterns("__pycache__", "*.pyc"),
+    )
+    for name in ("pyproject.toml", "README.md", "LICENSE"):
+        shutil.copy2(ROOT / name, source / name)
+    # Keep a real sibling in the build tree to exercise the discovery boundary.
+    shutil.copytree(
+        ROOT / "pheroos-bench" / "src",
+        source / "pheroos-bench" / "src",
+        ignore=shutil.ignore_patterns("__pycache__", "*.pyc"),
+    )
     completed = _run(
         [
             sys.executable,
@@ -73,13 +90,23 @@ def distribution_artifacts(
             "--outdir",
             str(output),
         ],
-        cwd=ROOT,
+        cwd=source,
     )
     assert completed.returncode == 0, completed.stdout + completed.stderr
     return {
         "wheel": next(output.glob("*.whl")),
         "sdist": next(output.glob("*.tar.gz")),
     }
+
+
+def test_core_wheel_excludes_sibling_bench(
+    distribution_artifacts: dict[str, Path],
+) -> None:
+    with zipfile.ZipFile(distribution_artifacts["wheel"]) as wheel:
+        assert all(
+            name.startswith("pheroos/") or name.split("/", 1)[0].endswith(".dist-info")
+            for name in wheel.namelist()
+        )
 
 
 @pytest.mark.parametrize("distribution_kind", ("wheel", "sdist"))

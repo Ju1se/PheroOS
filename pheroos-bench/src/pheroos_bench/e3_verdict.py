@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import random
 import sys
 from collections import defaultdict
@@ -18,7 +19,131 @@ from typing import Any, Iterable
 
 
 def _as_float(value: Any) -> float:
+    if (
+        isinstance(value, bool)
+        or not isinstance(value, (int, float))
+        or not math.isfinite(value)
+    ):
+        raise ValueError("measurement must be a finite number")
     return float(value)
+
+
+def _positive_int(value: Any) -> int:
+    if type(value) is not int or value <= 0:
+        raise ValueError("a calibrated positive integer is required")
+    return value
+
+
+def _static_arms(config: dict[str, Any], *, admission_only: bool = False) -> list[str]:
+    sizes = config["arms"]["static_homog"]["N"]
+    if not isinstance(sizes, list) or not sizes:
+        raise ValueError("static_homog.N must be a calibrated nonempty list")
+    sizes = [_positive_int(n) for n in sizes]
+    if len(set(sizes)) != len(sizes):
+        raise ValueError("static N values must be distinct")
+    if admission_only:
+        return [f"static_homog@{max(sizes)}"]
+    diverse = config["arms"]["static_diverse"]["N"]
+    if diverse != "same set as static_homog" and diverse != sizes:
+        raise ValueError("static arms must use the same N values")
+    return sorted(
+        f"{arm}@{n}" for arm in ("static_homog", "static_diverse") for n in sizes
+    )
+
+
+def _has_pilot_placeholder(value: Any) -> bool:
+    if isinstance(value, str):
+        return value.strip().startswith("PILOT")
+    if isinstance(value, dict):
+        return any(_has_pilot_placeholder(v) for v in value.values())
+    if isinstance(value, list):
+        return any(_has_pilot_placeholder(v) for v in value)
+    return False
+
+
+def _validate_records(
+    rows: list[dict[str, Any]], config: dict[str, Any], *, phase: str
+) -> list[str]:
+    """Check the declared experiment grid before looking at any outcome."""
+    confirmatory = phase == "confirmatory"
+    if confirmatory and (
+        config.get("status") != "frozen" or _has_pilot_placeholder(config)
+    ):
+        raise ValueError(
+            "confirmatory config must be frozen with no PILOT placeholders"
+        )
+    try:
+        static = _static_arms(config, admission_only=not confirmatory)
+        arms = static + (
+            ["adaptive_K", "adaptive_random"] if confirmatory else ["single"]
+        )
+        if confirmatory and "single" in config["arms"]:
+            arms.append("single")
+        items = config["task"]["item_ids"]
+        repetitions = _positive_int(
+            config["statistics"]["repetitions_per_item_per_arm"]
+        )
+        model = config["model"]["provider_model_string"]
+        unit = config["budget"]["unit"]
+        cap = _as_float(config["budget"]["cap_per_item"])
+    except (KeyError, TypeError) as exc:
+        raise ValueError("missing calibrated experiment/data-contract field") from exc
+    if unit not in ("tokens", "dollars") or cap <= 0:
+        raise ValueError("budget needs an explicit unit and positive cap")
+    if not isinstance(model, str) or not model or model.startswith("PILOT"):
+        raise ValueError("the exact model must be declared")
+    if not isinstance(items, dict) or not items:
+        raise ValueError("task.item_ids must declare the item IDs in each benchmark")
+    item_keys: set[tuple[str, str]] = set()
+    for cell, ids in items.items():
+        if (
+            not isinstance(cell, str)
+            or not cell
+            or not isinstance(ids, list)
+            or not ids
+        ):
+            raise ValueError("benchmark and item lists must be nonempty")
+        if any(not isinstance(item, str) or not item for item in ids) or len(
+            set(ids)
+        ) != len(ids):
+            raise ValueError("item IDs must be distinct nonempty strings per benchmark")
+        item_keys.update((cell, item) for item in ids)
+    expected = {
+        (cell, item, rep, arm)
+        for cell, item in item_keys
+        for rep in range(repetitions)
+        for arm in arms
+    }
+    observed: set[tuple[str, str, int, str]] = set()
+    for row in rows:
+        try:
+            key = (row["cell"], row["item_id"], row["repetition"], row["arm"])
+            quality, spent = _as_float(row["quality"]), _as_float(row[unit])
+            if type(key[2]) is not int or key not in expected or key in observed:
+                raise ValueError(
+                    "duplicate or undeclared benchmark/item/repetition/arm"
+                )
+            if not 0 <= quality <= 1 or not 0 <= spent <= cap:
+                raise ValueError("quality is out of range or budget is exceeded")
+            if unit == "tokens" and type(row[unit]) is not int:
+                raise ValueError("token accounting must be a known nonnegative integer")
+            if row["model"] != model:
+                raise ValueError("model version drifted")
+            if (
+                row["phase"] != phase
+                or row["counts_toward_verdict"] is not confirmatory
+            ):
+                raise ValueError(
+                    "pilot/admission records cannot enter the confirmatory verdict"
+                )
+        except (KeyError, TypeError) as exc:
+            raise ValueError("malformed or incomplete experiment record") from exc
+        observed.add(key)
+    if observed != expected:
+        raise ValueError(
+            f"incomplete experiment grid: missing {len(expected - observed)} records"
+        )
+    return static
 
 
 def _item_arm_means(
@@ -26,11 +151,13 @@ def _item_arm_means(
     *,
     arm: str,
     metric: str = "quality",
-) -> dict[str, float]:
-    grouped: dict[str, list[float]] = defaultdict(list)
+) -> dict[tuple[str, str], float]:
+    grouped: dict[tuple[str, str], list[float]] = defaultdict(list)
     for row in rows:
         if str(row["arm"]) == arm:
-            grouped[str(row["item_id"])].append(_as_float(row[metric]))
+            grouped[(str(row["cell"]), str(row["item_id"]))].append(
+                _as_float(row[metric])
+            )
     return {item_id: sum(values) / len(values) for item_id, values in grouped.items()}
 
 
@@ -42,7 +169,9 @@ def paired_item_differences(
     rows = list(rows)
     a = _item_arm_means(rows, arm=arm_a, metric=metric)
     b = _item_arm_means(rows, arm=arm_b, metric=metric)
-    common = sorted(a.keys() & b.keys())
+    if a.keys() != b.keys():
+        raise ValueError("paired arms have different benchmark/item sets")
+    common = sorted(a)
     if not common:
         raise ValueError(f"no paired items for {arm_a!r} and {arm_b!r}")
     return [a[item_id] - b[item_id] for item_id in common]
@@ -62,7 +191,11 @@ def percentile(values: list[float], probability: float) -> float:
 
 
 def paired_percentile_ci(
-    differences: list[float], *, confidence: float = 0.95, resamples: int = 10_000, seed: int = 37
+    differences: list[float],
+    *,
+    confidence: float = 0.95,
+    resamples: int = 10_000,
+    seed: int = 37,
 ) -> tuple[float, float]:
     """Percentile bootstrap CI over already-paired item differences."""
 
@@ -81,7 +214,9 @@ def paired_percentile_ci(
     return percentile(estimates, alpha), percentile(estimates, 1.0 - alpha)
 
 
-def _metric_variance_by_arm_across_cells(rows: list[dict[str, Any]], metric: str) -> dict[str, float]:
+def _metric_variance_by_arm_across_cells(
+    rows: list[dict[str, Any]], metric: str
+) -> dict[str, float]:
     grouped: dict[str, dict[str, list[float]]] = defaultdict(lambda: defaultdict(list))
     for row in rows:
         cell = str(row.get("cell", row.get("benchmark", "default")))
@@ -96,7 +231,9 @@ def _metric_variance_by_arm_across_cells(rows: list[dict[str, Any]], metric: str
     return result
 
 
-def assert_nonzero_cell_variance(rows: list[dict[str, Any]], metric: str = "quality") -> None:
+def assert_nonzero_cell_variance(
+    rows: list[dict[str, Any]], metric: str = "quality"
+) -> None:
     """Reject a flat arm/cell metric; flat controls are a broken instrument."""
 
     variances = _metric_variance_by_arm_across_cells(rows, metric)
@@ -105,7 +242,9 @@ def assert_nonzero_cell_variance(rows: list[dict[str, Any]], metric: str = "qual
         raise ValueError("flat arm metric across cells detected: " + ", ".join(flat))
 
 
-def _ci_payload(differences: list[float], *, seed: int, config: dict[str, Any]) -> dict[str, Any]:
+def _ci_payload(
+    differences: list[float], *, seed: int, config: dict[str, Any]
+) -> dict[str, Any]:
     statistics = config.get("statistics", {})
     confidence = float(statistics.get("confidence", 0.95))
     resamples = int(statistics.get("bootstrap_resamples", 10_000))
@@ -122,52 +261,54 @@ def _ci_payload(differences: list[float], *, seed: int, config: dict[str, Any]) 
 
 
 def admission(rows: list[dict[str, Any]], config: dict[str, Any]) -> dict[str, Any]:
-    """Evaluate the frozen admission rule; raise SystemExit(1) on failure."""
-
-    arms = config["admission"]["arms_run"]
-    if tuple(arms[:1]) != ("single",) or len(arms) != 2:
-        raise ValueError("E3 admission must run single and static_homog only")
-    static_arm = str(arms[1]).replace(" at max N", "")
-    differences = paired_item_differences(rows, static_arm, "single")
-    ci = _ci_payload(differences, seed=10_301, config=config)
-    static_quality = _item_arm_means(rows, arm=static_arm)
-    single_quality = _item_arm_means(rows, arm="single")
-    common = sorted(static_quality.keys() & single_quality.keys())
-    static_median = median([static_quality[item_id] for item_id in common])
-    single_median = median([single_quality[item_id] for item_id in common])
-    median_gap = static_median - single_median
-    passed = median_gap > 10.0 * ci["ci_halfwidth"]
-    result = {
-        "status": "PASS_ADMISSION" if passed else "FAIL_ADMISSION",
-        "arms": ["single", static_arm],
-        "endpoint": "quality(static_homog@maxN) - quality(single)",
-        "rule": "median(diff) > 10 * ci_halfwidth",
-        "paired": ci,
-        "static_median": static_median,
-        "single_median": single_median,
-        "median_gap": median_gap,
-        "treatment_executed": False,
-    }
-    if not passed:
-        # This is executable preregistration semantics, not a warning path.
+    """Run the unchanged admission gate separately for every benchmark."""
+    static_arm = _validate_records(rows, config, phase="admission")[0]
+    if config["admission"]["arms_run"] not in (
+        ["single", "static_homog at max N"],
+        ["single", static_arm],
+    ):
+        raise ValueError("admission must run single and static_homog at max N")
+    cells = {}
+    for cell in sorted(config["task"]["item_ids"]):
+        selected = [row for row in rows if row["cell"] == cell]
+        differences = paired_item_differences(selected, static_arm, "single")
+        ci = _ci_payload(differences, seed=10_301, config=config)
+        static_median = median(_item_arm_means(selected, arm=static_arm).values())
+        single_median = median(_item_arm_means(selected, arm="single").values())
+        gap = static_median - single_median
+        passed = gap > 10.0 * ci["ci_halfwidth"]
+        cells[cell] = {
+            "status": "PASS_ADMISSION" if passed else "FAIL_ADMISSION",
+            "paired": ci,
+            "static_median": static_median,
+            "single_median": single_median,
+            "median_gap": gap,
+        }
+    if any(cell["status"] != "PASS_ADMISSION" for cell in cells.values()):
         raise SystemExit(1)
-    return result
+    return {
+        "status": "PASS_ADMISSION",
+        "arms": ["single", static_arm],
+        "cells": cells,
+        "treatment_executed": False,
+        "rule": "median(static_quality) - median(single_quality) > 10 * ci_halfwidth(paired_diff)",
+    }
 
 
 def verdict(rows: list[dict[str, Any]], config: dict[str, Any]) -> dict[str, Any]:
     """Evaluate E3 primary, co-primary, and quality-floor gates."""
 
+    static_arms = _validate_records(rows, config, phase="confirmatory")
     assert_nonzero_cell_variance(rows)
     treatment = {str(row["arm"]) for row in rows}
     required = {"adaptive_K", "adaptive_random"}
     if not required <= treatment:
-        raise ValueError("treatment records must include adaptive_K and adaptive_random")
+        raise ValueError(
+            "treatment records must include adaptive_K and adaptive_random"
+        )
     primary_differences = paired_item_differences(rows, "adaptive_K", "adaptive_random")
     primary = _ci_payload(primary_differences, seed=10_401, config=config)
 
-    static_arms = sorted(
-        arm for arm in treatment if arm.startswith("static_")
-    )
     co_primary: dict[str, Any] = {}
     for index, arm in enumerate(static_arms):
         co_primary[arm] = _ci_payload(
@@ -176,18 +317,33 @@ def verdict(rows: list[dict[str, Any]], config: dict[str, Any]) -> dict[str, Any
             config=config,
         )
     adaptive_quality = _item_arm_means(rows, arm="adaptive_K")
-    floor = float(config["endpoints"]["quality_floor"])
+    floor = _as_float(config["endpoints"]["quality_floor"])
+    if not 0 <= floor <= 1:
+        raise ValueError("quality floor must be in [0, 1]")
     floor_pass = median(list(adaptive_quality.values())) >= floor
     primary_pass = primary["ci_low"] > 0.0
-    co_primary_pass = bool(co_primary) and all(result["ci_low"] > 0.0 for result in co_primary.values())
+    co_primary_pass = bool(co_primary) and all(
+        result["ci_low"] > 0.0 for result in co_primary.values()
+    )
     passed = primary_pass and co_primary_pass and floor_pass
+    secondary = {}
+    if "single" in config["arms"]:
+        secondary["adaptive_K_vs_single"] = _ci_payload(
+            paired_item_differences(rows, "adaptive_K", "single"),
+            seed=10_601,
+            config=config,
+        )
     return {
         "status": "PASS" if passed else "FAIL",
         "primary": primary,
         "co_primary": co_primary,
-        "quality_floor": {"median": median(list(adaptive_quality.values())), "floor": floor, "pass": floor_pass},
+        "secondary": secondary,
+        "quality_floor": {
+            "median": median(list(adaptive_quality.values())),
+            "floor": floor,
+            "pass": floor_pass,
+        },
         "counts_toward_verdict": True,
-        "single_confirmatory_run": True,
     }
 
 
@@ -201,7 +357,9 @@ def _load_rows(path: Path) -> list[dict[str, Any]]:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Evaluate the preregistered E3 statistics")
+    parser = argparse.ArgumentParser(
+        description="Evaluate the preregistered E3 statistics"
+    )
     parser.add_argument("--phase", choices=("admission", "verdict"), required=True)
     parser.add_argument("--input", type=Path, required=True)
     parser.add_argument("--config", type=Path, required=True)
@@ -209,7 +367,9 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     config = json.loads(args.config.read_text(encoding="utf-8"))
     rows = _load_rows(args.input)
-    result = admission(rows, config) if args.phase == "admission" else verdict(rows, config)
+    result = (
+        admission(rows, config) if args.phase == "admission" else verdict(rows, config)
+    )
     rendered = json.dumps(result, indent=2, sort_keys=True) + "\n"
     if args.output:
         args.output.write_text(rendered, encoding="utf-8")

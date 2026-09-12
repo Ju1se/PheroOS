@@ -4,7 +4,8 @@
 
 This repository is the PheroOS protocol-core package.
 
-PheroOS is a swarm-native multi-agent operating protocol core for governed multi-agent runtimes.
+PheroOS is a provider-free governed authority/commit protocol core for
+multi-agent runtimes.
 
 Agents are not authority. Protocol is authority.
 
@@ -14,38 +15,43 @@ The repository must stay small, cohesive, domain-neutral, deterministic, provide
 
 ## Core Mission
 
-Evolve PheroOS into a swarm-native multi-agent operating protocol without turning it into an app runtime, agent framework, provider gateway, dashboard, or protection-layer stack.
-
-Swarm-native means that bee-swarm and ant-colony decision mechanisms are encoded as protocol/governance/trace/conformance semantics:
-
-- independent exploration
-- scout reports
-- recruitment signals
-- inhibition signals
-- pheromone trails
-- pheromone evaporation
-- collective consensus
-- safe fallback when consensus fails
-- traceable collective decision lineage
-
-Swarm-native does not mean adding a large swarm framework.
+Maintain explicit protocol authority, replaceable capability/store contracts,
+and deterministic compatibility checks. New behavior should primarily change
+its owning module and preserve declared consumer contracts through explicit
+versioning and migration.
 
 ## Current Strategic Direction
 
-The [Hybrid Pheromone ABI](docs/protocol/hybrid-pheromone-abi.md) is an
-implemented Draft swarm profile and a regression boundary. The active
-production-readiness work is tracked by the
-[hardening Goal plan](docs/process/production-readiness-hardening-goal-plan.md).
+Use the [current support matrix](docs/protocol/current-support.md), checked
+public API/lifecycle inventories, and exact Conformance profiles to determine
+the supported surface. All public exports remain Draft. The smaller
+[consumer candidate](docs/protocol/stable-core-consumer.md) is not formally
+Stable.
 
-Preserve the complete declared Hybrid path: subject-aware collective memory,
-pheromone diffusion, feedback reinforcement, nonlinear response, layer
-proposals, metacognitive coordination, trace lineage, and Conformance. Changes
-to that path must use explicit versioned contracts and migration rather than a
-minimal scoring substitute. Baseline protocols remain independent and optional
-swarm profiles remain explicit. Do not place the external hybrid runtime,
-neural networks, evolutionary algorithm runtime, environment simulation, agent
-colony, analytics loop, worker infrastructure, or server machinery inside
-protocol-core.
+Attention and pheromone implementations are private experimental details.
+Historical Hybrid Pheromone plans do not authorize restoring removed exports
+or swarm conformance. Scoped Hybrid Replay v2 and Hybrid Commit remain public
+Draft authority contracts; preserve their exact version, replay, and
+attention/authority separation requirements. A future public attention contract
+requires a separate versioned API and compatibility decision.
+
+The [hardening plan](docs/process/production-readiness-hardening-goal-plan.md)
+records historical work and evidence, not current support or permission to
+execute its remaining release actions.
+
+## Change Ownership
+
+- Core owns protocol, capability declarations, Governance, Trace, and Conformance.
+- External runtimes own scheduling, execution, cancellation, retries, and recovery.
+- External adapters own concrete model, tool, and storage integrations; they
+  may initially live with the runtime.
+- `pheroos-bench/` is an independent package in this repository. Datasets,
+  experimental algorithms, controls, and statistics belong there. Its model
+  and numerical dependencies must not enter the core distribution or imports.
+
+Use the existing Driver, Store, and Trace contracts for extensions. Every new
+public API needs a concrete caller, an explanation of why existing interfaces
+are insufficient, and a compatibility/migration decision.
 
 ## Allowed Core Surfaces
 
@@ -62,7 +68,8 @@ Executable code should exist only when it directly supports:
 - deterministic ABI/schema/TCK generators and CI/release verification tooling
 - tests for the above
 
-A change that does not strengthen one of these surfaces should usually not be made in this repository.
+A core change must strengthen one of these surfaces. Bench changes follow the
+separate package boundary above.
 
 ## Non-Goals
 
@@ -87,37 +94,9 @@ Do not add:
 
 If runtime infrastructure is needed, keep this repository limited to ABI contracts and conformance. Full runtime infrastructure belongs outside protocol-core.
 
-## Swarm-Inspired Protocol Mapping
-
-Use biology as inspiration, not as implementation baggage.
-
-Bee-swarm mapping:
-
-- scout bee -> independent agent report
-- nest site -> declared candidate
-- waggle dance -> recruitment signal
-- stop/dissent behavior -> inhibition signal
-- quorum threshold -> consensus threshold
-- swarm takeoff -> output authorization or publication
-
-Ant-colony mapping:
-
-- path -> candidate, route, or tool/reasoning trajectory
-- pheromone -> accumulated support signal
-- evaporation -> confidence decay
-- negative pheromone -> inhibition or blocked route
-- alarm pheromone -> emergency caution or fallback pressure
-- pheromone diffusion -> bounded local propagation over declared subjects
-- feedback reinforcement -> outcome-bound strengthening or weakening
-- response saturation -> positive feedback without runaway lock-in
-- exploration/exploitation balance -> non-greedy candidate search
-- convergence -> committed candidate or safe fallback
-
-Do not use swarm terminology as marketing. Encode it as testable protocol behavior.
-
 ## Implementation Bias
 
-Prefer the smallest explicit protocol object that advances an end-to-end swarm decision path.
+Prefer the smallest explicit change that advances a declared governed path.
 
 Prefer:
 
@@ -167,72 +146,23 @@ When adding a rule, validator, hook, or denial path, ensure it is:
 
 If a constraint only sounds safe but does not affect protocol correctness, conformance, traceability, or deterministic behavior, do not add it.
 
-## Preferred Swarm ABI Additions
-
-When implementing swarm-native behavior, prefer adding small pieces under existing surfaces instead of creating a new top-level framework.
-
-Preferred locations:
-
-- `pheroos.protocol` for manifest declarations and validation
-- `pheroos.governance` for collective decision primitives
-- `pheroos.trace` for lineage and append-only events
-- `pheroos.conformance` for compatibility checks
-- `examples/swarm-protocol` for a provider-free protocol example
-- `tests` for deterministic proof
-
-Preferred concepts:
-
-- `CollectiveDecisionPolicy`
-- `ScoutReport`
-- `RecruitmentSignal`
-- `InhibitionSignal`
-- `PheromoneTrail`
-- `PheromonePolicy`
-- `PheromoneKindProfile`
-- `PheromoneDiffusionPolicy`
-- `PheromoneFeedback`
-- `LayerProposal`
-- `LayerCoordinationPolicy`
-- `PolicyAdjustmentProposal`
-- `CollectiveDecisionState`
-- `evaluate_collective_decision`
-- `evaporate_trails`
-- `diffuse_pheromone_trails`
-- `reinforce_pheromone_trails`
-- `evaluate_layer_coordination`
-
-These names are preferred, not mandatory. Use existing code style and naming if it gives a cleaner result.
-
 ## End-to-End Direction
 
 Prefer vertical slices over disconnected primitives.
 
-The baseline swarm-native path is:
+The governed baseline path is:
 
 1. Load a capability manifest.
 2. Validate protocol invariants.
-3. Read a collective decision policy.
-4. Declare targets and candidates.
-5. Identify a declared safe fallback candidate.
-6. Collect independent scout reports with evidence provenance.
-7. Apply recruitment signals when enabled.
-8. Apply inhibition signals when enabled.
-9. Apply pheromone deposit and evaporation when enabled.
-10. Apply pheromone diffusion, feedback reinforcement, and response shaping when declared.
-11. Evaluate layer proposals and metacognitive coordination when declared.
-12. Enforce policy adjustment bounds when runtime layers propose adaptation.
-13. Evaluate collective consensus.
-14. Commit only a declared candidate, or fall back safely.
-15. Authorize output only when the output contract is satisfied.
-16. Emit trace events for the collective decision path.
-17. Pass conformance.
+3. Bind scope, capabilities, and current authority under the selected version.
+4. Verify evidence-bearing proposals for declared targets and candidates.
+5. Commit a declared candidate or return an explicit terminal fallback.
+6. Authorize publication or execution only when its current output gates pass.
+7. Record causal Trace and verify the selected Conformance contract.
 
-A swarm-specific feature that does not improve this path should usually be deferred.
-
-When a manifest explicitly selects the Hybrid Pheromone ABI, preserve its
-complete declared path: diffusion, feedback reinforcement, nonlinear response,
-layer proposals, metacognitive coordination, policy adjustment bounds, trace
-lineage, Conformance, and provider-free examples.
+Use the installed-package consumer and independent adapter tests when changing
+an extension contract. Callers should be able to replace an implementation
+without changing business logic or importing private core modules.
 
 ## Protocol Rules
 
@@ -386,7 +316,10 @@ Conformance checks should remain:
 - small
 - explicit about the invariant being checked
 
-Swarm-specific conformance checks apply only when a manifest declares swarm behavior.
+The removed swarm and Hybrid-swarm profiles are not public Conformance
+contracts. A legacy attention declaration without Commit selects the core
+profile. Commit profiles retain their explicit attention bounds and
+channel-separation checks; private scoring is not proof of swarm efficacy.
 
 ## Import Boundaries
 
@@ -423,13 +356,18 @@ Use examples to prove ABI behavior, not to create product workflows.
 
 `examples/e2e-protocol` may demonstrate the minimal governed vertical slice.
 
-`examples/swarm-protocol` may demonstrate swarm-native collective decision behavior.
+`examples/swarm-protocol` and `examples/hybrid-pheromone-protocol` are legacy
+private-attention fixtures, not demonstrations of established swarm efficacy.
 
 Do not turn examples into app runtimes, provider gateways, dashboards, or domain workflows.
 
 ## Testing and Validation
 
 Add tests before or alongside behavior.
+
+Derive tests from the problem, counterexamples, and independently checkable
+invariants. Do not fix failures by refreshing unrelated snapshots, weakening
+thresholds, or changing expected outcomes to match the implementation.
 
 Tests should prove:
 
@@ -466,15 +404,16 @@ Do not add marketing copy, product runtime documentation, dashboard docs, provid
 
 ## Backward Compatibility Rule
 
-Do not force existing baseline protocols to become swarm protocols.
+Follow the API lifecycle and removal ledger for declared compatibility cohorts.
+Draft is not permission to silently change a contract or retain duplicate
+algorithms without a consumer and an exit decision.
 
 `examples/toy-protocol` should remain the minimal baseline governed protocol example.
 
-Swarm-native rules apply only when a manifest explicitly declares `collective_decision_policy` with a swarm mode such as `bee_swarm`, `ant_colony`, or `hybrid`.
-
 Baseline quorum-only protocols must continue to validate and pass conformance.
 
-Do not rewrite old protocol examples merely to satisfy new swarm-specific checks. Add a separate `examples/swarm-protocol` example for swarm-native behavior.
+Do not rewrite baseline examples to make them opt into a new contract. Add a
+separate versioned example and migration evidence for newly declared behavior.
 
 ## Final Rule
 

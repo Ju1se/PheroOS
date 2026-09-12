@@ -31,6 +31,8 @@ WORKFLOW = ROOT / ".github" / "workflows" / "tests.yml"
 RELEASE_CANDIDATE_WORKFLOW = ROOT / ".github" / "workflows" / "release-candidate.yml"
 CONSTRAINTS = ROOT / "requirements" / "ci-constraints.txt"
 CONSTRAINT_DIGEST = ROOT / "requirements" / "ci-constraints.sha256"
+BENCH_CONSTRAINTS = ROOT / "requirements" / "bench-constraints.txt"
+BENCH_CONSTRAINT_DIGEST = ROOT / "requirements" / "bench-constraints.sha256"
 
 ACTION_PINS = {
     "actions/checkout": "de0fac2e4500dabe0009e67214ff5f5447ce83dd",
@@ -90,6 +92,14 @@ REQUIRED_TOOLS = {
 }
 REQUIRED_VALIDATION_MARKERS = {
     "python-tests": ('python scripts/run_test_shard.py "${{ matrix.shard }}"',),
+    "bench-tests": (
+        "sha256sum --check requirements/ci-constraints.sha256",
+        "sha256sum --check requirements/bench-constraints.sha256",
+        "--require-hashes --only-binary=:all: -r requirements/ci-constraints.txt",
+        "--require-hashes --only-binary=:all: -r requirements/bench-constraints.txt",
+        "python -m pip install --no-deps --no-build-isolation -e ./pheroos-bench",
+        "python -m pytest -q -c pheroos-bench/pyproject.toml pheroos-bench/tests",
+    ),
     "lint-and-typing": (
         "python -m ruff check pheroos scripts tests",
         "python -m ruff format --check pheroos scripts tests",
@@ -236,6 +246,7 @@ WORKFLOW_HEADER_DIGEST = (
 )
 WORKFLOW_JOB_DIGESTS = {
     "python-tests": "db44ef360b52e4fd9e975d2ff965eac0c6d4fac6816a15fb86efc6bf7a3a0845",
+    "bench-tests": "1eff30fd13261754a3d074cbfeeeea9930163bf92dbd3f586529bc1e3bd956d7",
     "lint-and-typing": "5ceada187b115a4737af295db42c7f04afc3a51d967076c6e8d8827fac1d37ae",
     "schema-version-drift": (
         "8156a5c2fe5063ae430c04763fbde4dd4093fa1f79425a6d0940c29f09548710"
@@ -285,9 +296,9 @@ WORKFLOW_JOB_DIGESTS = {
         "0c6ed88f4fc908722641ba0dd090a5c36301192f537d9f8ed2e41570e5f9d6af"
     ),
     "supply-chain": "1f5f498a2c881326114102a0955f5f7336239e3161abdd1934d65b1818e947e4",
-    PROVENANCE_JOB: "dec1bf4def4b220dee051d00b5a884e80e2a4c777b77ec6ae7803cb1bcf2b8ac",
+    PROVENANCE_JOB: "fc30da5b8067878a3d04e99c1f57fd2bf9cff38243cfbdae2a57ccd3a92c2b8a",
     QUALITY_GATE_JOB: (
-        "07aeb4161606f8022a64640bc63ebda3a07fa890b37bf2c90677a09ea60caf70"
+        "4f38b84ae5e97642c416e22239303b7469d99487961e2f417fe0fbc77814dbef"
     ),
 }
 RELEASE_CANDIDATE_HEADER_DIGEST = (
@@ -658,6 +669,29 @@ def _job_inventory_failures(
     return failures
 
 
+def _allowed_install(line: str, *, job: str) -> bool:
+    if "-e ./pheroos-bench" in line:
+        return job == "bench-tests" and line.strip() == (
+            "python -m pip install --no-deps --no-build-isolation -e ./pheroos-bench"
+        )
+    if "requirements/bench-constraints.txt" in line:
+        return job == "bench-tests" and line.strip() == (
+            "python -m pip install --require-hashes --only-binary=:all: "
+            "-r requirements/bench-constraints.txt"
+        )
+    local_install = (
+        "pip install --no-deps dist/*.whl" in line
+        or "pip install --no-build-isolation --no-deps dist/*.tar.gz" in line
+        or "pip install --no-deps --no-build-isolation -e ." in line
+    )
+    hashed_install = (
+        "--require-hashes" in line
+        and "--only-binary=:all:" in line
+        and "requirements/ci-constraints.txt" in line
+    )
+    return local_install or hashed_install
+
+
 def _installation_failures(
     workflow: str,
     *,
@@ -681,20 +715,14 @@ def _installation_failures(
             failures.append(
                 "no-deps editable install lacks the complete hashed wheel lock"
             )
+    current_job = ""
     for line in workflow_lines:
+        job_header = re.fullmatch(r"  ([a-z0-9-]+):", line)
+        if job_header is not None:
+            current_job = job_header.group(1)
         if "pip install" not in line:
             continue
-        local_install = (
-            "pip install --no-deps dist/*.whl" in line
-            or "pip install --no-build-isolation --no-deps dist/*.tar.gz" in line
-            or "pip install --no-deps --no-build-isolation -e ." in line
-        )
-        hashed_install = (
-            "--require-hashes" in line
-            and "--only-binary=:all:" in line
-            and "requirements/ci-constraints.txt" in line
-        )
-        if not local_install and not hashed_install:
+        if not _allowed_install(line, job=current_job):
             failures.append(
                 "every network-capable pip install must use the complete hashed lock"
             )
@@ -1023,12 +1051,34 @@ def audit() -> list[str]:
     if expected_digest_line != canonical_digest_line:
         failures.append("ci-constraints.sha256 does not bind the constraints file")
 
+    failures.extend(
+        audit_bench_constraints(
+            BENCH_CONSTRAINTS.read_bytes(),
+            BENCH_CONSTRAINT_DIGEST.read_text(encoding="utf-8"),
+        )
+    )
     failures.extend(audit_workflow(WORKFLOW.read_text(encoding="utf-8")))
     failures.extend(
         audit_release_candidate_workflow(
             RELEASE_CANDIDATE_WORKFLOW.read_text(encoding="utf-8")
         )
     )
+    return failures
+
+
+def audit_bench_constraints(constraints: bytes, digest_line: str) -> list[str]:
+    """Keep the benchmark's wheel lock separate and as strict as the core lock."""
+    failures: list[str] = []
+    try:
+        pins = parse_hashed_requirements(constraints)
+    except ValueError as error:
+        failures.append(str(error))
+        pins = {}
+    if set(pins) != {"numpy"}:
+        failures.append("benchmark CI lock must contain exactly numpy")
+    expected = f"{sha256(constraints).hexdigest()}  requirements/bench-constraints.txt"
+    if digest_line.strip() != expected:
+        failures.append("bench-constraints.sha256 does not bind the constraints file")
     return failures
 
 

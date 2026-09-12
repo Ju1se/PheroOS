@@ -3,6 +3,12 @@
 Status: Draft promotion-candidate guide. This document does not declare a
 formally Stable ABI.
 
+At the post-cleanup `0.1.0` baseline, this candidate has **37 roots and a
+121-symbol closure** drawn from 1,232 Draft exports. It is the recommended
+starting point for ordinary consumers, not a promise that the full facade is
+Stable or that noncandidate public exports have been removed. See the
+[current support matrix](current-support.md).
+
 The machine-readable source of truth is
 [`stable-python-api-v1.json`](../../pheroos/conformance/abi/stable-python-api-v1.json).
 Its lifecycle must remain:
@@ -25,8 +31,9 @@ The candidate is a type-closed projection of six public package facades. A
 consumer must:
 
 - import candidate symbols only from the package facades below;
-- treat private modules, reference-adapter internals, and Draft Expert exports
-  outside the candidate closure as non-contractual;
+- avoid private modules and reference-adapter internals; exports outside the
+  candidate closure remain Draft public interfaces but are outside this
+  smaller consumer contract;
 - use the packaged `pheroos/py.typed` marker and run a strict type checker;
 - pin the exact package artifact and candidate artifact digest during RC
   validation;
@@ -82,6 +89,11 @@ The executable strict-typing consumer is
 [`tests/typing/stable_consumer.py`](../../tests/typing/stable_consumer.py).
 The same file is executed after separate wheel and sdist installation from an
 external working directory.
+
+The distribution harness injects an independent stdlib Store into that same
+consumer journey. A new external Store should satisfy the same adapter contract
+without changing the consumer's business logic. That test is evidence of
+replaceability at this boundary, not evidence of production database behavior.
 
 ## External Adapter Rule
 

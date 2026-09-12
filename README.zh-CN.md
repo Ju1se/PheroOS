@@ -35,6 +35,11 @@ Trace 与 Conformance 都已经实现并由确定性测试覆盖。在首个稳�
 `draft / promotion_candidate / formal_stable=false`；当前没有任何公共 lifecycle entry
 被正式提升为 Stable。
 
+[当前支持矩阵](docs/protocol/current-support.md) 将每项能力对应到精确接口与测试入口。
+六个门面的 1,232 项导出均为 Draft；普通使用者应从 37 个根入口、121 项类型闭包的
+[消费候选合同](docs/protocol/stable-core-consumer.md) 开始并固定版本。
+该候选不构成 Stable 兼容性保证。
+
 ## 快速开始
 
 从源码克隆并安装：
@@ -333,6 +338,10 @@ inert policy，并未成为远程保护。这是 build 与 attestation pipeline�
 Protocol-core 不是 agent framework、model-provider gateway、FastAPI 或 product server、
 dashboard、LangGraph runtime、provider SDK wrapper、database、queue、worker pool、daemon、
 plugin marketplace 或 domain workflow package。外部 runtime 可以围绕 ABI 实现这些能力。
+
+`pheroos-bench/` 是在同一仓库维护的独立研究包，负责数据集、模型调用、实验算法与统计，
+拥有自己的依赖和打包链。运行时调度，以及具体模型、工具、存储的 adapter 均在
+protocol-core 之外维护。
 
 ## 开发
 

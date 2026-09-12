@@ -40,6 +40,12 @@ The checked Stable Core candidate remains
 `draft / promotion_candidate / formal_stable=false`; no public lifecycle entry
 has been formally promoted to Stable.
 
+The [current support matrix](docs/protocol/current-support.md) maps capabilities
+to exact interfaces and test entries. All 1,232 facade exports are Draft;
+ordinary consumers should start with the 37-root, 121-symbol
+[consumer candidate](docs/protocol/stable-core-consumer.md) and pin its version.
+The candidate is not a Stable compatibility guarantee.
+
 ## Quick Start
 
 Clone and install from source:
@@ -366,6 +372,11 @@ Protocol-core is not an agent framework, model-provider gateway, FastAPI or
 product server, dashboard, LangGraph runtime, provider SDK wrapper, database,
 queue, worker pool, daemon, plugin marketplace, or domain workflow package.
 External runtimes may implement those concerns around the ABI.
+
+`pheroos-bench/` is an independent research package maintained in this
+repository. It owns datasets, model calls, experimental algorithms, and
+statistics with its own dependencies and packaging. Runtime scheduling and
+concrete model/tool/storage adapters remain external to protocol-core.
 
 ## Development
 

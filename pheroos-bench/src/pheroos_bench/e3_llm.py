@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import os
 import re
 import subprocess
@@ -20,6 +21,24 @@ from typing import Any
 
 DEFAULT_BASE_URL = "https://api.moonshot.cn/v1"
 DEFAULT_MODEL = "kimi-k2.6"
+
+
+def _token_usage(usage: Any, *, embedding: bool = False) -> dict[str, int]:
+    names = (
+        ("prompt_tokens", "total_tokens")
+        if embedding
+        else ("prompt_tokens", "completion_tokens", "total_tokens")
+    )
+    if not isinstance(usage, dict) or any(
+        type(usage.get(name)) is not int or usage[name] < 0 for name in names
+    ):
+        raise ValueError("token usage is missing or invalid; unknown spend is not zero")
+    expected = usage["prompt_tokens"] + (0 if embedding else usage["completion_tokens"])
+    if usage["total_tokens"] < expected or (
+        not embedding and usage["total_tokens"] != expected
+    ):
+        raise ValueError("inconsistent token accounting")
+    return {name: usage[name] for name in names}
 
 
 def _unwrap_boxed(value: str) -> str:
@@ -35,7 +54,7 @@ def _unwrap_boxed(value: str) -> str:
         elif char == "}":
             depth -= 1
             if depth == 0:
-                return value[start + len(marker):index]
+                return value[start + len(marker) : index]
     return value
 
 
@@ -52,7 +71,7 @@ def _normalise_frac(value: str) -> str:
             index += 1
         if depth:
             break
-        numerator = value[numerator_start:index - 1]
+        numerator = value[numerator_start : index - 1]
         if index >= len(value) or value[index] != "{":
             break
         denominator_start = index + 1
@@ -64,7 +83,7 @@ def _normalise_frac(value: str) -> str:
             index += 1
         if depth:
             break
-        denominator = value[denominator_start:index - 1]
+        denominator = value[denominator_start : index - 1]
         value = value[:start] + numerator + "/" + denominator + value[index:]
     return value
 
@@ -103,7 +122,11 @@ def extract_answer(text: str, answer_type: str = "numeric") -> str:
         value = marked[-1].strip().strip(".`")
         return value.upper() if answer_type == "choice" else _canonical_answer(value)
     if answer_type == "choice":
-        choices = re.findall(r"(?:answer|option)(?:\s+is)?\s*[:\[(]?\s*([A-E])\b", text, flags=re.IGNORECASE)
+        choices = re.findall(
+            r"(?:answer|option)(?:\s+is)?\s*[:\[(]?\s*([A-E])\b",
+            text,
+            flags=re.IGNORECASE,
+        )
         return choices[-1].upper() if choices else ""
     if "\\boxed{" in text:
         return _canonical_answer(_unwrap_boxed(text))
@@ -134,9 +157,7 @@ def _chat(
         "messages": [
             {
                 "role": "system",
-                "content": (
-                    "Solve the problem accurately. " + instruction
-                ),
+                "content": ("Solve the problem accurately. " + instruction),
             },
             {"role": "user", "content": prompt},
         ],
@@ -152,11 +173,6 @@ def _chat(
         "curl",
         "-sS",
         "--fail-with-body",
-        "--retry",
-        "5",
-        "--retry-delay",
-        "2",
-        "--retry-all-errors",
         "--max-time",
         "120",
         f"{base_url.rstrip('/')}/chat/completions",
@@ -166,10 +182,13 @@ def _chat(
         json.dumps(payload, ensure_ascii=False, separators=(",", ":")),
     ]
     if api_key:
-        command[command.index("-H") + 1:command.index("-H") + 1] = [
-            "-H",
-            f"Authorization: Bearer {api_key}",
-        ]
+        command.extend(
+            [
+                "-H",
+                f"Authorization: Bearer {api_key}",
+            ]
+        )
+    # Retrying a paid POST can spend twice without a second usage receipt.
     process = subprocess.run(
         command,
         check=False,
@@ -177,15 +196,19 @@ def _chat(
         text=True,
     )
     if process.returncode:
-        raise RuntimeError(process.stderr.strip() or process.stdout.strip() or "chat request failed")
+        raise RuntimeError(
+            process.stderr.strip() or process.stdout.strip() or "chat request failed"
+        )
     response = json.loads(process.stdout)
     choice = response["choices"][0]["message"]
-    usage = response.get("usage", {})
+    usage = _token_usage(response.get("usage"))
+    if response.get("model") != model:
+        raise ValueError("response model differs from the declared exact model")
     return {
         "text": str(choice.get("content") or ""),
         "answer": extract_answer(str(choice.get("content") or ""), answer_type),
         "usage": usage,
-        "model": response.get("model", model),
+        "model": response["model"],
         "response_id": response.get("id"),
     }
 
@@ -205,59 +228,104 @@ def _embed(
         "curl",
         "-sS",
         "--fail-with-body",
-        "--retry",
-        "5",
-        "--retry-delay",
-        "2",
-        "--retry-all-errors",
         "--max-time",
         "120",
         f"{base_url.rstrip('/')}/embeddings",
         "-H",
         "Content-Type: application/json",
         "--data",
-        json.dumps({"model": model, "input": inputs}, ensure_ascii=False, separators=(",", ":")),
+        json.dumps(
+            {"model": model, "input": inputs}, ensure_ascii=False, separators=(",", ":")
+        ),
     ]
     if api_key:
-        command[command.index("-H") + 1:command.index("-H") + 1] = [
-            "-H",
-            f"Authorization: Bearer {api_key}",
-        ]
+        command.extend(
+            [
+                "-H",
+                f"Authorization: Bearer {api_key}",
+            ]
+        )
     process = subprocess.run(command, check=False, capture_output=True, text=True)
     if process.returncode:
-        raise RuntimeError(process.stderr.strip() or process.stdout.strip() or "embedding request failed")
+        raise RuntimeError(
+            process.stderr.strip()
+            or process.stdout.strip()
+            or "embedding request failed"
+        )
     response = json.loads(process.stdout)
-    vectors = [list(map(float, entry["embedding"])) for entry in response["data"]]
+    usage = _token_usage(response.get("usage"), embedding=True)
+    if response.get("model") != model:
+        raise ValueError("embedding model differs from the declared exact model")
+    entries = response["data"]
+    if any(type(entry.get("index")) is not int for entry in entries) or sorted(
+        entry["index"] for entry in entries
+    ) != list(range(len(inputs))):
+        raise ValueError("embedding indices must match input indices exactly")
+    vectors = [
+        list(map(float, entry["embedding"]))
+        for entry in sorted(entries, key=lambda x: x["index"])
+    ]
     if len(vectors) != len(inputs):
         raise RuntimeError("embedding response count does not match input count")
     dimensions = {len(vector) for vector in vectors}
-    if len(dimensions) != 1:
+    if (
+        len(dimensions) != 1
+        or 0 in dimensions
+        or any(not math.isfinite(v) for vector in vectors for v in vector)
+    ):
         raise RuntimeError("embedding vectors have inconsistent dimensions")
     return {
-        "model": response.get("model", model),
+        "model": response["model"],
         "vectors": vectors,
-        "usage": response.get("usage", {}),
+        "usage": usage,
     }
 
 
-def _load_items(path: Path, limit: int | None, benchmark: str = "gsm8k") -> list[dict[str, str]]:
+def _validate_items(items: list[dict[str, str]]) -> None:
+    if not items:
+        raise ValueError("at least one labeled item is required")
+    seen: set[str] = set()
+    for item in items:
+        if not isinstance(item, dict) or any(
+            not isinstance(item.get(key), str) or not item[key].strip()
+            for key in ("item_id", "question", "answer")
+        ):
+            raise ValueError(
+                "items require nonempty string IDs, questions, and ground truth"
+            )
+        if item["item_id"] in seen:
+            raise ValueError("item IDs must be distinct within a benchmark")
+        seen.add(item["item_id"])
+
+
+def _load_items(
+    path: Path, limit: int | None, benchmark: str = "gsm8k"
+) -> list[dict[str, str]]:
     items: list[dict[str, str]] = []
     with path.open(encoding="utf-8") as handle:
         for index, line in enumerate(handle):
             if not line.strip():
                 continue
             value = json.loads(line)
-            answer = str(value.get("answer", ""))
+            if not isinstance(value, dict):
+                raise ValueError("each JSONL item must be an object")
+            raw_answer = value.get("answer")
+            if type(raw_answer) not in (str, int, float) or (
+                isinstance(raw_answer, float) and not math.isfinite(raw_answer)
+            ):
+                raise ValueError("each item requires a known ground-truth answer")
+            answer = str(raw_answer)
             answer = answer.split("####")[-1].strip()
-            items.append({
-                "item_id": f"{benchmark}-{index:04d}",
-                "question": str(value.get("question", value.get("problem", ""))),
-                "answer": _canonical_answer(answer),
-            })
+            items.append(
+                {
+                    "item_id": f"{benchmark}-{index:04d}",
+                    "question": value.get("question", value.get("problem", "")),
+                    "answer": _canonical_answer(answer),
+                }
+            )
             if limit is not None and len(items) >= limit:
                 break
-    if not items:
-        raise ValueError("item file contains no JSONL items")
+    _validate_items(items)
     return items
 
 
@@ -282,9 +350,15 @@ def run(
     top_p: float = 0.95,
     max_tokens: int = 1024,
     answer_type: str = "numeric",
+    phase: str = "admission",
 ) -> dict[str, Any]:
     if n <= 0 or repetitions <= 0 or workers <= 0:
         raise ValueError("n, repetitions, and workers must be positive")
+    _validate_items(items)
+    if phase not in ("admission", "pilot"):
+        raise ValueError("this runner supports admission and void pilot only")
+    if output.exists() and any(output.iterdir()):
+        raise FileExistsError("output directory already contains records")
     calls: list[dict[str, Any]] = []
 
     tasks = [
@@ -306,7 +380,9 @@ def run(
             max_tokens=max_tokens,
             answer_type=answer_type,
         )
-        usage = response["usage"]
+        usage = _token_usage(response["usage"])
+        if response["model"] != model:
+            raise ValueError("model version changed during the run")
         return {
             "item_id": item["item_id"],
             "repetition": repetition,
@@ -316,9 +392,11 @@ def run(
             "response_id": response["response_id"],
             "answer": response["answer"],
             "quality": float(response["answer"] == item["answer"]),
-            "prompt_tokens": int(usage.get("prompt_tokens", 0)),
-            "completion_tokens": int(usage.get("completion_tokens", 0)),
-            "total_tokens": int(usage.get("total_tokens", 0)),
+            "prompt_tokens": usage["prompt_tokens"],
+            "completion_tokens": usage["completion_tokens"],
+            "total_tokens": usage["total_tokens"],
+            "phase": phase,
+            "counts_toward_verdict": False,
             "expected_answer": item["answer"],
             "response": response["text"],
         }
@@ -333,24 +411,29 @@ def run(
         for repetition in range(repetitions):
             for arm in sorted({row["arm"] for row in calls}):
                 values = [
-                    row for row in calls
+                    row
+                    for row in calls
                     if row["item_id"] == item["item_id"]
                     and row["repetition"] == repetition
                     and row["arm"] == arm
                 ]
                 predicted = _majority([row["answer"] for row in values])
-                aggregate.append({
-                    "item_id": item["item_id"],
-                    "cell": "gsm8k",
-                    "repetition": repetition,
-                    "arm": arm,
-                    "model": values[0]["model"],
-                    "quality": float(predicted == item["answer"]),
-                    "predicted_answer": predicted,
-                    "expected_answer": item["answer"],
-                    "tokens": sum(row["total_tokens"] for row in values),
-                    "agent_calls": len(values),
-                })
+                aggregate.append(
+                    {
+                        "item_id": item["item_id"],
+                        "cell": benchmark,
+                        "phase": phase,
+                        "counts_toward_verdict": False,
+                        "repetition": repetition,
+                        "arm": arm,
+                        "model": values[0]["model"],
+                        "quality": float(predicted == item["answer"]),
+                        "predicted_answer": predicted,
+                        "expected_answer": item["answer"],
+                        "tokens": sum(row["total_tokens"] for row in values),
+                        "agent_calls": len(values),
+                    }
+                )
 
     output.mkdir(parents=True, exist_ok=True)
     with (output / "calls.ndjson").open("w", encoding="utf-8") as handle:
@@ -361,6 +444,8 @@ def run(
             handle.write(json.dumps(row, ensure_ascii=False, sort_keys=True) + "\n")
     metadata = {
         "benchmark": benchmark,
+        "phase": phase,
+        "counts_toward_verdict": False,
         "items": len(items),
         "n": n,
         "repetitions": repetitions,
@@ -373,15 +458,20 @@ def run(
         "total_tokens": sum(row["total_tokens"] for row in calls),
         "api_key_recorded": False,
     }
-    (output / "metadata.json").write_text(json.dumps(metadata, indent=2) + "\n", encoding="utf-8")
+    (output / "metadata.json").write_text(
+        json.dumps(metadata, indent=2) + "\n", encoding="utf-8"
+    )
     return metadata
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Run a small Kimi-compatible E3 chat pilot/admission")
+    parser = argparse.ArgumentParser(
+        description="Run a small Kimi-compatible E3 chat pilot/admission"
+    )
     parser.add_argument("--items", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--benchmark", default="gsm8k")
+    parser.add_argument("--phase", choices=("admission", "pilot"), default="admission")
     parser.add_argument("--api-key-env", default="MOONSHOT_API_KEY")
     parser.add_argument("--base-url", default=DEFAULT_BASE_URL)
     parser.add_argument("--model", default=DEFAULT_MODEL)
@@ -392,7 +482,9 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--temperature", type=float, default=0.6)
     parser.add_argument("--top-p", type=float, default=0.95)
     parser.add_argument("--max-tokens", type=int, default=1024)
-    parser.add_argument("--answer-type", choices=("numeric", "choice"), default="numeric")
+    parser.add_argument(
+        "--answer-type", choices=("numeric", "choice"), default="numeric"
+    )
     args = parser.parse_args(argv)
     api_key = os.environ.get(args.api_key_env) if args.api_key_env else None
     local_endpoint = "127.0.0.1" in args.base_url or "localhost" in args.base_url
@@ -412,6 +504,7 @@ def main(argv: list[str] | None = None) -> int:
         max_tokens=args.max_tokens,
         benchmark=args.benchmark,
         answer_type=args.answer_type,
+        phase=args.phase,
     )
     print(json.dumps(metadata, indent=2, sort_keys=True))
     return 0

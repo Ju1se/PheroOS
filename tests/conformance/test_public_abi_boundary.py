@@ -100,3 +100,67 @@ def test_public_abi_boundary_rejects_stale_lifecycle_metadata(
     assert result.ok is False
     assert "lifecycle:entry:pheroos.drivers." in result.detail
     assert ":replacement" in result.detail
+
+
+def test_public_abi_artifacts_report_missing_invalid_and_drifted_state(
+    tmp_path: Path,
+) -> None:
+    assert public_abi_boundary.public_inventory_problems(tmp_path) == [
+        "inventory:artifact_missing"
+    ]
+    assert public_abi_boundary.public_lifecycle_problems(tmp_path) == [
+        "lifecycle:artifact_missing"
+    ]
+
+    abi = tmp_path / "pheroos/conformance/abi"
+    abi.mkdir(parents=True)
+    inventory = abi / "public-python-api-v1.json"
+    lifecycle = abi / "public-python-api-lifecycle-v1.json"
+    inventory.write_text("{", encoding="utf-8")
+    lifecycle.write_text("[]", encoding="utf-8")
+    assert public_abi_boundary.public_inventory_problems(tmp_path) == [
+        "inventory:artifact_invalid:JSONDecodeError"
+    ]
+    assert public_abi_boundary.public_lifecycle_problems(tmp_path) == [
+        "lifecycle:artifact_invalid:ValueError"
+    ]
+
+    inventory.write_text("{}", encoding="utf-8")
+    lifecycle.write_text("{}", encoding="utf-8")
+    inventory_drift = public_abi_boundary.public_inventory_problems(tmp_path)
+    lifecycle_drift = public_abi_boundary.public_lifecycle_problems(tmp_path)
+    assert inventory_drift
+    assert all(problem.startswith("inventory:") for problem in inventory_drift)
+    assert lifecycle_drift
+    assert all(problem.startswith("lifecycle:") for problem in lifecycle_drift)
+
+
+def test_public_lifecycle_boundary_totalizes_structural_and_source_failures(
+    tmp_path: Path,
+) -> None:
+    source_artifact = (
+        ROOT / "pheroos/conformance/abi/public-python-api-lifecycle-v1.json"
+    )
+    lifecycle = json.loads(source_artifact.read_text(encoding="utf-8"))
+    lifecycle["diagnostic_codes"][0]["package"] = []
+    abi = tmp_path / "structural/pheroos/conformance/abi"
+    abi.mkdir(parents=True)
+    (abi / "public-python-api-lifecycle-v1.json").write_text(
+        json.dumps(lifecycle),
+        encoding="utf-8",
+    )
+    structural = public_abi_boundary.public_lifecycle_problems(tmp_path / "structural")
+    assert structural == ["lifecycle:inspection_failed:TypeError"]
+
+    source_root = tmp_path / "source"
+    source_abi = source_root / "pheroos/conformance/abi"
+    source_abi.mkdir(parents=True)
+    (source_abi / "public-python-api-lifecycle-v1.json").write_text(
+        source_artifact.read_text(encoding="utf-8"),
+        encoding="utf-8",
+    )
+    protocol = source_root / "pheroos/protocol"
+    protocol.mkdir(parents=True)
+    (protocol / "validation.py").write_text("this is not valid ???", encoding="utf-8")
+    source_failure = public_abi_boundary.public_lifecycle_problems(source_root)
+    assert "lifecycle:inspection_failed:SyntaxError" in source_failure

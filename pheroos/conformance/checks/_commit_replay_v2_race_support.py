@@ -170,8 +170,17 @@ def _evaluate_two_fork_race(
         frozenset({GovernanceCommitDispositionV2.COMMITTED}),
         frozenset({GovernanceCommitDispositionV2.RETRY_REQUIRED}),
     }
-    if {frozenset(item) for item in dispositions} != expected_families:
+    observed_families = {frozenset(item) for item in dispositions}
+    if observed_families != expected_families:
         problems.append("concurrent_two_fork_disposition")
+        # A malformed attempt must not be used to infer the winning fork.
+        # In particular, an adversarial adapter can rewrite both returned
+        # dispositions after the store has committed one fork.  There is then
+        # no trustworthy loser from which to read a stale-read diagnostic, and
+        # selecting a fork here can rehydrate a non-committed view and raise
+        # instead of reporting the checker result.
+        problems.append("concurrent_two_fork_diagnostic")
+        return
     loser = (
         family_a
         if dispositions[0] == {GovernanceCommitDispositionV2.RETRY_REQUIRED}
