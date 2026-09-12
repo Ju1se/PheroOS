@@ -162,3 +162,47 @@ assert e3_llm.main([
     assert preview["dry_run"] is True
     assert preview["call_count"] == 12
     assert preview["monetary_upper_bound"] is None
+
+    # New R-series entrypoints must work without the source tree or NumPy.
+    output = _run(
+        [
+            sys.executable,
+            "-S",
+            "-m",
+            "pheroos_bench.r0_self_check",
+            "--output",
+            "r0-checks.json",
+        ],
+        tmp_path,
+        env,
+    )
+    assert json.loads(output)["status"] == "R0_INSTRUMENT_CHECKS_PASSED"
+    report = json.loads((tmp_path / "r0-checks.json").read_text())
+    assert report["checks"]["known_positive"]["quality"]["mean"] == 0.25
+    assert report["checks"]["legal_flat_cells"]["status"] == "VALID_MEASUREMENT"
+    # Malformed data must produce a durable INVALID_ABORT diagnostic and exit 2.
+    (tmp_path / "r0-config.json").write_text("{}")
+    (tmp_path / "r0-records.ndjson").write_text("{broken json}")
+    failed = subprocess.run(
+        [
+            sys.executable,
+            "-S",
+            "-m",
+            "pheroos_bench.r0_measurement",
+            "--config",
+            "r0-config.json",
+            "--records",
+            "r0-records.ndjson",
+            "--output",
+            "r0-invalid.json",
+        ],
+        cwd=tmp_path,
+        env=env,
+        capture_output=True,
+        text=True,
+    )
+    assert failed.returncode == 2
+    assert (
+        json.loads((tmp_path / "r0-invalid.json").read_text())["status"]
+        == "INVALID_ABORT"
+    )

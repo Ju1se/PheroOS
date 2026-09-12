@@ -1,0 +1,563 @@
+{
+  "status": "R0_INSTRUMENT_CHECKS_PASSED",
+  "counts_toward_verdict": false,
+  "invariants": {
+    "known_mean": true,
+    "known_interval": true,
+    "negative_control": true,
+    "identical_no_advantage": true,
+    "sparse_mean": true,
+    "worlds_not_episodes": true,
+    "flat_cells_valid": true,
+    "zero_width_disclosed": true,
+    "shuffle_invariant": true,
+    "invalid_inputs_abort": true
+  },
+  "checks": {
+    "known_positive": {
+      "method_version": "r_paired_world_mean_v1",
+      "counts_toward_verdict": false,
+      "status": "VALID_MEASUREMENT",
+      "phase": "instrument_check",
+      "contrast": {
+        "candidate": "candidate",
+        "control": "control"
+      },
+      "n_worlds": 100,
+      "n_episodes": 200,
+      "confidence": 0.95,
+      "bootstrap_resamples": 10000,
+      "seed": 37,
+      "repetitions": 1,
+      "weighting": "equal_world; repetitions averaged; cells stratified with declared world counts",
+      "interval": "two_sided_paired_world_percentile",
+      "cost_unit": "call_units",
+      "quality": {
+        "mean": 0.25,
+        "ci_low": 0.15,
+        "ci_high": 0.35,
+        "ci_status": "OK",
+        "n_worlds": 100
+      },
+      "cost": {
+        "mean": 0.0,
+        "ci_low": 0.0,
+        "ci_high": 0.0,
+        "ci_status": "INSUFFICIENT_RESOLUTION",
+        "n_worlds": 100
+      },
+      "by_cell_arm": [
+        {
+          "cell": "synthetic",
+          "arm": "candidate",
+          "n_episodes": 100,
+          "quality_mean": 0.3,
+          "cost_total": 100,
+          "unknown_cost_units": 0,
+          "budget_exceeded_episodes": 0,
+          "outcomes": {
+            "cancelled": 0,
+            "failed": 70,
+            "rejected": 0,
+            "success": 30,
+            "timeout": 0
+          }
+        },
+        {
+          "cell": "synthetic",
+          "arm": "control",
+          "n_episodes": 100,
+          "quality_mean": 0.05,
+          "cost_total": 100,
+          "unknown_cost_units": 0,
+          "budget_exceeded_episodes": 0,
+          "outcomes": {
+            "cancelled": 0,
+            "failed": 95,
+            "rejected": 0,
+            "success": 5,
+            "timeout": 0
+          }
+        }
+      ]
+    },
+    "known_negative": {
+      "method_version": "r_paired_world_mean_v1",
+      "counts_toward_verdict": false,
+      "status": "VALID_MEASUREMENT",
+      "phase": "instrument_check",
+      "contrast": {
+        "candidate": "candidate",
+        "control": "control"
+      },
+      "n_worlds": 100,
+      "n_episodes": 200,
+      "confidence": 0.95,
+      "bootstrap_resamples": 10000,
+      "seed": 37,
+      "repetitions": 1,
+      "weighting": "equal_world; repetitions averaged; cells stratified with declared world counts",
+      "interval": "two_sided_paired_world_percentile",
+      "cost_unit": "call_units",
+      "quality": {
+        "mean": -0.25,
+        "ci_low": -0.35,
+        "ci_high": -0.15,
+        "ci_status": "OK",
+        "n_worlds": 100
+      },
+      "cost": {
+        "mean": 0.0,
+        "ci_low": 0.0,
+        "ci_high": 0.0,
+        "ci_status": "INSUFFICIENT_RESOLUTION",
+        "n_worlds": 100
+      },
+      "by_cell_arm": [
+        {
+          "cell": "synthetic",
+          "arm": "candidate",
+          "n_episodes": 100,
+          "quality_mean": 0.05,
+          "cost_total": 100,
+          "unknown_cost_units": 0,
+          "budget_exceeded_episodes": 0,
+          "outcomes": {
+            "cancelled": 0,
+            "failed": 95,
+            "rejected": 0,
+            "success": 5,
+            "timeout": 0
+          }
+        },
+        {
+          "cell": "synthetic",
+          "arm": "control",
+          "n_episodes": 100,
+          "quality_mean": 0.3,
+          "cost_total": 100,
+          "unknown_cost_units": 0,
+          "budget_exceeded_episodes": 0,
+          "outcomes": {
+            "cancelled": 0,
+            "failed": 70,
+            "rejected": 0,
+            "success": 30,
+            "timeout": 0
+          }
+        }
+      ]
+    },
+    "identical_arms": {
+      "method_version": "r_paired_world_mean_v1",
+      "counts_toward_verdict": false,
+      "status": "VALID_MEASUREMENT",
+      "phase": "instrument_check",
+      "contrast": {
+        "candidate": "candidate",
+        "control": "control"
+      },
+      "n_worlds": 20,
+      "n_episodes": 40,
+      "confidence": 0.95,
+      "bootstrap_resamples": 10000,
+      "seed": 37,
+      "repetitions": 1,
+      "weighting": "equal_world; repetitions averaged; cells stratified with declared world counts",
+      "interval": "two_sided_paired_world_percentile",
+      "cost_unit": "call_units",
+      "quality": {
+        "mean": 0.0,
+        "ci_low": 0.0,
+        "ci_high": 0.0,
+        "ci_status": "INSUFFICIENT_RESOLUTION",
+        "n_worlds": 20
+      },
+      "cost": {
+        "mean": 0.0,
+        "ci_low": 0.0,
+        "ci_high": 0.0,
+        "ci_status": "INSUFFICIENT_RESOLUTION",
+        "n_worlds": 20
+      },
+      "by_cell_arm": [
+        {
+          "cell": "synthetic",
+          "arm": "candidate",
+          "n_episodes": 20,
+          "quality_mean": 0.5,
+          "cost_total": 20,
+          "unknown_cost_units": 0,
+          "budget_exceeded_episodes": 0,
+          "outcomes": {
+            "cancelled": 0,
+            "failed": 10,
+            "rejected": 0,
+            "success": 10,
+            "timeout": 0
+          }
+        },
+        {
+          "cell": "synthetic",
+          "arm": "control",
+          "n_episodes": 20,
+          "quality_mean": 0.5,
+          "cost_total": 20,
+          "unknown_cost_units": 0,
+          "budget_exceeded_episodes": 0,
+          "outcomes": {
+            "cancelled": 0,
+            "failed": 10,
+            "rejected": 0,
+            "success": 10,
+            "timeout": 0
+          }
+        }
+      ]
+    },
+    "sparse_two_of_180": {
+      "method_version": "r_paired_world_mean_v1",
+      "counts_toward_verdict": false,
+      "status": "VALID_MEASUREMENT",
+      "phase": "instrument_check",
+      "contrast": {
+        "candidate": "candidate",
+        "control": "control"
+      },
+      "n_worlds": 60,
+      "n_episodes": 360,
+      "confidence": 0.95,
+      "bootstrap_resamples": 10000,
+      "seed": 37,
+      "repetitions": 3,
+      "weighting": "equal_world; repetitions averaged; cells stratified with declared world counts",
+      "interval": "two_sided_paired_world_percentile",
+      "cost_unit": "call_units",
+      "quality": {
+        "mean": 0.01111111111111111,
+        "ci_low": 0.0,
+        "ci_high": 0.027777777777777776,
+        "ci_status": "OK",
+        "n_worlds": 60
+      },
+      "cost": {
+        "mean": 0.0,
+        "ci_low": 0.0,
+        "ci_high": 0.0,
+        "ci_status": "INSUFFICIENT_RESOLUTION",
+        "n_worlds": 60
+      },
+      "by_cell_arm": [
+        {
+          "cell": "synthetic",
+          "arm": "candidate",
+          "n_episodes": 180,
+          "quality_mean": 0.011111111111111112,
+          "cost_total": 180,
+          "unknown_cost_units": 0,
+          "budget_exceeded_episodes": 0,
+          "outcomes": {
+            "cancelled": 0,
+            "failed": 178,
+            "rejected": 0,
+            "success": 2,
+            "timeout": 0
+          }
+        },
+        {
+          "cell": "synthetic",
+          "arm": "control",
+          "n_episodes": 180,
+          "quality_mean": 0.0,
+          "cost_total": 180,
+          "unknown_cost_units": 0,
+          "budget_exceeded_episodes": 0,
+          "outcomes": {
+            "cancelled": 0,
+            "failed": 180,
+            "rejected": 0,
+            "success": 0,
+            "timeout": 0
+          }
+        }
+      ]
+    },
+    "legal_flat_cells": {
+      "method_version": "r_paired_world_mean_v1",
+      "counts_toward_verdict": false,
+      "status": "VALID_MEASUREMENT",
+      "phase": "instrument_check",
+      "contrast": {
+        "candidate": "candidate",
+        "control": "control"
+      },
+      "n_worlds": 40,
+      "n_episodes": 80,
+      "confidence": 0.95,
+      "bootstrap_resamples": 10000,
+      "seed": 37,
+      "repetitions": 1,
+      "weighting": "equal_world; repetitions averaged; cells stratified with declared world counts",
+      "interval": "two_sided_paired_world_percentile",
+      "cost_unit": "call_units",
+      "quality": {
+        "mean": 0.0,
+        "ci_low": 0.0,
+        "ci_high": 0.0,
+        "ci_status": "INSUFFICIENT_RESOLUTION",
+        "n_worlds": 40
+      },
+      "cost": {
+        "mean": 0.0,
+        "ci_low": 0.0,
+        "ci_high": 0.0,
+        "ci_status": "INSUFFICIENT_RESOLUTION",
+        "n_worlds": 40
+      },
+      "by_cell_arm": [
+        {
+          "cell": "a",
+          "arm": "candidate",
+          "n_episodes": 20,
+          "quality_mean": 0.5,
+          "cost_total": 20,
+          "unknown_cost_units": 0,
+          "budget_exceeded_episodes": 0,
+          "outcomes": {
+            "cancelled": 0,
+            "failed": 10,
+            "rejected": 0,
+            "success": 10,
+            "timeout": 0
+          }
+        },
+        {
+          "cell": "a",
+          "arm": "control",
+          "n_episodes": 20,
+          "quality_mean": 0.5,
+          "cost_total": 20,
+          "unknown_cost_units": 0,
+          "budget_exceeded_episodes": 0,
+          "outcomes": {
+            "cancelled": 0,
+            "failed": 10,
+            "rejected": 0,
+            "success": 10,
+            "timeout": 0
+          }
+        },
+        {
+          "cell": "b",
+          "arm": "candidate",
+          "n_episodes": 20,
+          "quality_mean": 0.5,
+          "cost_total": 20,
+          "unknown_cost_units": 0,
+          "budget_exceeded_episodes": 0,
+          "outcomes": {
+            "cancelled": 0,
+            "failed": 10,
+            "rejected": 0,
+            "success": 10,
+            "timeout": 0
+          }
+        },
+        {
+          "cell": "b",
+          "arm": "control",
+          "n_episodes": 20,
+          "quality_mean": 0.5,
+          "cost_total": 20,
+          "unknown_cost_units": 0,
+          "budget_exceeded_episodes": 0,
+          "outcomes": {
+            "cancelled": 0,
+            "failed": 10,
+            "rejected": 0,
+            "success": 10,
+            "timeout": 0
+          }
+        }
+      ]
+    },
+    "constant_positive_difference": {
+      "method_version": "r_paired_world_mean_v1",
+      "counts_toward_verdict": false,
+      "status": "VALID_MEASUREMENT",
+      "phase": "instrument_check",
+      "contrast": {
+        "candidate": "candidate",
+        "control": "control"
+      },
+      "n_worlds": 20,
+      "n_episodes": 40,
+      "confidence": 0.95,
+      "bootstrap_resamples": 10000,
+      "seed": 37,
+      "repetitions": 1,
+      "weighting": "equal_world; repetitions averaged; cells stratified with declared world counts",
+      "interval": "two_sided_paired_world_percentile",
+      "cost_unit": "call_units",
+      "quality": {
+        "mean": 1.0,
+        "ci_low": 1.0,
+        "ci_high": 1.0,
+        "ci_status": "INSUFFICIENT_RESOLUTION",
+        "n_worlds": 20
+      },
+      "cost": {
+        "mean": 0.0,
+        "ci_low": 0.0,
+        "ci_high": 0.0,
+        "ci_status": "INSUFFICIENT_RESOLUTION",
+        "n_worlds": 20
+      },
+      "by_cell_arm": [
+        {
+          "cell": "synthetic",
+          "arm": "candidate",
+          "n_episodes": 20,
+          "quality_mean": 1.0,
+          "cost_total": 20,
+          "unknown_cost_units": 0,
+          "budget_exceeded_episodes": 0,
+          "outcomes": {
+            "cancelled": 0,
+            "failed": 0,
+            "rejected": 0,
+            "success": 20,
+            "timeout": 0
+          }
+        },
+        {
+          "cell": "synthetic",
+          "arm": "control",
+          "n_episodes": 20,
+          "quality_mean": 0.0,
+          "cost_total": 20,
+          "unknown_cost_units": 0,
+          "budget_exceeded_episodes": 0,
+          "outcomes": {
+            "cancelled": 0,
+            "failed": 20,
+            "rejected": 0,
+            "success": 0,
+            "timeout": 0
+          }
+        }
+      ]
+    },
+    "missing_episode": {
+      "method_version": "r_paired_world_mean_v1",
+      "counts_toward_verdict": false,
+      "status": "INVALID_ABORT",
+      "reason": "incomplete_episode_grid"
+    },
+    "duplicate_episode": {
+      "method_version": "r_paired_world_mean_v1",
+      "counts_toward_verdict": false,
+      "status": "INVALID_ABORT",
+      "reason": "duplicate_episode"
+    },
+    "unknown_cost": {
+      "method_version": "r_paired_world_mean_v1",
+      "counts_toward_verdict": false,
+      "status": "INVALID_ABORT",
+      "reason": "unknown_cost",
+      "accounting": [
+        {
+          "cell": "synthetic",
+          "arm": "candidate",
+          "n_episodes": 100,
+          "quality_mean": 0.3,
+          "cost_total": 100,
+          "unknown_cost_units": 0,
+          "budget_exceeded_episodes": 0,
+          "outcomes": {
+            "cancelled": 0,
+            "failed": 70,
+            "rejected": 0,
+            "success": 30,
+            "timeout": 0
+          }
+        },
+        {
+          "cell": "synthetic",
+          "arm": "control",
+          "n_episodes": 100,
+          "quality_mean": 0.05,
+          "cost_total": 100,
+          "unknown_cost_units": 1,
+          "budget_exceeded_episodes": 0,
+          "outcomes": {
+            "cancelled": 0,
+            "failed": 95,
+            "rejected": 0,
+            "success": 5,
+            "timeout": 0
+          }
+        }
+      ]
+    }
+  },
+  "runtime_snapshots": [
+    {
+      "input_name": "completed.json",
+      "sha256": "7bc90310a21fce9e9b0815fc91ea80daa571110e6953862d71c8dcfd321df167",
+      "reconciliation": {
+        "profile": "g1_mock_sqlite_v1",
+        "validation_status": "VALID",
+        "cost_status": "KNOWN",
+        "run_status": "completed",
+        "actual_units": 26,
+        "reserved_units": 0,
+        "unknown_units": 0,
+        "remaining_units": 0,
+        "diagnostics": [],
+        "payload_bytes": 5789,
+        "event_bytes": 57460
+      }
+    },
+    {
+      "input_name": "cancelled_unknown.json",
+      "sha256": "712c2035e967755e5884d6f33b19c3b8524693ed4be8980115b1f077d0968d5f",
+      "reconciliation": {
+        "profile": "g1_mock_sqlite_v1",
+        "validation_status": "VALID",
+        "cost_status": "UNRESOLVED",
+        "run_status": "cancelled",
+        "actual_units": 0,
+        "reserved_units": 1,
+        "unknown_units": 1,
+        "remaining_units": 25,
+        "diagnostics": [],
+        "payload_bytes": 97,
+        "event_bytes": 1531
+      }
+    },
+    {
+      "input_name": "cancelled_late_receipt.json",
+      "sha256": "993ee5e9f658515177d0b1ef132781aefbbe7c741e6bf3fe4b90572bb4907ed6",
+      "reconciliation": {
+        "profile": "g1_mock_sqlite_v1",
+        "validation_status": "VALID",
+        "cost_status": "KNOWN",
+        "run_status": "cancelled",
+        "actual_units": 1,
+        "reserved_units": 0,
+        "unknown_units": 0,
+        "remaining_units": 25,
+        "diagnostics": [],
+        "payload_bytes": 108,
+        "event_bytes": 2123
+      }
+    }
+  ],
+  "implementation_sha256": {
+    "e3_verdict.py": "f6490708d96e175754cce3689d16d177dd9485b90d0b829f9867f4433b84cfdb",
+    "r0_measurement.py": "5d12a686fd186b9b62033ff9ae55c4c6f9b2c35fcd894a08dc45d94107f7d2ed",
+    "r0_runtime.py": "dc8be28cb340cef1027ab83075f292ca6e7080bc5c56aa41defafe48f0c63245",
+    "r0_self_check.py": "37613a78011b5aed362c89e9abeb58f39086676f5c3d5e64d7df4d8eca8600ae"
+  }
+}
