@@ -81,6 +81,24 @@ without provider calls. Live collection requires `--output` and `--max-calls`.
 This is a call-count limit, not a dollar limit; actual usage is retained when
 collection aborts.
 
+## R0 instrument checks
+
+The [R0 data contract](R0-data-contract.md) adds a separate
+`r_paired_world_mean_v1` instrument-only entry. It pairs independent worlds,
+averages repetitions within worlds, retains legitimate flat cells, and aborts
+on missing/duplicate records or unknown costs. It reuses the existing mean
+bootstrap arithmetic; E3's historical gates are unchanged.
+
+```bash
+pheroos-bench-r0 --config config.json --records episodes.ndjson --output report.json
+python -m pheroos_bench.r0_self_check --output synthetic-checks.json
+```
+
+`r0_runtime.reconcile_snapshot` independently reconciles G1's per-call and
+event accounting. An optional external-runtime capture tool is under
+`tools/capture_r0_runtime.py`; it requires the separately installed mock runtime.
+Neither R0 entry invokes a paid provider or produces a treatment verdict.
+
 ## Package checks
 
 From this directory:

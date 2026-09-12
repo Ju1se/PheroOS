@@ -20,6 +20,7 @@ pheroos-bench = "pheroos_bench.run:main"
 pheroos-bench-e2 = "pheroos_bench.e2_run:main"
 pheroos-bench-e3-verdict = "pheroos_bench.e3_verdict:main"
 pheroos-bench-e3-llm = "pheroos_bench.e3_llm:main"
+pheroos-bench-r0 = "pheroos_bench.r0_measurement:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
