@@ -1,0 +1,16 @@
+{
+  "method": "r2_capacity_audit_v1",
+  "phase": "retrospective_audit",
+  "counts_toward_verdict": false,
+  "base_commit": "b154472becea561ac1f5fc442a7ccf372ab154f8",
+  "source_results": "results/r2-pilot-v1",
+  "source_artifact_sha256": {
+    "RESULTS.md": "a8c9e37ecab5479adff21b968085ed9d437f6c89df3b6b03d5ea185b9a97afc4",
+    "audit.json": "e2d2609e2c0dbe6a79572bd4a1b32b16b6af457968d5c97a079c3ef945d00727",
+    "episodes.jsonl": "0f14be654e80733d32ec0ca335e2dfa19a1cfde8558e7b35d5e2e1a509c43212",
+    "freeze.json": "79312141639c0548c731fd971281f93fb2bfa603b871f5d3ee73ca213fa3eb3c",
+    "sample-traces.json": "90cff28894564ee5d11d758fd27071709bf3d378aa3c38f6a1bd8ec542a7a18e",
+    "summary.json": "0fe7da5184fbe31e5936299f7e7fdab90d71a36fb14a7c1144ab40fb82048878",
+    "validation.json": "db59f0b0565333708b94169dd12180d6c1e7c4cb9212af8e64df8496ab0387a0"
+  }
+}

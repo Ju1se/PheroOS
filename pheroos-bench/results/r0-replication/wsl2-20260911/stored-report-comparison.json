@@ -1,0 +1,6 @@
+{
+  "exact_report_equal": true,
+  "historical_report_sha256": "c64ccda26d570594a78767e4e8c589c4f55fc10485f53949b3d3f5100d8420ba",
+  "replication_report_sha256": "c64ccda26d570594a78767e4e8c589c4f55fc10485f53949b3d3f5100d8420ba",
+  "counts_toward_verdict": false
+}

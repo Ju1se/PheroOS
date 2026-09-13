@@ -1,0 +1,69 @@
+{
+  "method_version": "r3_local_closed_loop_pilot_v1",
+  "status": "PILOT_COMPLETE",
+  "counts_toward_verdict": false,
+  "arms": {
+    "single": {
+      "episodes": 4,
+      "successes": 2,
+      "invalid": 0,
+      "input_tokens": 8887,
+      "output_tokens": 941,
+      "elapsed_ns": 42198123181,
+      "peak_cuda_bytes": 3177852928,
+      "shared_verified_consumptions": 0,
+      "changed_after_shared_consumption": 0
+    },
+    "independent": {
+      "episodes": 4,
+      "successes": 2,
+      "invalid": 0,
+      "input_tokens": 4632,
+      "output_tokens": 811,
+      "elapsed_ns": 21218530326,
+      "peak_cuda_bytes": 3126689792,
+      "shared_verified_consumptions": 0,
+      "changed_after_shared_consumption": 0
+    },
+    "manager_graph": {
+      "episodes": 4,
+      "successes": 1,
+      "invalid": 0,
+      "input_tokens": 6738,
+      "output_tokens": 910,
+      "elapsed_ns": 25837033876,
+      "peak_cuda_bytes": 3146169344,
+      "shared_verified_consumptions": 2,
+      "changed_after_shared_consumption": 2
+    },
+    "blackboard": {
+      "episodes": 4,
+      "successes": 2,
+      "invalid": 0,
+      "input_tokens": 8189,
+      "output_tokens": 948,
+      "elapsed_ns": 24378060139,
+      "peak_cuda_bytes": 3162645504,
+      "shared_verified_consumptions": 4,
+      "changed_after_shared_consumption": 4
+    },
+    "versioned_blackboard": {
+      "episodes": 4,
+      "successes": 1,
+      "invalid": 0,
+      "input_tokens": 7138,
+      "output_tokens": 926,
+      "elapsed_ns": 23752413140,
+      "peak_cuda_bytes": 3162833920,
+      "shared_verified_consumptions": 3,
+      "changed_after_shared_consumption": 3
+    }
+  },
+  "limitations": [
+    "four closed worlds; no efficacy inference",
+    "one resident GPU model, sequential inference",
+    "logical roles, not GPU concurrency scaling",
+    "artifact consumption/action change is observed lineage, not a controlled causal estimate",
+    "logical JSON bytes exclude physical device/storage I/O"
+  ]
+}

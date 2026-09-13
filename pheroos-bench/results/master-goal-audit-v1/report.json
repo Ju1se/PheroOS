@@ -1,0 +1,55 @@
+{
+  "schema": "pheroos_master_goal_initial_audit_v1",
+  "goal_complete": false,
+  "counts_toward_verdict": false,
+  "core_head": "b154472becea561ac1f5fc442a7ccf372ab154f8",
+  "runtime_head": "e3ef1e8ed0812296601e4a901768af4a1068b5e0",
+  "dirty_sources_require_content_hashes": true,
+  "evidence": {
+    "support_matrix": {
+      "path": "docs/protocol/current-support.md",
+      "sha256": "3338c6913862ebcea20b4968171957c64e310ae517804ce9a5e5a0e23c22eb1c"
+    },
+    "r1": {
+      "path": "pheroos-bench/results/r1-coordination-pilot-v2/summary.json",
+      "sha256": "1f4f05cad6617a065592c23345febaab0551b1eeda7eeac66589d95183a49365"
+    },
+    "r1_audit": {
+      "path": "pheroos-bench/results/r1-coordination-pilot-v2/audit.json",
+      "sha256": "3033a21420ed95480ad17fc2c3772441e740b7d1708aad4403708c2d87bb2068"
+    },
+    "r2": {
+      "path": "pheroos-bench/results/r2-pilot-v1/summary.json",
+      "sha256": "0fe7da5184fbe31e5936299f7e7fdab90d71a36fb14a7c1144ab40fb82048878"
+    },
+    "r2_capacity": {
+      "path": "pheroos-bench/results/r2-capacity-audit-v1/summary.json",
+      "sha256": "9fe2f2f9115078b2891ccdcac70cf77de317c4a3927f9df59f257fa8b682a67f"
+    },
+    "r3": {
+      "path": "pheroos-bench/results/r3-pilot-v1/summary.json",
+      "sha256": "dccbeff2617c9fa0781c0bcf893bf3901076bac16c81ec61dce8ff49457b4082"
+    },
+    "r3_tool": {
+      "path": "pheroos-bench/results/r3-tool-pilot-v2/summary.json",
+      "sha256": "1bda0fb0f225a3c95401488030e5cac692a210e4a6c9b9627453feac442cbcbd"
+    },
+    "r3_format": {
+      "path": "pheroos-bench/results/r3-format-audit-v1/summary.json",
+      "sha256": "e195c82a3e985d6f3f468beb27e3fb880be3ec554015ce7a92a1e8afd64c6f7a"
+    },
+    "r5": {
+      "path": "pheroos-bench/results/r5-runtime-faults-v1/summary.json",
+      "sha256": "2924ab9e3c18b044454cc4d29c211af202c71057349dffa494d153a5f91fe1ad"
+    }
+  },
+  "gates": {
+    "G3_R1": "ENGINEERING_MEASUREMENT_PASS_NO_EFFICACY_CLAIM",
+    "G4_R2": "BOUNDED_NEGATIVE_PHASE_COMPLETE_CAPACITY_RECONCILED",
+    "G5_R3": "FORMAT_CAPABILITY_FOLLOWUP_REQUIRED",
+    "R4": "NOT_RUN",
+    "R5": "FIVE_LEDGER_CASES_ONLY_INCOMPLETE",
+    "final_architecture": "INCOMPLETE"
+  },
+  "next_execution": "New frozen R3 framing-capability pilot on unchanged tasks/evaluator; stage a concrete recoverable session outside core for the following runtime journey."
+}

@@ -1,0 +1,20 @@
+{
+  "local_sqlite_artifacts": {
+    "before_receipt.sqlite": "9ab5912f2f9e1f9eac3cb71583c578554f8a491515287d73e6838499cee5c4d2",
+    "receipt_before_commit.sqlite": "9ab5912f2f9e1f9eac3cb71583c578554f8a491515287d73e6838499cee5c4d2",
+    "receipt_committed_before_ack.sqlite": "5ffb66a88e78262975020830dc58eefe5c1315ba44799882cbab90a716bb5aa8",
+    "receipts_reordered.sqlite": "6688687ce820ec39c9d1681c751b1a0e916568e5836a9dde7454c4b566053645",
+    "transient_write_lock.sqlite": "3485ef634ca2b2427b3a274213b537052050b0b737c78ebb2605c1bf2373776d"
+  },
+  "method": "r5-runtime-faults-v1",
+  "portable_artifacts": {
+    "RESULTS.md": "286c9378e0b1c972cef07db39aa9808105b8d6883404a84d0c9cff0fa34246e5",
+    "before_receipt.json": "257ae41f85ee448d3d019f70f423b621cb2e1f2ed5ce8c5cdeeae9fab4a001b7",
+    "freeze.json": "388391cea9291a41699fa35cf6e16cab724d753aedb8d03c05f04837938eeb06",
+    "receipt_before_commit.json": "991fb13861e97c3d9b849e7f80137fdc8a2aac392355fdd3f57eb55ab1c36143",
+    "receipt_committed_before_ack.json": "bd89e4c036f3d937028f127e58da8fde9b5bc86da343825f99c39fd046ce219a",
+    "receipts_reordered.json": "0d41d7ce13670051f93200e81ee789a117cbdad782bea480a1fe5c4b1893d2d7",
+    "summary.json": "2924ab9e3c18b044454cc4d29c211af202c71057349dffa494d153a5f91fe1ad",
+    "transient_write_lock.json": "0e347577f98c22469a85e25c327cef24dc466c85211ddd4d79dd6a10b84408e8"
+  }
+}

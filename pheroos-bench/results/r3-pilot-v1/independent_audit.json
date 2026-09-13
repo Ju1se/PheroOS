@@ -1,0 +1,66 @@
+{
+  "status": "PASS_COMPLETE",
+  "completed_episodes_checked": 20,
+  "completed_traces_checked": 80,
+  "authority_bindings_checked": 97,
+  "verified_publications_checked": 17,
+  "known_tokens": 40120,
+  "input_tokens": 35584,
+  "output_tokens": 4536,
+  "failed_candidates": 63,
+  "failed_candidate_tokens_included": 31500,
+  "raw_text_change_followup": [
+    {
+      "call_id": "002-manager_graph:1",
+      "classification": "equivalent_code_on_585_integer_probes"
+    },
+    {
+      "call_id": "002-manager_graph:2",
+      "classification": "new_proposal_rejected"
+    },
+    {
+      "call_id": "003-blackboard:1",
+      "classification": "new_proposal_rejected"
+    },
+    {
+      "call_id": "003-blackboard:2",
+      "classification": "equivalent_code_on_585_integer_probes"
+    },
+    {
+      "call_id": "003-blackboard:3",
+      "classification": "new_proposal_rejected"
+    },
+    {
+      "call_id": "004-versioned_blackboard:1",
+      "classification": "new_proposal_rejected"
+    },
+    {
+      "call_id": "004-versioned_blackboard:2",
+      "classification": "equivalent_code_on_585_integer_probes"
+    },
+    {
+      "call_id": "004-versioned_blackboard:3",
+      "classification": "new_proposal_rejected"
+    },
+    {
+      "call_id": "011-blackboard:3",
+      "classification": "same_evidence_answer"
+    }
+  ],
+  "interpretation": "The frozen metric measures raw proposal text changes. Finite probe equivalence is not a general semantic proof; no efficacy or controlled causal inference follows from these traces. Concurrent host acceptance tests contaminate elapsed-time comparison.",
+  "completion_token_limitation": "Output token IDs are not retained. Exact reported completion usage is reconciled against durable receipts and the frozen tensor-length counting implementation; decoded text alone cannot independently reproduce every generated special token.",
+  "checks": [
+    "frozen sources",
+    "installed runtime hashes",
+    "public-only prompts",
+    "memory lineage",
+    "version binding",
+    "public verifier receipts",
+    "authority bindings",
+    "per-call budget",
+    "cumulative ledger",
+    "final SQLite receipts",
+    "final selection",
+    "summary aggregation"
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "bench_commit": "b154472becea561ac1f5fc442a7ccf372ab154f8",
+  "bench_core_commit": "4f292de799b01e57bdbb87e915191f310d219579",
+  "runtime_commit": "b3c0d4977c466c02a200d4fe63857682de53ddfd",
+  "runtime_core_commit": "b4845e5972e74425af55ad9f306b17535957c68d",
+  "runtime_handoff_commit": "e3ef1e8ed0812296601e4a901768af4a1068b5e0",
+  "source_method": "git archive from exact revisions; independent venvs and installed wheels"
+}

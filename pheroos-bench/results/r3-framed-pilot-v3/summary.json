@@ -1,0 +1,344 @@
+{
+  "method_version": "r3_framed_action_pilot_v3",
+  "counts_toward_verdict": false,
+  "status": "PILOT_COMPLETE",
+  "arms": {
+    "single": {
+      "episodes": 4,
+      "successes": 2,
+      "invalid": 0,
+      "main_tokens": 13951,
+      "probe_tokens": 4921,
+      "parser_admissions": {
+        "main": 24,
+        "probe": 8
+      },
+      "public_valid_actions": {
+        "main": 12,
+        "probe": 5
+      },
+      "processing_operations": 160,
+      "processing_bytes": 505471,
+      "transport_bytes": 610203,
+      "serialized_trace_bytes": 565358,
+      "eligible_probes": 0,
+      "valid_action_changes": 0,
+      "curve": [
+        {
+          "calls": 1,
+          "observed": 4,
+          "successes": 1,
+          "tokens": 1512,
+          "elapsed_ns": 7849920899
+        },
+        {
+          "calls": 2,
+          "observed": 4,
+          "successes": 1,
+          "tokens": 3298,
+          "elapsed_ns": 10554069104
+        },
+        {
+          "calls": 3,
+          "observed": 4,
+          "successes": 2,
+          "tokens": 5503,
+          "elapsed_ns": 14363151026
+        },
+        {
+          "calls": 4,
+          "observed": 4,
+          "successes": 2,
+          "tokens": 7931,
+          "elapsed_ns": 17704382936
+        },
+        {
+          "calls": 5,
+          "observed": 4,
+          "successes": 2,
+          "tokens": 10647,
+          "elapsed_ns": 20976629667
+        },
+        {
+          "calls": 6,
+          "observed": 4,
+          "successes": 2,
+          "tokens": 13951,
+          "elapsed_ns": 26573276251
+        }
+      ]
+    },
+    "independent": {
+      "episodes": 4,
+      "successes": 2,
+      "invalid": 0,
+      "main_tokens": 10846,
+      "probe_tokens": 3851,
+      "parser_admissions": {
+        "main": 24,
+        "probe": 8
+      },
+      "public_valid_actions": {
+        "main": 8,
+        "probe": 4
+      },
+      "processing_operations": 160,
+      "processing_bytes": 440584,
+      "transport_bytes": 521037,
+      "serialized_trace_bytes": 490501,
+      "eligible_probes": 0,
+      "valid_action_changes": 0,
+      "curve": [
+        {
+          "calls": 1,
+          "observed": 4,
+          "successes": 1,
+          "tokens": 1512,
+          "elapsed_ns": 3571750949
+        },
+        {
+          "calls": 2,
+          "observed": 4,
+          "successes": 1,
+          "tokens": 3298,
+          "elapsed_ns": 5949853848
+        },
+        {
+          "calls": 3,
+          "observed": 4,
+          "successes": 2,
+          "tokens": 5503,
+          "elapsed_ns": 10048273908
+        },
+        {
+          "calls": 4,
+          "observed": 4,
+          "successes": 2,
+          "tokens": 6959,
+          "elapsed_ns": 12276414019
+        },
+        {
+          "calls": 5,
+          "observed": 4,
+          "successes": 2,
+          "tokens": 8605,
+          "elapsed_ns": 14718894055
+        },
+        {
+          "calls": 6,
+          "observed": 4,
+          "successes": 2,
+          "tokens": 10846,
+          "elapsed_ns": 20856474709
+        }
+      ]
+    },
+    "manager_graph": {
+      "episodes": 4,
+      "successes": 2,
+      "invalid": 0,
+      "main_tokens": 11791,
+      "probe_tokens": 3481,
+      "parser_admissions": {
+        "main": 24,
+        "probe": 8
+      },
+      "public_valid_actions": {
+        "main": 10,
+        "probe": 4
+      },
+      "processing_operations": 160,
+      "processing_bytes": 451684,
+      "transport_bytes": 539336,
+      "serialized_trace_bytes": 507938,
+      "eligible_probes": 5,
+      "valid_action_changes": 0,
+      "curve": [
+        {
+          "calls": 1,
+          "observed": 4,
+          "successes": 1,
+          "tokens": 1512,
+          "elapsed_ns": 3531696414
+        },
+        {
+          "calls": 2,
+          "observed": 4,
+          "successes": 1,
+          "tokens": 3302,
+          "elapsed_ns": 6028985484
+        },
+        {
+          "calls": 3,
+          "observed": 4,
+          "successes": 2,
+          "tokens": 5515,
+          "elapsed_ns": 9950048921
+        },
+        {
+          "calls": 4,
+          "observed": 4,
+          "successes": 2,
+          "tokens": 7590,
+          "elapsed_ns": 12700040498
+        },
+        {
+          "calls": 5,
+          "observed": 4,
+          "successes": 2,
+          "tokens": 9536,
+          "elapsed_ns": 16412676341
+        },
+        {
+          "calls": 6,
+          "observed": 4,
+          "successes": 2,
+          "tokens": 11791,
+          "elapsed_ns": 21522716525
+        }
+      ]
+    },
+    "blackboard": {
+      "episodes": 4,
+      "successes": 2,
+      "invalid": 0,
+      "main_tokens": 12806,
+      "probe_tokens": 3633,
+      "parser_admissions": {
+        "main": 24,
+        "probe": 8
+      },
+      "public_valid_actions": {
+        "main": 10,
+        "probe": 4
+      },
+      "processing_operations": 160,
+      "processing_bytes": 470357,
+      "transport_bytes": 562393,
+      "serialized_trace_bytes": 526391,
+      "eligible_probes": 6,
+      "valid_action_changes": 0,
+      "curve": [
+        {
+          "calls": 1,
+          "observed": 4,
+          "successes": 1,
+          "tokens": 1512,
+          "elapsed_ns": 3574427396
+        },
+        {
+          "calls": 2,
+          "observed": 4,
+          "successes": 1,
+          "tokens": 3302,
+          "elapsed_ns": 5997795647
+        },
+        {
+          "calls": 3,
+          "observed": 4,
+          "successes": 2,
+          "tokens": 5515,
+          "elapsed_ns": 9793905416
+        },
+        {
+          "calls": 4,
+          "observed": 4,
+          "successes": 2,
+          "tokens": 7958,
+          "elapsed_ns": 12889141066
+        },
+        {
+          "calls": 5,
+          "observed": 4,
+          "successes": 2,
+          "tokens": 10313,
+          "elapsed_ns": 16510157930
+        },
+        {
+          "calls": 6,
+          "observed": 4,
+          "successes": 2,
+          "tokens": 12806,
+          "elapsed_ns": 21161587374
+        }
+      ]
+    },
+    "versioned_blackboard": {
+      "episodes": 4,
+      "successes": 2,
+      "invalid": 0,
+      "main_tokens": 12051,
+      "probe_tokens": 3378,
+      "parser_admissions": {
+        "main": 24,
+        "probe": 8
+      },
+      "public_valid_actions": {
+        "main": 9,
+        "probe": 3
+      },
+      "processing_operations": 160,
+      "processing_bytes": 457497,
+      "transport_bytes": 541272,
+      "serialized_trace_bytes": 509806,
+      "eligible_probes": 6,
+      "valid_action_changes": 0,
+      "curve": [
+        {
+          "calls": 1,
+          "observed": 4,
+          "successes": 1,
+          "tokens": 1512,
+          "elapsed_ns": 4333147715
+        },
+        {
+          "calls": 2,
+          "observed": 4,
+          "successes": 1,
+          "tokens": 3310,
+          "elapsed_ns": 6727492566
+        },
+        {
+          "calls": 3,
+          "observed": 4,
+          "successes": 2,
+          "tokens": 5539,
+          "elapsed_ns": 10773954144
+        },
+        {
+          "calls": 4,
+          "observed": 4,
+          "successes": 2,
+          "tokens": 7557,
+          "elapsed_ns": 13941704772
+        },
+        {
+          "calls": 5,
+          "observed": 4,
+          "successes": 2,
+          "tokens": 9698,
+          "elapsed_ns": 17557299053
+        },
+        {
+          "calls": 6,
+          "observed": 4,
+          "successes": 2,
+          "tokens": 12051,
+          "elapsed_ns": 23491534951
+        }
+      ]
+    }
+  },
+  "invalid_episode_accounting": [],
+  "limitations": [
+    "four previously observed worlds; engineering pilot, not held-out efficacy",
+    "framing adapter selected after the v2 posthoc audit; v2 outcomes are unchanged",
+    "parser admission, public tool validity, final success, and collaboration benefit are separate",
+    "sequential GPU inference; no hardware or agent-count scaling",
+    "prefix quality uses current source version; evidence changes at call 4",
+    "paired probe changes access to current verified other-agent receipts; no downstream branch rollout",
+    "no-eligible probes are retained controls; action difference is not necessarily improvement",
+    "logical JSON bytes exclude physical device/storage IO",
+    "runtime development authority and trusted-host verification remain unchanged"
+  ]
+}

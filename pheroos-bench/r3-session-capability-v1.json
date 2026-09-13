@@ -1,0 +1,39 @@
+{
+  "method_version": "r3_session_capability_v1",
+  "phase": "capability_diagnostic",
+  "models": {
+    "qwen_1_5b": {
+      "repository": "Qwen/Qwen2.5-Coder-1.5B-Instruct",
+      "revision": "2e1fd397ee46e1388853d2af2c993145b0f1098a",
+      "manifest_sha256": "600319fcf68b230820502b61767b49ce375316a2d23fe4708126ff5e5fbc26c8"
+    },
+    "qwen_3b": {
+      "repository": "Qwen/Qwen2.5-Coder-3B-Instruct",
+      "revision": "488639f1ff808d1d3d0ba301aef8c11461451ec5",
+      "manifest_sha256": "cf4593f14704152d28ea15c6630ee7abaca52580973524a386e05ba217391777"
+    }
+  },
+  "conditions": [
+    "autonomous_single",
+    "supplied_current_inspections"
+  ],
+  "worlds": [
+    "code_repair/clamp",
+    "code_repair/chunk_count",
+    "evidence_revision/dispatch_limit",
+    "evidence_revision/channel_route"
+  ],
+  "steps": 6,
+  "diagnostic_step": 5,
+  "max_new_tokens": 256,
+  "context_tokens": 2048,
+  "context_bytes": 65536,
+  "artifact_bytes": 65536,
+  "episode_token_cap": 12288,
+  "max_calls": 16,
+  "seed": 2081,
+  "model_class": "Qwen2ForCausalLM",
+  "precision": "float16",
+  "quantization": null,
+  "counts_toward_verdict": false
+}

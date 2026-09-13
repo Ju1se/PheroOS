@@ -1,0 +1,8 @@
+{
+  "kind": "post-freeze acceptance verifier, not a change to frozen R0/runtime",
+  "source_sha256": {
+    "pheroos-bench/tools/compare_r0_replication.py": "5cc8fbd85ed5ecc857f480950ed56c2cc34f3651c29e570041e467f10c0bad4a",
+    "pheroos-bench/tests/test_r0_replication.py": "8388e44461a91e0379bc4a5aa5c0a59fb2c6866d61d79f6cc8c95c87a69a2702"
+  },
+  "tests": 14
+}

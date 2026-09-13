@@ -1,0 +1,90 @@
+{
+  "artifact_sha256": {
+    "/home/scott/projects/PheroOS/pheroos-bench/results/r5-session-faults-v1/independent-audit-v1.json": "c08b741735d9e542c9cb4edb5f319793b61dab765864412798f90354f70095ec",
+    "/home/scott/projects/PheroOS/pheroos-bench/results/r5-session-faults-v1/summary.json": "f0597a36b097be055b72f77df6ebddda032bdf3db144804c7c56a009bb3fde3e",
+    "/home/scott/projects/PheroOS/pheroos-bench/tests/test_audit_r5_session_faults.py": "0a835a86685de9b4b2a302833801eb4fa7efe658d8a1d16296f62802ad31237c",
+    "/home/scott/projects/PheroOS/pheroos-bench/tools/audit_r5_session_faults.py": "c340d49b2be83f558c2a55e6e4120460b6d52a8eef8afce2759284c5d8ba453f"
+  },
+  "audit_status": "AUDIT_MISMATCH",
+  "counts_toward_verdict": false,
+  "created_utc": "2026-09-13T22:57:24.248092+00:00",
+  "disposition": "Original v1 mismatch retained unchanged; root authorized one separately identified narrow checker correction and reanalysis of the same evidence, without fault reruns.",
+  "engineering_gate": "NOT_ACCEPTED",
+  "execution": {
+    "before_launch_utc_observation": "2026-09-13 22:52:48 UTC",
+    "command": "PYTHONDONTWRITEBYTECODE=1 CUDA_VISIBLE_DEVICES='' PYTHONPATH=/tmp/pheroos-session-site:/home/scott/projects/PheroOS/pheroos-bench/src /home/scott/projects/PheroOS-runtime/.local/venv312/bin/python /home/scott/projects/PheroOS/pheroos-bench/tools/audit_r5_session_faults.py --output /home/scott/projects/PheroOS/pheroos-bench/results/r5-session-faults-v1 --audit-output /home/scott/projects/PheroOS/pheroos-bench/results/r5-session-faults-v1/independent-audit-v1.json",
+    "completion_utc_observation": "2026-09-13 22:55:06 UTC",
+    "observed_exit_code": 2,
+    "tool_session_id": 18316,
+    "working_directory": "/tmp"
+  },
+  "fault_cases_rerun": 0,
+  "final_recheck": {
+    "all_match": true,
+    "frozen_inputs_count": 628,
+    "original_evidence_count": 163
+  },
+  "generated_model_calls": 0,
+  "known_accounting": {
+    "all_observed_unique_available_dispatches": {
+      "model_dispatches": 13,
+      "tool_dispatches": 25
+    },
+    "all_observed_unique_available_ledger_components": {
+      "actual_tokens": 18,
+      "reserved_tokens": 0,
+      "unknown_calls": 10,
+      "unknown_tokens": 70
+    },
+    "auxiliary_ledgers": [
+      {
+        "accounting": {
+          "actual_tokens": 0,
+          "reserved_tokens": 0,
+          "unknown_calls": 0,
+          "unknown_tokens": 0
+        },
+        "ledger": "foreign.sqlite",
+        "model_dispatches": 0,
+        "tool_dispatches": 1
+      }
+    ],
+    "coverage": "Only verified available ledgers are summed. Auxiliary and intact-before-corruption work is separate; damaged or missing primary accounting stays unavailable. Shared sidecars are counted once.",
+    "intact_originals": [
+      {
+        "accounting": {
+          "actual_tokens": 0,
+          "reserved_tokens": 0,
+          "unknown_calls": 0,
+          "unknown_tokens": 0
+        },
+        "action_counts": {
+          "model_dispatches": 0,
+          "tool_dispatches": 1
+        },
+        "case": "corrupted_database_copy:default"
+      }
+    ],
+    "primary_dispatches": {
+      "model_dispatches": 13,
+      "tool_dispatches": 23
+    },
+    "primary_known_components": {
+      "actual_tokens": 18,
+      "reserved_tokens": 0,
+      "unknown_calls": 10,
+      "unknown_tokens": 70
+    },
+    "sidecar_effect_invocations": 32,
+    "unavailable_primary_cases": [
+      "corrupted_database_copy:default"
+    ],
+    "unverified_effect_case_ids": [
+      "transport:malformed_reply"
+    ],
+    "verified_primary_ledgers": 37
+  },
+  "mismatch": "transport:malformed_reply records concrete JSONDecodeError, a ValueError subclass; v1 incorrectly expects literal ValueError. Original source study has no observed defect.",
+  "receipt_method": "r5_independent_audit_execution_v1",
+  "source_status": "PASS"
+}

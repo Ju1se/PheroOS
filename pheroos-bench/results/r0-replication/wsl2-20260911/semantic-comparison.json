@@ -1,0 +1,77 @@
+{
+  "status": "R0_REPLICATION_PASSED",
+  "counts_toward_verdict": false,
+  "guarantee": "Tested G1 snapshot semantics and consistency; not authentication, current authority, universal hardware independence or swarm efficacy.",
+  "excluded_from_equality": [
+    "call UUIDs and their checked Driver digests",
+    "worker identities",
+    "independent task event interleaving",
+    "raw snapshot hashes and serialized byte counters"
+  ],
+  "differences": [],
+  "snapshots": {
+    "completed": {
+      "equal": true,
+      "semantic_sha256": "sha256:aab7a325f685c39b87fc65e27f911c2420bdb8e03950244d3a38bb7eb8267b48",
+      "accounting": {
+        "actual_units": 26,
+        "reserved_units": 0,
+        "unknown_units": 0,
+        "remaining_units": 0
+      },
+      "final_value": 204
+    },
+    "cancelled_unknown": {
+      "equal": true,
+      "semantic_sha256": "sha256:63033b44e9fce9815815d6a5a54f13b97b33619320dc4d01f9e2c2a45073deb9",
+      "accounting": {
+        "actual_units": 0,
+        "reserved_units": 1,
+        "unknown_units": 1,
+        "remaining_units": 25
+      },
+      "final_value": null
+    },
+    "cancelled_late_receipt": {
+      "equal": true,
+      "semantic_sha256": "sha256:e0db7ad91410b17ef30f3a519d93f2b8ac0db383343b2f0c77c67f88391562d2",
+      "accounting": {
+        "actual_units": 1,
+        "reserved_units": 0,
+        "unknown_units": 0,
+        "remaining_units": 25
+      },
+      "final_value": null
+    }
+  },
+  "provenance": {
+    "reference": {
+      "kind": "R0_G1_MOCK_SNAPSHOTS",
+      "runtime_source_sha256": {
+        "store.py": "e8004958aa007a734204bc7e8dd97cfee4bb1abf47ef603d5f22facbe8d75e81",
+        "engine.py": "8304ddc5a2b3d87b480caf22be9012fff728ae0896900e278d2d68412252df28",
+        "authority.py": "895086d165637d791290c0a332a29cea3f360e70521e3fa5abe0e69486702fad",
+        "adapters.py": "c5c1db4a9d62bddb9c064cc7be533fc7972d481c6ed8556f8d5db7f0c05170e9"
+      },
+      "snapshots": {
+        "completed": "7bc90310a21fce9e9b0815fc91ea80daa571110e6953862d71c8dcfd321df167",
+        "cancelled_unknown": "712c2035e967755e5884d6f33b19c3b8524693ed4be8980115b1f077d0968d5f",
+        "cancelled_late_receipt": "993ee5e9f658515177d0b1ef132781aefbbe7c741e6bf3fe4b90572bb4907ed6"
+      }
+    },
+    "candidate": {
+      "kind": "R0_G1_MOCK_SNAPSHOTS",
+      "runtime_source_sha256": {
+        "store.py": "e8004958aa007a734204bc7e8dd97cfee4bb1abf47ef603d5f22facbe8d75e81",
+        "engine.py": "8304ddc5a2b3d87b480caf22be9012fff728ae0896900e278d2d68412252df28",
+        "authority.py": "895086d165637d791290c0a332a29cea3f360e70521e3fa5abe0e69486702fad",
+        "adapters.py": "c5c1db4a9d62bddb9c064cc7be533fc7972d481c6ed8556f8d5db7f0c05170e9"
+      },
+      "snapshots": {
+        "completed": "b8ba9fce766d240737c28af050faaf6681b0de317585b2bc0df48015baa61f23",
+        "cancelled_unknown": "e194e5ad8bb4cc7da390ab68b394af78dbe827c1c7d082078aa5e90552263712",
+        "cancelled_late_receipt": "fdafb16513d7b4674a86d22247df4fa3a668eed0ebef0edef71720dc8e5dc524"
+      }
+    }
+  }
+}

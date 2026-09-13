@@ -1,0 +1,126 @@
+{
+  "method": "master_final_preservation_check_v1",
+  "created_utc": "2026-09-13T23:15:50.846880+00:00",
+  "status": "PASS",
+  "counts_toward_verdict": false,
+  "generated_model_calls": 0,
+  "fault_cases_rerun": 0,
+  "initial_snapshot_sha256": "6b2b9deb1cf57e0f8c4c3bb396d4ac791e1f80de232f4826d946baad34dd5522",
+  "checks": [
+    {
+      "check": "initial_repository_snapshot",
+      "files": 1210,
+      "status": "PASS_WITH_DECLARED_README_EDIT",
+      "changed": [
+        "pheroos-bench/README.md"
+      ],
+      "missing": []
+    },
+    {
+      "check": "R1 frozen source/config",
+      "files": 9,
+      "status": "PASS"
+    },
+    {
+      "check": "R2 frozen source/config",
+      "files": 4,
+      "status": "PASS"
+    },
+    {
+      "check": "R2 capacity frozen historical evidence/source",
+      "files": 15,
+      "status": "PASS"
+    },
+    {
+      "check": "r3-framed-pilot-v3/independent_audit.json:source_evidence_sha256",
+      "files": 47,
+      "status": "PASS"
+    },
+    {
+      "check": "r3-framed-pilot-v3/independent_audit.json:audit_source_sha256",
+      "files": 2,
+      "status": "PASS"
+    },
+    {
+      "check": "r3-session-capability-v1/independent_audit.json:frozen_input_hashes",
+      "files": 654,
+      "status": "PASS"
+    },
+    {
+      "check": "r3-session-capability-v1/independent_audit.json:evidence_sha256",
+      "files": 38,
+      "status": "PASS"
+    },
+    {
+      "check": "r3-session-capability-v1/independent_audit.json:audit_source_sha256",
+      "files": 1,
+      "status": "PASS"
+    },
+    {
+      "check": "r4-session-scaling-pilot-v1/abort-independent-audit-v1.json:checked_input_sha256",
+      "files": 660,
+      "status": "PASS"
+    },
+    {
+      "check": "r4-session-scaling-pilot-v1/abort-independent-audit-v1.json:evidence_sha256",
+      "files": 621,
+      "status": "PASS"
+    },
+    {
+      "check": "r4-session-scaling-pilot-v1/abort-independent-audit-v1.json:audit_source_sha256",
+      "files": 3,
+      "status": "PASS"
+    },
+    {
+      "check": "r4-session-scaling-replication-v1/independent-audit-v1.json:checked_input_sha256",
+      "files": 660,
+      "status": "PASS"
+    },
+    {
+      "check": "r4-session-scaling-replication-v1/independent-audit-v1.json:evidence_sha256",
+      "files": 798,
+      "status": "PASS"
+    },
+    {
+      "check": "r4-session-scaling-replication-v1/independent-audit-v1.json:audit_source_sha256",
+      "files": 2,
+      "status": "PASS"
+    },
+    {
+      "check": "r5-session-faults-v1/independent-audit-v2.json:frozen_input_sha256",
+      "files": 628,
+      "status": "PASS"
+    },
+    {
+      "check": "r5-session-faults-v1/independent-audit-v2.json:original_evidence_sha256",
+      "files": 165,
+      "status": "PASS"
+    },
+    {
+      "check": "r5-session-faults-v1/independent-audit-v2.json:audit_source_sha256",
+      "files": 4,
+      "status": "PASS"
+    },
+    {
+      "check": "r3-session-capability-v1/G5-gate-review.json:gate_bindings",
+      "files": 4,
+      "status": "PASS"
+    },
+    {
+      "check": "r4-session-scaling-replication-v1/R4-gate-review.json:gate_bindings",
+      "files": 8,
+      "status": "PASS"
+    },
+    {
+      "check": "r5-session-faults-v1/R5-gate-review.json:gate_bindings",
+      "files": 9,
+      "status": "PASS"
+    }
+  ],
+  "unique_files_hashed": 3588,
+  "source_sha256": "570b014afec38aca3e8e31a2c523e451020541fb574c158631d5f6814e6f42a6",
+  "limitations": [
+    "Verifies retained identities, not a new semantic audit or efficacy observation.",
+    "Core full-suite interruption remains incomplete; this receipt does not claim a full-suite pass."
+  ]
+}

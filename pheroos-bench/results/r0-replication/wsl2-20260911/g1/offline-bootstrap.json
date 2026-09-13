@@ -1,0 +1,70 @@
+{
+  "method": "isolated stdlib venv without pip, populated offline from existing distribution file inventories; package scripts outside site-packages omitted",
+  "include_system_site_packages": false,
+  "bootstrap_interpreter": "/home/scott/projects/PheroOS/.venv/bin/python",
+  "runtime_interpreter": "/tmp/pheroos-wsl2-runtime-g1/.venv/bin/python",
+  "copied_distributions": [
+    {
+      "name": "pip",
+      "version": "25.2",
+      "source_site_packages": "/home/scott/projects/PheroOS/.venv/lib/python3.14/site-packages",
+      "copied_files": 455
+    },
+    {
+      "name": "build",
+      "version": "1.3.0",
+      "source_site_packages": "/home/scott/projects/PheroOS/.venv/lib/python3.14/site-packages",
+      "copied_files": 21
+    },
+    {
+      "name": "pytest",
+      "version": "8.4.2",
+      "source_site_packages": "/home/scott/projects/PheroOS/.venv/lib/python3.14/site-packages",
+      "copied_files": 83
+    },
+    {
+      "name": "setuptools",
+      "version": "80.9.0",
+      "source_site_packages": "/home/scott/projects/PheroOS/.venv/lib/python3.14/site-packages",
+      "copied_files": 514
+    },
+    {
+      "name": "wheel",
+      "version": "0.45.1",
+      "source_site_packages": "/home/scott/projects/PheroOS/.venv/lib/python3.14/site-packages",
+      "copied_files": 39
+    },
+    {
+      "name": "packaging",
+      "version": "25.0",
+      "source_site_packages": "/home/scott/projects/PheroOS/.venv/lib/python3.14/site-packages",
+      "copied_files": 25
+    },
+    {
+      "name": "pyproject_hooks",
+      "version": "1.2.0",
+      "source_site_packages": "/home/scott/projects/PheroOS/.venv/lib/python3.14/site-packages",
+      "copied_files": 11
+    },
+    {
+      "name": "iniconfig",
+      "version": "2.1.0",
+      "source_site_packages": "/home/scott/projects/PheroOS/.venv/lib/python3.14/site-packages",
+      "copied_files": 11
+    },
+    {
+      "name": "pluggy",
+      "version": "1.6.0",
+      "source_site_packages": "/home/scott/projects/PheroOS/.venv/lib/python3.14/site-packages",
+      "copied_files": 16
+    },
+    {
+      "name": "pygments",
+      "version": "2.19.2",
+      "source_site_packages": "/home/scott/projects/PheroOS/.venv/lib/python3.14/site-packages",
+      "copied_files": 346
+    }
+  ],
+  "core_and_runtime_installation": "exact source revision wheels installed with pip --no-deps --no-index; no editable installs",
+  "deviation_from_historical_environment": "Historical macOS Python 3.14 patch/development lock unavailable; this is a newly recorded Python 3.14.7 environment."
+}

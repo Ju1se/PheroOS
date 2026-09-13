@@ -1,0 +1,13 @@
+{
+  "status": "PASS_HISTORICAL_PRESERVATION",
+  "created_utc": "2026-09-13T22:31:15.008006+00:00",
+  "baseline_sha256": "6b2b9deb1cf57e0f8c4c3bb396d4ac791e1f80de232f4826d946baad34dd5522",
+  "files_checked": 1210,
+  "changed": [
+    "pheroos-bench/README.md"
+  ],
+  "missing": [],
+  "allowed_change": "Living bench README links/status; original evidence, thresholds, source and protocol core unchanged.",
+  "bench_base_commit": "b154472becea561ac1f5fc442a7ccf372ab154f8",
+  "stage": "after R4 replication, before actual R5 collection"
+}

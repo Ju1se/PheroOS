@@ -1,0 +1,3 @@
+# Durable ledgers are audited and exported as JSON; local databases are not published.
+*.sqlite*
+__pycache__/

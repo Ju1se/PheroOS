@@ -1,0 +1,77 @@
+{
+  "method": "publication_independent_packaging_review_v1",
+  "created_utc": "2026-09-13T23:40:52.248425+00:00",
+  "counts_toward_verdict": false,
+  "inventory_sha256": "6f7a007bd448d2bf4d41aa0cccc1ab7908f25fba2e07e088d6f131caadc3ed30",
+  "repositories": [
+    {
+      "repository": "PheroOS",
+      "status": "PASS",
+      "base_commit": "053a0d33d72a259d631ba5299e1452c0838aafe9",
+      "source_checkout_commit": "b154472becea561ac1f5fc442a7ccf372ab154f8",
+      "manifest_sha256": "2f56c5b1d9f4a994f1ce64c75c77447d6f7e7f180a26194d9030ff07116bfa53",
+      "files": 2298,
+      "original_bytes": 911628046,
+      "direct_files_verified": 443,
+      "archived_files_verified": 1855,
+      "archives_verified": 29,
+      "archive_compressed_bytes": 24119272,
+      "original_files_unchanged_against_manifest": true,
+      "exact_archive_member_set": true,
+      "member_bytes_sha256_modes_and_zeroed_metadata_verified": true,
+      "upstream_docs_retained": [
+        "README.md",
+        "README.zh-CN.md",
+        "pheroos-bench/docs/reviewed-runtime-plan.md"
+      ],
+      "frozen_bench_readme_preserved": true,
+      "upstream_only_delta": [
+        "README.md",
+        "README.zh-CN.md",
+        "pheroos-bench/README.md",
+        "pheroos-bench/docs/reviewed-runtime-plan.md"
+      ]
+    },
+    {
+      "repository": "PheroOS-runtime",
+      "status": "PASS",
+      "base_commit": "e3ef1e8ed0812296601e4a901768af4a1068b5e0",
+      "source_checkout_commit": "e3ef1e8ed0812296601e4a901768af4a1068b5e0",
+      "manifest_sha256": "0ec8f02433d2ff8d9559a5f70d6cfd8deaea7ce45354c5a0e841910495265687",
+      "files": 85,
+      "original_bytes": 30772436,
+      "direct_files_verified": 72,
+      "archived_files_verified": 13,
+      "archives_verified": 2,
+      "archive_compressed_bytes": 5918288,
+      "original_files_unchanged_against_manifest": true,
+      "exact_archive_member_set": true,
+      "member_bytes_sha256_modes_and_zeroed_metadata_verified": true
+    }
+  ],
+  "historical_snapshot_check": {
+    "files": 1210,
+    "missing": [],
+    "changed": [
+      "pheroos-bench/README.md"
+    ],
+    "status": "PASS_WITH_DECLARED_README_EDIT"
+  },
+  "historical_reference_presence": {
+    "absolute_hash_paths_inspected": 3661,
+    "old_tmp_paths_absent": 10,
+    "old_tmp_paths_byte_identical_at_current_runtime": 10,
+    "mapping": "r3-legacy-path-mapping.json"
+  },
+  "scope_notes": [
+    "Both PR bases preserve repository boundaries; no protocol-core implementation changes.",
+    "Bench README is copied byte-for-byte from the accepted experimental checkout; its diff removes six upstream-added G0/G1 link lines. Preserve those links in additive publication guidance or PR text.",
+    "Archives are delivery containers; restore them before invoking existing relative-path consumers. Historical absolute /home and /tmp paths are provenance, not portable installation roots.",
+    "All raw data, including R3 v1 SQLite WAL/SHM, original aborted R4 collection and failed first R5 audit, remains byte-identical.",
+    "Downloaded third-party model weights and interpreter/cache files are excluded; frozen identities and all inventoried experimental data are retained.",
+    "High-confidence credential scans found no tokens, private keys or embedded authenticated URLs in inventoried source/data/packages. Generic authorization assignment detections were source-code annotations or policy fixtures. No evidence bytes were redacted.",
+    "This review checks publication fidelity, not fresh algorithmic efficacy, production readiness or rerun reproducibility on arbitrary paths."
+  ],
+  "status": "PASS",
+  "review_source_sha256": "3db59be9503f81bdcebcd058e61a91361a7274335c1fffed26f35b09d6d17697"
+}

@@ -1,0 +1,69 @@
+{
+  "kind": "G1_ENGINEERING_ACCEPTANCE",
+  "core_commit": "b4845e5972e74425af55ad9f306b17535957c68d",
+  "core_wheel_sha256": "758f7e3d8135ff3ced2f7ed21aa0710b57a106530b464bbf8d939413c22170fc",
+  "distributions": [
+    {
+      "artifact": "pheroos_runtime-0.1.0.dev1-py3-none-any.whl",
+      "sha256": "db93bf05c2a6bedc854933c51164033f9847a5eed27df6ddfb054cb98e9b44d2",
+      "test_output": "........................................................................ [ 54%]\n...........................................................              [100%]\n131 passed in 39.07s",
+      "elapsed_seconds": 39.364830668000195,
+      "source_independent": true,
+      "cli": {
+        "run": {
+          "id": 1,
+          "run_id": "g1-demo",
+          "scope_ref": "sha256:c7287e20f818af8f05fdb935591744d8af8a8d1c6162d85ce18afaef339f769d",
+          "status": "completed",
+          "budget": 26
+        },
+        "actual_units": 26,
+        "reserved_units": 0,
+        "unknown_units": 0,
+        "remaining_units": 0,
+        "payload_bytes": 5789,
+        "event_bytes": 57460,
+        "worker_exitcodes": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "elapsed_seconds": 3.8211131200000636,
+        "tasks_done": 13,
+        "final_value": 204
+      }
+    },
+    {
+      "artifact": "pheroos_runtime-0.1.0.dev1.tar.gz",
+      "sha256": "4cd8e6194edd093722495a54af637ea55f7fee3be65c3ffbdcf8254e95fac69b",
+      "test_output": "........................................................................ [ 54%]\n...........................................................              [100%]\n131 passed in 40.76s",
+      "elapsed_seconds": 41.024919102999775,
+      "source_independent": true,
+      "cli": {
+        "run": {
+          "id": 1,
+          "run_id": "g1-demo",
+          "scope_ref": "sha256:c7287e20f818af8f05fdb935591744d8af8a8d1c6162d85ce18afaef339f769d",
+          "status": "completed",
+          "budget": 26
+        },
+        "actual_units": 26,
+        "reserved_units": 0,
+        "unknown_units": 0,
+        "remaining_units": 0,
+        "payload_bytes": 5789,
+        "event_bytes": 57460,
+        "worker_exitcodes": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "elapsed_seconds": 4.0198685999998816,
+        "tasks_done": 13,
+        "final_value": 204
+      }
+    }
+  ]
+}

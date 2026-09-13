@@ -1,0 +1,24 @@
+{
+  "schema": "r1_coordination_audit_v2",
+  "counts_toward_verdict": false,
+  "base_core_commit": "b154472becea561ac1f5fc442a7ccf372ab154f8",
+  "implementation_identity": "uncommitted v2 files identified by freeze.json SHA-256, not base commit alone",
+  "episodes": 64,
+  "exact_reproductions": 64,
+  "paired_exports_match_unchanged_r0": {
+    "full_relevant": true,
+    "dedup_ttl": true,
+    "source_version_ttl": true,
+    "matched_sparse_random": true,
+    "no_dedup": true,
+    "no_relevance": true,
+    "no_reactivation": true
+  },
+  "frozen_inputs_unchanged": true,
+  "preexisting_files_changed_since_task_start": [
+    "pheroos-bench/README.md"
+  ],
+  "known_accounted_operations": 454440,
+  "unknown_cost_units": 0,
+  "status": "PASS"
+}

@@ -1,0 +1,281 @@
+{
+  "method_version": "r3_tool_loop_pilot_v2",
+  "counts_toward_verdict": false,
+  "status": "PILOT_COMPLETE",
+  "arms": {
+    "single": {
+      "episodes": 4,
+      "successes": 0,
+      "invalid": 0,
+      "main_tokens": 12284,
+      "probe_tokens": 4385,
+      "eligible_probes": 0,
+      "valid_action_changes": 0,
+      "curve": [
+        {
+          "calls": 1,
+          "observed": 4,
+          "successes": 0,
+          "tokens": 1456,
+          "elapsed_ns": 18572956247
+        },
+        {
+          "calls": 2,
+          "observed": 4,
+          "successes": 0,
+          "tokens": 3193,
+          "elapsed_ns": 22279166695
+        },
+        {
+          "calls": 3,
+          "observed": 4,
+          "successes": 0,
+          "tokens": 5214,
+          "elapsed_ns": 27838471891
+        },
+        {
+          "calls": 4,
+          "observed": 4,
+          "successes": 0,
+          "tokens": 7374,
+          "elapsed_ns": 31816175326
+        },
+        {
+          "calls": 5,
+          "observed": 4,
+          "successes": 0,
+          "tokens": 9738,
+          "elapsed_ns": 35695835582
+        },
+        {
+          "calls": 6,
+          "observed": 4,
+          "successes": 0,
+          "tokens": 12284,
+          "elapsed_ns": 38908283028
+        }
+      ]
+    },
+    "independent": {
+      "episodes": 4,
+      "successes": 0,
+      "invalid": 0,
+      "main_tokens": 10285,
+      "probe_tokens": 3722,
+      "eligible_probes": 0,
+      "valid_action_changes": 0,
+      "curve": [
+        {
+          "calls": 1,
+          "observed": 4,
+          "successes": 0,
+          "tokens": 1456,
+          "elapsed_ns": 2452211050
+        },
+        {
+          "calls": 2,
+          "observed": 4,
+          "successes": 0,
+          "tokens": 3193,
+          "elapsed_ns": 6159165152
+        },
+        {
+          "calls": 3,
+          "observed": 4,
+          "successes": 0,
+          "tokens": 5214,
+          "elapsed_ns": 11742016642
+        },
+        {
+          "calls": 4,
+          "observed": 4,
+          "successes": 0,
+          "tokens": 6704,
+          "elapsed_ns": 14845287512
+        },
+        {
+          "calls": 5,
+          "observed": 4,
+          "successes": 0,
+          "tokens": 8405,
+          "elapsed_ns": 18061226243
+        },
+        {
+          "calls": 6,
+          "observed": 4,
+          "successes": 0,
+          "tokens": 10285,
+          "elapsed_ns": 20376213893
+        }
+      ]
+    },
+    "manager_graph": {
+      "episodes": 4,
+      "successes": 0,
+      "invalid": 0,
+      "main_tokens": 10983,
+      "probe_tokens": 3977,
+      "eligible_probes": 0,
+      "valid_action_changes": 0,
+      "curve": [
+        {
+          "calls": 1,
+          "observed": 4,
+          "successes": 0,
+          "tokens": 1456,
+          "elapsed_ns": 2243189743
+        },
+        {
+          "calls": 2,
+          "observed": 4,
+          "successes": 0,
+          "tokens": 3197,
+          "elapsed_ns": 5914994634
+        },
+        {
+          "calls": 3,
+          "observed": 4,
+          "successes": 0,
+          "tokens": 5226,
+          "elapsed_ns": 11081574590
+        },
+        {
+          "calls": 4,
+          "observed": 4,
+          "successes": 0,
+          "tokens": 7148,
+          "elapsed_ns": 14193861810
+        },
+        {
+          "calls": 5,
+          "observed": 4,
+          "successes": 0,
+          "tokens": 9096,
+          "elapsed_ns": 17671993540
+        },
+        {
+          "calls": 6,
+          "observed": 4,
+          "successes": 0,
+          "tokens": 10983,
+          "elapsed_ns": 19977929068
+        }
+      ]
+    },
+    "blackboard": {
+      "episodes": 4,
+      "successes": 0,
+      "invalid": 0,
+      "main_tokens": 11632,
+      "probe_tokens": 4193,
+      "eligible_probes": 0,
+      "valid_action_changes": 0,
+      "curve": [
+        {
+          "calls": 1,
+          "observed": 4,
+          "successes": 0,
+          "tokens": 1456,
+          "elapsed_ns": 2241013774
+        },
+        {
+          "calls": 2,
+          "observed": 4,
+          "successes": 0,
+          "tokens": 3197,
+          "elapsed_ns": 5935264948
+        },
+        {
+          "calls": 3,
+          "observed": 4,
+          "successes": 0,
+          "tokens": 5226,
+          "elapsed_ns": 11276994810
+        },
+        {
+          "calls": 4,
+          "observed": 4,
+          "successes": 0,
+          "tokens": 7364,
+          "elapsed_ns": 14283146690
+        },
+        {
+          "calls": 5,
+          "observed": 4,
+          "successes": 0,
+          "tokens": 9528,
+          "elapsed_ns": 17859572761
+        },
+        {
+          "calls": 6,
+          "observed": 4,
+          "successes": 0,
+          "tokens": 11632,
+          "elapsed_ns": 20231635688
+        }
+      ]
+    },
+    "versioned_blackboard": {
+      "episodes": 4,
+      "successes": 0,
+      "invalid": 0,
+      "main_tokens": 9970,
+      "probe_tokens": 3484,
+      "eligible_probes": 0,
+      "valid_action_changes": 0,
+      "curve": [
+        {
+          "calls": 1,
+          "observed": 4,
+          "successes": 0,
+          "tokens": 1456,
+          "elapsed_ns": 2289949384
+        },
+        {
+          "calls": 2,
+          "observed": 4,
+          "successes": 0,
+          "tokens": 3205,
+          "elapsed_ns": 6036007211
+        },
+        {
+          "calls": 3,
+          "observed": 4,
+          "successes": 0,
+          "tokens": 4950,
+          "elapsed_ns": 9550219703
+        },
+        {
+          "calls": 4,
+          "observed": 4,
+          "successes": 0,
+          "tokens": 6552,
+          "elapsed_ns": 12536442147
+        },
+        {
+          "calls": 5,
+          "observed": 4,
+          "successes": 0,
+          "tokens": 8291,
+          "elapsed_ns": 16123369141
+        },
+        {
+          "calls": 6,
+          "observed": 4,
+          "successes": 0,
+          "tokens": 9970,
+          "elapsed_ns": 18385198228
+        }
+      ]
+    }
+  },
+  "limitations": [
+    "four previously observed worlds; engineering pilot, not held-out efficacy",
+    "sequential GPU inference; no hardware or agent-count scaling",
+    "prefix quality uses current source version; evidence changes at call 4",
+    "paired probe changes access to current verified other-agent receipts; no downstream branch rollout",
+    "no-eligible probes are retained controls; action difference is not necessarily improvement",
+    "logical JSON bytes exclude physical device/storage IO",
+    "runtime development authority and trusted-host verification remain unchanged"
+  ]
+}

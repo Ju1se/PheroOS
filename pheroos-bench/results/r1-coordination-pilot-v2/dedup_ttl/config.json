@@ -1,0 +1,32 @@
+{
+  "arms": [
+    "dedup_ttl",
+    "candidate"
+  ],
+  "bootstrap_resamples": 2000,
+  "budget_cap": 100000,
+  "confidence": 0.95,
+  "cost_unit": "call_units",
+  "method_version": "r_paired_world_mean_v1",
+  "phase": "instrument_check",
+  "repetitions": 1,
+  "seed": 37,
+  "world_ids": {
+    "constraint_update": [
+      "seed:1002",
+      "seed:1006"
+    ],
+    "mixed": [
+      "seed:1003",
+      "seed:1007"
+    ],
+    "no_update": [
+      "seed:1000",
+      "seed:1004"
+    ],
+    "source_update": [
+      "seed:1001",
+      "seed:1005"
+    ]
+  }
+}

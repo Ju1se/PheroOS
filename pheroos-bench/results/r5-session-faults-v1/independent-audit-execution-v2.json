@@ -1,0 +1,122 @@
+{
+  "artifact_sha256": {
+    "/home/scott/projects/PheroOS/pheroos-bench/results/r5-session-faults-v1/execution-receipt.json": "3b7db758caae5f7fdc6c04a20c1281799923dc2c094faddc362d55cc19213f58",
+    "/home/scott/projects/PheroOS/pheroos-bench/results/r5-session-faults-v1/freeze.json": "3b1948fe9b7429801daa075ec9b15ac2e2969ff1dc12c2381216c3e274faa648",
+    "/home/scott/projects/PheroOS/pheroos-bench/results/r5-session-faults-v1/independent-audit-execution-v1.json": "d01c778091a87e6ebdc9bf5cad52b1f33a1f675afcaf605197d9b1feb2abf9b1",
+    "/home/scott/projects/PheroOS/pheroos-bench/results/r5-session-faults-v1/independent-audit-v1.json": "c08b741735d9e542c9cb4edb5f319793b61dab765864412798f90354f70095ec",
+    "/home/scott/projects/PheroOS/pheroos-bench/results/r5-session-faults-v1/independent-audit-v2.json": "9f0ba43d43c9a997f7634fe1d4d43e2558984f7fc1d269afc61071b757a1eb9f",
+    "/home/scott/projects/PheroOS/pheroos-bench/results/r5-session-faults-v1/outcomes.json": "54fff525859ab95830d657a644e5de0d0520a6c8f5c3730dce44d34a9bd4d3da",
+    "/home/scott/projects/PheroOS/pheroos-bench/results/r5-session-faults-v1/summary.json": "f0597a36b097be055b72f77df6ebddda032bdf3db144804c7c56a009bb3fde3e"
+  },
+  "audit_source_sha256": {
+    "/home/scott/projects/PheroOS/pheroos-bench/tests/test_audit_r5_session_faults.py": "0a835a86685de9b4b2a302833801eb4fa7efe658d8a1d16296f62802ad31237c",
+    "/home/scott/projects/PheroOS/pheroos-bench/tests/test_audit_r5_session_faults_v2.py": "b67f87a6ef8a466707f1b73378e1332cf5dcb1de61d62a732fa41c9fec10a7de",
+    "/home/scott/projects/PheroOS/pheroos-bench/tools/audit_r5_session_faults.py": "c340d49b2be83f558c2a55e6e4120460b6d52a8eef8afce2759284c5d8ba453f",
+    "/home/scott/projects/PheroOS/pheroos-bench/tools/audit_r5_session_faults_v2.py": "922a9348d3b7141a1858f8908ceed114d7727cc13cd0cb3076a29ace03d17a7d"
+  },
+  "audit_status": "INTEGRITY_PASS",
+  "correction": {
+    "case": "transport:malformed_reply",
+    "corrected_expected_label": "JSONDecodeError",
+    "independently_reproduced_refusal": "JSONDecodeError: Expecting value: line 1 column 1 (char 0)",
+    "legacy_expected_label": "ValueError",
+    "packet_sha256": "da3f48576e54db8707c800c4e8e4cfb25536abb74b8c021bc298de3f14f7ddb1"
+  },
+  "correction_validation": {
+    "command": ".venv/bin/python -m pytest -q pheroos-bench/tests/test_audit_r5_session_faults_v2.py",
+    "independent_read_only_review": "/root/audit_r1 confirmed narrow adapter preserves all original checks, exactly one label correction, strict raw-packet/unknown-state prerequisites and finally restoration; no study runs or edits by reviewer.",
+    "result": "12 passed in 0.04s",
+    "working_directory": "/home/scott/projects/PheroOS"
+  },
+  "counts_toward_verdict": false,
+  "created_utc": "2026-09-13T23:06:13.166431+00:00",
+  "disposition": "All 38 unchanged study cases pass the corrected offline integrity audit. Original v1 checker mismatch remains immutable. Unresolved calls and unavailable damaged-store accounting retain their original dispositions; this is one source study, not an independent new sample.",
+  "engineering_gate": "PENDING_ROOT_REVIEW",
+  "execution": {
+    "before_launch_utc_observation": "2026-09-13 23:01:56 UTC",
+    "command": "PYTHONDONTWRITEBYTECODE=1 CUDA_VISIBLE_DEVICES='' PYTHONPATH=/tmp/pheroos-session-site:/home/scott/projects/PheroOS/pheroos-bench/src /home/scott/projects/PheroOS-runtime/.local/venv312/bin/python /home/scott/projects/PheroOS/pheroos-bench/tools/audit_r5_session_faults_v2.py --output /home/scott/projects/PheroOS/pheroos-bench/results/r5-session-faults-v1 --audit-output /home/scott/projects/PheroOS/pheroos-bench/results/r5-session-faults-v1/independent-audit-v2.json",
+    "completion_utc_observation": "2026-09-13 23:04:47 UTC",
+    "observed_exit_code": 0,
+    "tool_session_id": 1969,
+    "working_directory": "/tmp"
+  },
+  "fault_cases_rerun": 0,
+  "final_recheck": {
+    "additional_retained_v1_evidence": [
+      "/home/scott/projects/PheroOS/pheroos-bench/results/r5-session-faults-v1/independent-audit-execution-v1.json",
+      "/home/scott/projects/PheroOS/pheroos-bench/results/r5-session-faults-v1/independent-audit-v1.json"
+    ],
+    "all_match": true,
+    "checker_closure_count": 4,
+    "frozen_inputs_count": 628,
+    "original_study_evidence_count": 163,
+    "v2_retained_evidence_count": 165
+  },
+  "generated_model_calls": 0,
+  "legacy_audit": {
+    "path": "/home/scott/projects/PheroOS/pheroos-bench/results/r5-session-faults-v1/independent-audit-v1.json",
+    "receipt_sha256": "d01c778091a87e6ebdc9bf5cad52b1f33a1f675afcaf605197d9b1feb2abf9b1",
+    "sha256": "c08b741735d9e542c9cb4edb5f319793b61dab765864412798f90354f70095ec",
+    "status": "AUDIT_MISMATCH"
+  },
+  "legacy_exit_rationale": "Preserve v1 for its recorded audit. V2 reuses all v1 checks and replaces only its incorrect exact malformed-JSON exception-label expectation. No harness/runtime defect, study rerun, or independent new sample.",
+  "observed_accounting": {
+    "all_observed_unique_available_dispatches": {
+      "model_dispatches": 13,
+      "tool_dispatches": 25
+    },
+    "all_observed_unique_available_ledger_components": {
+      "actual_tokens": 18,
+      "reserved_tokens": 0,
+      "unknown_calls": 10,
+      "unknown_tokens": 70
+    },
+    "auxiliary_ledgers": [
+      {
+        "accounting": {
+          "actual_tokens": 0,
+          "reserved_tokens": 0,
+          "unknown_calls": 0,
+          "unknown_tokens": 0
+        },
+        "ledger": "foreign.sqlite",
+        "model_dispatches": 0,
+        "tool_dispatches": 1
+      }
+    ],
+    "coverage": "Only verified available ledgers are summed. Auxiliary and intact-before-corruption work is separate; damaged or missing primary accounting stays unavailable. Shared sidecars are counted once.",
+    "intact_originals": [
+      {
+        "accounting": {
+          "actual_tokens": 0,
+          "reserved_tokens": 0,
+          "unknown_calls": 0,
+          "unknown_tokens": 0
+        },
+        "action_counts": {
+          "model_dispatches": 0,
+          "tool_dispatches": 1
+        },
+        "case": "corrupted_database_copy:default"
+      }
+    ],
+    "primary_dispatches": {
+      "model_dispatches": 13,
+      "tool_dispatches": 23
+    },
+    "primary_known_components": {
+      "actual_tokens": 18,
+      "reserved_tokens": 0,
+      "unknown_calls": 10,
+      "unknown_tokens": 70
+    },
+    "sidecar_effect_invocations": 33,
+    "unavailable_primary_cases": [
+      "corrupted_database_copy:default"
+    ],
+    "unverified_effect_case_ids": [],
+    "verified_primary_ledgers": 37
+  },
+  "receipt_method": "r5_independent_audit_execution_v2",
+  "source_status": "PASS"
+}

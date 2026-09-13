@@ -1,0 +1,509 @@
+{
+  "method_version": "r4_session_scaling_pilot_v1",
+  "phase": "pilot",
+  "counts_toward_verdict": false,
+  "worlds": [
+    "code_repair/bounded_increment",
+    "code_repair/cyclic_offset",
+    "evidence_revision/route_quota",
+    "evidence_revision/ready_window"
+  ],
+  "conditions": [
+    {
+      "id": "fixed_calls-small-private-n1",
+      "cohort": "small",
+      "policy": "private",
+      "agents": 1,
+      "regime": "fixed_calls"
+    },
+    {
+      "id": "fixed_calls-small-private-n2",
+      "cohort": "small",
+      "policy": "private",
+      "agents": 2,
+      "regime": "fixed_calls"
+    },
+    {
+      "id": "fixed_calls-small-private-n4",
+      "cohort": "small",
+      "policy": "private",
+      "agents": 4,
+      "regime": "fixed_calls"
+    },
+    {
+      "id": "fixed_calls-small-private-n8",
+      "cohort": "small",
+      "policy": "private",
+      "agents": 8,
+      "regime": "fixed_calls"
+    },
+    {
+      "id": "fixed_calls-small-private-n16",
+      "cohort": "small",
+      "policy": "private",
+      "agents": 16,
+      "regime": "fixed_calls"
+    },
+    {
+      "id": "fixed_calls-small-private-n32",
+      "cohort": "small",
+      "policy": "private",
+      "agents": 32,
+      "regime": "fixed_calls"
+    },
+    {
+      "id": "fixed_calls-small-blackboard-n1",
+      "cohort": "small",
+      "policy": "blackboard",
+      "agents": 1,
+      "regime": "fixed_calls"
+    },
+    {
+      "id": "fixed_calls-small-blackboard-n2",
+      "cohort": "small",
+      "policy": "blackboard",
+      "agents": 2,
+      "regime": "fixed_calls"
+    },
+    {
+      "id": "fixed_calls-small-blackboard-n4",
+      "cohort": "small",
+      "policy": "blackboard",
+      "agents": 4,
+      "regime": "fixed_calls"
+    },
+    {
+      "id": "fixed_calls-small-blackboard-n8",
+      "cohort": "small",
+      "policy": "blackboard",
+      "agents": 8,
+      "regime": "fixed_calls"
+    },
+    {
+      "id": "fixed_calls-small-blackboard-n16",
+      "cohort": "small",
+      "policy": "blackboard",
+      "agents": 16,
+      "regime": "fixed_calls"
+    },
+    {
+      "id": "fixed_calls-small-blackboard-n32",
+      "cohort": "small",
+      "policy": "blackboard",
+      "agents": 32,
+      "regime": "fixed_calls"
+    },
+    {
+      "id": "fixed_calls-small-dedup_ttl-n1",
+      "cohort": "small",
+      "policy": "dedup_ttl",
+      "agents": 1,
+      "regime": "fixed_calls"
+    },
+    {
+      "id": "fixed_calls-small-dedup_ttl-n2",
+      "cohort": "small",
+      "policy": "dedup_ttl",
+      "agents": 2,
+      "regime": "fixed_calls"
+    },
+    {
+      "id": "fixed_calls-small-dedup_ttl-n4",
+      "cohort": "small",
+      "policy": "dedup_ttl",
+      "agents": 4,
+      "regime": "fixed_calls"
+    },
+    {
+      "id": "fixed_calls-small-dedup_ttl-n8",
+      "cohort": "small",
+      "policy": "dedup_ttl",
+      "agents": 8,
+      "regime": "fixed_calls"
+    },
+    {
+      "id": "fixed_calls-small-dedup_ttl-n16",
+      "cohort": "small",
+      "policy": "dedup_ttl",
+      "agents": 16,
+      "regime": "fixed_calls"
+    },
+    {
+      "id": "fixed_calls-small-dedup_ttl-n32",
+      "cohort": "small",
+      "policy": "dedup_ttl",
+      "agents": 32,
+      "regime": "fixed_calls"
+    },
+    {
+      "id": "fixed_calls-small-versioned-n1",
+      "cohort": "small",
+      "policy": "versioned",
+      "agents": 1,
+      "regime": "fixed_calls"
+    },
+    {
+      "id": "fixed_calls-small-versioned-n2",
+      "cohort": "small",
+      "policy": "versioned",
+      "agents": 2,
+      "regime": "fixed_calls"
+    },
+    {
+      "id": "fixed_calls-small-versioned-n4",
+      "cohort": "small",
+      "policy": "versioned",
+      "agents": 4,
+      "regime": "fixed_calls"
+    },
+    {
+      "id": "fixed_calls-small-versioned-n8",
+      "cohort": "small",
+      "policy": "versioned",
+      "agents": 8,
+      "regime": "fixed_calls"
+    },
+    {
+      "id": "fixed_calls-small-versioned-n16",
+      "cohort": "small",
+      "policy": "versioned",
+      "agents": 16,
+      "regime": "fixed_calls"
+    },
+    {
+      "id": "fixed_calls-small-versioned-n32",
+      "cohort": "small",
+      "policy": "versioned",
+      "agents": 32,
+      "regime": "fixed_calls"
+    },
+    {
+      "id": "fixed_calls-medium-private-n1",
+      "cohort": "medium",
+      "policy": "private",
+      "agents": 1,
+      "regime": "fixed_calls"
+    },
+    {
+      "id": "fixed_calls-medium-private-n4",
+      "cohort": "medium",
+      "policy": "private",
+      "agents": 4,
+      "regime": "fixed_calls"
+    },
+    {
+      "id": "fixed_calls-medium-private-n16",
+      "cohort": "medium",
+      "policy": "private",
+      "agents": 16,
+      "regime": "fixed_calls"
+    },
+    {
+      "id": "fixed_calls-medium-private-n32",
+      "cohort": "medium",
+      "policy": "private",
+      "agents": 32,
+      "regime": "fixed_calls"
+    },
+    {
+      "id": "fixed_calls-medium-blackboard-n1",
+      "cohort": "medium",
+      "policy": "blackboard",
+      "agents": 1,
+      "regime": "fixed_calls"
+    },
+    {
+      "id": "fixed_calls-medium-blackboard-n4",
+      "cohort": "medium",
+      "policy": "blackboard",
+      "agents": 4,
+      "regime": "fixed_calls"
+    },
+    {
+      "id": "fixed_calls-medium-blackboard-n16",
+      "cohort": "medium",
+      "policy": "blackboard",
+      "agents": 16,
+      "regime": "fixed_calls"
+    },
+    {
+      "id": "fixed_calls-medium-blackboard-n32",
+      "cohort": "medium",
+      "policy": "blackboard",
+      "agents": 32,
+      "regime": "fixed_calls"
+    },
+    {
+      "id": "fixed_calls-mixed-private-n1",
+      "cohort": "mixed",
+      "policy": "private",
+      "agents": 1,
+      "regime": "fixed_calls"
+    },
+    {
+      "id": "fixed_calls-mixed-private-n4",
+      "cohort": "mixed",
+      "policy": "private",
+      "agents": 4,
+      "regime": "fixed_calls"
+    },
+    {
+      "id": "fixed_calls-mixed-private-n16",
+      "cohort": "mixed",
+      "policy": "private",
+      "agents": 16,
+      "regime": "fixed_calls"
+    },
+    {
+      "id": "fixed_calls-mixed-private-n32",
+      "cohort": "mixed",
+      "policy": "private",
+      "agents": 32,
+      "regime": "fixed_calls"
+    },
+    {
+      "id": "fixed_calls-mixed-blackboard-n1",
+      "cohort": "mixed",
+      "policy": "blackboard",
+      "agents": 1,
+      "regime": "fixed_calls"
+    },
+    {
+      "id": "fixed_calls-mixed-blackboard-n4",
+      "cohort": "mixed",
+      "policy": "blackboard",
+      "agents": 4,
+      "regime": "fixed_calls"
+    },
+    {
+      "id": "fixed_calls-mixed-blackboard-n16",
+      "cohort": "mixed",
+      "policy": "blackboard",
+      "agents": 16,
+      "regime": "fixed_calls"
+    },
+    {
+      "id": "fixed_calls-mixed-blackboard-n32",
+      "cohort": "mixed",
+      "policy": "blackboard",
+      "agents": 32,
+      "regime": "fixed_calls"
+    },
+    {
+      "id": "fixed_tokens-small-private-n1",
+      "cohort": "small",
+      "policy": "private",
+      "agents": 1,
+      "regime": "fixed_tokens"
+    },
+    {
+      "id": "fixed_tokens-small-private-n2",
+      "cohort": "small",
+      "policy": "private",
+      "agents": 2,
+      "regime": "fixed_tokens"
+    },
+    {
+      "id": "fixed_tokens-small-private-n4",
+      "cohort": "small",
+      "policy": "private",
+      "agents": 4,
+      "regime": "fixed_tokens"
+    },
+    {
+      "id": "fixed_tokens-small-private-n8",
+      "cohort": "small",
+      "policy": "private",
+      "agents": 8,
+      "regime": "fixed_tokens"
+    },
+    {
+      "id": "fixed_tokens-small-private-n16",
+      "cohort": "small",
+      "policy": "private",
+      "agents": 16,
+      "regime": "fixed_tokens"
+    },
+    {
+      "id": "fixed_tokens-small-private-n32",
+      "cohort": "small",
+      "policy": "private",
+      "agents": 32,
+      "regime": "fixed_tokens"
+    },
+    {
+      "id": "fixed_tokens-small-blackboard-n1",
+      "cohort": "small",
+      "policy": "blackboard",
+      "agents": 1,
+      "regime": "fixed_tokens"
+    },
+    {
+      "id": "fixed_tokens-small-blackboard-n2",
+      "cohort": "small",
+      "policy": "blackboard",
+      "agents": 2,
+      "regime": "fixed_tokens"
+    },
+    {
+      "id": "fixed_tokens-small-blackboard-n4",
+      "cohort": "small",
+      "policy": "blackboard",
+      "agents": 4,
+      "regime": "fixed_tokens"
+    },
+    {
+      "id": "fixed_tokens-small-blackboard-n8",
+      "cohort": "small",
+      "policy": "blackboard",
+      "agents": 8,
+      "regime": "fixed_tokens"
+    },
+    {
+      "id": "fixed_tokens-small-blackboard-n16",
+      "cohort": "small",
+      "policy": "blackboard",
+      "agents": 16,
+      "regime": "fixed_tokens"
+    },
+    {
+      "id": "fixed_tokens-small-blackboard-n32",
+      "cohort": "small",
+      "policy": "blackboard",
+      "agents": 32,
+      "regime": "fixed_tokens"
+    },
+    {
+      "id": "fixed_tokens-medium-private-n1",
+      "cohort": "medium",
+      "policy": "private",
+      "agents": 1,
+      "regime": "fixed_tokens"
+    },
+    {
+      "id": "fixed_deadline-small-private-n1",
+      "cohort": "small",
+      "policy": "private",
+      "agents": 1,
+      "regime": "fixed_deadline"
+    },
+    {
+      "id": "fixed_deadline-small-private-n2",
+      "cohort": "small",
+      "policy": "private",
+      "agents": 2,
+      "regime": "fixed_deadline"
+    },
+    {
+      "id": "fixed_deadline-small-private-n4",
+      "cohort": "small",
+      "policy": "private",
+      "agents": 4,
+      "regime": "fixed_deadline"
+    },
+    {
+      "id": "fixed_deadline-small-private-n8",
+      "cohort": "small",
+      "policy": "private",
+      "agents": 8,
+      "regime": "fixed_deadline"
+    },
+    {
+      "id": "fixed_deadline-small-private-n16",
+      "cohort": "small",
+      "policy": "private",
+      "agents": 16,
+      "regime": "fixed_deadline"
+    },
+    {
+      "id": "fixed_deadline-small-private-n32",
+      "cohort": "small",
+      "policy": "private",
+      "agents": 32,
+      "regime": "fixed_deadline"
+    },
+    {
+      "id": "fixed_deadline-small-blackboard-n1",
+      "cohort": "small",
+      "policy": "blackboard",
+      "agents": 1,
+      "regime": "fixed_deadline"
+    },
+    {
+      "id": "fixed_deadline-small-blackboard-n2",
+      "cohort": "small",
+      "policy": "blackboard",
+      "agents": 2,
+      "regime": "fixed_deadline"
+    },
+    {
+      "id": "fixed_deadline-small-blackboard-n4",
+      "cohort": "small",
+      "policy": "blackboard",
+      "agents": 4,
+      "regime": "fixed_deadline"
+    },
+    {
+      "id": "fixed_deadline-small-blackboard-n8",
+      "cohort": "small",
+      "policy": "blackboard",
+      "agents": 8,
+      "regime": "fixed_deadline"
+    },
+    {
+      "id": "fixed_deadline-small-blackboard-n16",
+      "cohort": "small",
+      "policy": "blackboard",
+      "agents": 16,
+      "regime": "fixed_deadline"
+    },
+    {
+      "id": "fixed_deadline-small-blackboard-n32",
+      "cohort": "small",
+      "policy": "blackboard",
+      "agents": 32,
+      "regime": "fixed_deadline"
+    },
+    {
+      "id": "fixed_deadline-medium-private-n1",
+      "cohort": "medium",
+      "policy": "private",
+      "agents": 1,
+      "regime": "fixed_deadline"
+    }
+  ],
+  "steps": 32,
+  "token_cap": 65536,
+  "binding_token_cap": 8192,
+  "max_calls": 64,
+  "max_new_tokens": 256,
+  "context_tokens": 2048,
+  "context_bytes": 32768,
+  "artifact_bytes": 32768,
+  "deadline_seconds": 30,
+  "seed": 3109,
+  "order_seed": 3137,
+  "models": {
+    "small": {
+      "repository": "Qwen/Qwen2.5-Coder-1.5B-Instruct",
+      "revision": "2e1fd397ee46e1388853d2af2c993145b0f1098a",
+      "precision": "float16",
+      "quantization": null,
+      "manifest_sha256": "600319fcf68b230820502b61767b49ce375316a2d23fe4708126ff5e5fbc26c8"
+    },
+    "medium": {
+      "repository": "Qwen/Qwen2.5-Coder-3B-Instruct",
+      "revision": "488639f1ff808d1d3d0ba301aef8c11461451ec5",
+      "precision": "float16",
+      "quantization": null,
+      "manifest_sha256": "cf4593f14704152d28ea15c6630ee7abaca52580973524a386e05ba217391777"
+    }
+  },
+  "mixed_medium_start_step": 28,
+  "measurement": {
+    "confidence": 0.95,
+    "bootstrap_resamples": 2000,
+    "seed": 3141,
+    "budget_cap": 10000
+  }
+}
