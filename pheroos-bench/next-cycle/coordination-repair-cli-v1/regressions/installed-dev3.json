@@ -1,0 +1,27 @@
+{
+  "schema": "coordination_repair_installed_consumer_v1",
+  "status": "PASS",
+  "identities": {
+    "paths": [
+      "/tmp/pheroos-coordination-cli-dev4-site/pheroos/__init__.py",
+      "/tmp/pheroos-coordination-cli-dev4-site/pheroos_runtime/__init__.py",
+      "/tmp/pheroos-coordination-cli-dev4-site/pheroos_bench/__init__.py"
+    ],
+    "versions": {
+      "pheroos": "0.1.0",
+      "pheroos-runtime": "0.1.0.dev3",
+      "pheroos-bench": "0.1.1.dev4"
+    }
+  },
+  "inputs": {
+    "pheroos-0.1.0-py3-none-any.whl": "758f7e3d8135ff3ced2f7ed21aa0710b57a106530b464bbf8d939413c22170fc",
+    "pheroos_runtime-0.1.0.dev3-py3-none-any.whl": "1711ac6b8ac4d1d60e03a78e4ac4efbcba535c93df2c52575f118b666505d0f7"
+  },
+  "bench_wheel": "pheroos_bench-0.1.1.dev4-py3-none-any.whl",
+  "bench_wheel_sha256": "19aadbd99992c5baae6f73cad2007b7240a6eb135400436e14c6dd28d88db6c3",
+  "test_output": "........................................................................ [ 44%]\n........................................................................ [ 89%]\n.................                                                        [100%]\n161 passed in 42.46s\n",
+  "elapsed_seconds": 44.362989634006226,
+  "source_independent": true,
+  "network_calls": 0,
+  "model_calls": 0
+}

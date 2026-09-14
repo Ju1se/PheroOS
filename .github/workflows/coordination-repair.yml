@@ -31,7 +31,7 @@ jobs:
           python -m pip install --require-hashes --only-binary=:all: -r requirements/ci-constraints.txt
           python -m pip install --require-hashes --only-binary=:all: -r requirements/bench-constraints.txt
       - name: Require installed runtime and execute the new consumer
-        run: python pheroos-bench/tools/verify_coordination_repair_install.py --runtime-cohort "${{ matrix.runtime-cohort }}" --bench-cohort dev3 --output "${RUNNER_TEMP}/coordination-repair-install.json"
+        run: python pheroos-bench/tools/verify_coordination_repair_install.py --runtime-cohort "${{ matrix.runtime-cohort }}" --bench-cohort dev4 --output "${RUNNER_TEMP}/coordination-repair-install.json"
       - uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4
         with:
           name: experimental-installed-session-consumer-${{ matrix.runtime-cohort }}

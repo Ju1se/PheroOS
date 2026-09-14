@@ -20,7 +20,7 @@ from .coordination_repair_v1_pilot import admit_actionability as original_admiss
 from .coordination_repair_v1_pilot import source_identity as original_sources
 
 
-CONFIG_VERSION = "coordination_repair_local_cycle_v2"
+CONFIG_VERSION = "coordination_repair_local_cycle_v2_cli_v1"
 PREDECESSOR_FILES = {
     "local-cycle-v1/frozen-config.json": "d7796ac52d5378b502756ba3395f6ef234064815d16a60851d2b585e68295459",
     "local-cycle-v1/actionability/accounting.json": "a92a92aca3658534c19c9f175541f9f33de300a5120b8519a1550c10bc0b52dd",
@@ -35,7 +35,7 @@ def configuration():
     config = deepcopy(original_configuration())
     config["config_version"] = CONFIG_VERSION
     config["runtime_version"] = "0.1.0.dev3"
-    config["bench_version"] = "0.1.1.dev3"
+    config["bench_version"] = "0.1.1.dev4"
     config["model_adapter"] = "pheroos_runtime.recorded_local_v2.RecordedLocalModelAdapter"
     # Retain the predecessor's one conservative intent slot; never reset it.
     config["cycle_caps"]["model_dispatches"] = 999
@@ -301,6 +301,39 @@ def collect(config, output, model_path, phase, predecessor_root, *, additional_c
     return report
 
 
+def cli_result(report, phase_path, phase):
+    """Map retained collection state to the experimental CLI v1 exit contract.
+
+    A negative research result is valid completion. Non-admission is distinct
+    from incomplete or unresolved collection; neither permits shell chaining.
+    This reports state only and does not authorize a subsequent phase.
+    """
+    result = dict(profile="coordination_repair_cli_v1", status="INVALID_ABORT", exit_code=2)
+    try:
+        completion = json.loads((phase_path / "campaign-completion.json").read_text())
+        accounting = json.loads((phase_path / "accounting.json").read_text())
+        complete = (completion["status"] == "COMPLETE" and completion["failure"] is None
+                    and completion["unstarted"] == []
+                    and completion["executed"] == completion["declared"] > 0)
+        settled = (accounting["known_tokens_complete"] is True and accounting["violation"] is None
+                   and all(a["state"] == "terminal" and a["unknown_tokens"] == 0
+                           for a in accounting["allotments"]))
+        if not complete or not settled:
+            return result
+        if phase == "actionability" and report.get("measurement_status") == "COMPLETE":
+            if report.get("admitted") is False:
+                return {**result, "status": "NOT_ADMITTED", "exit_code": 3}
+            if report.get("admitted") is True:
+                return {**result, "status": "COMPLETED", "exit_code": 0}
+        if phase == "collaboration" and report.get("status") in {"VALID_KNOWN", "NO_ELIGIBLE_PREFIXES"}:
+            return {**result, "status": "COMPLETED", "exit_code": 0}
+    except (OSError, ValueError, KeyError, TypeError):
+        # Missing/unreadable status is not a successful collection. Do not
+        # replace any retained report, outcome or unknown accounting value.
+        pass
+    return result
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--config", type=Path, required=True)
@@ -313,8 +346,10 @@ def main():
     report = collect(json.loads(args.config.read_text()), args.output, args.model_path,
                      args.phase, args.predecessor_root,
                      additional_campaign_authorized=args.authorized_additional_campaign)
-    print(wire(report))
+    cli = cli_result(report, args.output / args.phase, args.phase)
+    print(wire({**report, "cli": cli}))
+    return cli["exit_code"]
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

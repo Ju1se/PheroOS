@@ -28,8 +28,12 @@ def main():
     parser.add_argument("--site", type=Path)
     parser.add_argument("--retain-wheel", type=Path)
     parser.add_argument("--runtime-cohort", choices=("dev2", "dev3"), default="dev2")
-    parser.add_argument("--bench-cohort", choices=("dev2", "dev3"), default="dev2")
+    parser.add_argument("--bench-cohort", choices=("dev2", "dev3", "dev4"), default="dev2")
+    parser.add_argument("--bench-wheel", type=Path)
+    parser.add_argument("--bench-wheel-sha256")
     args = parser.parse_args()
+    if bool(args.bench_wheel) != bool(args.bench_wheel_sha256):
+        parser.error("--bench-wheel and --bench-wheel-sha256 must be supplied together")
     root = Path(__file__).resolve().parents[1]
     artifacts = root / "next-cycle/coordination-repair-v1/artifacts"
     input_file = "installation-inputs.json" if args.runtime_cohort == "dev2" else "installation-inputs-dev3.json"
@@ -41,8 +45,13 @@ def main():
     with tempfile.TemporaryDirectory(prefix="pheroos-repair-installed-") as directory:
         staging = Path(directory)
         build = staging / "build"
-        run([sys.executable,"-m","build","--no-isolation","--wheel","--outdir",str(build)],root)
-        wheel, = build.glob("*.whl")
+        if args.bench_wheel:
+            wheel = args.bench_wheel.resolve()
+            if sha256(wheel.read_bytes()).hexdigest() != args.bench_wheel_sha256:
+                raise ValueError("accepted bench wheel identity mismatch")
+        else:
+            run([sys.executable,"-m","build","--no-isolation","--wheel","--outdir",str(build)],root)
+            wheel, = build.glob("*.whl")
         site = args.site.resolve() if args.site else staging / "site"
         if site.exists():
             raise FileExistsError("installation site must be fresh")
@@ -64,10 +73,12 @@ def main():
         config.write_text("[pytest]\n")
         cases = ["integration/coordination-repair-v1", "tests/test_coordination_repair_v1_tasks.py",
                  "tests/test_coordination_repair_v1_measurement.py", "tests/test_coordination_repair_v1_pilot.py"]
-        if args.bench_cohort == "dev3":
+        if args.bench_cohort in ("dev3", "dev4"):
             cases += ["tests/test_coordination_repair_v2.py", "tests/test_coordination_repair_v2_pilot.py"]
             if args.runtime_cohort == "dev3":
                 cases += ["integration/coordination-repair-v2"]
+            elif args.bench_cohort == "dev4":
+                cases += ["integration/coordination-repair-v2/test_coordination_repair_v2_cli.py"]
         tests = run([sys.executable,"-m","pytest","-q","-rs","-c",str(config),
                      *[str(root/name) for name in cases]],external,env)
         if "skipped" in tests:
