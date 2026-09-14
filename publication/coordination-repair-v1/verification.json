@@ -1,0 +1,13 @@
+{
+  "archived_files": 0,
+  "archives_verified": 0,
+  "counts_toward_verdict": false,
+  "direct_files": 333,
+  "existing_matching_files": 333,
+  "files_restored": 0,
+  "files_verified": 333,
+  "status": "VERIFIED",
+  "version": "publication_evidence_v1",
+  "manifest_sha256": "64b9714cc97775068349455d3b958e62f887b454282392523cce715329c7b5b9",
+  "final_staged_audit_sha256": "b14f4685aacdf1108d06e7c633516bc91ab07d8e719d2210bcda5c1407230278"
+}

@@ -1,0 +1,8 @@
+{
+  "command": "python -m pytest -q -rs",
+  "exit_code": 0,
+  "elapsed_seconds": 146.38240432800376,
+  "runtime_cohort": "0.1.0.dev3",
+  "bench_cohort": "0.1.1.dev3",
+  "model_dispatches": 0
+}

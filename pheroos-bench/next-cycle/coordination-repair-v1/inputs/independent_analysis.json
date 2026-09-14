@@ -1,0 +1,184 @@
+{
+  "scope": "Independent R2 rule reconstruction and arithmetic over published aggregates; not raw-archive or model rerun",
+  "source_commit": "3604f5ce358ed6051c67e48906d240ac0b581f14",
+  "r2_reconstructed_episodes": 480,
+  "r2_matched_dispatch_pairs": 80,
+  "r2_all_candidate_fifo_dispatch_identical": true,
+  "r2_evaluation": {
+    "capability_fifo": {
+      "episodes": 32,
+      "completed": 768,
+      "on_time": 625,
+      "mean_episode_p95_wait": 8.09375,
+      "duplicate_attempts": 29,
+      "mean_lost_units": 1.21875,
+      "mean_pressure_operations": 0,
+      "pressure_ticks": 0
+    },
+    "work_stealing": {
+      "episodes": 32,
+      "completed": 767,
+      "on_time": 603,
+      "mean_episode_p95_wait": 9.125,
+      "duplicate_attempts": 26,
+      "mean_lost_units": 1.28125,
+      "mean_pressure_operations": 0,
+      "pressure_ticks": 0
+    },
+    "priority_queue": {
+      "episodes": 32,
+      "completed": 768,
+      "on_time": 620,
+      "mean_episode_p95_wait": 8.125,
+      "duplicate_attempts": 33,
+      "mean_lost_units": 1.40625,
+      "mean_pressure_operations": 0,
+      "pressure_ticks": 0
+    },
+    "central_manager": {
+      "episodes": 32,
+      "completed": 767,
+      "on_time": 632,
+      "mean_episode_p95_wait": 7.5625,
+      "duplicate_attempts": 28,
+      "mean_lost_units": 1.5,
+      "mean_pressure_operations": 0,
+      "pressure_ticks": 0
+    },
+    "congestion_backpressure": {
+      "episodes": 32,
+      "completed": 768,
+      "on_time": 625,
+      "mean_episode_p95_wait": 8.09375,
+      "duplicate_attempts": 29,
+      "mean_lost_units": 1.21875,
+      "mean_pressure_operations": 59.46875,
+      "pressure_ticks": 438
+    },
+    "no_backpressure": {
+      "episodes": 32,
+      "completed": 768,
+      "on_time": 625,
+      "mean_episode_p95_wait": 8.09375,
+      "duplicate_attempts": 29,
+      "mean_lost_units": 1.21875,
+      "mean_pressure_operations": 0,
+      "pressure_ticks": 0
+    }
+  },
+  "r1_relative_percent_change": {
+    "dedup_ttl": {
+      "deliveries": -8.77598152424942,
+      "operations": 14.992537650942971,
+      "bytes": 19.99368940021451
+    },
+    "full_relevant": {
+      "deliveries": -87.62531328320802,
+      "operations": -13.833536668022228,
+      "bytes": -39.54336194930247
+    },
+    "matched_sparse_random": {
+      "deliveries": 0.0,
+      "operations": 39.54228637286648,
+      "bytes": 28.386568192654615
+    }
+  },
+  "r4_arithmetic": {
+    "success_share": 0.19318181818181818,
+    "code_success_share": 0.38636363636363635,
+    "rejected_evaluated_action_share": 0.8846859562455893,
+    "rejected_tokens_share": 0.8728080821854203,
+    "failed_episode_tokens_share": 0.7701941494785829,
+    "prompt_token_share": 0.8905329721450481,
+    "repeated_inspection_share": 0.43467336683417085,
+    "mixed_small_token_share": 0.8630120969930809,
+    "versioned_vs_dedup_token_change": -1.6313974084086857,
+    "versioned_vs_dedup_operation_change": -0.4706409681757062,
+    "aggregate_r4_known_tokens": 6227054,
+    "fixed_call_total": 5120,
+    "logical_call_units": 235176,
+    "code_hidden_cases": {
+      "bounded_increment": 1453,
+      "cyclic_offset": 1392
+    }
+  },
+  "r4_private_evidence_action_capacity": {
+    "1": {
+      "final_version_turns_per_active_agent": [
+        16
+      ],
+      "can_one_private_agent_make_three_inspections_and_submit": true
+    },
+    "2": {
+      "final_version_turns_per_active_agent": [
+        8,
+        8
+      ],
+      "can_one_private_agent_make_three_inspections_and_submit": true
+    },
+    "4": {
+      "final_version_turns_per_active_agent": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "can_one_private_agent_make_three_inspections_and_submit": true
+    },
+    "8": {
+      "final_version_turns_per_active_agent": [
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+      ],
+      "can_one_private_agent_make_three_inspections_and_submit": false
+    },
+    "16": {
+      "final_version_turns_per_active_agent": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "can_one_private_agent_make_three_inspections_and_submit": false
+    },
+    "32": {
+      "final_version_turns_per_active_agent": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "can_one_private_agent_make_three_inspections_and_submit": false
+    }
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "stage": "operator_preflight_before_collection",
+  "initial_check": "FAILED",
+  "reason": "Ad-hoc checker used ensure_ascii=False; repository wire/digest uses default ASCII escaping. The configuration bytes and collector were not changed.",
+  "correction": "Use the existing wire serialization semantics in the external preflight checker.",
+  "campaign_started": false,
+  "model_dispatches": 0,
+  "source_or_config_modified": false
+}

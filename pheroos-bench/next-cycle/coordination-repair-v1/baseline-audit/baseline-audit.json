@@ -1,0 +1,525 @@
+{
+  "audit_version": "coordination_repair_baseline_audit_v1",
+  "counts_toward_verdict": false,
+  "limits": [
+    "No model calls, network, historical SQLite access, or package/test suite execution.",
+    "R2 independent reconstructed dispatch is compared with frozen-source replay and original stored trace hashes; replay alone is not independent oracle.",
+    "R4 diagnostics use 264 raw replication episodes and receipt records, not new inference. Unknown/rejected/unevaluated rows retained.",
+    "Audit checks selected source/raw identities against publication manifest, not all archives or repository history.",
+    "Current remote PR/branch resolution and installed identities are owned by the root audit; local dirty source manifests identify this read-only input.",
+    "4 historical task worlds and deterministic shared prompts cannot establish broad generalization or independent agent intelligence."
+  ],
+  "publication_manifest_identity_matches": [
+    {
+      "path": "/home/scott/projects/PheroOS/pheroos-bench/EXPERIMENTAL-OS-CANDIDATE.md",
+      "sha256": "293f564e5d7846bf911f2c0684ba68a73319cda6745ecc078cc62a4486029cdd"
+    },
+    {
+      "path": "/home/scott/projects/PheroOS/pheroos-bench/results/master-goal-audit-v1/FINAL-REPORT.md",
+      "sha256": "4f8bd104b1def70db393f8b01532db218134a36c0e81a9770fd26b78eda1007b"
+    },
+    {
+      "path": "/home/scott/projects/PheroOS/pheroos-bench/src/pheroos_bench/r1_coordination.py",
+      "sha256": "c9e086e3acb74fc17e26e3061213e1524b512ec1b1e9ce3919227862aa017049"
+    },
+    {
+      "path": "/home/scott/projects/PheroOS/pheroos-bench/src/pheroos_bench/r2_scheduling.py",
+      "sha256": "c9c94622d20d165effc8139062f4fd0888205cb4ad4493afc14fe79912352d62"
+    },
+    {
+      "path": "/home/scott/projects/PheroOS/pheroos-bench/src/pheroos_bench/r4_tasks.py",
+      "sha256": "6d15eba2cbef758affda0259a5748cd94f605f315aa87a58382106ac801831d3"
+    },
+    {
+      "path": "/home/scott/projects/PheroOS/pheroos-bench/src/pheroos_bench/r4_session_scaling.py",
+      "sha256": "0b60f0c2a7d988afd9ef2915769be9f5fd86026ca9615d71aa0a1af88acd95de"
+    },
+    {
+      "path": "/home/scott/projects/PheroOS/pheroos-bench/results/r1-coordination-pilot-v2/episodes.jsonl",
+      "sha256": "33cd3025a0a74be2cd309c58bf832eb288353eff4ab3d28445e4edbdc2a95f84"
+    },
+    {
+      "path": "/home/scott/projects/PheroOS/pheroos-bench/results/r2-pilot-v1/episodes.jsonl",
+      "sha256": "0f14be654e80733d32ec0ca335e2dfa19a1cfde8558e7b35d5e2e1a509c43212"
+    },
+    {
+      "path": "/home/scott/projects/PheroOS/pheroos-bench/results/r4-session-scaling-replication-v1/collection/episodes.jsonl",
+      "sha256": "b4160e71a66a0977ad39995de1c5481eecfbb1baed7f20a4e590f35d00d9675c"
+    },
+    {
+      "path": "/home/scott/projects/PheroOS-runtime/src/pheroos_runtime/session_v1.py",
+      "sha256": "a1c0750b12ea2d3b3cfabc42c29f2616c6160ef0b1641cd573d67db3d6d9a39e"
+    },
+    {
+      "path": "/home/scott/projects/PheroOS-runtime/src/pheroos_runtime/session_driver_v1.py",
+      "sha256": "4bc372f2f64d01efa0b4c1da896db27793b8ef473bd85e20cbba025e13839b08"
+    },
+    {
+      "path": "/home/scott/projects/PheroOS-runtime/docs/session-v1.md",
+      "sha256": "9dc5c5da01274e9ddf62edf2fe7911db3152e77be48e2e5f8b05028fbac83f28"
+    }
+  ],
+  "python": "3.14.7",
+  "r1": {
+    "candidate": {
+      "bytes": 393127.375,
+      "deliveries": 98.75,
+      "episodes": 8,
+      "operations": 6356.5,
+      "successes": 7
+    },
+    "candidate_relative_percent": {
+      "bytes": 19.99368940021451,
+      "deliveries": -8.77598152424942,
+      "operations": 14.992537650942971
+    },
+    "dedup_ttl": {
+      "bytes": 327623.375,
+      "deliveries": 108.25,
+      "episodes": 8,
+      "operations": 5527.75,
+      "successes": 7
+    }
+  },
+  "r2": {
+    "bottleneck_evaluation_mean_extra_pressure_inspections": 59.46875,
+    "bottleneck_evaluation_pressure_ticks": 438,
+    "candidate_fifo_identical_dispatch_pairs": 80,
+    "frozen_source_replays": 160,
+    "independent_raw_result_matches": 480,
+    "raw_trace_hash_matches": 160
+  },
+  "r4": {
+    "actual_tokens": 3402842,
+    "compared_model_input_steps": 2688,
+    "episode_statuses": {
+      "complete": 264
+    },
+    "episodes": 264,
+    "equal_model_input_steps": 2688,
+    "equal_model_response_steps": 2688,
+    "evaluated_actions": 7085,
+    "mixed_tokens": {
+      "medium": 65612,
+      "small": 413350
+    },
+    "model_dispatches": 7134,
+    "model_ledger_states": {
+      "abandoned": 1,
+      "received": 7134
+    },
+    "not_evaluated_record_counts": {
+      "known_response_no_evaluation": 49,
+      "no_recorded_response": 53
+    },
+    "pairs_all_common_inputs_equal": 84,
+    "primary_stage_scope": "Diagnostic classification of historic public-tool feedback; not a replacement historical method. Parse formatting and semantic syntax are distinct. No hidden objective feedback used.",
+    "private_final_version_capacity": {
+      "1": {
+        "can_one_private_agent_make_three_inspections_and_submit": true,
+        "final_version_turns_per_active_agent": [
+          16
+        ]
+      },
+      "2": {
+        "can_one_private_agent_make_three_inspections_and_submit": true,
+        "final_version_turns_per_active_agent": [
+          8,
+          8
+        ]
+      },
+      "4": {
+        "can_one_private_agent_make_three_inspections_and_submit": true,
+        "final_version_turns_per_active_agent": [
+          4,
+          4,
+          4,
+          4
+        ]
+      },
+      "8": {
+        "can_one_private_agent_make_three_inspections_and_submit": false,
+        "final_version_turns_per_active_agent": [
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2
+        ]
+      },
+      "16": {
+        "can_one_private_agent_make_three_inspections_and_submit": false,
+        "final_version_turns_per_active_agent": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "32": {
+        "can_one_private_agent_make_three_inspections_and_submit": false,
+        "final_version_turns_per_active_agent": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ]
+      }
+    },
+    "prompt_tokens": 3030343,
+    "public_action_primary_stages": {
+      "accepted": 817,
+      "action_schema": 1342,
+      "execution_error": 24,
+      "missing_current_evidence": 1345,
+      "missing_or_stale_citation_metadata": 29,
+      "public_code_language_rejection": 14,
+      "transport_format": 98,
+      "undeclared_target": 3416
+    },
+    "published_valid_inspections": 398,
+    "raw_feedback_counts": {
+      "Invalid action: Expecting value: line 1 column 1 (char 0)": 98,
+      "Invalid action: all three current source inspection receipts are required": 1345,
+      "Invalid action: choose exactly inspect with target or submit with candidate": 707,
+      "Invalid action: cite all three exact current sources once": 29,
+      "Invalid action: code_lines must contain one source line per string": 635,
+      "Invalid action: function did not return an integer": 24,
+      "Invalid action: unknown source target": 1218,
+      "Invalid action: unknown test target": 2198,
+      "Invalid action: unsupported statement; use assignment, if/else, return": 14,
+      "Public candidate checks accepted; hidden correctness was not checked.": 419,
+      "Public inspection completed.": 398
+    },
+    "rejected_action_tokens": 2970028,
+    "rejected_actions": 6268,
+    "repeated_published_valid_inspections_by_origin": 173,
+    "same_input_fixed_call_pairs": 84,
+    "stop_reasons": {
+      "budget": 52,
+      "call_limit": 160,
+      "deadline": 52
+    },
+    "tokens_by_public_action_stage": {
+      "accepted": 408703,
+      "action_schema": 633551,
+      "execution_error": 13884,
+      "missing_current_evidence": 734511,
+      "missing_or_stale_citation_metadata": 16153,
+      "public_code_language_rejection": 5791,
+      "transport_format": 55396,
+      "undeclared_target": 1510742
+    }
+  },
+  "repositories": {
+    "/home/scott/projects/PheroOS": {
+      "branch": "main",
+      "head": "b154472becea561ac1f5fc442a7ccf372ab154f8",
+      "status": [
+        " M pheroos-bench/README.md",
+        "?? pheroos-bench/EXPERIMENTAL-OS-CANDIDATE.md",
+        "?? pheroos-bench/MASTER-GOAL-status.md",
+        "?? pheroos-bench/R1-coordination-v2-contract.md",
+        "?? pheroos-bench/R1-data-contract.md",
+        "?? pheroos-bench/R2-capacity-v1-contract.md",
+        "?? pheroos-bench/R2-data-contract.md",
+        "?? pheroos-bench/R3-data-contract.md",
+        "?? pheroos-bench/R3-framed-v3-contract.md",
+        "?? pheroos-bench/R3-session-capability-v1-contract.md",
+        "?? pheroos-bench/R3-tool-loop-v2-contract.md",
+        "?? pheroos-bench/R4-session-scaling-v1-contract.md",
+        "?? pheroos-bench/R5-session-faults-v1-contract.md",
+        "?? pheroos-bench/SCALING-replication-v1-contract.md",
+        "?? pheroos-bench/r1-coordination-pilot-v2.json",
+        "?? pheroos-bench/r1-pilot-v1.json",
+        "?? pheroos-bench/r2-capacity-audit-v1.json",
+        "?? pheroos-bench/r2-pilot-v1.json",
+        "?? pheroos-bench/r3-framed-pilot-v3.json",
+        "?? pheroos-bench/r3-pilot-v1.json",
+        "?? pheroos-bench/r3-session-capability-v1.json",
+        "?? pheroos-bench/r3-tool-pilot-v2.json",
+        "?? pheroos-bench/r4-session-scaling-pilot-v1.json",
+        "?? pheroos-bench/r5-runtime-faults-v1.json",
+        "?? pheroos-bench/r5-session-faults-v1.json",
+        "?? pheroos-bench/results/master-goal-audit-v1/",
+        "?? pheroos-bench/results/r0-replication/",
+        "?? pheroos-bench/results/r1-coordination-pilot-v2/",
+        "?? pheroos-bench/results/r1-pilot-v1/",
+        "?? pheroos-bench/results/r2-capacity-audit-v1/",
+        "?? pheroos-bench/results/r2-pilot-v1/",
+        "?? pheroos-bench/results/r3-format-audit-v1/",
+        "?? pheroos-bench/results/r3-framed-pilot-v3/",
+        "?? pheroos-bench/results/r3-pilot-v1/",
+        "?? pheroos-bench/results/r3-session-capability-v1/",
+        "?? pheroos-bench/results/r3-tool-pilot-v2/",
+        "?? pheroos-bench/results/r4-session-scaling-pilot-v1/",
+        "?? pheroos-bench/results/r4-session-scaling-replication-v1/",
+        "?? pheroos-bench/results/r5-runtime-faults-v1/",
+        "?? pheroos-bench/results/r5-session-faults-v1/",
+        "?? pheroos-bench/results/session-model-readiness-v1/",
+        "?? pheroos-bench/scaling-full-grid-replication-v1.json",
+        "?? pheroos-bench/src/pheroos_bench/r1_coordination.py",
+        "?? pheroos-bench/src/pheroos_bench/r1_measurement.py",
+        "?? pheroos-bench/src/pheroos_bench/r1_signals.py",
+        "?? pheroos-bench/src/pheroos_bench/r2_capacity.py",
+        "?? pheroos-bench/src/pheroos_bench/r2_scheduling.py",
+        "?? pheroos-bench/src/pheroos_bench/r3_framed_pilot.py",
+        "?? pheroos-bench/src/pheroos_bench/r3_pilot.py",
+        "?? pheroos-bench/src/pheroos_bench/r3_session_capability.py",
+        "?? pheroos-bench/src/pheroos_bench/r3_tasks.py",
+        "?? pheroos-bench/src/pheroos_bench/r3_tool_pilot.py",
+        "?? pheroos-bench/src/pheroos_bench/r3_tool_tasks.py",
+        "?? pheroos-bench/src/pheroos_bench/r4_measurement.py",
+        "?? pheroos-bench/src/pheroos_bench/r4_session_scaling.py",
+        "?? pheroos-bench/src/pheroos_bench/r4_tasks.py",
+        "?? pheroos-bench/tests/test_audit_r5_session_faults.py",
+        "?? pheroos-bench/tests/test_audit_r5_session_faults_v2.py",
+        "?? pheroos-bench/tests/test_r0_replication.py",
+        "?? pheroos-bench/tests/test_r1_coordination.py",
+        "?? pheroos-bench/tests/test_r1_measurement.py",
+        "?? pheroos-bench/tests/test_r1_signals.py",
+        "?? pheroos-bench/tests/test_r2_capacity.py",
+        "?? pheroos-bench/tests/test_r2_scheduling.py",
+        "?? pheroos-bench/tests/test_r3_format_audit.py",
+        "?? pheroos-bench/tests/test_r3_framed_pilot.py",
+        "?? pheroos-bench/tests/test_r3_pilot.py",
+        "?? pheroos-bench/tests/test_r3_session_capability.py",
+        "?? pheroos-bench/tests/test_r3_tasks.py",
+        "?? pheroos-bench/tests/test_r3_tool_pilot.py",
+        "?? pheroos-bench/tests/test_r3_tool_tasks.py",
+        "?? pheroos-bench/tests/test_r4_measurement.py",
+        "?? pheroos-bench/tests/test_r4_session_scaling.py",
+        "?? pheroos-bench/tests/test_r4_tasks.py",
+        "?? pheroos-bench/tests/test_r5_session_faults.py",
+        "?? pheroos-bench/tests/test_scaling_replication.py",
+        "?? pheroos-bench/tools/analyze_r4_session_scaling.py",
+        "?? pheroos-bench/tools/audit_r3_format.py",
+        "?? pheroos-bench/tools/audit_r3_framed.py",
+        "?? pheroos-bench/tools/audit_r3_session_capability.py",
+        "?? pheroos-bench/tools/audit_r3_tool_pilot.py",
+        "?? pheroos-bench/tools/audit_r4_session_scaling.py",
+        "?? pheroos-bench/tools/audit_r4_session_scaling_abort.py",
+        "?? pheroos-bench/tools/audit_r5_session_faults.py",
+        "?? pheroos-bench/tools/audit_r5_session_faults_v2.py",
+        "?? pheroos-bench/tools/check_r4_analysis.py",
+        "?? pheroos-bench/tools/compare_r0_replication.py",
+        "?? pheroos-bench/tools/r5_runtime_faults.py",
+        "?? pheroos-bench/tools/r5_session_faults.py",
+        "?? pheroos-bench/tools/run_scaling_replication.py"
+      ]
+    },
+    "/home/scott/projects/PheroOS-runtime": {
+      "branch": "main",
+      "head": "e3ef1e8ed0812296601e4a901768af4a1068b5e0",
+      "status": [
+        " M .gitignore",
+        " M README.md",
+        " M src/pheroos_runtime/authority.py",
+        "?? docs/r3-local-pilot.md",
+        "?? docs/session-v1.md",
+        "?? replication/",
+        "?? results/r3-install-acceptance.json",
+        "?? results/r3-packages.txt",
+        "?? src/pheroos_runtime/r3_ledger.py",
+        "?? src/pheroos_runtime/r3_local.py",
+        "?? src/pheroos_runtime/session_driver_v1.py",
+        "?? src/pheroos_runtime/session_v1.py",
+        "?? tests/test_r3_ledger.py",
+        "?? tests/test_r3_local.py",
+        "?? tests/test_session_driver_v1.py",
+        "?? tests/test_session_journey_v1.py",
+        "?? tests/test_session_v1.py",
+        "?? tools/run_session_journey_v1.py"
+      ]
+    }
+  },
+  "requirements": [
+    {
+      "completion": "NOT_ASSESSED_NEW_WORK",
+      "id": "A1",
+      "requirement": "Stable failure taxonomy, raw and normalized actions, actual feedback and full charged denominators; hidden final correctness stays outside policy."
+    },
+    {
+      "completion": "NOT_ASSESSED_NEW_WORK",
+      "id": "A2",
+      "requirement": "Concrete legal target IDs and small shared schema; no executable placeholders or semantic repair; bounded charged retries."
+    },
+    {
+      "completion": "NOT_ASSESSED_NEW_WORK",
+      "id": "A3",
+      "requirement": "Predeclare one D0/D1/D2 actionability campaign on identified development worlds; D0/D1 preparation charged and separate from matched efficacy."
+    },
+    {
+      "completion": "NOT_ASSESSED_NEW_WORK",
+      "id": "A4",
+      "requirement": "Trusted public-tool reference completes each primary condition under identical opportunity limits; label unreachable cases structural negative controls."
+    },
+    {
+      "completion": "NOT_ASSESSED_NEW_WORK",
+      "id": "B1",
+      "requirement": "Scope/source/version immutable evidence index with provenance, supersession, validity; attention TTL does not erase valid evidence."
+    },
+    {
+      "completion": "NOT_ASSESSED_NEW_WORK",
+      "id": "B2",
+      "requirement": "Bounded manifests plus metered retrieval/materialization/serialization; separate bounded private error feedback and preserve private access restrictions."
+    },
+    {
+      "completion": "NOT_ASSESSED_NEW_WORK",
+      "id": "B3",
+      "requirement": "Pure-read version/state-aware reuse and in-flight ownership; no duplicate independent support or automatic unknown dispatch retries."
+    },
+    {
+      "completion": "NOT_ASSESSED_NEW_WORK",
+      "id": "B4",
+      "requirement": "Test duplicate/reordered delivery, concurrent claims, updates, stale cache, cross-scope, cancel/expiry, unknown and late receipt behavior."
+    },
+    {
+      "completion": "NOT_ASSESSED_NEW_WORK",
+      "id": "C1",
+      "requirement": "Shared corrected runtime/interface/tools/accounting/evaluator: single total-budget agent, blackboard dedup TTL N2/N4, candidate N2/N4, allocation/reuse ablations."
+    },
+    {
+      "completion": "NOT_ASSESSED_NEW_WORK",
+      "id": "C2",
+      "requirement": "Real bounded private state and eligible work choices; demonstrated changed assignment/retrieval/composition before larger collection; same-input N relabeling stays null instrument."
+    },
+    {
+      "completion": "NOT_ASSESSED_NEW_WORK",
+      "id": "D",
+      "requirement": "Predeclared eligible prefix relevant/withheld/size-matched irrelevant branches; independently accounted full downstream rollouts, origin lineage, fresh current permissions, setup cost, no hidden selection."
+    },
+    {
+      "completion": "NOT_ASSESSED_NEW_WORK",
+      "id": "M",
+      "requirement": "World-level primary success/cost, nested-fork versioned analysis, prefix/incremental costs separate; unequal cell and nonzero signed cost synthetic checks; unknown cost never zero."
+    },
+    {
+      "completion": "NOT_ASSESSED_NEW_WORK",
+      "id": "Resources",
+      "requirement": "Local existing models only; cycle ceilings 500000 total tokens/1000 dispatches, one actionability and one collaboration campaign; reserve output and retain unresolved upper bounds; no confirmatory study."
+    },
+    {
+      "completion": "NOT_ASSESSED_NEW_WORK",
+      "id": "Hardening",
+      "requirement": "Process-barrier claim/cancel/dispatch/publication tests, late settlement without revival, fake-clock changes/restart, explicit retention limits; no system clock/stack changes."
+    },
+    {
+      "completion": "NOT_ASSESSED_NEW_WORK",
+      "id": "Delivery",
+      "requirement": "Distinct experimental package identity retaining prior cohort; installed-Session integration and relevant regressions; audit, source, tests, diagnostics, frozen configs/raw records, full-rollout evidence, reproduction, report and status."
+    }
+  ],
+  "reviewed_pr_snapshots": {
+    "PheroOS": "3604f5ce358ed6051c67e48906d240ac0b581f14",
+    "runtime": "c94a2efd13ace1ac424b5ccb1dc0f885b810f82c"
+  },
+  "source_bytes_unchanged_after_audit": true,
+  "source_identities": {
+    "/home/scott/projects/PheroOS-runtime/AGENTS.md": {
+      "bytes": 1171,
+      "sha256": "b7eff2d988cd05225a11305c478febed7f4f593adfc7d7d05f213cd1e128206a"
+    },
+    "/home/scott/projects/PheroOS-runtime/docs/session-v1.md": {
+      "bytes": 8776,
+      "sha256": "9dc5c5da01274e9ddf62edf2fe7911db3152e77be48e2e5f8b05028fbac83f28"
+    },
+    "/home/scott/projects/PheroOS-runtime/src/pheroos_runtime/session_driver_v1.py": {
+      "bytes": 5513,
+      "sha256": "4bc372f2f64d01efa0b4c1da896db27793b8ef473bd85e20cbba025e13839b08"
+    },
+    "/home/scott/projects/PheroOS-runtime/src/pheroos_runtime/session_v1.py": {
+      "bytes": 24647,
+      "sha256": "a1c0750b12ea2d3b3cfabc42c29f2616c6160ef0b1641cd573d67db3d6d9a39e"
+    },
+    "/home/scott/projects/PheroOS/AGENTS.md": {
+      "bytes": 14053,
+      "sha256": "f9c934480bc5a4b43125fc138321c9aa0ad6692a9162136c5e13430d1427a3b3"
+    },
+    "/home/scott/projects/PheroOS/docs/protocol/current-support.md": {
+      "bytes": 4919,
+      "sha256": "3338c6913862ebcea20b4968171957c64e310ae517804ce9a5e5a0e23c22eb1c"
+    },
+    "/home/scott/projects/PheroOS/pheroos-bench/EXPERIMENTAL-OS-CANDIDATE.md": {
+      "bytes": 8143,
+      "sha256": "293f564e5d7846bf911f2c0684ba68a73319cda6745ecc078cc62a4486029cdd"
+    },
+    "/home/scott/projects/PheroOS/pheroos-bench/results/master-goal-audit-v1/FINAL-REPORT.md": {
+      "bytes": 19824,
+      "sha256": "4f8bd104b1def70db393f8b01532db218134a36c0e81a9770fd26b78eda1007b"
+    },
+    "/home/scott/projects/PheroOS/pheroos-bench/results/r1-coordination-pilot-v2/episodes.jsonl": {
+      "bytes": 62603,
+      "sha256": "33cd3025a0a74be2cd309c58bf832eb288353eff4ab3d28445e4edbdc2a95f84"
+    },
+    "/home/scott/projects/PheroOS/pheroos-bench/results/r2-pilot-v1/episodes.jsonl": {
+      "bytes": 801960,
+      "sha256": "0f14be654e80733d32ec0ca335e2dfa19a1cfde8558e7b35d5e2e1a509c43212"
+    },
+    "/home/scott/projects/PheroOS/pheroos-bench/results/r4-session-scaling-replication-v1/collection/episodes.jsonl": {
+      "bytes": 119452485,
+      "sha256": "b4160e71a66a0977ad39995de1c5481eecfbb1baed7f20a4e590f35d00d9675c"
+    },
+    "/home/scott/projects/PheroOS/pheroos-bench/src/pheroos_bench/r1_coordination.py": {
+      "bytes": 18048,
+      "sha256": "c9e086e3acb74fc17e26e3061213e1524b512ec1b1e9ce3919227862aa017049"
+    },
+    "/home/scott/projects/PheroOS/pheroos-bench/src/pheroos_bench/r2_scheduling.py": {
+      "bytes": 18406,
+      "sha256": "c9c94622d20d165effc8139062f4fd0888205cb4ad4493afc14fe79912352d62"
+    },
+    "/home/scott/projects/PheroOS/pheroos-bench/src/pheroos_bench/r4_session_scaling.py": {
+      "bytes": 29087,
+      "sha256": "0b60f0c2a7d988afd9ef2915769be9f5fd86026ca9615d71aa0a1af88acd95de"
+    },
+    "/home/scott/projects/PheroOS/pheroos-bench/src/pheroos_bench/r4_tasks.py": {
+      "bytes": 19475,
+      "sha256": "6d15eba2cbef758affda0259a5748cd94f605f315aa87a58382106ac801831d3"
+    },
+    "/mnt/c/Users/24410/Downloads/AUDIT_SCOPE_AND_NEXT_STEPS.md": {
+      "bytes": 5377,
+      "sha256": "3836e410087e634a07fd9de88c9ac9576e8e27d3609e2a8a7aa1028950c42724"
+    },
+    "/mnt/c/Users/24410/Downloads/PheroOS_Next_Cycle_Codex_Goal.md": {
+      "bytes": 22204,
+      "sha256": "f4668325f60f900ee2eb4319f8a14607c4f811fc15693d396e97c486857b6ac9"
+    },
+    "/mnt/c/Users/24410/Downloads/independent_analysis.json": {
+      "bytes": 4598,
+      "sha256": "68bb104f01dd12b7d1463c2d1f770d53a17343d56c053aa053f2c7683da730b6"
+    },
+    "/mnt/c/Users/24410/Downloads/independent_analysis.py": {
+      "bytes": 9456,
+      "sha256": "a64485b43f3958b9783eae61675604248ba9303d016f59b0b5f572a1bb466587"
+    }
+  },
+  "status": "COMPLETED_READ_ONLY_BASELINE_AUDIT",
+  "supplied_reconstruction_output_identical": true
+}

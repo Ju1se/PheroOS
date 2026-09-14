@@ -1,0 +1,252 @@
+{
+  "capability_admission": {
+    "admitted": false,
+    "checks": {
+      "complete_known_records": true,
+      "d0_objective": false,
+      "d0_public_submission": false,
+      "d2_families": false,
+      "d2_objective": false,
+      "full_declared_grid": true,
+      "interface_rejection": false,
+      "intervention_relevance": true
+    },
+    "counts_toward_verdict": false,
+    "d2_successful_families": [
+      "version_correction"
+    ],
+    "fractions": {
+      "d0_objective": 0.0,
+      "d0_public_submission": 0.0,
+      "d2_objective": 0.25
+    },
+    "interface_rejection_fraction": 0.7415730337078652,
+    "intervention_comparisons": [
+      {
+        "blackboard_tool_calls": 6,
+        "candidate_tool_calls": 7,
+        "changed": true,
+        "inspection_dispatch_change": 1,
+        "valid": true,
+        "world": "interval_intersection/dev_b"
+      },
+      {
+        "blackboard_tool_calls": 6,
+        "candidate_tool_calls": 7,
+        "changed": true,
+        "inspection_dispatch_change": 1,
+        "valid": true,
+        "world": "inventory_reconciliation/dev_b"
+      }
+    ],
+    "measurement_status": "COMPLETE",
+    "model_action_denominator": 89,
+    "stages": {
+      "action_schema": 32,
+      "missing_or_stale_evidence": 1,
+      "transport_format": 34
+    }
+  },
+  "collaboration": {
+    "episodes": 0,
+    "method_if_admitted": "r_paired_world_mean_v1",
+    "model_calls": 0,
+    "paired_export_emitted": false,
+    "reason": "complete_actionability_not_admitted",
+    "status": "UNMEASURED"
+  },
+  "collection_source_commit": "cbbf105804dca286846771ee7560f245ffcd42e7",
+  "config_sha256": "916e2b2f05e32059b2e0ca35e1ce70f9708b8a98059cc40aface055cb86b6193",
+  "counts_toward_verdict": false,
+  "groups": {
+    "D0": {
+      "artifact_reuse": 0,
+      "call_units": 376,
+      "control_operations": 342,
+      "coordination_request_bytes": 5450,
+      "elapsed_ns": 79636489930,
+      "episodes": 8,
+      "event_bytes": 156908,
+      "failure_stages": {
+        "transport_format": 8
+      },
+      "hidden_objective_successes": 0,
+      "input_tokens": 4663,
+      "inspection_dispatches": 18,
+      "inspection_requests": 18,
+      "materialized_bytes": 32747,
+      "model_calls": 8,
+      "monetary_cost": null,
+      "monetary_cost_status": "not_measured_local_inference",
+      "output_at_256_token_cap": 8,
+      "output_starts_with_agent_envelope_field": 8,
+      "output_tokens": 2048,
+      "prompt_message_exposures": 16,
+      "public_accepted": 0,
+      "repeated_inspections": 0,
+      "repeated_prompt_message_exposures": 0,
+      "settled_receipt_reuse": 0,
+      "successful_families": [],
+      "tokens": 6711,
+      "tool_calls": 26,
+      "unknown_calls": 0,
+      "unknown_tokens": 0
+    },
+    "D1": {
+      "artifact_reuse": 0,
+      "call_units": 762,
+      "control_operations": 696,
+      "coordination_request_bytes": 13225,
+      "elapsed_ns": 136219173260,
+      "episodes": 8,
+      "event_bytes": 339385,
+      "failure_stages": {
+        "action_schema": 9,
+        "transport_format": 8
+      },
+      "hidden_objective_successes": 2,
+      "input_tokens": 14964,
+      "inspection_dispatches": 18,
+      "inspection_requests": 18,
+      "materialized_bytes": 95788,
+      "model_calls": 24,
+      "monetary_cost": null,
+      "monetary_cost_status": "not_measured_local_inference",
+      "output_at_256_token_cap": 7,
+      "output_starts_with_agent_envelope_field": 8,
+      "output_tokens": 3408,
+      "prompt_message_exposures": 48,
+      "public_accepted": 7,
+      "repeated_inspections": 0,
+      "repeated_prompt_message_exposures": 16,
+      "settled_receipt_reuse": 0,
+      "successful_families": [
+        "version_correction"
+      ],
+      "tokens": 18372,
+      "tool_calls": 42,
+      "unknown_calls": 0,
+      "unknown_tokens": 0
+    },
+    "D2": {
+      "artifact_reuse": 0,
+      "call_units": 1328,
+      "control_operations": 1202,
+      "coordination_request_bytes": 17062,
+      "elapsed_ns": 255079365780,
+      "episodes": 8,
+      "event_bytes": 580358,
+      "failure_stages": {
+        "action_schema": 23,
+        "missing_or_stale_evidence": 1,
+        "transport_format": 18
+      },
+      "hidden_objective_successes": 2,
+      "input_tokens": 21852,
+      "inspection_dispatches": 12,
+      "inspection_requests": 12,
+      "materialized_bytes": 48197,
+      "model_calls": 57,
+      "monetary_cost": null,
+      "monetary_cost_status": "not_measured_local_inference",
+      "output_at_256_token_cap": 18,
+      "output_starts_with_agent_envelope_field": 21,
+      "output_tokens": 6644,
+      "prompt_message_exposures": 114,
+      "public_accepted": 3,
+      "repeated_inspections": 2,
+      "repeated_prompt_message_exposures": 49,
+      "settled_receipt_reuse": 0,
+      "successful_families": [
+        "version_correction"
+      ],
+      "tokens": 28496,
+      "tool_calls": 69,
+      "unknown_calls": 0,
+      "unknown_tokens": 0
+    },
+    "intervention_probes": {
+      "artifact_reuse": 0,
+      "call_units": 752,
+      "control_operations": 702,
+      "coordination_request_bytes": 14731,
+      "elapsed_ns": 138511990573,
+      "episodes": 4,
+      "event_bytes": 359175,
+      "failure_stages": {
+        "action_schema": 11,
+        "missing_or_stale_evidence": 1,
+        "transport_format": 10
+      },
+      "hidden_objective_successes": 0,
+      "input_tokens": 8597,
+      "inspection_dispatches": 2,
+      "inspection_requests": 2,
+      "materialized_bytes": 17154,
+      "model_calls": 24,
+      "monetary_cost": null,
+      "monetary_cost_status": "not_measured_local_inference",
+      "output_at_256_token_cap": 10,
+      "output_starts_with_agent_envelope_field": 11,
+      "output_tokens": 3486,
+      "prompt_message_exposures": 48,
+      "public_accepted": 0,
+      "repeated_inspections": 0,
+      "repeated_prompt_message_exposures": 20,
+      "settled_receipt_reuse": 0,
+      "successful_families": [],
+      "tokens": 12083,
+      "tool_calls": 26,
+      "unknown_calls": 0,
+      "unknown_tokens": 0
+    }
+  },
+  "notes": [
+    "Descriptive counts only: eight fixed development worlds; agents, turns and probes are not independent samples.",
+    "Output-cap and leading-agent-field labels are post-run diagnostics, not preregistered efficacy endpoints or causal explanations.",
+    "call_units includes model calls, tool calls and control operations; it is not money.",
+    "Elapsed episode sums exclude process/model setup; process time includes it. Neither measures parallel scaling.",
+    "The monetary_cost CSV cell is empty with an explicit unknown-status column, never zero.",
+    "No paired effect is emitted because collaboration was not admitted; that absence is not a null effect."
+  ],
+  "process_elapsed_ns": 627591274727,
+  "profile": "coordination_repair_live_descriptive_v1",
+  "records_sha256": "4ec40cc9938f713799bf1dc0f2ca83230783ebdda1bb05339890cb7f731a65fc",
+  "totals": {
+    "artifact_reuse": 0,
+    "call_units": 3218,
+    "control_operations": 2942,
+    "coordination_request_bytes": 50468,
+    "elapsed_ns": 609447019543,
+    "episodes": 28,
+    "event_bytes": 1435826,
+    "failure_stages": {
+      "action_schema": 43,
+      "missing_or_stale_evidence": 2,
+      "transport_format": 44
+    },
+    "hidden_objective_successes": 4,
+    "input_tokens": 50076,
+    "inspection_dispatches": 50,
+    "inspection_requests": 50,
+    "materialized_bytes": 193886,
+    "model_calls": 113,
+    "monetary_cost": null,
+    "monetary_cost_status": "not_measured_local_inference",
+    "output_at_256_token_cap": 43,
+    "output_starts_with_agent_envelope_field": 48,
+    "output_tokens": 15586,
+    "prompt_message_exposures": 226,
+    "public_accepted": 10,
+    "repeated_inspections": 2,
+    "repeated_prompt_message_exposures": 85,
+    "settled_receipt_reuse": 0,
+    "successful_families": [
+      "version_correction"
+    ],
+    "tokens": 65662,
+    "tool_calls": 163,
+    "unknown_calls": 0,
+    "unknown_tokens": 0
+  }
+}

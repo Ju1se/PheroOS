@@ -1,0 +1,62 @@
+{
+  "schema": "coordination_repair_v2_preparation_status_v1",
+  "state": "IMPLEMENTED_COLLECTION_BLOCKED",
+  "preparation_status": "READY_FOR_SEPARATE_AUTHORIZATION",
+  "goal_complete": false,
+  "counts_toward_verdict": false,
+  "experimental_promotion": false,
+  "source_base": "9393527fd830aff218b2f41b44438a1aa4136cf3",
+  "source_hashes": {
+    "src/pheroos_bench/coordination_repair_v2.py": "b4d4bdd30379f5fbcd66816f3a88819e3e12c8ff05124c8b78d3ebab0934912b",
+    "src/pheroos_bench/coordination_repair_v2_pilot.py": "a5559144aceba9a1ef4c1901f0d1e73b05a457ec40b24ec4cd67fd518e09e496"
+  },
+  "config_id": "coordination_repair_local_cycle_v2",
+  "config_sha256": "65c292335b892aa14067f725e69e7acbb84c699e2e2e7039ae45d276ffce7941",
+  "bench_cohort": "0.1.1.dev3",
+  "runtime_cohort": "0.1.0.dev3",
+  "accepted_bench_wheel_sha256": "bc274b567650d1862a93e4b20e7545ca2e9065aeb1d216ccf8a149df02e7414d",
+  "accepted_wheel_matches_source": true,
+  "validation": {
+    "full_bench_passed": 1373,
+    "subtests_passed": 12,
+    "skips": 0,
+    "installed_current_runtime_passed": 150,
+    "installed_legacy_runtime_passed": 141,
+    "focused_new_and_r0_passed": 112,
+    "core_regression_inherited": {
+      "passed": 5877,
+      "skipped": 1,
+      "reason": "core sources unchanged from v1 publication"
+    },
+    "runtime_regression_inherited": {
+      "installed_wheel_passed": 192,
+      "installed_sdist_passed": 192,
+      "subtests_each": 12,
+      "reason": "runtime dev3 unchanged"
+    }
+  },
+  "live_collection": {
+    "new_live_dispatches": 0,
+    "new_live_tokens": 0,
+    "paid_api_calls": 0,
+    "authorized_additional_campaign": false,
+    "result_directory": null,
+    "capability": "UNMEASURED",
+    "coordination_efficacy": "UNMEASURED",
+    "sharing_efficacy": "UNMEASURED"
+  },
+  "proposed_limits": {
+    "combined_tokens": 500000,
+    "combined_model_intents": 1000,
+    "predecessor_reserved_intents": 1,
+    "new_intent_cap": 999,
+    "additional_actionability_campaigns_requested": 1,
+    "conditional_collaboration_campaigns": 1
+  },
+  "remaining": [
+    "Separate user authorization for one additional local actionability campaign.",
+    "Execute diagnostics through the accepted installed cohort; only a complete admitted diagnostic may enter collaboration.",
+    "Run eligible full sharing rollouts and record empirical results or the diagnosed collection blocker."
+  ],
+  "prior_build_note": "Initial147-test wheel and full-suite receipt predate whole-phase analysis gating; preserved as engineering history. Use artifacts/accepted and final receipts."
+}

@@ -1,0 +1,80 @@
+{
+  "schema": "coordination_repair_local_execution_preflight_v1",
+  "recorded_utc": "2026-09-14T04:50:03.906766+00:00",
+  "model_path": "/home/scott/projects/PheroOS-runtime/.local/models/qwen2.5-coder-3b",
+  "model_manifest_sha256": "cf4593f14704152d28ea15c6630ee7abaca52580973524a386e05ba217391777",
+  "model_files": [
+    {
+      "path": "LICENSE",
+      "sha256": "ef52482bb785733093dc9a2e8edd8e764c77d12d8e9d8f10a80c9b547d32d0f9",
+      "size_bytes": 7388
+    },
+    {
+      "path": "README.md",
+      "sha256": "eb21b99af3631b35f79edc886755aa3358098ab72b97d018f1978a3f04e4a362",
+      "size_bytes": 5271
+    },
+    {
+      "path": "config.json",
+      "sha256": "8f85440a3222d18772e964b1ef0b4b1574a1c5e6260c99aa23fcddd05c28b8ae",
+      "size_bytes": 661
+    },
+    {
+      "path": "generation_config.json",
+      "sha256": "fdaccbcb02f3e1e7914ccb0f69ebe899071ffd27cf825166d823163e156870f2",
+      "size_bytes": 243
+    },
+    {
+      "path": "merges.txt",
+      "sha256": "599bab54075088774b1733fde865d5bd747cbcc7a547c5bc12610e874e26f5e3",
+      "size_bytes": 1671839
+    },
+    {
+      "path": "model-00001-of-00002.safetensors",
+      "sha256": "5b684409377e037e5ed75d680a070126e841dab17e8cb9a818868deadf01ab39",
+      "size_bytes": 4957560304
+    },
+    {
+      "path": "model-00002-of-00002.safetensors",
+      "sha256": "8bc5227aae6174eaf0b589fd4fbeb0de046a1fc951a67f2d2538acad811e1068",
+      "size_bytes": 1214366696
+    },
+    {
+      "path": "model.safetensors.index.json",
+      "sha256": "7b85f79fd7612df2e5d7f03d7f92d65c8967f790a331146ca7f45658823060d3",
+      "size_bytes": 35581
+    },
+    {
+      "path": "tokenizer.json",
+      "sha256": "c0382117ea329cdf097041132f6d735924b697924d6f6fc3945713e96ce87539",
+      "size_bytes": 7031645
+    },
+    {
+      "path": "tokenizer_config.json",
+      "sha256": "959e7f1d9a1b7641a6d6ce05ca97b75c7894fcb66cbe5a040406458fb1128ee4",
+      "size_bytes": 7305
+    },
+    {
+      "path": "vocab.json",
+      "sha256": "ca10d7e9fb3ed18575dd1e277a2579c16d108e32f27439684afa0e10b1440910",
+      "size_bytes": 2776833
+    }
+  ],
+  "environment": {
+    "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+    "kernel": "6.18.33.2-microsoft-standard-WSL2",
+    "packages": {
+      "torch": "2.11.0+cu128",
+      "transformers": "4.57.3",
+      "tokenizers": "0.22.2",
+      "numpy": "2.5.3",
+      "pheroos": "0.1.0",
+      "pheroos-runtime": "0.1.0.dev3",
+      "pheroos-bench": "0.1.1.dev4"
+    }
+  },
+  "elapsed_seconds": 5.463043829993694,
+  "model_generations": 0,
+  "api_calls": 0,
+  "note": "Read-only artifact/model verification before campaign allocation; costs are separate setup overhead."
+}

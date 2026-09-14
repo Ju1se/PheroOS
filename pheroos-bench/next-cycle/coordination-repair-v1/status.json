@@ -1,0 +1,129 @@
+{
+  "schema": "coordination_repair_delivery_status_v1",
+  "state": "IMPLEMENTED_COLLECTION_BLOCKED",
+  "full_goal_complete": false,
+  "counts_toward_verdict": false,
+  "confirmatory_evidence": false,
+  "source_bases": {
+    "core": "3604f5ce358ed6051c67e48906d240ac0b581f14",
+    "runtime": "c94a2efd13ace1ac424b5ccb1dc0f885b810f82c"
+  },
+  "config_id": "coordination_repair_local_cycle_v1",
+  "config_sha256": "fbedef437ebca5228c148a98ff53c23d296ddee5ba298f9253881caea4317682",
+  "methods": [
+    "r_paired_world_mean_v1",
+    "coordination_repair_nested_forks_v1"
+  ],
+  "engineering": {
+    "core_changed": false,
+    "runtime_cohorts": [
+      "0.1.0.dev2",
+      "0.1.0.dev3"
+    ],
+    "bench_cohort": "0.1.1.dev2",
+    "new_adapter_identity_fix": "recorded_local_v2",
+    "frozen_v1_preserved": true
+  },
+  "validation": {
+    "core": {
+      "passed": 5877,
+      "skipped": 1,
+      "receipt": "regressions/core-pytest.json",
+      "log": "regressions/core-pytest.log"
+    },
+    "core_cli": {
+      "passed": 4,
+      "receipt": "regressions/core-cli-v1.json"
+    },
+    "bench": {
+      "passed": 1343,
+      "subtests": 12,
+      "skipped": 0,
+      "receipt": "regressions/bench-regressions-v1.json"
+    },
+    "focused_r0": {
+      "passed": 73
+    },
+    "runtime_dev2": {
+      "installed_wheel_passed": 189,
+      "installed_sdist_passed": 189,
+      "subtests_each": 12
+    },
+    "runtime_dev3": {
+      "installed_wheel_passed": 192,
+      "installed_sdist_passed": 192,
+      "subtests_each": 12
+    },
+    "installed_consumer_dev2": {
+      "passed": 111,
+      "skipped": 0,
+      "receipt": "regressions/installed-consumer-v2.json"
+    },
+    "installed_consumer_dev3": {
+      "passed": 111,
+      "skipped": 0,
+      "receipt": "regressions/installed-consumer-dev3.json"
+    }
+  },
+  "reference_instrument": {
+    "completed": 61,
+    "successes": 61,
+    "fork_branches": 9,
+    "eligible_worlds": 3,
+    "ineligible_worlds": 1,
+    "functional_intervention_pairs": 8,
+    "functional_intervention_changed": 0,
+    "learned_model_calls": 0,
+    "efficacy_evidence": false
+  },
+  "live_collection": {
+    "status": "INVALID_ABORT",
+    "started_episodes": 1,
+    "unstarted_episodes": 27,
+    "completed_model_diagnostics": 0,
+    "model_dispatches": 0,
+    "known_model_tokens": 0,
+    "unknown_model_tokens": 0,
+    "settled_preparation_tool_calls": 3,
+    "retained_campaign_model_slots": 1,
+    "unknown_spending": false,
+    "monetary_cost": null,
+    "gpu_time": null,
+    "admission_rates_interpretation": "UNMEASURED; raw fractions are fail-closed gate sentinels for empty model denominators",
+    "capability": "UNMEASURED",
+    "coordination_efficacy": "UNMEASURED",
+    "live_sharing": "UNEXECUTED",
+    "rerun_authorized": false
+  },
+  "limits": {
+    "cycle_tokens": 500000,
+    "cycle_model_dispatches": 1000,
+    "actionability_campaigns": 1,
+    "collaboration_campaigns": 1,
+    "paid_api_calls": 0,
+    "confirmatory_studies": 0
+  },
+  "remaining": [
+    "Versioned runner/config selecting the repaired adapter; no change to frozen v1 records.",
+    "Separate authorization for another live actionability campaign.",
+    "Complete diagnostics and intervention relevance before collaboration collection.",
+    "Separate message-duplicate metric and clarified progress/branch-completion semantics before affected collection.",
+    "Learned collaboration and sharing rollouts; any confirmatory proposal remains unexecuted."
+  ],
+  "audit_addendum": {
+    "frozen_audit": "completion-audit/completion-audit.json",
+    "resolved_since_cutoff": [
+      "terminal full core result",
+      "dev3 installed runtime validation",
+      "dev3 installed consumer validation",
+      "phase report, machine status and reproduction guide"
+    ],
+    "scientific_limitations_resolved": false
+  },
+  "publication": {
+    "authorized_by_later_user_message": true,
+    "mode": "additive_pull_requests",
+    "historical_evidence_changed": false,
+    "experimental_promotion": false
+  }
+}

@@ -1,0 +1,129 @@
+{
+  "version": "publication_evidence_v1",
+  "namespace": "coordination_repair_cli_publication_v1",
+  "repository": "Ju1se/PheroOS",
+  "base_commit": "bc567552c34fae8c1bb94fbfd452e7a78e93c6ae",
+  "counts_toward_verdict": false,
+  "archives": [],
+  "files": [
+    {
+      "path": ".github/workflows/coordination-repair.yml",
+      "sha256": "ed669cee4310f9547cb67d910322a853d18e489ee026e151ad68d7665ab937ba",
+      "size_bytes": 1560,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/integration/coordination-repair-v2/model-manifest-fixture.json",
+      "sha256": "cf4593f14704152d28ea15c6630ee7abaca52580973524a386e05ba217391777",
+      "size_bytes": 1239,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/integration/coordination-repair-v2/test_coordination_repair_v2_cli.py",
+      "sha256": "19259eb84c8765615fd228fd3c91144f16bb0b9cff16e904049158c8928e3da1",
+      "size_bytes": 5327,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/integration/coordination-repair-v2/test_coordination_repair_v2_cli_session.py",
+      "sha256": "0dd70ebbc0f7018e58bf209b02ebb3a6480cce7a6ef2fe9213e467a5381fd1fb",
+      "size_bytes": 3444,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/coordination-repair-cli-v1/README.md",
+      "sha256": "c2e8d74a3b661a750883392f7a2bfdd59cf6c207c11ad9984d41b3b8a1b5f523",
+      "size_bytes": 4810,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/coordination-repair-cli-v1/artifacts/accepted/pheroos_bench-0.1.1.dev4-py3-none-any.whl",
+      "sha256": "19aadbd99992c5baae6f73cad2007b7240a6eb135400436e14c6dd28d88db6c3",
+      "size_bytes": 170677,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/coordination-repair-cli-v1/pilot-config-proposal.json",
+      "sha256": "07698c0170020841175bc0cb6f05a35582746d136acac419521058aee7019039",
+      "size_bytes": 5171,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/coordination-repair-cli-v1/regressions/artifact-pin-negative-check.json",
+      "sha256": "6dc8d4224319ebb7ee9205768b8402702c020303a5f2ad520935eaac3348c7a8",
+      "size_bytes": 264,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/coordination-repair-cli-v1/regressions/bench-full.json",
+      "sha256": "a5470039a68d9e783ec31cbabc116eb50e93a7496c9bc2cfdd6025ede04ee6a6",
+      "size_bytes": 412,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/coordination-repair-cli-v1/regressions/bench-full.log",
+      "sha256": "f3391064c2296f7cb70b7c167a794f2da5cd80cfc8f11be2820049096bd08773",
+      "size_bytes": 1641,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/coordination-repair-cli-v1/regressions/installed-dev2.json",
+      "sha256": "ac5f1541c7d9af698c74f34720f96e8d96914bbe4b71d148d2d7d910b4cff489",
+      "size_bytes": 1277,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/coordination-repair-cli-v1/regressions/installed-dev3.json",
+      "sha256": "2c956ec2b154d55ebf014a955da6566004f43764417e5358ad094bc45200ef23",
+      "size_bytes": 1266,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/coordination-repair-cli-v1/status.json",
+      "sha256": "63653d57c6aa2a68a885179790d2ca0ba854d25de16bf45dde68666e44fd959a",
+      "size_bytes": 1828,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/pyproject.toml",
+      "sha256": "77eae350b15cbc70ac97bfdca508be607b700cbcd65d9eb3d813f0596fac917f",
+      "size_bytes": 950,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/src/pheroos_bench/coordination_repair_v2_pilot.py",
+      "sha256": "706fec07c77671d1ab31cebb9195133c766c6ce682cf39b95f8204f01a77e6b0",
+      "size_bytes": 21755,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/tools/verify_coordination_repair_install.py",
+      "sha256": "d7d22f316cb34a48c1b784c75f0776fe6e07c527a2bb1eed8a44bd2f2372446c",
+      "size_bytes": 5594,
+      "mode": "100644",
+      "storage": "direct"
+    }
+  ],
+  "source_files": 16,
+  "source_bytes": 227215,
+  "outside_manifest": [
+    "publication/coordination-repair-cli-v1/manifest.json",
+    "publication/coordination-repair-cli-v1/verification.json"
+  ],
+  "live_collection_executed": false
+}

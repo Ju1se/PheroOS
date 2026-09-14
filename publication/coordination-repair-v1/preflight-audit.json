@@ -1,0 +1,3629 @@
+{
+  "schema": "coordination_repair_publication_preflight_v1",
+  "created_utc": "2026-09-14T02:22:54.717078+00:00",
+  "read_only": true,
+  "original_artifacts_modified": false,
+  "network_calls": 0,
+  "model_calls": 0,
+  "repositories": [
+    {
+      "name": "core",
+      "root": "/tmp/pheroos-next-cycle-core",
+      "base": "3604f5ce358ed6051c67e48906d240ac0b581f14",
+      "head": "3604f5ce358ed6051c67e48906d240ac0b581f14",
+      "branch": "codex/coordination-repair-v1",
+      "candidate_files": 329,
+      "candidate_bytes": 19735303,
+      "largest_files": [
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/artifacts/pheroos-0.1.0-py3-none-any.whl",
+          "bytes": 1838887,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "758f7e3d8135ff3ced2f7ed21aa0710b57a106530b464bbf8d939413c22170fc"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/interval_intersection/pilot_a/candidate-4/session.sqlite",
+          "bytes": 258048,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "40eb7a0be5825a1569437e4692ae7ac33910f551cf3fbb58e921423ce89283ce"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/interval_intersection/pilot_a/no_reuse-4/session.sqlite",
+          "bytes": 258048,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "c7a1e8a2bf1d10fe1cd0c608cb84f1656610912772f7652e6162cfdfd9268c74"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/inventory_reconciliation/pilot_a/candidate-4/session.sqlite",
+          "bytes": 258048,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "ae2f8e112895a5bbf6ddd44bc81c79d1a92310f7e802d082f8234d1bcbcf3a98"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/inventory_reconciliation/pilot_a/no_reuse-4/session.sqlite",
+          "bytes": 258048,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "4d70d50e57046db05d18c3895f9da9878ffd0b4627eac338a65eb1f026b4026d"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/interval_intersection/pilot_a/blackboard-4/session.sqlite",
+          "bytes": 253952,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "d72301f8566e31e161074fe10c1658e8f9e6943ec643e81807d7cd3db02b2462"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/interval_intersection/pilot_a/no_ownership-4/session.sqlite",
+          "bytes": 253952,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "c10b1c4d3911f04ed7ad19c23a04447dedbee15567d2f8f393947c20b43ce5c2"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/inventory_reconciliation/pilot_a/blackboard-4/session.sqlite",
+          "bytes": 253952,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "b659197a226f0f68b4e8e8e94ef9298c0d50fcbf0770adc03c11f6d192d2b533"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/inventory_reconciliation/pilot_a/no_ownership-4/session.sqlite",
+          "bytes": 253952,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "f2df0721801a9780b7cf8d1a8c03648e62dc327b11cabb3e65029d31cadf9c43"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/inventory_reconciliation/pilot_a/candidate-2/session.sqlite",
+          "bytes": 225280,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "85e4c7556e6db36b983b35d889b26937418d3d573d876cf87737336c40fac809"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/interval_intersection/pilot_a/candidate-2/session.sqlite",
+          "bytes": 221184,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "d819250a7652d7751740ee4adf6cd75ab52bad0d5501a0424d2a09d3c9a05d94"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/inventory_reconciliation/pilot_a/blackboard-2/session.sqlite",
+          "bytes": 221184,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "c576f9d32b4600bd70de984168cee8aaaf63c28a193abc002c2a352019e09069"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/interval_intersection/pilot_a/blackboard-2/session.sqlite",
+          "bytes": 217088,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "e84282477604b93018759ebc0c6fc8a1d3f311c4ba5f3932106f065459c67107"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/interval_intersection/dev_a/D2-single-1/session.sqlite",
+          "bytes": 196608,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "25ae2c1c0e7b449f8e932bce6a76b9a64fca99999f30b1a5ad4a8e34a4d8256f"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/interval_intersection/dev_b/D2-single-1/session.sqlite",
+          "bytes": 196608,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "f1f4808056680f7b3be6206da574beff77e6c3baa5b61288ef952028502dbafe"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/inventory_reconciliation/dev_a/D2-single-1/session.sqlite",
+          "bytes": 196608,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "2aef3fa5f04e96c0f80a1b1b71a13d4ec13ad74791115e7028acce81c4dfa27e"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/inventory_reconciliation/dev_b/D2-single-1/session.sqlite",
+          "bytes": 196608,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "d8acfc8f6c90fc118019852264a7b1d4e323912b6ccb28b7d9925f165e35281d"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/dependency_readiness/pilot_a/blackboard-4/session.sqlite",
+          "bytes": 196608,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "06161641c6d054f21711d611f071eb50d675f5bdb1d6cca1865d60eb560852bd"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/dependency_readiness/pilot_a/candidate-4/session.sqlite",
+          "bytes": 196608,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "44b12a858ebcdf2b2c164e38eddb7efa83d149dbac05b99d48453516df6a5d92"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/dependency_readiness/pilot_a/no_ownership-4/session.sqlite",
+          "bytes": 196608,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "28c084c1d772e38d2518f900a6adf09faac33c5c262cc0b624e28bd0715f49fa"
+        }
+      ],
+      "ignored_relevant_files": [
+        {
+          "path": "pheroos-bench/integration/coordination-repair-v1/__pycache__/test_coordination_repair_v1_consumer_audit.cpython-312-pytest-9.1.1.pyc",
+          "bytes": 37520,
+          "ignored": true,
+          "tracked_modified": false,
+          "sha256": "2fd533a38e20a79b23236ca7836d024a3a7a7df47903f54eadff7c9a9d5a476f"
+        }
+      ],
+      "ignored_relevant_count": 1,
+      "publication_candidate_flags": [
+        {
+          "path": "pheroos-bench/integration/coordination-repair-v1/__pycache__/test_coordination_repair_v1_consumer_audit.cpython-312-pytest-9.1.1.pyc",
+          "flags": [
+            "cache"
+          ],
+          "ignored": true,
+          "bytes": 37520
+        }
+      ],
+      "noncandidate_ignored_flags_count": 2525,
+      "noncandidate_ignored_flags_examples": [
+        {
+          "path": ".mypy_cache/.gitignore",
+          "flags": [
+            "cache"
+          ]
+        },
+        {
+          "path": ".mypy_cache/3.14/@plugins_snapshot.json",
+          "flags": [
+            "cache"
+          ]
+        },
+        {
+          "path": ".mypy_cache/3.14/__future__.data.json",
+          "flags": [
+            "cache"
+          ]
+        },
+        {
+          "path": ".mypy_cache/3.14/__future__.meta.json",
+          "flags": [
+            "cache"
+          ]
+        },
+        {
+          "path": ".mypy_cache/3.14/_ast.data.json",
+          "flags": [
+            "cache"
+          ]
+        },
+        {
+          "path": ".mypy_cache/3.14/_ast.meta.json",
+          "flags": [
+            "cache"
+          ]
+        },
+        {
+          "path": ".mypy_cache/3.14/_blake2.data.json",
+          "flags": [
+            "cache"
+          ]
+        },
+        {
+          "path": ".mypy_cache/3.14/_blake2.meta.json",
+          "flags": [
+            "cache"
+          ]
+        },
+        {
+          "path": ".mypy_cache/3.14/_codecs.data.json",
+          "flags": [
+            "cache"
+          ]
+        },
+        {
+          "path": ".mypy_cache/3.14/_codecs.meta.json",
+          "flags": [
+            "cache"
+          ]
+        },
+        {
+          "path": ".mypy_cache/3.14/_collections_abc.data.json",
+          "flags": [
+            "cache"
+          ]
+        },
+        {
+          "path": ".mypy_cache/3.14/_collections_abc.meta.json",
+          "flags": [
+            "cache"
+          ]
+        },
+        {
+          "path": ".mypy_cache/3.14/_contextvars.data.json",
+          "flags": [
+            "cache"
+          ]
+        },
+        {
+          "path": ".mypy_cache/3.14/_contextvars.meta.json",
+          "flags": [
+            "cache"
+          ]
+        },
+        {
+          "path": ".mypy_cache/3.14/_ctypes.data.json",
+          "flags": [
+            "cache"
+          ]
+        },
+        {
+          "path": ".mypy_cache/3.14/_ctypes.meta.json",
+          "flags": [
+            "cache"
+          ]
+        },
+        {
+          "path": ".mypy_cache/3.14/_frozen_importlib.data.json",
+          "flags": [
+            "cache"
+          ]
+        },
+        {
+          "path": ".mypy_cache/3.14/_frozen_importlib.meta.json",
+          "flags": [
+            "cache"
+          ]
+        },
+        {
+          "path": ".mypy_cache/3.14/_frozen_importlib_external.data.json",
+          "flags": [
+            "cache"
+          ]
+        },
+        {
+          "path": ".mypy_cache/3.14/_frozen_importlib_external.meta.json",
+          "flags": [
+            "cache"
+          ]
+        },
+        {
+          "path": ".mypy_cache/3.14/_hashlib.data.json",
+          "flags": [
+            "cache"
+          ]
+        },
+        {
+          "path": ".mypy_cache/3.14/_hashlib.meta.json",
+          "flags": [
+            "cache"
+          ]
+        },
+        {
+          "path": ".mypy_cache/3.14/_interpqueues.data.json",
+          "flags": [
+            "cache"
+          ]
+        },
+        {
+          "path": ".mypy_cache/3.14/_interpqueues.meta.json",
+          "flags": [
+            "cache"
+          ]
+        },
+        {
+          "path": ".mypy_cache/3.14/_interpreters.data.json",
+          "flags": [
+            "cache"
+          ]
+        }
+      ],
+      "scan_skips": [],
+      "historical_evidence_v1": {
+        "base_files": 37,
+        "files": [
+          {
+            "path": "publication/evidence-v1/README.md",
+            "base_blob": "875eb1b129b5a889421fd417b41bc6715eca863d",
+            "current_blob": "875eb1b129b5a889421fd417b41bc6715eca863d",
+            "bytes": 3713,
+            "identical": true
+          },
+          {
+            "path": "publication/evidence-v1/RESTORE.md",
+            "base_blob": "83931acd729fa65b15ea14e64ca5e06d06b869ab",
+            "current_blob": "83931acd729fa65b15ea14e64ca5e06d06b869ab",
+            "bytes": 2348,
+            "identical": true
+          },
+          {
+            "path": "publication/evidence-v1/independent-packaging-review-source.py",
+            "base_blob": "3f28585e0f9651cca3a4a78632e6f52fb4b4f3b9",
+            "current_blob": "3f28585e0f9651cca3a4a78632e6f52fb4b4f3b9",
+            "bytes": 5648,
+            "identical": true
+          },
+          {
+            "path": "publication/evidence-v1/independent-packaging-review.json",
+            "base_blob": "fa150fe7ff55596eb30bb9273003f7424a67f298",
+            "current_blob": "fa150fe7ff55596eb30bb9273003f7424a67f298",
+            "bytes": 3709,
+            "identical": true
+          },
+          {
+            "path": "publication/evidence-v1/manifest.json",
+            "base_blob": "60aadad79bb6c3a287b9b591a36af27df8c91293",
+            "current_blob": "60aadad79bb6c3a287b9b591a36af27df8c91293",
+            "bytes": 1150949,
+            "identical": true
+          },
+          {
+            "path": "publication/evidence-v1/master-goal-audit-v1-000.tar.xz",
+            "base_blob": "daaacbd9582f333d1823e9f76bf05edecd47e241",
+            "current_blob": "daaacbd9582f333d1823e9f76bf05edecd47e241",
+            "bytes": 1926808,
+            "identical": true
+          },
+          {
+            "path": "publication/evidence-v1/packaging-receipt.json",
+            "base_blob": "0fde7ba68db61f3dfe75f187fddbd216e08a481e",
+            "current_blob": "0fde7ba68db61f3dfe75f187fddbd216e08a481e",
+            "bytes": 1021,
+            "identical": true
+          },
+          {
+            "path": "publication/evidence-v1/r0-replication-000.tar.xz",
+            "base_blob": "3f46f099493a710efb2e039b0218e700f7bc262d",
+            "current_blob": "3f46f099493a710efb2e039b0218e700f7bc262d",
+            "bytes": 2461748,
+            "identical": true
+          },
+          {
+            "path": "publication/evidence-v1/r1-coordination-pilot-v2-000.tar.xz",
+            "base_blob": "fb331ac804c94a71e53f54cd07a6ac3886c0c650",
+            "current_blob": "fb331ac804c94a71e53f54cd07a6ac3886c0c650",
+            "bytes": 3736,
+            "identical": true
+          },
+          {
+            "path": "publication/evidence-v1/r1-pilot-v1-000.tar.xz",
+            "base_blob": "130f4cc488bfb361d6489b8340165b358f75e865",
+            "current_blob": "130f4cc488bfb361d6489b8340165b358f75e865",
+            "bytes": 5052,
+            "identical": true
+          },
+          {
+            "path": "publication/evidence-v1/r2-capacity-audit-v1-000.tar.xz",
+            "base_blob": "ba9d507f7023f2eb491cd5e24c1fc98ea361431d",
+            "current_blob": "ba9d507f7023f2eb491cd5e24c1fc98ea361431d",
+            "bytes": 26328,
+            "identical": true
+          },
+          {
+            "path": "publication/evidence-v1/r2-pilot-v1-000.tar.xz",
+            "base_blob": "cca23a66aa3b9a595d650940034809188b4be849",
+            "current_blob": "cca23a66aa3b9a595d650940034809188b4be849",
+            "bytes": 29448,
+            "identical": true
+          },
+          {
+            "path": "publication/evidence-v1/r3-format-audit-v1-000.tar.xz",
+            "base_blob": "f6af3edef99141e714ae5bce7aa90fc830cd2e29",
+            "current_blob": "f6af3edef99141e714ae5bce7aa90fc830cd2e29",
+            "bytes": 22220,
+            "identical": true
+          },
+          {
+            "path": "publication/evidence-v1/r3-framed-pilot-v3-000.tar.xz",
+            "base_blob": "dd36d63fce9f18a25c4cfa134f76ea4392794759",
+            "current_blob": "dd36d63fce9f18a25c4cfa134f76ea4392794759",
+            "bytes": 109708,
+            "identical": true
+          },
+          {
+            "path": "publication/evidence-v1/r3-pilot-v1-000.tar.xz",
+            "base_blob": "d4ab4bec3104f30cea8994818ffba07d0b58b4ee",
+            "current_blob": "d4ab4bec3104f30cea8994818ffba07d0b58b4ee",
+            "bytes": 29552,
+            "identical": true
+          },
+          {
+            "path": "publication/evidence-v1/r3-session-capability-v1-000.tar.xz",
+            "base_blob": "9302eae94fdd81420afdd76625fa6aff95089223",
+            "current_blob": "9302eae94fdd81420afdd76625fa6aff95089223",
+            "bytes": 119156,
+            "identical": true
+          },
+          {
+            "path": "publication/evidence-v1/r3-tool-pilot-v2-000.tar.xz",
+            "base_blob": "796037657c0c31ea9835b88ccee02e00e67623fb",
+            "current_blob": "796037657c0c31ea9835b88ccee02e00e67623fb",
+            "bytes": 48756,
+            "identical": true
+          },
+          {
+            "path": "publication/evidence-v1/r4-session-scaling-pilot-v1-000.tar.xz",
+            "base_blob": "4145c56923a61a0581a3ec1b909c448511880463",
+            "current_blob": "4145c56923a61a0581a3ec1b909c448511880463",
+            "bytes": 74496,
+            "identical": true
+          },
+          {
+            "path": "publication/evidence-v1/r4-session-scaling-pilot-v1-001.tar.xz",
+            "base_blob": "8330e7175a17c7e95d3799be06df94aac9b4e57b",
+            "current_blob": "8330e7175a17c7e95d3799be06df94aac9b4e57b",
+            "bytes": 3539024,
+            "identical": true
+          },
+          {
+            "path": "publication/evidence-v1/r4-session-scaling-pilot-v1-002.tar.xz",
+            "base_blob": "ce1622c7ab8235dc24d25e4cdeaf6625d5ac6b9a",
+            "current_blob": "ce1622c7ab8235dc24d25e4cdeaf6625d5ac6b9a",
+            "bytes": 1126244,
+            "identical": true
+          },
+          {
+            "path": "publication/evidence-v1/r4-session-scaling-pilot-v1-003.tar.xz",
+            "base_blob": "e852f3248b680d3208f335468432ac38f571775b",
+            "current_blob": "e852f3248b680d3208f335468432ac38f571775b",
+            "bytes": 1180820,
+            "identical": true
+          },
+          {
+            "path": "publication/evidence-v1/r4-session-scaling-pilot-v1-004.tar.xz",
+            "base_blob": "349e5c3d68ba76ede6517a7c0bbc67d3f67a312a",
+            "current_blob": "349e5c3d68ba76ede6517a7c0bbc67d3f67a312a",
+            "bytes": 1235340,
+            "identical": true
+          },
+          {
+            "path": "publication/evidence-v1/r4-session-scaling-pilot-v1-005.tar.xz",
+            "base_blob": "e97c7b6e6259b06613384177170b645c389e5ebc",
+            "current_blob": "e97c7b6e6259b06613384177170b645c389e5ebc",
+            "bytes": 1126468,
+            "identical": true
+          },
+          {
+            "path": "publication/evidence-v1/r4-session-scaling-pilot-v1-006.tar.xz",
+            "base_blob": "edc89eca4314c5c4d64de4f877bc3683251439e9",
+            "current_blob": "edc89eca4314c5c4d64de4f877bc3683251439e9",
+            "bytes": 318732,
+            "identical": true
+          },
+          {
+            "path": "publication/evidence-v1/r4-session-scaling-replication-v1-000.tar.xz",
+            "base_blob": "a21e140a8269401d4cae16cbdd7a346f29688432",
+            "current_blob": "a21e140a8269401d4cae16cbdd7a346f29688432",
+            "bytes": 336940,
+            "identical": true
+          },
+          {
+            "path": "publication/evidence-v1/r4-session-scaling-replication-v1-001.tar.xz",
+            "base_blob": "eaf443f913402a103e6a459f748e26f12f30fd57",
+            "current_blob": "eaf443f913402a103e6a459f748e26f12f30fd57",
+            "bytes": 4250880,
+            "identical": true
+          },
+          {
+            "path": "publication/evidence-v1/r4-session-scaling-replication-v1-002.tar.xz",
+            "base_blob": "d92107acc56791e5b8cf2acbcbf1065c0e439ddb",
+            "current_blob": "d92107acc56791e5b8cf2acbcbf1065c0e439ddb",
+            "bytes": 1122304,
+            "identical": true
+          },
+          {
+            "path": "publication/evidence-v1/r4-session-scaling-replication-v1-003.tar.xz",
+            "base_blob": "79bd3914ac12df66d39c016ebcab0f68e0729c18",
+            "current_blob": "79bd3914ac12df66d39c016ebcab0f68e0729c18",
+            "bytes": 1179720,
+            "identical": true
+          },
+          {
+            "path": "publication/evidence-v1/r4-session-scaling-replication-v1-004.tar.xz",
+            "base_blob": "c3f9d6f1dd1836f474210d71b7f456fd74ea58b2",
+            "current_blob": "c3f9d6f1dd1836f474210d71b7f456fd74ea58b2",
+            "bytes": 1236844,
+            "identical": true
+          },
+          {
+            "path": "publication/evidence-v1/r4-session-scaling-replication-v1-005.tar.xz",
+            "base_blob": "caefe7eec68577578157286abf2a293fe3c8aa07",
+            "current_blob": "caefe7eec68577578157286abf2a293fe3c8aa07",
+            "bytes": 1141956,
+            "identical": true
+          },
+          {
+            "path": "publication/evidence-v1/r4-session-scaling-replication-v1-006.tar.xz",
+            "base_blob": "f09728ca675b8a1c930b8d51db1fc4b2d52c323f",
+            "current_blob": "f09728ca675b8a1c930b8d51db1fc4b2d52c323f",
+            "bytes": 1173436,
+            "identical": true
+          },
+          {
+            "path": "publication/evidence-v1/r4-session-scaling-replication-v1-007.tar.xz",
+            "base_blob": "23494109989843003cc0dd9b4f039cb50cc23362",
+            "current_blob": "23494109989843003cc0dd9b4f039cb50cc23362",
+            "bytes": 226616,
+            "identical": true
+          },
+          {
+            "path": "publication/evidence-v1/r5-runtime-faults-v1-000.tar.xz",
+            "base_blob": "975372f8eaa73ec9f05e152374c4404c7276258a",
+            "current_blob": "975372f8eaa73ec9f05e152374c4404c7276258a",
+            "bytes": 964,
+            "identical": true
+          },
+          {
+            "path": "publication/evidence-v1/r5-session-faults-v1-000.tar.xz",
+            "base_blob": "d89b403fb1934f630c91ec6c0ca129acf0a1db9e",
+            "current_blob": "d89b403fb1934f630c91ec6c0ca129acf0a1db9e",
+            "bytes": 62140,
+            "identical": true
+          },
+          {
+            "path": "publication/evidence-v1/restore-tool-validation.json",
+            "base_blob": "f571d47fa86cc724c5ffbf8bf760c56446849b5e",
+            "current_blob": "f571d47fa86cc724c5ffbf8bf760c56446849b5e",
+            "bytes": 756,
+            "identical": true
+          },
+          {
+            "path": "publication/evidence-v1/session-model-readiness-v1-000.tar.xz",
+            "base_blob": "4e3ed6bcd8c2bf37e22f3792486858d7e794362e",
+            "current_blob": "4e3ed6bcd8c2bf37e22f3792486858d7e794362e",
+            "bytes": 3836,
+            "identical": true
+          },
+          {
+            "path": "publication/evidence-v1/validation.json",
+            "base_blob": "ca0b4171689ec5c11c6b259881a53473f1c57813",
+            "current_blob": "ca0b4171689ec5c11c6b259881a53473f1c57813",
+            "bytes": 1294,
+            "identical": true
+          }
+        ],
+        "mismatches": [],
+        "unexpected_untracked_files": [],
+        "all_base_bytes_identical": true
+      },
+      "file_manifest": [
+        {
+          "path": ".github/workflows/coordination-repair.yml",
+          "bytes": 1540,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "dcf9493c30333aa6d730b2074aa606c4d5945732b9e9be22648f8e57569cf2b9"
+        },
+        {
+          "path": "pheroos-bench/integration/coordination-repair-v1/__pycache__/test_coordination_repair_v1_consumer_audit.cpython-312-pytest-9.1.1.pyc",
+          "bytes": 37520,
+          "ignored": true,
+          "tracked_modified": false,
+          "sha256": "2fd533a38e20a79b23236ca7836d024a3a7a7df47903f54eadff7c9a9d5a476f"
+        },
+        {
+          "path": "pheroos-bench/integration/coordination-repair-v1/test_coordination_repair_v1_consumer_audit.py",
+          "bytes": 11273,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "25d4987e57e9c8bf92517fe7de3c7abc4ff399cb6900f20cb539b893b2fdb286"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/ABORT-REVIEW-v1.json",
+          "bytes": 1079,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "0018954e30dbadc7de58802e2c6a9097599a22bb6c4b1135a308674b96a3f84f"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/actionability-process-v1.json",
+          "bytes": 2867,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "0420eed5be2b8f71707f30527560b7eeb74b614c425bc2c9e22300a59038c709"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/actionability-process-v1.log",
+          "bytes": 1328,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "526890091abd0e93bed577b32369d3ec26f6cb39a6400c2218fe6b0e6286ac8d"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/artifacts/installation-inputs-dev3.json",
+          "bytes": 224,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "8c2dfa4bec9786b96b533c5b3196e9fb2ee847de813175f48d03291f269b0a1a"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/artifacts/installation-inputs.json",
+          "bytes": 224,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "d17ea386fbfb3fc8d3597500f9a881eaf3112117222fc61693637536b19248dc"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/artifacts/pheroos-0.1.0-py3-none-any.whl",
+          "bytes": 1838887,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "758f7e3d8135ff3ced2f7ed21aa0710b57a106530b464bbf8d939413c22170fc"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/artifacts/pheroos_bench-0.1.1.dev1-py3-none-any.whl",
+          "bytes": 158852,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "19bbd44ed697083d3d4a7b278cb904821731bc5de4a7c8d5a8205c320ca33f59"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/artifacts/pheroos_bench-0.1.1.dev2-py3-none-any.whl",
+          "bytes": 158927,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "ab71f365c9e0da098574ff5f84d3cae2d67e49e1d4b668ba1e63fc62b9ad3a4b"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/artifacts/pheroos_runtime-0.1.0.dev2-py3-none-any.whl",
+          "bytes": 39482,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "12ade6ec65a1a5dd7c24353a45a4366968b7ecd8d1c75dfdc6019b8c016c7fbb"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/artifacts/pheroos_runtime-0.1.0.dev3-py3-none-any.whl",
+          "bytes": 40053,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "1711ac6b8ac4d1d60e03a78e4ac4efbcba535c93df2c52575f118b666505d0f7"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/baseline-audit/BASELINE-AUDIT.md",
+          "bytes": 6267,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "777aa29576aa1029c56aae752287bb1093b8db31b77fd96ec8604f6b9c5b325f"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/baseline-audit/baseline-audit.json",
+          "bytes": 22515,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "235fd89ad37cff88a51b044db07bac711cc3dc80ca54a0bd5d95a1120cad4c34"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/baseline-audit/run_audit.py",
+          "bytes": 16310,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "55017d0ed910e413ac629f2c92126261a1c6dd7701bcbb04f2a6845aef70baba"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/baseline-audit/same-input-pairs.json",
+          "bytes": 21764,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "d3cdf342bdcfdb84025445aae51aeb67540709d2b683c000ab53c16851b15e32"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/baseline-audit/supplied-analysis-rerun.json",
+          "bytes": 4598,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "68bb104f01dd12b7d1463c2d1f770d53a17343d56c053aa053f2c7683da730b6"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/baseline-audit/supplied-analysis-rerun.py",
+          "bytes": 9465,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "519bab701fbafa900503a995928149a8c11334ecf5436e35d5f7faf4960e251e"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/completion-audit/REPORT.md",
+          "bytes": 20795,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "a6d10389726b1c18aa61c988b5e421f89828625f033f5f45b99d80fc50038e7f"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/completion-audit/completion-audit.json",
+          "bytes": 42943,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "18f0816e49a151ff15a51ccf2ddd198c9cbb2c4682c1a5014df65c3f1b983137"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/completion-audit/fork-lineage-audit.json",
+          "bytes": 16377,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "05b2cd49666971fab0c4f9c5ef452a5d4e8a092755ddd5b2211b8059fd757420"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/completion-audit/raw-ledger-audit.json",
+          "bytes": 52561,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "7cf1aa4057de7d7c7ec19aefbbbd2ff2e8ca70318dbca383f2ef2229f53c145d"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/input-manifest.json",
+          "bytes": 7417,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "487a001d3861c64c77ff5a68795813be08bb59d0f0942370258b9cc500282de1"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/inputs/AUDIT_SCOPE_AND_NEXT_STEPS.md",
+          "bytes": 5377,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "3836e410087e634a07fd9de88c9ac9576e8e27d3609e2a8a7aa1028950c42724"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/inputs/PheroOS_Next_Cycle_Codex_Goal.md",
+          "bytes": 22204,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "f4668325f60f900ee2eb4319f8a14607c4f811fc15693d396e97c486857b6ac9"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/inputs/api-diagnostic-recommendation.md",
+          "bytes": 12448,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "a31c4ad0140aa0e7990a58f403a481a380689c46bd0c1dcb59c7aea00599994e"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/inputs/independent_analysis.json",
+          "bytes": 4598,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "68bb104f01dd12b7d1463c2d1f770d53a17343d56c053aa053f2c7683da730b6"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/inputs/independent_analysis.py",
+          "bytes": 9456,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "a64485b43f3958b9783eae61675604248ba9303d016f59b0b5f572a1bb466587"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/local-cycle-v1/actionability/accounting.json",
+          "bytes": 787,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "a92a92aca3658534c19c9f175541f9f33de300a5120b8519a1550c10bc0b52dd"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/local-cycle-v1/actionability/actionability-000-single-n1-D0/coordination-accounting.json",
+          "bytes": 1642,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "bbdfb572b814e4d5640e080e5ee6df30e557b277c07ad8f44d8278d7439fa953"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/local-cycle-v1/actionability/actionability-000-single-n1-D0/episode.json",
+          "bytes": 9007,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "0b0505d9897fe569374dbd646d3e8189bea0ae0533d6eef936ffc6c8cc36e45a"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/local-cycle-v1/actionability/actionability-000-single-n1-D0/session-snapshot.json",
+          "bytes": 36005,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "f693189c63a0f23dd896509fda8cbf6643bb12d9d6daa2991765278078b84532"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/local-cycle-v1/actionability/actionability-000-single-n1-D0/session.sqlite",
+          "bytes": 135168,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "3124f3e837774a9f2868d5080ef97b792137649ca37d7f4fa1299b3041c5d0a9"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/local-cycle-v1/actionability/admission.json",
+          "bytes": 590,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "3ebd96359e05e430578ca79e0ce648a9baf8d761e129b8f63c557d9848dba9c7"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/local-cycle-v1/actionability/campaign-completion.json",
+          "bytes": 5436,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "94850c3769e69e08bb2fcf4b863aba864031e057fcfe05720f72b1a7acfee036"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/local-cycle-v1/actionability/expected-grid.json",
+          "bytes": 3696,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "0ddcde37a50a4e8a71c86444f8e79037761e7722c98a8663f09779195af64393"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/local-cycle-v1/actionability/freeze.json",
+          "bytes": 2199,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "60cbcb25987d55a9e5d07698fed8d396990a9ec5e0085bf9a9534841a67aba50"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/local-cycle-v1/actionability/model-identity.json",
+          "bytes": 1505,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "45d691e81d3a6d0e03d71fbbf9492a2c7a0866b1a0f895614d2a1d29f60f7266"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/local-cycle-v1/actionability/records.json",
+          "bytes": 9043,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "b708369824f38b55fb74f608a9b277ad6b84378494223d27f0b927c1950a5fd1"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/local-cycle-v1/campaign.sqlite",
+          "bytes": 28672,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "87ddcc1def17858d65f7321a8dd9c56b73f82b36235d0a76fd6e3810d554ebd3"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/local-cycle-v1/frozen-config.json",
+          "bytes": 2710,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "d7796ac52d5378b502756ba3395f6ef234064815d16a60851d2b585e68295459"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/pilot-config.json",
+          "bytes": 3633,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "e4cf1d1eca84b3a144b50fd619cea49dde4a670643f99a41a6719c7c57a945ca"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/REPORT.md",
+          "bytes": 3114,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "ef3747302506d6f6cf75254055d26acf78bb16297bcd68d18251db49f28faa99"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/check_context_fit_v1.py",
+          "bytes": 5440,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "13997e3a03cfa8314763952a1dd5ce751586154dd9ef5b96b4fe7ef45381094a"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/completed.jsonl",
+          "bytes": 63584,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "c7735433db0d8e4c0029a5bb5edce848da896f003f9ca83e09c57ede073cef73"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/config.json",
+          "bytes": 3192,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "4edd4744a07d58fbdee4c19c1a23b85d75c53f5b0b51b4407c698e17906a93f0"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/context-fit-config.json",
+          "bytes": 1183,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "2e419ac99e608281f10ef6a0e5e8d65ffe026307faf2ffb30d6a467697241928"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/context-fit.json",
+          "bytes": 133337,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "4795e20a98cd3bb28913bd0b2da3e5f38376e29abd42947d7e3a9a423be3fd5d"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/dependency_readiness/dev_a/D0-single-1/coordination-accounting.json",
+          "bytes": 1241,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "4b5cc69dad3f927f92f0754b7b6fd53a33e60204910e18386b6a8feb1e96b9c2"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/dependency_readiness/dev_a/D0-single-1/episode.json",
+          "bytes": 7936,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "93a1d603df4eb18e8cea3415beb8dc673ba6203914fff27ec814b14ea0740934"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/dependency_readiness/dev_a/D0-single-1/session-snapshot.json",
+          "bytes": 29552,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "a630a5dca37c6bc93dc8586a6629afa301487e0c9673914627e6daaf9238cbfc"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/dependency_readiness/dev_a/D0-single-1/session.sqlite",
+          "bytes": 131072,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "28e363bd0c1e21d39a6c3984573e31277a2af18d590a38287899a250ce4d8697"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/dependency_readiness/dev_a/D1-single-1/coordination-accounting.json",
+          "bytes": 1241,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "4b5cc69dad3f927f92f0754b7b6fd53a33e60204910e18386b6a8feb1e96b9c2"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/dependency_readiness/dev_a/D1-single-1/episode.json",
+          "bytes": 8075,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "724d33aee0f61eb64ed9236f7d55ce2e2a83c69344b6f5c16c022809d0b50a37"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/dependency_readiness/dev_a/D1-single-1/session-snapshot.json",
+          "bytes": 32955,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "b54f725ad7801567563a95fe440e903ffbc23f279e8617ced8d7696720141d56"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/dependency_readiness/dev_a/D1-single-1/session.sqlite",
+          "bytes": 139264,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "6118e8b5d7f07b5e46a9497251f07d9fb0450b15a333ee713f045dba230383a5"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/dependency_readiness/dev_a/D2-single-1/coordination-accounting.json",
+          "bytes": 2164,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "63c8ad549a0e42be725e25d904571d7be60dc43c57c3ffde9d44a1676cc36dad"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/dependency_readiness/dev_a/D2-single-1/episode.json",
+          "bytes": 13314,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "49767d2ebd5090903718fedb58da57f653fc94cbe8cd135be3754a45790e0a96"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/dependency_readiness/dev_a/D2-single-1/session-snapshot.json",
+          "bytes": 56970,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "9b83f8ffff5c8ee43640dca136c375e10c19273784ec530636a58ed1666b21a9"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/dependency_readiness/dev_a/D2-single-1/session.sqlite",
+          "bytes": 172032,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "febba19d9f9b0d576d8f96b9a5313dd703eb32f720fd2bd7b4686a1bdf24a7d2"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/dependency_readiness/dev_b/D0-single-1/coordination-accounting.json",
+          "bytes": 1241,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "215371b27477f57ba67cf666686c757c41cbb386dd0fde571589f3649260ca66"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/dependency_readiness/dev_b/D0-single-1/episode.json",
+          "bytes": 7885,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "914cff023320a412ba26885ce1b37b2d955fca92fdc482a99bdab6c251752e14"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/dependency_readiness/dev_b/D0-single-1/session-snapshot.json",
+          "bytes": 29472,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "98503f2e4da85c03598536657ee9ec229a7ea8d41a54aa7b21e9e4485d3dc314"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/dependency_readiness/dev_b/D0-single-1/session.sqlite",
+          "bytes": 131072,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "373d2e0ace513497d0a9861ea347b6844cf750a7b7931d988c87ea5c6693e905"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/dependency_readiness/dev_b/D1-single-1/coordination-accounting.json",
+          "bytes": 1241,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "215371b27477f57ba67cf666686c757c41cbb386dd0fde571589f3649260ca66"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/dependency_readiness/dev_b/D1-single-1/episode.json",
+          "bytes": 8024,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "f136ac1fd7fddf862c81e215183084363842a0dff31d50375184163ddda520ec"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/dependency_readiness/dev_b/D1-single-1/session-snapshot.json",
+          "bytes": 32875,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "04266d526588ead36d013bc2f07e8cebc877bed97f694fe437f354a7ce48c6ab"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/dependency_readiness/dev_b/D1-single-1/session.sqlite",
+          "bytes": 139264,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "fafa9e5a34e2ad572b7c4d08fe88d22b63429a66a08fc55c9550217e2874f5fb"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/dependency_readiness/dev_b/D2-single-1/coordination-accounting.json",
+          "bytes": 2164,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "5046d87b1a102a0ce4138a7f0a4bc3dfa673c78cddb4e9a95fb006eeb8d5d3bc"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/dependency_readiness/dev_b/D2-single-1/episode.json",
+          "bytes": 13248,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "16bb7e9f7888c3aa9b2319c4fde3552a3411f9bc95abad79b3d4d81fa3361f10"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/dependency_readiness/dev_b/D2-single-1/session-snapshot.json",
+          "bytes": 56876,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "003113f31e27b18b7b8cb0d60333c83d78de4366bf79bd6cfd2134dabb2c6b4e"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/dependency_readiness/dev_b/D2-single-1/session.sqlite",
+          "bytes": 172032,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "527c2b59cd453065951f38b45cbf4635802b8e2d8c3a0b109a731cdf3d269e0f"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/interval_intersection/dev_a/D0-single-1/coordination-accounting.json",
+          "bytes": 1642,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "bbdfb572b814e4d5640e080e5ee6df30e557b277c07ad8f44d8278d7439fa953"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/interval_intersection/dev_a/D0-single-1/episode.json",
+          "bytes": 9285,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "c2a04f53ce04d748abc898074b0b65e2b16a3953beeeb77b7fdbfa0936292ad1"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/interval_intersection/dev_a/D0-single-1/session-snapshot.json",
+          "bytes": 38588,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "02b74216e6effe733b0f2fcf84d1a068cfb5f0103839c88ce9a3ca782ec745b9"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/interval_intersection/dev_a/D0-single-1/session.sqlite",
+          "bytes": 135168,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "5c4e069ab80c35cc187e73c1ffa77a9462f07fc95ab39ca60378df851e44399e"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/interval_intersection/dev_a/D1-single-1/coordination-accounting.json",
+          "bytes": 1642,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "bbdfb572b814e4d5640e080e5ee6df30e557b277c07ad8f44d8278d7439fa953"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/interval_intersection/dev_a/D1-single-1/episode.json",
+          "bytes": 9431,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "0101b3a3260992224b8575b85432e222b109f3de179c78f1682e601cc9919d84"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/interval_intersection/dev_a/D1-single-1/session-snapshot.json",
+          "bytes": 42786,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "3b75a94664df36055a0905bdf28c3412bfb264d6eca89816aa27eb2b03319051"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/interval_intersection/dev_a/D1-single-1/session.sqlite",
+          "bytes": 151552,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "d18604efd238e0f99741aa51c20824c218b18719bef175deafa9f9ed931885b7"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/interval_intersection/dev_a/D2-single-1/coordination-accounting.json",
+          "bytes": 3619,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "be9ab0ed795da19b74a69dfaa09c1966fa9841cec7156a20f6a23363946c3f66"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/interval_intersection/dev_a/D2-single-1/episode.json",
+          "bytes": 17735,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "1bdd8a2f21cca4666026d86e13485f3692779a4b66ec7147d0d558e0d5664367"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/interval_intersection/dev_a/D2-single-1/session-snapshot.json",
+          "bytes": 83652,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "d34c2694b20c557180cdf3a2742b9356167f26d5cf6b3fef65a5681d063dc7d0"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/interval_intersection/dev_a/D2-single-1/session.sqlite",
+          "bytes": 196608,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "25ae2c1c0e7b449f8e932bce6a76b9a64fca99999f30b1a5ad4a8e34a4d8256f"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/interval_intersection/dev_b/D0-single-1/coordination-accounting.json",
+          "bytes": 1642,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "1e27201b8a5853e7e2202c357b700fd59610231b405abcfda736edfa6d11bf37"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/interval_intersection/dev_b/D0-single-1/episode.json",
+          "bytes": 9287,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "e4825ce064146a3fcee8f23cf70d4b2648073df401f3278555e73da138aa6b1f"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/interval_intersection/dev_b/D0-single-1/session-snapshot.json",
+          "bytes": 38591,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "bf017e4f13d67afe3b23228fc6829291ef396d33e4e48dc7561d8a57fe5b7b35"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/interval_intersection/dev_b/D0-single-1/session.sqlite",
+          "bytes": 135168,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "43575b6099157bb8c9f2839b8e02e1051bf467ce3b14aa23d5707f33bf4d9054"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/interval_intersection/dev_b/D1-single-1/coordination-accounting.json",
+          "bytes": 1642,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "1e27201b8a5853e7e2202c357b700fd59610231b405abcfda736edfa6d11bf37"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/interval_intersection/dev_b/D1-single-1/episode.json",
+          "bytes": 9433,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "75e215ee5645c66564573ee32c4bb3129bb92e3a7719cd24c7c0fdfde2ad0408"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/interval_intersection/dev_b/D1-single-1/session-snapshot.json",
+          "bytes": 42789,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "112eb28febefea302ed0f3d733a06f1eaeb76ad2ad3a7b4136a9ef329385df3d"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/interval_intersection/dev_b/D1-single-1/session.sqlite",
+          "bytes": 151552,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "88b83616f28767d2dcd987d6f8d381f77e32c3349a183e3c48d7ae4d84e3cad4"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/interval_intersection/dev_b/D2-single-1/coordination-accounting.json",
+          "bytes": 3619,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "e469bb057fc85316c8424b690bfa0eb87ece9b3a48b72c0fc1c4b03232f3c3d1"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/interval_intersection/dev_b/D2-single-1/episode.json",
+          "bytes": 17740,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "07dabffc7a37b89993ee860a82181bbda93ff65bdc7e22d509bf8c95b9a17948"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/interval_intersection/dev_b/D2-single-1/session-snapshot.json",
+          "bytes": 83658,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "685462887d6dd1a0978223fb4a3a729657aa67b43e2ad49bc2a82e933cf5d185"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/interval_intersection/dev_b/D2-single-1/session.sqlite",
+          "bytes": 196608,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "f1f4808056680f7b3be6206da574beff77e6c3baa5b61288ef952028502dbafe"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/inventory_reconciliation/dev_a/D0-single-1/coordination-accounting.json",
+          "bytes": 1644,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "672965b30f6f7be47fd68b7ebd7b655ddf7540b5a7c60ff5150af649527d7760"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/inventory_reconciliation/dev_a/D0-single-1/episode.json",
+          "bytes": 10182,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "cdb1c100c484aadd659a1ce60ff83c6b395757c514f3efe7e5c647e5d116611a"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/inventory_reconciliation/dev_a/D0-single-1/session-snapshot.json",
+          "bytes": 40009,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "b952ef4c8f7ddbdaee9c79df6c0f8c09a619888c2c99641ac0b6910c7547bf84"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/inventory_reconciliation/dev_a/D0-single-1/session.sqlite",
+          "bytes": 139264,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "3fddff857e738f29c312d237531ff3ca6640eb897f57f19c7d84d821a6ab3948"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/inventory_reconciliation/dev_a/D1-single-1/coordination-accounting.json",
+          "bytes": 1644,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "672965b30f6f7be47fd68b7ebd7b655ddf7540b5a7c60ff5150af649527d7760"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/inventory_reconciliation/dev_a/D1-single-1/episode.json",
+          "bytes": 10339,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "f0ec400f48edb824bd459261466705fc37cfdc9e065dc222ac7bbb21b2bba05b"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/inventory_reconciliation/dev_a/D1-single-1/session-snapshot.json",
+          "bytes": 44273,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "33fd23c9d7f62be844041beb4957f56f43eab684f0d80193f727c076990222fc"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/inventory_reconciliation/dev_a/D1-single-1/session.sqlite",
+          "bytes": 155648,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "ce10d067c1d32472219a8303fd3e66eafe9152a62343a4a7a77e40683832cc41"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/inventory_reconciliation/dev_a/D2-single-1/coordination-accounting.json",
+          "bytes": 3623,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "64d7060a819b6ff281ac08d5eaacdad009b41119bd2a67d5050bf24f2ef023e0"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/inventory_reconciliation/dev_a/D2-single-1/episode.json",
+          "bytes": 19441,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "46d6ceb9acb447009978b89b6b01d66df75c5bc5822741091e664ad0a6b7b2eb"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/inventory_reconciliation/dev_a/D2-single-1/session-snapshot.json",
+          "bytes": 85602,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "aef2d5363ec12e2d06c58bcee4de937553dfa3516566a9a24e4034d10bab4872"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/inventory_reconciliation/dev_a/D2-single-1/session.sqlite",
+          "bytes": 196608,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "2aef3fa5f04e96c0f80a1b1b71a13d4ec13ad74791115e7028acce81c4dfa27e"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/inventory_reconciliation/dev_b/D0-single-1/coordination-accounting.json",
+          "bytes": 1644,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "9e8fcb33044f9c6508a53957048141b83ae1563e3c25cf5aa068aa6983a1928d"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/inventory_reconciliation/dev_b/D0-single-1/episode.json",
+          "bytes": 10183,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "b70f97ab28ef24067ee1d301ac5dd269cd1d3cd15fe6ab0dcdc03da5f6caaf42"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/inventory_reconciliation/dev_b/D0-single-1/session-snapshot.json",
+          "bytes": 40015,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "a3d8a4a02494d36f03e2d5e60995a3f86dd59e6ed84eb3642adac937ef341c0b"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/inventory_reconciliation/dev_b/D0-single-1/session.sqlite",
+          "bytes": 139264,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "22ecef9349701703348feb7aba511bb4bd67b0326941f32e1c5033aac92e93c8"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/inventory_reconciliation/dev_b/D1-single-1/coordination-accounting.json",
+          "bytes": 1644,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "9e8fcb33044f9c6508a53957048141b83ae1563e3c25cf5aa068aa6983a1928d"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/inventory_reconciliation/dev_b/D1-single-1/episode.json",
+          "bytes": 10340,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "e05e35363927e83620edee3e88dc5f0165cedf579615d48c210c6061658c7f10"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/inventory_reconciliation/dev_b/D1-single-1/session-snapshot.json",
+          "bytes": 44279,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "db8dd90d44109308c6ae4833e056196599e950b1acf4bfeadc671ec544a8fdb7"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/inventory_reconciliation/dev_b/D1-single-1/session.sqlite",
+          "bytes": 155648,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "2c2befcace8c0ba7199507bace0eaf2acba63895a5576955b27d33a4824b7606"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/inventory_reconciliation/dev_b/D2-single-1/coordination-accounting.json",
+          "bytes": 3623,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "18b8fb7a8c0ebd6faa123b65eabf109a16f10941174d2246ea9223da5a9b6d8e"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/inventory_reconciliation/dev_b/D2-single-1/episode.json",
+          "bytes": 19434,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "3ce99e760f76c8fdf2d3654fc46baf8d313f9ce2e592b7f0f05ae99733018280"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/inventory_reconciliation/dev_b/D2-single-1/session-snapshot.json",
+          "bytes": 85604,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "16c552b4f2ffb9aae3978ea9779990e3667e4324edef856502d5c4ffa2fff65e"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/inventory_reconciliation/dev_b/D2-single-1/session.sqlite",
+          "bytes": 196608,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "d8acfc8f6c90fc118019852264a7b1d4e323912b6ccb28b7d9925f165e35281d"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/version_correction/dev_a/D0-single-1/coordination-accounting.json",
+          "bytes": 838,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "91d488e700e4d211bb0bb2882537c1c1ef0343a2e628b13e70246473cf0c83cf"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/version_correction/dev_a/D0-single-1/episode.json",
+          "bytes": 5803,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "b2463dabe1c05be365e17614ad4f48069a68e08983e7fc807deede89f91f347c"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/version_correction/dev_a/D0-single-1/session-snapshot.json",
+          "bytes": 19884,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "38ae41c5567c29f329580df082d08972812ae96f3fe9cbba35f20b277222f3e2"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/version_correction/dev_a/D0-single-1/session.sqlite",
+          "bytes": 106496,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "ee66c4d6e11570fe29fd79fae6541a2b8d4514c1b55a6c5f9b20287245925853"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/version_correction/dev_a/D1-single-1/coordination-accounting.json",
+          "bytes": 838,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "91d488e700e4d211bb0bb2882537c1c1ef0343a2e628b13e70246473cf0c83cf"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/version_correction/dev_a/D1-single-1/episode.json",
+          "bytes": 5919,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "5c7f916dbe767d886c11a16dbbe544592beae1bb52607e3ad6216cf844c59aba"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/version_correction/dev_a/D1-single-1/session-snapshot.json",
+          "bytes": 23263,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "1e6933c1c8206a74bfee31bbfaaa81f107637ea49eeefca7572b0c8a2886b07c"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/version_correction/dev_a/D1-single-1/session.sqlite",
+          "bytes": 114688,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "f2d0f318d87b7c8332660be11dea2db6f1e2a8cd192fbfaf59f15405e448524a"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/version_correction/dev_a/D2-single-1/coordination-accounting.json",
+          "bytes": 1899,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "d172f809e93f5c8d5b1a4bba0cecff48dae1c126ea635b6281ab7323135c9b33"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/version_correction/dev_a/D2-single-1/episode.json",
+          "bytes": 14349,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "ae90e5a16774407e53017a776b576f09dd93859bc1ad3d11cb1efc99465933b6"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/version_correction/dev_a/D2-single-1/session-snapshot.json",
+          "bytes": 59487,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "08bc05c05dd4f5344f0ecda92dac63581857912fb0de64b6af9a8ad7d0158acb"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/version_correction/dev_a/D2-single-1/session.sqlite",
+          "bytes": 172032,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "9d8bfc72248f6e62b5afe66de17dd1fff15e011ccd16e05b55e1522579732e42"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/version_correction/dev_b/D0-single-1/coordination-accounting.json",
+          "bytes": 838,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "8919c58e93e06c98db8b63a0027b43b3c7f55eb5c6e57cd3bf965efc64467c92"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/version_correction/dev_b/D0-single-1/episode.json",
+          "bytes": 5792,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "2e4c7b33c79d9a380ce537bc32891f7542727222288a550e6f4af1359195e4e7"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/version_correction/dev_b/D0-single-1/session-snapshot.json",
+          "bytes": 19870,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "4594681fa65bb9ca1ad5882a226b89a6b15aca9b541ffbfbdccfaa5e9772863e"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/version_correction/dev_b/D0-single-1/session.sqlite",
+          "bytes": 106496,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "4836e1a351ab67b80cff4da8c7c4b05f2149b090106d0da4d6659281921fb670"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/version_correction/dev_b/D1-single-1/coordination-accounting.json",
+          "bytes": 838,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "8919c58e93e06c98db8b63a0027b43b3c7f55eb5c6e57cd3bf965efc64467c92"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/version_correction/dev_b/D1-single-1/episode.json",
+          "bytes": 5908,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "e6a3ffb88ed644dc3c61b3c1979d72b8e8a42806350f64264db1cfe63de32f08"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/version_correction/dev_b/D1-single-1/session-snapshot.json",
+          "bytes": 23249,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "f2125b77506765fbbb3b6d6bcff0963e555259c52bb510ed43001ebcf8fafb32"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/version_correction/dev_b/D1-single-1/session.sqlite",
+          "bytes": 114688,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "94ef62505f109ed8980672cb8847de24447d52ac47769a6b067efea0d8d4c223"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/version_correction/dev_b/D2-single-1/coordination-accounting.json",
+          "bytes": 1899,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "0996e6eb20f901a113b75e137021a16ea0aaa9fd99a90676ebbd692d0cf38657"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/version_correction/dev_b/D2-single-1/episode.json",
+          "bytes": 14336,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "de71366c54012de42d387db1dd1ede304d0772c0befb94b15c12acedef3012d0"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/version_correction/dev_b/D2-single-1/session-snapshot.json",
+          "bytes": 59476,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "25772f776ab5d154a2db877caa2b2c6ef06c228141212c257e6e81b4bf28a439"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/development/version_correction/dev_b/D2-single-1/session.sqlite",
+          "bytes": 172032,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "e93861d91f0bbd99f5f407347afb965e0c4f8f17659653dd5b27b6c8e44b6381"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/fork-prefixes.json",
+          "bytes": 13642,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "c0954f5b46619e49f46aaa06dc52b9e0a9d79e49d78eb3c4d44d7406b6ed0a01"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/fork-records.json",
+          "bytes": 8003,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "327194c353c7abeb1ec5a406c17c569589e2c31dfb79459ee6ff1f23fc14c8c2"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/forks/dependency_readiness/pilot_a/irrelevant/coordination-accounting.json",
+          "bytes": 1223,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "c365e95d083d1919accce0dc6f826f75d4fea3e81fc52f1819822a4346a2c2a8"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/forks/dependency_readiness/pilot_a/irrelevant/episode.json",
+          "bytes": 9145,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "4b0252e1679310af204e847fc7a5e070427dba63d2c207d4217f4f88b9f3d7d4"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/forks/dependency_readiness/pilot_a/irrelevant/session-snapshot.json",
+          "bytes": 38881,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "2d5679eeb0bc86360e0e43e8b7f76dff8bf5737e8f52b2685fb49889d8c228c0"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/forks/dependency_readiness/pilot_a/irrelevant/session.sqlite",
+          "bytes": 143360,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "463079411599c58f2fd762eca116a2c3efbc177567dbe8b587ecc9f59c1e5a81"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/forks/dependency_readiness/pilot_a/prefix.json",
+          "bytes": 3863,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "c15c68929ce36d8a826c30342a6be09d803d2cc1a07235ba7939bc75da621871"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/forks/dependency_readiness/pilot_a/relevant/coordination-accounting.json",
+          "bytes": 1225,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "71eae3ccf2d8fd0bb6ff833cb58315cccd3efba20747cb503969ada294bca34e"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/forks/dependency_readiness/pilot_a/relevant/episode.json",
+          "bytes": 8838,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "d1f38396210214d2595dba8ae1c2314bf8aa054384ac7771d369653b22ae9b17"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/forks/dependency_readiness/pilot_a/relevant/session-snapshot.json",
+          "bytes": 38885,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "06793058afa7d8663e05c28a2c791c182b01e433e609177c3924896cee27a685"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/forks/dependency_readiness/pilot_a/relevant/session.sqlite",
+          "bytes": 143360,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "f03b3ab09b70d802465faaa9ee3b7630c59db4fe15cd8566347f4a8439c252bf"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/forks/dependency_readiness/pilot_a/rollout-records.json",
+          "bytes": 2664,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "23fdc509f683a1185dbd84840ab2b8faa788973a6478679c416216014e9f88bf"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/forks/dependency_readiness/pilot_a/withheld/coordination-accounting.json",
+          "bytes": 1223,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "c365e95d083d1919accce0dc6f826f75d4fea3e81fc52f1819822a4346a2c2a8"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/forks/dependency_readiness/pilot_a/withheld/episode.json",
+          "bytes": 8801,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "9fe0292bc95ab4272c8562559aa06453e2225e73d60fc52c5f99c68e6c7c5e90"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/forks/dependency_readiness/pilot_a/withheld/session-snapshot.json",
+          "bytes": 38882,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "7fbb80e19a54ae4dc5d08059cf8cc83de5f7fabec0e2cdf249db66339dfb7e31"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/forks/dependency_readiness/pilot_a/withheld/session.sqlite",
+          "bytes": 143360,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "72b774b97c048328382a8b0db8c07d8c830b45c94e5afd5f1dece229642fc440"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/forks/interval_intersection/pilot_a/irrelevant/coordination-accounting.json",
+          "bytes": 2813,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "4515b43a7188fe745394a48ad454de12c5712764e38f81c04b44195a67399c66"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/forks/interval_intersection/pilot_a/irrelevant/episode.json",
+          "bytes": 13550,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "cb87d6e775d467283cb6906d9efd5455406f846b6263bc239e0cf33aa43034ba"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/forks/interval_intersection/pilot_a/irrelevant/session-snapshot.json",
+          "bytes": 66205,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "a837b33ddf60dd72bcdc46e06515f904f37362bdbfa6d937bb2a39fc8ec54310"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/forks/interval_intersection/pilot_a/irrelevant/session.sqlite",
+          "bytes": 176128,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "9c582758c84498e20b3595a068abe8e9f12e85acd9ad9aa6ec22ccdd9669e683"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/forks/interval_intersection/pilot_a/prefix.json",
+          "bytes": 3668,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "69be9bfc22800c175d19726d45176de685b9dd8de64ff9db90d519a52adda857"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/forks/interval_intersection/pilot_a/relevant/coordination-accounting.json",
+          "bytes": 2949,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "2e15c3bf34a5c57889e419155448be00137b4a6655ebb333cf75765c8c985cd5"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/forks/interval_intersection/pilot_a/relevant/episode.json",
+          "bytes": 13446,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "bb159998ea9e713d10bff17a471c9760fe8e491c6f16f6c52be2a82bb676754b"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/forks/interval_intersection/pilot_a/relevant/session-snapshot.json",
+          "bytes": 67799,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "f28692b052a65e33de1e49d851f7b1d334f0b9f29685e4c9321ba08dc3d80391"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/forks/interval_intersection/pilot_a/relevant/session.sqlite",
+          "bytes": 180224,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "ba73a8c7bd1b016cf224cd8068563ae129224ab850d641187bc9c7123c427906"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/forks/interval_intersection/pilot_a/rollout-records.json",
+          "bytes": 2667,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "5f2bdb7e2ae372eff00e899c3a4cc43daa7bfedbd8b221bf5e1b2558a199a72a"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/forks/interval_intersection/pilot_a/withheld/coordination-accounting.json",
+          "bytes": 2813,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "4515b43a7188fe745394a48ad454de12c5712764e38f81c04b44195a67399c66"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/forks/interval_intersection/pilot_a/withheld/episode.json",
+          "bytes": 12896,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "0c5682f7df5e5e7f06da9ccc159abab65850332cf6d3e2d6a623c8a7ba619b39"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/forks/interval_intersection/pilot_a/withheld/session-snapshot.json",
+          "bytes": 66206,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "47445181d2226fcac0864c7536b737caabf56b2edc924225a86d689752cd7da3"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/forks/interval_intersection/pilot_a/withheld/session.sqlite",
+          "bytes": 176128,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "597d5136c200d8ec7684fbfb45b955145c7697e3d9a508e1488873b79a4d1e97"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/forks/inventory_reconciliation/pilot_a/irrelevant/coordination-accounting.json",
+          "bytes": 2815,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "879799e85f0bc70e7488292483bb1b048648e6db5813c530f29bcc4688d957e2"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/forks/inventory_reconciliation/pilot_a/irrelevant/episode.json",
+          "bytes": 15118,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "0b04ed841e3389af78a6b4f8656e0d120bf3f67964a0531827be64fa97b9d34f"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/forks/inventory_reconciliation/pilot_a/irrelevant/session-snapshot.json",
+          "bytes": 67983,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "617b0fd1b2ef3332daf05c8569e1aa328f1914689444c3e60e19cac7bbfbe507"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/forks/inventory_reconciliation/pilot_a/irrelevant/session.sqlite",
+          "bytes": 176128,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "7ab240c4cdef4c0cca8b5011a17905abbf4b634d3cb390a3919bbe7293623e66"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/forks/inventory_reconciliation/pilot_a/prefix.json",
+          "bytes": 4177,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "acc203a53ab1457287c181f5b120e902789b8ad083b1db4e70139c6312522aa9"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/forks/inventory_reconciliation/pilot_a/relevant/coordination-accounting.json",
+          "bytes": 2953,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "bfa36204009e81850317a5f5f81f947d21c29b938b5a81faccd3f7cb72d3e840"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/forks/inventory_reconciliation/pilot_a/relevant/episode.json",
+          "bytes": 14846,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "02f5194a9a5656a30dec07cc26113e91fa1369d80028be69d3525e3582ac7c96"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/forks/inventory_reconciliation/pilot_a/relevant/session-snapshot.json",
+          "bytes": 69856,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "37993c5ac62166359eae312c1cc530b5bd9312aca5d493d3308590f1affaaf62"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/forks/inventory_reconciliation/pilot_a/relevant/session.sqlite",
+          "bytes": 180224,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "d5e33644a934d93b68897ef9c89171a3fe6bbfe4592f5430fbc39fcb8714b45d"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/forks/inventory_reconciliation/pilot_a/rollout-records.json",
+          "bytes": 2676,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "dfb2fdd3ca29a5283371e1e479996a8260f1ec31ec0f42394a66241309c7ef76"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/forks/inventory_reconciliation/pilot_a/withheld/coordination-accounting.json",
+          "bytes": 2815,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "879799e85f0bc70e7488292483bb1b048648e6db5813c530f29bcc4688d957e2"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/forks/inventory_reconciliation/pilot_a/withheld/episode.json",
+          "bytes": 14014,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "79cfe85436d3a1956186587184efd4e28caab324e5398ac8a058d75664a51dc7"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/forks/inventory_reconciliation/pilot_a/withheld/session-snapshot.json",
+          "bytes": 67983,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "761b1e3af129bc947ce410f4a4627ea81bb64715ff0a6c2ef553fff97752e11a"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/forks/inventory_reconciliation/pilot_a/withheld/session.sqlite",
+          "bytes": 176128,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "a2ae5e2a6f035ec826884320ea041ef3611bf6785c5468cd63ad63752345d1a5"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/forks/version_correction/pilot_a/prefix.json",
+          "bytes": 1932,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "61a4aa1a1b096a264c2c6b6ed11a4d7a11fac757d99afc1f98958c9296ec8c30"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/frozen-source-manifest.json",
+          "bytes": 2864,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "aa7dba9ee755aae2f98eeb314f02355b3341fd5a457962b38d015ff97513953d"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/frozen-source-v1.tar.xz",
+          "bytes": 29748,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "23ac18602683a0fc5199e336bf087bbac3c06e1ef4d8a8271b6a41ca0981698e"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/functional-intervention.json",
+          "bytes": 14366,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "24ddd6990080d1bfc1f38999d908ef821a241940c206a396efb7ae163b936c66"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/functional_intervention_v1.py",
+          "bytes": 1876,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "71cd06dda62a2fc347e35fccaacbc4dc6f4e15ed4d6d5624cb715bab212a615f"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/intervention-relevance.json",
+          "bytes": 17153,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "1906161bc030d8b9396c3b382ef299c5c13d46786ebd85cdff90881e8d6a6ff5"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/dependency_readiness/pilot_a/blackboard-2/coordination-accounting.json",
+          "bytes": 2957,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "7ce084d181dded119bdfea6916d3169421ed6f1bfee12826d2e34e14957473c7"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/dependency_readiness/pilot_a/blackboard-2/episode.json",
+          "bytes": 13485,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "0a6d3d89cd9bd96ce724eb6714fdce75cfc68febb8642d890bb52d7aaa9d1909"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/dependency_readiness/pilot_a/blackboard-2/session-snapshot.json",
+          "bytes": 65634,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "ae3bdc216a6c95703c1f63e44fce255085d1a9be6f161efe5a5d33b41259a9c5"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/dependency_readiness/pilot_a/blackboard-2/session.sqlite",
+          "bytes": 176128,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "462339353b2b4c12edc786a0070b7deb58c5d37c427daba6f6c9990c88a02e41"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/dependency_readiness/pilot_a/blackboard-4/coordination-accounting.json",
+          "bytes": 4543,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "d305653f48bd12177464aa8cbfd4e63ffd66b6516b5d72d9881cae597087ddd9"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/dependency_readiness/pilot_a/blackboard-4/episode.json",
+          "bytes": 13670,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "083682ee39ad542a1803a064da1e3e72cf1fb879b7f37b229cdd2b0dbade5ba3"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/dependency_readiness/pilot_a/blackboard-4/session-snapshot.json",
+          "bytes": 82771,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "af413cb3dd68a05fff6ad2ade3ca833160acb120db898db1ea1d295aa357c822"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/dependency_readiness/pilot_a/blackboard-4/session.sqlite",
+          "bytes": 196608,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "06161641c6d054f21711d611f071eb50d675f5bdb1d6cca1865d60eb560852bd"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/dependency_readiness/pilot_a/candidate-2/coordination-accounting.json",
+          "bytes": 3223,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "c11e62ce3bfdf5503714b09edf8b3510b0c9ebf7af5c275fda4c72c2e56b2469"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/dependency_readiness/pilot_a/candidate-2/episode.json",
+          "bytes": 15489,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "4517fb4630dfb28e2ebdcbe2238114b48fa9dea21647d27159409d94da99fbf6"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/dependency_readiness/pilot_a/candidate-2/session-snapshot.json",
+          "bytes": 68221,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "4f2d7fba32c3a20fb4b3da6aa447219099fb209b08b33d603276cb81d0177cbe"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/dependency_readiness/pilot_a/candidate-2/session.sqlite",
+          "bytes": 180224,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "39f5b8636430cc218105cf848b88bdb1a56aa1235f2c3ffbe74afd3a4ff26f1a"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/dependency_readiness/pilot_a/candidate-4/coordination-accounting.json",
+          "bytes": 4543,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "a57623e92c63c1b4d95794201029e1156eb46c54456a8634f5c139c2dcf964e6"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/dependency_readiness/pilot_a/candidate-4/episode.json",
+          "bytes": 13667,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "87a54a161d4fec88c98fe2db103b08b70a6a0f92313d9ed5e37b2596822f7f7f"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/dependency_readiness/pilot_a/candidate-4/session-snapshot.json",
+          "bytes": 82770,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "5e13647dec6b9ad908a999fa86d769ab65404232bfb2ddb425c03e96ca3a03bc"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/dependency_readiness/pilot_a/candidate-4/session.sqlite",
+          "bytes": 196608,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "44b12a858ebcdf2b2c164e38eddb7efa83d149dbac05b99d48453516df6a5d92"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/dependency_readiness/pilot_a/no_ownership-4/coordination-accounting.json",
+          "bytes": 4543,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "9f7c4158bf0eed6a0a88a5e33708115185dea5bb710e819570587f5731cd5409"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/dependency_readiness/pilot_a/no_ownership-4/episode.json",
+          "bytes": 13676,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "a66ef2d696e17f51d02b31d2632327ff5195edceb291536fbf531237c93f8a96"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/dependency_readiness/pilot_a/no_ownership-4/session-snapshot.json",
+          "bytes": 82770,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "412d5ad2cc9a0dd535a665449746b9b660c5770b7227a668cd1ce90eb5a566ea"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/dependency_readiness/pilot_a/no_ownership-4/session.sqlite",
+          "bytes": 196608,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "28c084c1d772e38d2518f900a6adf09faac33c5c262cc0b624e28bd0715f49fa"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/dependency_readiness/pilot_a/no_reuse-4/coordination-accounting.json",
+          "bytes": 4543,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "ca0b5d03695fe3d9515f76a42b555539a93cfcf8e9f472bc5fd35d22b03a4fd2"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/dependency_readiness/pilot_a/no_reuse-4/episode.json",
+          "bytes": 13664,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "2433e350366842a24c84888535c6add115719328aacd141521f6cc3a4db244d1"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/dependency_readiness/pilot_a/no_reuse-4/session-snapshot.json",
+          "bytes": 82770,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "5abd32de09c6623ffcfb5694749dad303b66aedd0987e24a81911e6464bb72f9"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/dependency_readiness/pilot_a/no_reuse-4/session.sqlite",
+          "bytes": 196608,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "db8185cb0d10a7ce848f8c3816012486a315e75c1a300edb5098ca0f0335fa18"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/dependency_readiness/pilot_a/single-1/coordination-accounting.json",
+          "bytes": 2164,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "21fbd1bf21e91abee58b80c1bab8d1feb99c9a56d37d8e34c00f76dc3e406c78"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/dependency_readiness/pilot_a/single-1/episode.json",
+          "bytes": 13381,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "54325f7739a95264ce522d35f59a2f3d96a4d86a3506e19b103574f45254a13f"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/dependency_readiness/pilot_a/single-1/session-snapshot.json",
+          "bytes": 57067,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "627395c7cd5032eb9b25680f481c07b68a2e0aae0801e1a155319b38b0295fd2"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/dependency_readiness/pilot_a/single-1/session.sqlite",
+          "bytes": 172032,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "c013ae00a62a1a761446a7ce56b7b61399066f850bd3fc36dc2eb8334693c1a6"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/interval_intersection/pilot_a/blackboard-2/coordination-accounting.json",
+          "bytes": 5203,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "2a53043d781d8d03b2cae91a88c2ccc0805e55bff63902badcee44ca039d7669"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/interval_intersection/pilot_a/blackboard-2/episode.json",
+          "bytes": 17898,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "cc53d5963a9003f955362d043ce2a68ccd673496dbdf3e3c34d4384ba4e5bf2d"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/interval_intersection/pilot_a/blackboard-2/session-snapshot.json",
+          "bytes": 100077,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "1e4cdf125ac136f09e084dd8f2234ad98e79f7c5b2c253167c8d435ce35f1667"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/interval_intersection/pilot_a/blackboard-2/session.sqlite",
+          "bytes": 217088,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "e84282477604b93018759ebc0c6fc8a1d3f311c4ba5f3932106f065459c67107"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/interval_intersection/pilot_a/blackboard-4/coordination-accounting.json",
+          "bytes": 8371,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "023ce40b248622fbfa1fcd2d3cb793996f782ce4eb17980fd9e4c61d15b3d990"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/interval_intersection/pilot_a/blackboard-4/episode.json",
+          "bytes": 18164,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "ae534dafc2c3abe92b825f0c95f1accf9e0a9467ea06554af090b47106ac78b9"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/interval_intersection/pilot_a/blackboard-4/session-snapshot.json",
+          "bytes": 132855,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "737b20db7d474f560ddd810c35ce4184aebeb8bd266378258c354eb816c74e75"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/interval_intersection/pilot_a/blackboard-4/session.sqlite",
+          "bytes": 253952,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "d72301f8566e31e161074fe10c1658e8f9e6943ec643e81807d7cd3db02b2462"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/interval_intersection/pilot_a/candidate-2/coordination-accounting.json",
+          "bytes": 5469,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "b53b2ec1253c4da5229c6bb03449862c07eec2c025640582eaba0238f65218e7"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/interval_intersection/pilot_a/candidate-2/episode.json",
+          "bytes": 19804,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "833a8eace99fe2c38e9cd1e7e2e1673c0388ff1d8835d59d178e4e40ec623414"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/interval_intersection/pilot_a/candidate-2/session-snapshot.json",
+          "bytes": 102663,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "e0a934dad149bb10d455ecd0e31b030d08434651675ac690d29e00762cb6831f"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/interval_intersection/pilot_a/candidate-2/session.sqlite",
+          "bytes": 221184,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "d819250a7652d7751740ee4adf6cd75ab52bad0d5501a0424d2a09d3c9a05d94"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/interval_intersection/pilot_a/candidate-4/coordination-accounting.json",
+          "bytes": 8371,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "8bc776f5f5b0a991be6e664488b5814c905c124f2b1aba1e23dc83235c8bb9d2"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/interval_intersection/pilot_a/candidate-4/episode.json",
+          "bytes": 18160,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "94df8823c93e24a6f4963582fa17bc314122007eca540a81efb5058326064b2c"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/interval_intersection/pilot_a/candidate-4/session-snapshot.json",
+          "bytes": 132856,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "7ed7caeeeb4bc72d6a5d3ff5c1f5cee38c033dadfe7deb1b4ffb7cb8e69d4501"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/interval_intersection/pilot_a/candidate-4/session.sqlite",
+          "bytes": 258048,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "40eb7a0be5825a1569437e4692ae7ac33910f551cf3fbb58e921423ce89283ce"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/interval_intersection/pilot_a/no_ownership-4/coordination-accounting.json",
+          "bytes": 8371,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "dd6ae6deffa6b3d6c93eab2eb4b3b088ffcbc481302f3c5937239cf7231d48d3"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/interval_intersection/pilot_a/no_ownership-4/episode.json",
+          "bytes": 18172,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "02c6458618fef276fb6fe5f278fec0dc9bd35aca134a3b881f32f5c07c3bba3e"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/interval_intersection/pilot_a/no_ownership-4/session-snapshot.json",
+          "bytes": 132857,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "e9cb42c5065ae71e97bca1dbdd3a4ad4813a6e063aae2a24aa1af1b070e78dc4"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/interval_intersection/pilot_a/no_ownership-4/session.sqlite",
+          "bytes": 253952,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "c10b1c4d3911f04ed7ad19c23a04447dedbee15567d2f8f393947c20b43ce5c2"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/interval_intersection/pilot_a/no_reuse-4/coordination-accounting.json",
+          "bytes": 8371,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "a50a4088398e2855b8bfc48fb1bd636d929f1bb179fa482dafa1f5de8000b4fa"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/interval_intersection/pilot_a/no_reuse-4/episode.json",
+          "bytes": 18156,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "4af402822f8f21095ed45089281b822a28509fb2c2bb26544f7cbc9dfe6a7ca4"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/interval_intersection/pilot_a/no_reuse-4/session-snapshot.json",
+          "bytes": 132856,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "b7d755adb4226ec1a3386075b11dd5d3d99bb196f724626d7f29f39a48d2939c"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/interval_intersection/pilot_a/no_reuse-4/session.sqlite",
+          "bytes": 258048,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "c7a1e8a2bf1d10fe1cd0c608cb84f1656610912772f7652e6162cfdfd9268c74"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/interval_intersection/pilot_a/single-1/coordination-accounting.json",
+          "bytes": 3619,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "ed5c63d5755c3c8dabee03e3430e8a71e6fb391a51e7fbd627f7eecfbafb5bad"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/interval_intersection/pilot_a/single-1/episode.json",
+          "bytes": 17748,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "4314322f93dc1fcfbb3f0c5e547c6354282e7a7c52c501ebe367684d0840f609"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/interval_intersection/pilot_a/single-1/session-snapshot.json",
+          "bytes": 83689,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "b7311a973c6e58be55acec5f502f57e0a1376c350ae5304ab8efddb75d37f8b5"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/interval_intersection/pilot_a/single-1/session.sqlite",
+          "bytes": 196608,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "de5a7a40184ca7f6bf06fd02a354899c3f267c1de6f767e05a4dba685a0529b1"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/inventory_reconciliation/pilot_a/blackboard-2/coordination-accounting.json",
+          "bytes": 5207,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "e37cc3d210927b45c6dcc1289fdd309542bf50dd74a1bda23ae982aac354d4c2"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/inventory_reconciliation/pilot_a/blackboard-2/episode.json",
+          "bytes": 19616,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "46dd13aeda4d329329fcb6d589dbdf43e5c1880d66efce321ac66872ffd65241"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/inventory_reconciliation/pilot_a/blackboard-2/session-snapshot.json",
+          "bytes": 102016,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "751ef8efe5e0e75e3154ca42faf49edf2fd1a309f16bea9225f2c0294fbbc922"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/inventory_reconciliation/pilot_a/blackboard-2/session.sqlite",
+          "bytes": 221184,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "c576f9d32b4600bd70de984168cee8aaaf63c28a193abc002c2a352019e09069"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/inventory_reconciliation/pilot_a/blackboard-4/coordination-accounting.json",
+          "bytes": 8375,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "38bb3e971453c884ffd3a43ecd5c5182f5480920557c6571cd1caeb1dea03366"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/inventory_reconciliation/pilot_a/blackboard-4/episode.json",
+          "bytes": 19922,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "113751b7f16695e9741ef97c4b636bf971e410e0b2892b58b9618ca8d8348303"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/inventory_reconciliation/pilot_a/blackboard-4/session-snapshot.json",
+          "bytes": 134794,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "84b07aac4cd56ae0d4418e790632f2f6a1f63bc163d2a44a42f9eb887af59e47"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/inventory_reconciliation/pilot_a/blackboard-4/session.sqlite",
+          "bytes": 253952,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "b659197a226f0f68b4e8e8e94ef9298c0d50fcbf0770adc03c11f6d192d2b533"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/inventory_reconciliation/pilot_a/candidate-2/coordination-accounting.json",
+          "bytes": 5473,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "0599c93bbc411b652c6840421955370b249dab761c6ea98be66ebb4d0ef0d849"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/inventory_reconciliation/pilot_a/candidate-2/episode.json",
+          "bytes": 21778,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "6a8b82000308a99999e2c9aa8f11eeacfa2e33f0bda9517c435d1663874a5eeb"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/inventory_reconciliation/pilot_a/candidate-2/session-snapshot.json",
+          "bytes": 104603,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "2e1d30a543545cfc97afa41b511a8b4cf849309dd0c2fd953e604c24f79dbd00"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/inventory_reconciliation/pilot_a/candidate-2/session.sqlite",
+          "bytes": 225280,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "85e4c7556e6db36b983b35d889b26937418d3d573d876cf87737336c40fac809"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/inventory_reconciliation/pilot_a/candidate-4/coordination-accounting.json",
+          "bytes": 8375,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "ec2dc7dd64b9455a85f6c38b4a2e72684f972793cbc12f479e82f757a82fcf5b"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/inventory_reconciliation/pilot_a/candidate-4/episode.json",
+          "bytes": 19918,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "b5922fb0db28355edf568a3a8a81c3a0db5e25780fc5b69bc52c74331632a248"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/inventory_reconciliation/pilot_a/candidate-4/session-snapshot.json",
+          "bytes": 134794,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "1254ddd369d1d30bf0d6cc27b100bb6ee37d82350f6e917ceb3d180039e16468"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/inventory_reconciliation/pilot_a/candidate-4/session.sqlite",
+          "bytes": 258048,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "ae2f8e112895a5bbf6ddd44bc81c79d1a92310f7e802d082f8234d1bcbcf3a98"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/inventory_reconciliation/pilot_a/no_ownership-4/coordination-accounting.json",
+          "bytes": 8375,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "bb5ff7afe5b4939c7058c5c088285ce5a4242d34408ba7b779c9615eeeb8eeca"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/inventory_reconciliation/pilot_a/no_ownership-4/episode.json",
+          "bytes": 19930,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "a9136e770c28ed1def0254e1afc36619b9695491b54f121a0da6b4939d34ab0e"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/inventory_reconciliation/pilot_a/no_ownership-4/session-snapshot.json",
+          "bytes": 134795,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "b848d4372e5b8b6eb25214512cd7e5d94a7e92d680260a341fcb861ec29ca05c"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/inventory_reconciliation/pilot_a/no_ownership-4/session.sqlite",
+          "bytes": 253952,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "f2df0721801a9780b7cf8d1a8c03648e62dc327b11cabb3e65029d31cadf9c43"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/inventory_reconciliation/pilot_a/no_reuse-4/coordination-accounting.json",
+          "bytes": 8375,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "d5ee10f1c6a7e515da72d2ed1a80f6dbe826a58b687c207daaaf5109275fcfe9"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/inventory_reconciliation/pilot_a/no_reuse-4/episode.json",
+          "bytes": 19914,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "29013c9cf10e6022701c10a6aa432e6bb7a09ece80907cbb5b579e0c400727c0"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/inventory_reconciliation/pilot_a/no_reuse-4/session-snapshot.json",
+          "bytes": 134796,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "85bb94c5c0b8b23e6c149fe41749c2d30accf55bb3b39676daf91ebd0227b4eb"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/inventory_reconciliation/pilot_a/no_reuse-4/session.sqlite",
+          "bytes": 258048,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "4d70d50e57046db05d18c3895f9da9878ffd0b4627eac338a65eb1f026b4026d"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/inventory_reconciliation/pilot_a/single-1/coordination-accounting.json",
+          "bytes": 3623,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "f14ad8f13da48767c2d3b1016244a0d7fb643e9f9df2134a76fbb9fb10ed56e0"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/inventory_reconciliation/pilot_a/single-1/episode.json",
+          "bytes": 19446,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "7c1ef87a358903dee0d1cbef11b61917e8a44ee41562cae62a6940a0a1b3d7b8"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/inventory_reconciliation/pilot_a/single-1/session-snapshot.json",
+          "bytes": 85628,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "f811b3cbcd99c14c634a60a0cff2be06f12867475157e64ad97c498870433775"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/inventory_reconciliation/pilot_a/single-1/session.sqlite",
+          "bytes": 196608,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "0c6760b0f344ba7ef0ca654f636b3498752194161569af48b53fee32676594ca"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/version_correction/pilot_a/blackboard-2/coordination-accounting.json",
+          "bytes": 2428,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "87b23b619c8530c0aac641db43ba94fea5d8f61e2fcb24dc8a51b2531604320e"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/version_correction/pilot_a/blackboard-2/episode.json",
+          "bytes": 14457,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "ccc48683b05e9dbf397bdb619f5c9199c80d81a64fa6daa41891e5723a6f56cb"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/version_correction/pilot_a/blackboard-2/session-snapshot.json",
+          "bytes": 65515,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "da965d89c782338f10514bc4526799ec5b973f9daebdb59de49cdc2de2215830"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/version_correction/pilot_a/blackboard-2/session.sqlite",
+          "bytes": 176128,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "e0f007877df4bbafbb04d496e44ad03ec30f9675385cc136409eb1c629d41035"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/version_correction/pilot_a/blackboard-4/coordination-accounting.json",
+          "bytes": 3484,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "d8ce99c4ffb0ecaa286322a78fd84fdd2f770170a42bdbc906ea20d61fd2b588"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/version_correction/pilot_a/blackboard-4/episode.json",
+          "bytes": 14617,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "67d22966e4c71440845544c88d5e532df1549a1302dffb5c23064c5a477486d3"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/version_correction/pilot_a/blackboard-4/session-snapshot.json",
+          "bytes": 77521,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "5447a854109f464f20c141f18dd3f24252a5e2471a5d5e9a91858a403cc720ce"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/version_correction/pilot_a/blackboard-4/session.sqlite",
+          "bytes": 188416,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "b91d558106fef45d29c2c592f79ca22890aea372af12e3b9f3f2859b817b461e"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/version_correction/pilot_a/candidate-2/coordination-accounting.json",
+          "bytes": 2694,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "9ba845aee3491eb0d57a51b7ed351de4c04aa9e107a31ff12abd0640bbd110fa"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/version_correction/pilot_a/candidate-2/episode.json",
+          "bytes": 15995,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "19886152397957e6ae9045692af4ff34f97b8ebd12fa5df13ae687da61fea9c2"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/version_correction/pilot_a/candidate-2/session-snapshot.json",
+          "bytes": 68101,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "44e003e7af02b6767f7a61889b03ff069b1cf2d5fd8784d3069186bd462885ff"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/version_correction/pilot_a/candidate-2/session.sqlite",
+          "bytes": 180224,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "6879d2dd07cd5c0aabc75b7be0bec043c0ca74ee4f07f32e7ba81c8bcae3fdb9"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/version_correction/pilot_a/candidate-4/coordination-accounting.json",
+          "bytes": 3484,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "c3637f39b3f410b282307d301a58a425f4afb3567aefcff1bd610d74a0640770"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/version_correction/pilot_a/candidate-4/episode.json",
+          "bytes": 14614,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "7ee21f10c5e01d1f679b5310704951051dad24211f1b85455fa098519863f52d"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/version_correction/pilot_a/candidate-4/session-snapshot.json",
+          "bytes": 77521,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "7ea5bc11228a8e853e4d8f8f817b167699af708457726ceb71f74d10b03f86aa"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/version_correction/pilot_a/candidate-4/session.sqlite",
+          "bytes": 188416,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "9792afece95053df895f23e36a10150d53c86e583dbbf4de829034ae2376415c"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/version_correction/pilot_a/no_ownership-4/coordination-accounting.json",
+          "bytes": 3484,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "36bb008cb6249c06896c3c429d200c33df2f87989022de127216fba4fbe70241"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/version_correction/pilot_a/no_ownership-4/episode.json",
+          "bytes": 14623,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "6591c0d89b8b777bba3e41ed8b2a240e692c8d4b603e86889e60022d2511fd3a"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/version_correction/pilot_a/no_ownership-4/session-snapshot.json",
+          "bytes": 77521,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "f6bb2f6d09503b2c219d81b3ce0dd4e630e2c4724642e8653794e957d827c2c1"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/version_correction/pilot_a/no_ownership-4/session.sqlite",
+          "bytes": 188416,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "9d113ff80568e8632cb8c16c5e2b53eb52b7944c623b7dc91f6ace532e5cf206"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/version_correction/pilot_a/no_reuse-4/coordination-accounting.json",
+          "bytes": 3484,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "1aebeab8b452b3535d422f851cce85e8a2dda0826b638f0bcbc70c27a9fa6a59"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/version_correction/pilot_a/no_reuse-4/episode.json",
+          "bytes": 14611,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "d89e5bea384cfb5a87ebc2f1db770493cb38b2fa5a23c5dea9b95c838be91d37"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/version_correction/pilot_a/no_reuse-4/session-snapshot.json",
+          "bytes": 77521,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "b9866402793294ad2654e179179c0af3ff8593d1b838848c55bf22cb52127584"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/version_correction/pilot_a/no_reuse-4/session.sqlite",
+          "bytes": 188416,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "4d2924874d4fcc4c977c7f210c089f262822526349eb115ceadcab3d819bf73c"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/version_correction/pilot_a/single-1/coordination-accounting.json",
+          "bytes": 1899,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "11cde135c113ab45c1259753a19d0dd983dbcfacdbd3cf6bb0e2d59eca076699"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/version_correction/pilot_a/single-1/episode.json",
+          "bytes": 14364,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "009b4506115d8422d6323e5b535a30265bb73127effd7ecd0ce1c6baa524ad2c"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/version_correction/pilot_a/single-1/session-snapshot.json",
+          "bytes": 59513,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "8ee3d4c51b849cd59b5c52fcad8fbddd6c98926e044f6db29f62188e6181d10c"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/version_correction/pilot_a/single-1/session.sqlite",
+          "bytes": 172032,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "4533873ecd64d0c17a6abf8fa81c6600fc2522a667e144e4abd9e24aa51ee4c6"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/records.json",
+          "bytes": 69168,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "81442e239c1bcfe27d62506ac13df6dcafea3fcd162f77c31f6303aceb9964f7"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/run_provider_free_v1.py",
+          "bytes": 9063,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "13209b177154abc4653ca248e34c356b8483d63a18b78decec27ddda4e1573f9"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/provider-free/summary.json",
+          "bytes": 3287,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "c0f328400a46ea6b7af650f5a9c7fed34604371f2ae3411b534f7fbcb1739e82"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/regressions/bench-regressions-v1.json",
+          "bytes": 786,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "035b63a2a36e412eb1b211b50fd244eefa515408ce89bcac3c2d8a84ccb1b547"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/regressions/core-cli-v1.json",
+          "bytes": 7840,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "ced316c2f786f74eba8ae66f130143d77e8d6dc8ba0169b90a0895bcee7bb2e8"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/regressions/core-pytest.json",
+          "bytes": 274,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "67c55bd5955f1022a1a1fe772a891633763ff9f46a28b722e9f0031bbec3a350"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/regressions/core-pytest.log",
+          "bytes": 6605,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "69adbbe748393c66af02215b604e15277d01f7a7b2d20a899a87ecdba8346b9a"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/regressions/installed-consumer-dev3.json",
+          "bytes": 1196,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "9f8897926bd160a4fbd1fcbf29fa251a8d9894cf8d88c4559929c86e2d91dd96"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/regressions/installed-consumer-v1.json",
+          "bytes": 1183,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "080d0e6101a9e11e95ac95532360cdf095fd0cc71930cd41bf9fb717da17751d"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/regressions/installed-consumer-v2.json",
+          "bytes": 1194,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "933f668a75323118dfabd0f55587b6441f6f46767c599884152ad887cea3796c"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/remote-proposal/official-api-review.json",
+          "bytes": 5029,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "e3617f5ff2ee9a4eef99385a0855a161e0207ee795b1a61308bf328eeb9b64be"
+        },
+        {
+          "path": "pheroos-bench/next-cycle/coordination-repair-v1/remote-proposal/official-api-review.md",
+          "bytes": 6337,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "2f2ff7832a57b7e61995a73ae7ab8b7eedfbc3f137fc9b316f918cb5216876f1"
+        },
+        {
+          "path": "pheroos-bench/pyproject.toml",
+          "bytes": 950,
+          "ignored": false,
+          "tracked_modified": true,
+          "sha256": "f5cdf338519352cd311398af806d4b5b56f8a2116bb0ced85dfe598fcc334147"
+        },
+        {
+          "path": "pheroos-bench/src/pheroos_bench/coordination_repair_v1.py",
+          "bytes": 27831,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "4c22ce447c1364b27eb40571fdeb5c6aa5fc203e97fd7a919b2d27b3c4fdd9e4"
+        },
+        {
+          "path": "pheroos-bench/src/pheroos_bench/coordination_repair_v1_forks.py",
+          "bytes": 5646,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "3b31d0af711b5cdfb341e923c52cedb021c4ddf0c789bddb35b4531268caf178"
+        },
+        {
+          "path": "pheroos-bench/src/pheroos_bench/coordination_repair_v1_measurement.py",
+          "bytes": 6057,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "e8a2c03cce77f4abec3544aacde3c9aea7d3be36d535191f8fc30568e674eef9"
+        },
+        {
+          "path": "pheroos-bench/src/pheroos_bench/coordination_repair_v1_pilot.py",
+          "bytes": 15155,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "4e68473824672bd1c1682e9889a3a4ad2dae8fdf256e173809eac38110c1f628"
+        },
+        {
+          "path": "pheroos-bench/src/pheroos_bench/coordination_repair_v1_tasks.py",
+          "bytes": 20023,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "715d82fca4a0f7995df8c424e510972716e9d983e47784b2eade10f2d1578d2b"
+        },
+        {
+          "path": "pheroos-bench/tests/test_coordination_repair_v1_measurement.py",
+          "bytes": 3353,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "5786de7a8952ce26272293d85ea9e73e40713f42ed3239f4d2f2aa47d7bb43a6"
+        },
+        {
+          "path": "pheroos-bench/tests/test_coordination_repair_v1_pilot.py",
+          "bytes": 3798,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "33c7ba7526fefcb56e73b73d2f902b9b115c5b92a30a6beafaf55426097283fc"
+        },
+        {
+          "path": "pheroos-bench/tests/test_coordination_repair_v1_tasks.py",
+          "bytes": 8706,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "d7741eb8d4eb3684be5653158506bbfc5507e119bee037203c5e1e0d13912f46"
+        },
+        {
+          "path": "pheroos-bench/tools/verify_coordination_repair_install.py",
+          "bytes": 4597,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "302a9d32d7922adebb961293c46441aaf3b2eecd50cfba4420e96c87ff345239"
+        }
+      ]
+    },
+    {
+      "name": "runtime",
+      "root": "/tmp/pheroos-next-cycle-runtime",
+      "base": "c94a2efd13ace1ac424b5ccb1dc0f885b810f82c",
+      "head": "c94a2efd13ace1ac424b5ccb1dc0f885b810f82c",
+      "branch": "codex/coordination-repair-runtime-v1",
+      "candidate_files": 28,
+      "candidate_bytes": 500174,
+      "largest_files": [
+        {
+          "path": "results/coordination-repair-v2/artifacts/pheroos_runtime-0.1.0.dev3.tar.gz",
+          "bytes": 94601,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "b5bb6e00b504271a5c8e1050ed84a893fedfa7dd0a41b99c9d0e4d84853d90e8"
+        },
+        {
+          "path": "results/coordination-repair-v1/artifacts/pheroos_runtime-0.1.0.dev2.tar.gz",
+          "bytes": 89408,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "69af3e69f12ddb5f5c67fce3b33bbb2d864a20e2c56dc245f9e3a7ade2bd5187"
+        },
+        {
+          "path": "results/coordination-repair-v1/install-attempt-1-distributions/pheroos_runtime-0.1.0.dev2.tar.gz",
+          "bytes": 87244,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "6b8a7cbfae3fc37c5e38ad509f09c5d1ef2f8f2c666ced392f77cf0ea5456eea"
+        },
+        {
+          "path": "results/coordination-repair-v2/artifacts/pheroos_runtime-0.1.0.dev3-py3-none-any.whl",
+          "bytes": 40053,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "1711ac6b8ac4d1d60e03a78e4ac4efbcba535c93df2c52575f118b666505d0f7"
+        },
+        {
+          "path": "results/coordination-repair-v1/artifacts/pheroos_runtime-0.1.0.dev2-py3-none-any.whl",
+          "bytes": 39482,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "12ade6ec65a1a5dd7c24353a45a4366968b7ecd8d1c75dfdc6019b8c016c7fbb"
+        },
+        {
+          "path": "results/coordination-repair-v1/install-attempt-1-distributions/pheroos_runtime-0.1.0.dev2-py3-none-any.whl",
+          "bytes": 38386,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "8f629badf9c38d224c359cfb8af5286126f6772058e2a736af04df9f24e2d691"
+        },
+        {
+          "path": "src/pheroos_runtime/coordination_v1.py",
+          "bytes": 27951,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "2abe73fb83099d2dffb705559bc62276fc6ced813732e4dee45e27c0697d006b"
+        },
+        {
+          "path": "tests/test_coordination_v1.py",
+          "bytes": 17871,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "70765567c0aef210b9212dd1e0d29243c0a48a48e0830e92711bbfcfd06c7b84"
+        },
+        {
+          "path": "src/pheroos_runtime/campaign_v1.py",
+          "bytes": 9770,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "7dd9ada21e7375519765bcd768bdaefa63c57746e240ef8ef691321c328473e8"
+        },
+        {
+          "path": "docs/coordination-v1.md",
+          "bytes": 7572,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "770df7c845c9f8ac9aaee6ed3a65e7f73b7bbc5dfe3eaecf2833022d85a7ff0b"
+        },
+        {
+          "path": "tests/test_recorded_local_v2.py",
+          "bytes": 7004,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "c97d6b3e4980bbd8e8951d5694c56c45fa15c6ff9ead5d93163ab1c9c87c5615"
+        },
+        {
+          "path": "tests/test_campaign_v1.py",
+          "bytes": 6346,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "00a0b0200dd5b08079db195fbd009cd8fa4b2fe42fb0b540f7fcfe8b81c2d573"
+        },
+        {
+          "path": "tests/fixtures/recorded-local-v1-pre-dispatch-abort.json",
+          "bytes": 5298,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "df1edaea93d43f3426705c5dfd6092e4cb33ea934d8b98b6a8d5cce468d4562c"
+        },
+        {
+          "path": "README.md",
+          "bytes": 5059,
+          "ignored": false,
+          "tracked_modified": true,
+          "sha256": "f280741c84946234ad843f7cbe4fd7cd1e3044516bf77c134b640b899972d437"
+        },
+        {
+          "path": "results/coordination-repair-v1/final-validation-v1.json",
+          "bytes": 4011,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "333f038a32dcba0b750ffae4c6b86bbb49977fe930f982cbe6a152ae0bdff774"
+        },
+        {
+          "path": "src/pheroos_runtime/recorded_local_v1.py",
+          "bytes": 2551,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "d05f5ae8c764bb5c05d9ad6dbf342e5a912c9a972de5ba413311c522a5f45c32"
+        },
+        {
+          "path": "results/coordination-repair-v2/install-validation-v1.json",
+          "bytes": 2509,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "e9f89fe494ffb6c9d2b7c7fc58b201d53f28bf9eb7bbedac1ea89b524fe7416a"
+        },
+        {
+          "path": "results/coordination-repair-v1/install-validation-v1.json",
+          "bytes": 2508,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "e1d6a0e0ab75bf8383187a5e7c740ad0da91b23b4bdf3dc0bb68b4a43367514d"
+        },
+        {
+          "path": "tests/test_recorded_local_v1.py",
+          "bytes": 2383,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "a6fd0693f4b389bd57954cfaf9a9e3f30b3df1a3a8a174d4cf0617c3964d2bdb"
+        },
+        {
+          "path": "docs/recorded-local-v2.md",
+          "bytes": 2247,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "0e655d18ec9088411d8ce4b427af4a75f8dbd66f7eec7b69044202a9718d82da"
+        }
+      ],
+      "ignored_relevant_files": [],
+      "ignored_relevant_count": 0,
+      "publication_candidate_flags": [],
+      "noncandidate_ignored_flags_count": 40,
+      "noncandidate_ignored_flags_examples": [
+        {
+          "path": ".pytest_cache/.gitignore",
+          "flags": [
+            "cache"
+          ]
+        },
+        {
+          "path": ".pytest_cache/CACHEDIR.TAG",
+          "flags": [
+            "cache"
+          ]
+        },
+        {
+          "path": ".pytest_cache/README.md",
+          "flags": [
+            "cache"
+          ]
+        },
+        {
+          "path": ".pytest_cache/v/cache/lastfailed",
+          "flags": [
+            "cache"
+          ]
+        },
+        {
+          "path": ".pytest_cache/v/cache/nodeids",
+          "flags": [
+            "cache"
+          ]
+        },
+        {
+          "path": ".ruff_cache/.gitignore",
+          "flags": [
+            "cache"
+          ]
+        },
+        {
+          "path": ".ruff_cache/0.13.3/5139977039158031902",
+          "flags": [
+            "cache"
+          ]
+        },
+        {
+          "path": ".ruff_cache/0.13.3/9070343607376661539",
+          "flags": [
+            "cache"
+          ]
+        },
+        {
+          "path": ".ruff_cache/CACHEDIR.TAG",
+          "flags": [
+            "cache"
+          ]
+        },
+        {
+          "path": "src/pheroos_runtime/__pycache__/__init__.cpython-312.pyc",
+          "flags": [
+            "cache"
+          ]
+        },
+        {
+          "path": "src/pheroos_runtime/__pycache__/adapters.cpython-312.pyc",
+          "flags": [
+            "cache"
+          ]
+        },
+        {
+          "path": "src/pheroos_runtime/__pycache__/authority.cpython-312.pyc",
+          "flags": [
+            "cache"
+          ]
+        },
+        {
+          "path": "src/pheroos_runtime/__pycache__/campaign_v1.cpython-312.pyc",
+          "flags": [
+            "cache"
+          ]
+        },
+        {
+          "path": "src/pheroos_runtime/__pycache__/coordination_v1.cpython-312.pyc",
+          "flags": [
+            "cache"
+          ]
+        },
+        {
+          "path": "src/pheroos_runtime/__pycache__/engine.cpython-312.pyc",
+          "flags": [
+            "cache"
+          ]
+        },
+        {
+          "path": "src/pheroos_runtime/__pycache__/r3_ledger.cpython-312.pyc",
+          "flags": [
+            "cache"
+          ]
+        },
+        {
+          "path": "src/pheroos_runtime/__pycache__/r3_local.cpython-312.pyc",
+          "flags": [
+            "cache"
+          ]
+        },
+        {
+          "path": "src/pheroos_runtime/__pycache__/recorded_local_v1.cpython-312.pyc",
+          "flags": [
+            "cache"
+          ]
+        },
+        {
+          "path": "src/pheroos_runtime/__pycache__/recorded_local_v2.cpython-312.pyc",
+          "flags": [
+            "cache"
+          ]
+        },
+        {
+          "path": "src/pheroos_runtime/__pycache__/session_driver_v1.cpython-312.pyc",
+          "flags": [
+            "cache"
+          ]
+        },
+        {
+          "path": "src/pheroos_runtime/__pycache__/session_v1.cpython-312.pyc",
+          "flags": [
+            "cache"
+          ]
+        },
+        {
+          "path": "src/pheroos_runtime/__pycache__/store.cpython-312.pyc",
+          "flags": [
+            "cache"
+          ]
+        },
+        {
+          "path": "tests/__pycache__/test_authority.cpython-312-pytest-9.1.1.pyc",
+          "flags": [
+            "cache"
+          ]
+        },
+        {
+          "path": "tests/__pycache__/test_campaign_v1.cpython-312-pytest-9.1.1.pyc",
+          "flags": [
+            "cache"
+          ]
+        },
+        {
+          "path": "tests/__pycache__/test_coordination_v1.cpython-312-pytest-9.1.1.pyc",
+          "flags": [
+            "cache"
+          ]
+        }
+      ],
+      "scan_skips": [],
+      "historical_evidence_v1": {
+        "base_files": 11,
+        "files": [
+          {
+            "path": "publication/evidence-v1/README.md",
+            "base_blob": "9fe217159f2caa7fe3f494ec1a79feb72dab6d9f",
+            "current_blob": "9fe217159f2caa7fe3f494ec1a79feb72dab6d9f",
+            "bytes": 3554,
+            "identical": true
+          },
+          {
+            "path": "publication/evidence-v1/RESTORE.md",
+            "base_blob": "861c8d5b0e4a295ee5a0de429670e9661eff7dba",
+            "current_blob": "861c8d5b0e4a295ee5a0de429670e9661eff7dba",
+            "bytes": 2320,
+            "identical": true
+          },
+          {
+            "path": "publication/evidence-v1/dist-000.tar.xz",
+            "base_blob": "233c69de2b312e19a22f45411565c2a4f835fd15",
+            "current_blob": "233c69de2b312e19a22f45411565c2a4f835fd15",
+            "bytes": 66380,
+            "identical": true
+          },
+          {
+            "path": "publication/evidence-v1/independent-packaging-review-source.py",
+            "base_blob": "3f28585e0f9651cca3a4a78632e6f52fb4b4f3b9",
+            "current_blob": "3f28585e0f9651cca3a4a78632e6f52fb4b4f3b9",
+            "bytes": 5648,
+            "identical": true
+          },
+          {
+            "path": "publication/evidence-v1/independent-packaging-review.json",
+            "base_blob": "fa150fe7ff55596eb30bb9273003f7424a67f298",
+            "current_blob": "fa150fe7ff55596eb30bb9273003f7424a67f298",
+            "bytes": 3709,
+            "identical": true
+          },
+          {
+            "path": "publication/evidence-v1/manifest.json",
+            "base_blob": "002f1e027dbe148a9ed26a59754c9a92cc662289",
+            "current_blob": "002f1e027dbe148a9ed26a59754c9a92cc662289",
+            "bytes": 23204,
+            "identical": true
+          },
+          {
+            "path": "publication/evidence-v1/packaging-receipt.json",
+            "base_blob": "bc32adb1fbff1a88e688d80ae76dde42d60bfc50",
+            "current_blob": "bc32adb1fbff1a88e688d80ae76dde42d60bfc50",
+            "bytes": 1025,
+            "identical": true
+          },
+          {
+            "path": "publication/evidence-v1/r3-legacy-path-mapping.json",
+            "base_blob": "b68d25652185cd68a0cce4e894006842159a0bc1",
+            "current_blob": "b68d25652185cd68a0cce4e894006842159a0bc1",
+            "bytes": 3833,
+            "identical": true
+          },
+          {
+            "path": "publication/evidence-v1/replication-000.tar.xz",
+            "base_blob": "18d90454516221ab1b993918ff836038a1e8ad1a",
+            "current_blob": "18d90454516221ab1b993918ff836038a1e8ad1a",
+            "bytes": 5851908,
+            "identical": true
+          },
+          {
+            "path": "publication/evidence-v1/restore-tool-validation.json",
+            "base_blob": "f571d47fa86cc724c5ffbf8bf760c56446849b5e",
+            "current_blob": "f571d47fa86cc724c5ffbf8bf760c56446849b5e",
+            "bytes": 756,
+            "identical": true
+          },
+          {
+            "path": "publication/evidence-v1/validation.json",
+            "base_blob": "2f8f4e77c69ceddf6fcfb2fd4ec172176c53288c",
+            "current_blob": "2f8f4e77c69ceddf6fcfb2fd4ec172176c53288c",
+            "bytes": 1207,
+            "identical": true
+          }
+        ],
+        "mismatches": [],
+        "unexpected_untracked_files": [],
+        "all_base_bytes_identical": true
+      },
+      "file_manifest": [
+        {
+          "path": "MANIFEST.in",
+          "bytes": 173,
+          "ignored": false,
+          "tracked_modified": true,
+          "sha256": "23f23d4e89e368992c1d8cecc714939983226f47bbd080b9325749a39e58b68e"
+        },
+        {
+          "path": "README.md",
+          "bytes": 5059,
+          "ignored": false,
+          "tracked_modified": true,
+          "sha256": "f280741c84946234ad843f7cbe4fd7cd1e3044516bf77c134b640b899972d437"
+        },
+        {
+          "path": "docs/coordination-v1.md",
+          "bytes": 7572,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "770df7c845c9f8ac9aaee6ed3a65e7f73b7bbc5dfe3eaecf2833022d85a7ff0b"
+        },
+        {
+          "path": "docs/recorded-local-v2.md",
+          "bytes": 2247,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "0e655d18ec9088411d8ce4b427af4a75f8dbd66f7eec7b69044202a9718d82da"
+        },
+        {
+          "path": "pyproject.toml",
+          "bytes": 595,
+          "ignored": false,
+          "tracked_modified": true,
+          "sha256": "ccce9ee162464be7482783e0ecea244a2b731a89c49c5ff06eb6f357fe3b1c69"
+        },
+        {
+          "path": "results/coordination-repair-v1/artifacts/pheroos_runtime-0.1.0.dev2-py3-none-any.whl",
+          "bytes": 39482,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "12ade6ec65a1a5dd7c24353a45a4366968b7ecd8d1c75dfdc6019b8c016c7fbb"
+        },
+        {
+          "path": "results/coordination-repair-v1/artifacts/pheroos_runtime-0.1.0.dev2.tar.gz",
+          "bytes": 89408,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "69af3e69f12ddb5f5c67fce3b33bbb2d864a20e2c56dc245f9e3a7ade2bd5187"
+        },
+        {
+          "path": "results/coordination-repair-v1/final-validation-v1.json",
+          "bytes": 4011,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "333f038a32dcba0b750ffae4c6b86bbb49977fe930f982cbe6a152ae0bdff774"
+        },
+        {
+          "path": "results/coordination-repair-v1/focused-validation-v1.json",
+          "bytes": 1412,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "85e7200c7d8d82549ad209ae5b64aee5960afa24ed3682d6ee8be69d8cc47ea8"
+        },
+        {
+          "path": "results/coordination-repair-v1/install-attempt-1-distributions/pheroos_runtime-0.1.0.dev2-py3-none-any.whl",
+          "bytes": 38386,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "8f629badf9c38d224c359cfb8af5286126f6772058e2a736af04df9f24e2d691"
+        },
+        {
+          "path": "results/coordination-repair-v1/install-attempt-1-distributions/pheroos_runtime-0.1.0.dev2.tar.gz",
+          "bytes": 87244,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "6b8a7cbfae3fc37c5e38ad509f09c5d1ef2f8f2c666ced392f77cf0ea5456eea"
+        },
+        {
+          "path": "results/coordination-repair-v1/install-attempt-1-distributions/sha256.json",
+          "bytes": 227,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "7e9b7ea1198280eb7468e051dfe7f87c47e850f90c632982429fbe9d42416f59"
+        },
+        {
+          "path": "results/coordination-repair-v1/install-attempt-1.json",
+          "bytes": 803,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "a2a6835f49c8bf724cf913642ff64da4054477d307c6042e082f8010bc9331f5"
+        },
+        {
+          "path": "results/coordination-repair-v1/install-validation-v1.json",
+          "bytes": 2508,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "e1d6a0e0ab75bf8383187a5e7c740ad0da91b23b4bdf3dc0bb68b4a43367514d"
+        },
+        {
+          "path": "results/coordination-repair-v2/artifacts/pheroos_runtime-0.1.0.dev3-py3-none-any.whl",
+          "bytes": 40053,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "1711ac6b8ac4d1d60e03a78e4ac4efbcba535c93df2c52575f118b666505d0f7"
+        },
+        {
+          "path": "results/coordination-repair-v2/artifacts/pheroos_runtime-0.1.0.dev3.tar.gz",
+          "bytes": 94601,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "b5bb6e00b504271a5c8e1050ed84a893fedfa7dd0a41b99c9d0e4d84853d90e8"
+        },
+        {
+          "path": "results/coordination-repair-v2/final-validation-v1.json",
+          "bytes": 1999,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "f5ff07e94b2551be296ad8d72f7f813249499256664b0b835b04547b1992a2a8"
+        },
+        {
+          "path": "results/coordination-repair-v2/install-validation-v1.json",
+          "bytes": 2509,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "e9f89fe494ffb6c9d2b7c7fc58b201d53f28bf9eb7bbedac1ea89b524fe7416a"
+        },
+        {
+          "path": "results/coordination-repair-v2/preflight-validation-v1.json",
+          "bytes": 1853,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "c80170883ad2abf26bdd0b7af642c492acc12d578a3636509eda191578b4eb3b"
+        },
+        {
+          "path": "src/pheroos_runtime/campaign_v1.py",
+          "bytes": 9770,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "7dd9ada21e7375519765bcd768bdaefa63c57746e240ef8ef691321c328473e8"
+        },
+        {
+          "path": "src/pheroos_runtime/coordination_v1.py",
+          "bytes": 27951,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "2abe73fb83099d2dffb705559bc62276fc6ced813732e4dee45e27c0697d006b"
+        },
+        {
+          "path": "src/pheroos_runtime/recorded_local_v1.py",
+          "bytes": 2551,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "d05f5ae8c764bb5c05d9ad6dbf342e5a912c9a972de5ba413311c522a5f45c32"
+        },
+        {
+          "path": "src/pheroos_runtime/recorded_local_v2.py",
+          "bytes": 858,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "2c0a0e27e460782afb04837c3c6da517f9bd8efd343bfea60e413aa45021cd5a"
+        },
+        {
+          "path": "tests/fixtures/recorded-local-v1-pre-dispatch-abort.json",
+          "bytes": 5298,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "df1edaea93d43f3426705c5dfd6092e4cb33ea934d8b98b6a8d5cce468d4562c"
+        },
+        {
+          "path": "tests/test_campaign_v1.py",
+          "bytes": 6346,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "00a0b0200dd5b08079db195fbd009cd8fa4b2fe42fb0b540f7fcfe8b81c2d573"
+        },
+        {
+          "path": "tests/test_coordination_v1.py",
+          "bytes": 17871,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "70765567c0aef210b9212dd1e0d29243c0a48a48e0830e92711bbfcfd06c7b84"
+        },
+        {
+          "path": "tests/test_recorded_local_v1.py",
+          "bytes": 2383,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "a6fd0693f4b389bd57954cfaf9a9e3f30b3df1a3a8a174d4cf0617c3964d2bdb"
+        },
+        {
+          "path": "tests/test_recorded_local_v2.py",
+          "bytes": 7004,
+          "ignored": false,
+          "tracked_modified": false,
+          "sha256": "c97d6b3e4980bbd8e8951d5694c56c45fa15c6ff9ead5d93163ab1c9c87c5615"
+        }
+      ]
+    }
+  ],
+  "archive_scan": [
+    {
+      "path": "core:pheroos-bench/next-cycle/coordination-repair-v1/artifacts/pheroos-0.1.0-py3-none-any.whl",
+      "member_count": 620,
+      "expanded_bytes": 13348180,
+      "scanned_bytes": 13348180,
+      "flagged_members": [],
+      "unscanned_members": [],
+      "unsafe_member_paths": [],
+      "secret_hit_paths": []
+    },
+    {
+      "path": "core:pheroos-bench/next-cycle/coordination-repair-v1/artifacts/pheroos_bench-0.1.1.dev1-py3-none-any.whl",
+      "member_count": 44,
+      "expanded_bytes": 513032,
+      "scanned_bytes": 513032,
+      "flagged_members": [],
+      "unscanned_members": [],
+      "unsafe_member_paths": [],
+      "secret_hit_paths": []
+    },
+    {
+      "path": "core:pheroos-bench/next-cycle/coordination-repair-v1/artifacts/pheroos_bench-0.1.1.dev2-py3-none-any.whl",
+      "member_count": 44,
+      "expanded_bytes": 513432,
+      "scanned_bytes": 513432,
+      "flagged_members": [],
+      "unscanned_members": [],
+      "unsafe_member_paths": [],
+      "secret_hit_paths": []
+    },
+    {
+      "path": "core:pheroos-bench/next-cycle/coordination-repair-v1/artifacts/pheroos_runtime-0.1.0.dev2-py3-none-any.whl",
+      "member_count": 18,
+      "expanded_bytes": 130011,
+      "scanned_bytes": 130011,
+      "flagged_members": [],
+      "unscanned_members": [],
+      "unsafe_member_paths": [],
+      "secret_hit_paths": []
+    },
+    {
+      "path": "core:pheroos-bench/next-cycle/coordination-repair-v1/artifacts/pheroos_runtime-0.1.0.dev3-py3-none-any.whl",
+      "member_count": 19,
+      "expanded_bytes": 130961,
+      "scanned_bytes": 130961,
+      "flagged_members": [],
+      "unscanned_members": [],
+      "unsafe_member_paths": [],
+      "secret_hit_paths": []
+    },
+    {
+      "path": "core:pheroos-bench/next-cycle/coordination-repair-v1/provider-free/frozen-source-v1.tar.xz",
+      "member_count": 9,
+      "expanded_bytes": 136501,
+      "scanned_bytes": 136501,
+      "flagged_members": [],
+      "unscanned_members": [],
+      "unsafe_member_paths": [],
+      "secret_hit_paths": []
+    },
+    {
+      "path": "runtime:results/coordination-repair-v1/artifacts/pheroos_runtime-0.1.0.dev2-py3-none-any.whl",
+      "member_count": 18,
+      "expanded_bytes": 130011,
+      "scanned_bytes": 130011,
+      "flagged_members": [],
+      "unscanned_members": [],
+      "unsafe_member_paths": [],
+      "secret_hit_paths": []
+    },
+    {
+      "path": "runtime:results/coordination-repair-v1/artifacts/pheroos_runtime-0.1.0.dev2.tar.gz",
+      "member_count": 47,
+      "expanded_bytes": 326936,
+      "scanned_bytes": 326936,
+      "flagged_members": [],
+      "unscanned_members": [],
+      "unsafe_member_paths": [],
+      "secret_hit_paths": []
+    },
+    {
+      "path": "runtime:results/coordination-repair-v1/install-attempt-1-distributions/pheroos_runtime-0.1.0.dev2-py3-none-any.whl",
+      "member_count": 18,
+      "expanded_bytes": 123213,
+      "scanned_bytes": 123213,
+      "flagged_members": [],
+      "unscanned_members": [],
+      "unsafe_member_paths": [],
+      "secret_hit_paths": []
+    },
+    {
+      "path": "runtime:results/coordination-repair-v1/install-attempt-1-distributions/pheroos_runtime-0.1.0.dev2.tar.gz",
+      "member_count": 47,
+      "expanded_bytes": 315427,
+      "scanned_bytes": 315427,
+      "flagged_members": [],
+      "unscanned_members": [],
+      "unsafe_member_paths": [],
+      "secret_hit_paths": []
+    },
+    {
+      "path": "runtime:results/coordination-repair-v2/artifacts/pheroos_runtime-0.1.0.dev3-py3-none-any.whl",
+      "member_count": 19,
+      "expanded_bytes": 130961,
+      "scanned_bytes": 130961,
+      "flagged_members": [],
+      "unscanned_members": [],
+      "unsafe_member_paths": [],
+      "secret_hit_paths": []
+    },
+    {
+      "path": "runtime:results/coordination-repair-v2/artifacts/pheroos_runtime-0.1.0.dev3.tar.gz",
+      "member_count": 51,
+      "expanded_bytes": 342564,
+      "scanned_bytes": 342564,
+      "flagged_members": [],
+      "unscanned_members": [],
+      "unsafe_member_paths": [],
+      "secret_hit_paths": []
+    }
+  ],
+  "secret_like_hits": [],
+  "secret_like_hit_paths": 0,
+  "scan_errors": [],
+  "limitations": [
+    "Pattern scan is a bounded heuristic, not proof that secrets cannot exist. Matches are paths/counts only; no credential text is emitted.",
+    "Archives are read without extraction; members up to64MiB and cumulative256MiB per archive scanned. Nested archives are inventoried as member bytes but not recursively unpacked.",
+    "Changes created after this timestamp need a final incremental publication scan.",
+    "Ignored raw evidence requires explicit inclusion or a versioned archive manifest. Ignored cache/environment files must remain excluded."
+  ]
+}

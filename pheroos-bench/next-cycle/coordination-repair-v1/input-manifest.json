@@ -1,0 +1,73 @@
+{
+  "schema": "coordination_repair_inputs_v1",
+  "inputs": [
+    {
+      "name": "PheroOS_Next_Cycle_Codex_Goal.md",
+      "original_path": "/mnt/c/Users/24410/Downloads/PheroOS_Next_Cycle_Codex_Goal.md",
+      "sha256": "f4668325f60f900ee2eb4319f8a14607c4f811fc15693d396e97c486857b6ac9",
+      "bytes": 22204
+    },
+    {
+      "name": "AUDIT_SCOPE_AND_NEXT_STEPS.md",
+      "original_path": "/mnt/c/Users/24410/Downloads/AUDIT_SCOPE_AND_NEXT_STEPS.md",
+      "sha256": "3836e410087e634a07fd9de88c9ac9576e8e27d3609e2a8a7aa1028950c42724",
+      "bytes": 5377
+    },
+    {
+      "name": "independent_analysis.json",
+      "original_path": "/mnt/c/Users/24410/Downloads/independent_analysis.json",
+      "sha256": "68bb104f01dd12b7d1463c2d1f770d53a17343d56c053aa053f2c7683da730b6",
+      "bytes": 4598
+    },
+    {
+      "name": "independent_analysis.py",
+      "original_path": "/mnt/c/Users/24410/Downloads/independent_analysis.py",
+      "sha256": "a64485b43f3958b9783eae61675604248ba9303d016f59b0b5f572a1bb466587",
+      "bytes": 9456
+    },
+    {
+      "name": "api-diagnostic-recommendation.md",
+      "original_path": "/home/scott/.codex/attachments/711cffb0-f589-42c3-8c0f-c29e461d23eb/pasted-text-1.txt",
+      "sha256": "a31c4ad0140aa0e7990a58f403a481a380689c46bd0c1dcb59c7aea00599994e",
+      "bytes": 12448
+    }
+  ],
+  "repositories": [
+    {
+      "path": "/home/scott/projects/PheroOS",
+      "head": "b154472becea561ac1f5fc442a7ccf372ab154f8",
+      "branch": "main",
+      "status": "M pheroos-bench/README.md\n?? pheroos-bench/EXPERIMENTAL-OS-CANDIDATE.md\n?? pheroos-bench/MASTER-GOAL-status.md\n?? pheroos-bench/R1-coordination-v2-contract.md\n?? pheroos-bench/R1-data-contract.md\n?? pheroos-bench/R2-capacity-v1-contract.md\n?? pheroos-bench/R2-data-contract.md\n?? pheroos-bench/R3-data-contract.md\n?? pheroos-bench/R3-framed-v3-contract.md\n?? pheroos-bench/R3-session-capability-v1-contract.md\n?? pheroos-bench/R3-tool-loop-v2-contract.md\n?? pheroos-bench/R4-session-scaling-v1-contract.md\n?? pheroos-bench/R5-session-faults-v1-contract.md\n?? pheroos-bench/SCALING-replication-v1-contract.md\n?? pheroos-bench/r1-coordination-pilot-v2.json\n?? pheroos-bench/r1-pilot-v1.json\n?? pheroos-bench/r2-capacity-audit-v1.json\n?? pheroos-bench/r2-pilot-v1.json\n?? pheroos-bench/r3-framed-pilot-v3.json\n?? pheroos-bench/r3-pilot-v1.json\n?? pheroos-bench/r3-session-capability-v1.json\n?? pheroos-bench/r3-tool-pilot-v2.json\n?? pheroos-bench/r4-session-scaling-pilot-v1.json\n?? pheroos-bench/r5-runtime-faults-v1.json\n?? pheroos-bench/r5-session-faults-v1.json\n?? pheroos-bench/results/master-goal-audit-v1/\n?? pheroos-bench/results/r0-replication/\n?? pheroos-bench/results/r1-coordination-pilot-v2/\n?? pheroos-bench/results/r1-pilot-v1/\n?? pheroos-bench/results/r2-capacity-audit-v1/\n?? pheroos-bench/results/r2-pilot-v1/\n?? pheroos-bench/results/r3-format-audit-v1/\n?? pheroos-bench/results/r3-framed-pilot-v3/\n?? pheroos-bench/results/r3-pilot-v1/\n?? pheroos-bench/results/r3-session-capability-v1/\n?? pheroos-bench/results/r3-tool-pilot-v2/\n?? pheroos-bench/results/r4-session-scaling-pilot-v1/\n?? pheroos-bench/results/r4-session-scaling-replication-v1/\n?? pheroos-bench/results/r5-runtime-faults-v1/\n?? pheroos-bench/results/r5-session-faults-v1/\n?? pheroos-bench/results/session-model-readiness-v1/\n?? pheroos-bench/scaling-full-grid-replication-v1.json\n?? pheroos-bench/src/pheroos_bench/r1_coordination.py\n?? pheroos-bench/src/pheroos_bench/r1_measurement.py\n?? pheroos-bench/src/pheroos_bench/r1_signals.py\n?? pheroos-bench/src/pheroos_bench/r2_capacity.py\n?? pheroos-bench/src/pheroos_bench/r2_scheduling.py\n?? pheroos-bench/src/pheroos_bench/r3_framed_pilot.py\n?? pheroos-bench/src/pheroos_bench/r3_pilot.py\n?? pheroos-bench/src/pheroos_bench/r3_session_capability.py\n?? pheroos-bench/src/pheroos_bench/r3_tasks.py\n?? pheroos-bench/src/pheroos_bench/r3_tool_pilot.py\n?? pheroos-bench/src/pheroos_bench/r3_tool_tasks.py\n?? pheroos-bench/src/pheroos_bench/r4_measurement.py\n?? pheroos-bench/src/pheroos_bench/r4_session_scaling.py\n?? pheroos-bench/src/pheroos_bench/r4_tasks.py\n?? pheroos-bench/tests/test_audit_r5_session_faults.py\n?? pheroos-bench/tests/test_audit_r5_session_faults_v2.py\n?? pheroos-bench/tests/test_r0_replication.py\n?? pheroos-bench/tests/test_r1_coordination.py\n?? pheroos-bench/tests/test_r1_measurement.py\n?? pheroos-bench/tests/test_r1_signals.py\n?? pheroos-bench/tests/test_r2_capacity.py\n?? pheroos-bench/tests/test_r2_scheduling.py\n?? pheroos-bench/tests/test_r3_format_audit.py\n?? pheroos-bench/tests/test_r3_framed_pilot.py\n?? pheroos-bench/tests/test_r3_pilot.py\n?? pheroos-bench/tests/test_r3_session_capability.py\n?? pheroos-bench/tests/test_r3_tasks.py\n?? pheroos-bench/tests/test_r3_tool_pilot.py\n?? pheroos-bench/tests/test_r3_tool_tasks.py\n?? pheroos-bench/tests/test_r4_measurement.py\n?? pheroos-bench/tests/test_r4_session_scaling.py\n?? pheroos-bench/tests/test_r4_tasks.py\n?? pheroos-bench/tests/test_r5_session_faults.py\n?? pheroos-bench/tests/test_scaling_replication.py\n?? pheroos-bench/tools/analyze_r4_session_scaling.py\n?? pheroos-bench/tools/audit_r3_format.py\n?? pheroos-bench/tools/audit_r3_framed.py\n?? pheroos-bench/tools/audit_r3_session_capability.py\n?? pheroos-bench/tools/audit_r3_tool_pilot.py\n?? pheroos-bench/tools/audit_r4_session_scaling.py\n?? pheroos-bench/tools/audit_r4_session_scaling_abort.py\n?? pheroos-bench/tools/audit_r5_session_faults.py\n?? pheroos-bench/tools/audit_r5_session_faults_v2.py\n?? pheroos-bench/tools/check_r4_analysis.py\n?? pheroos-bench/tools/compare_r0_replication.py\n?? pheroos-bench/tools/r5_runtime_faults.py\n?? pheroos-bench/tools/r5_session_faults.py\n?? pheroos-bench/tools/run_scaling_replication.py"
+    },
+    {
+      "path": "/home/scott/projects/PheroOS-runtime",
+      "head": "e3ef1e8ed0812296601e4a901768af4a1068b5e0",
+      "branch": "main",
+      "status": "M .gitignore\n M README.md\n M src/pheroos_runtime/authority.py\n?? docs/r3-local-pilot.md\n?? docs/session-v1.md\n?? replication/\n?? results/r3-install-acceptance.json\n?? results/r3-packages.txt\n?? src/pheroos_runtime/r3_ledger.py\n?? src/pheroos_runtime/r3_local.py\n?? src/pheroos_runtime/session_driver_v1.py\n?? src/pheroos_runtime/session_v1.py\n?? tests/test_r3_ledger.py\n?? tests/test_r3_local.py\n?? tests/test_session_driver_v1.py\n?? tests/test_session_journey_v1.py\n?? tests/test_session_v1.py\n?? tools/run_session_journey_v1.py"
+    },
+    {
+      "path": "/tmp/pheroos-next-cycle-core",
+      "head": "3604f5ce358ed6051c67e48906d240ac0b581f14",
+      "branch": "codex/coordination-repair-v1",
+      "status": "?? pheroos-bench/next-cycle/"
+    },
+    {
+      "path": "/tmp/pheroos-next-cycle-runtime",
+      "head": "c94a2efd13ace1ac424b5ccb1dc0f885b810f82c",
+      "branch": "codex/coordination-repair-runtime-v1",
+      "status": ""
+    }
+  ],
+  "historical_evidence_edited": false,
+  "core_source_changes_required": false,
+  "remote_calls_authorized": false,
+  "remote_dependency": "Provider key supplied; exact model, monetary ceiling, request limit and data scope remain unspecified. No paid calls are dispatched.",
+  "cycle_caps": {
+    "tokens": 500000,
+    "model_dispatches": 1000,
+    "actionability_campaigns": 1,
+    "collaboration_campaigns": 1,
+    "confirmatory": false
+  },
+  "current_state": "AUDIT_AND_IMPLEMENTATION"
+}

@@ -1,0 +1,16 @@
+{
+  "status": "IDENTICAL_TO_REPRODUCED_LF_EXPORT",
+  "files": {
+    "summary.json": "b2890d7eee6e5b2465e9648a2dd92fc151e3962192f3d3b11d51c0a99a3af9dd",
+    "episodes.csv": "cc41163d9b53ade00884dbf0847e556e99bbeb1180f6a566a0961ac14dd8c507"
+  },
+  "prepublication_format_change": {
+    "from_line_ending": "CRLF",
+    "to_line_ending": "LF",
+    "previous_csv_sha256": "f84e068b636c052c30411b45c605aacc6799fbf51913a86e53a596b139c06f7a",
+    "all_parsed_csv_values_unchanged": true,
+    "reason": "repository whitespace check"
+  },
+  "inference_dispatched": false,
+  "counts_toward_verdict": false
+}

@@ -1,0 +1,23 @@
+{
+  "schema": "coordination_repair_pre_dispatch_abort_review_v1",
+  "status": "INVALID_ABORT_RETAINED",
+  "record_status_unchanged": "INVALID_ABORT",
+  "raw_primary_stage": "transport_format",
+  "audited_failure_stage": "capability_permission",
+  "secondary_diagnostic": "fractional adapter identity metadata cannot cross existing integer-only authority canonical JSON contract",
+  "model_calls_dispatched": 0,
+  "tool_calls_settled": 3,
+  "known_tokens": 0,
+  "unknown_tokens": 0,
+  "unknown_calls": 0,
+  "unstarted_episodes": 27,
+  "model_reservation_terminal_state": "abandoned",
+  "held_campaign_tokens": 0,
+  "rerun_authorized": false,
+  "fix_scope": "new external recorded_local_v2 metadata encoding only; existing authority/core and v1 code remain unchanged",
+  "identities": {
+    "episode.json": "0b0505d9897fe569374dbd646d3e8189bea0ae0533d6eef936ffc6c8cc36e45a",
+    "session-snapshot.json": "f693189c63a0f23dd896509fda8cbf6643bb12d9d6daa2991765278078b84532",
+    "coordination-accounting.json": "bbdfb572b814e4d5640e080e5ee6df30e557b277c07ad8f44d8278d7439fa953"
+  }
+}
