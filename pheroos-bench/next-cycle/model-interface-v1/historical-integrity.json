@@ -1,0 +1,25 @@
+{
+  "profile": "model_interface_preparation_integrity_v1",
+  "status": "PASS",
+  "base_commit": "89650f532198abe86c2bd74cf8b5c679a1ae260c",
+  "implementation_commit": "232c01d3a78f382cda73ccdc2593127a1cce6c8d",
+  "runtime_commit": "2222d59bb05785528e4301dc14d164d538408ac6",
+  "preexisting_files_unchanged": 2224,
+  "legitimate_preexisting_changes": [
+    ".github/workflows/coordination-repair.yml",
+    "pheroos-bench/pyproject.toml"
+  ],
+  "frozen_evidence_changed": false,
+  "protocol_core_changed": false,
+  "accepted_wheel_source_matches": {
+    "pheroos_bench": {
+      "modules": 41,
+      "sha256": "eaf9ad0c637152c6c9f4b12f708ca76de40881096d86f6a984ed55134e4285fc"
+    },
+    "pheroos_runtime": {
+      "modules": 15,
+      "sha256": "0d4e3d58c8fc23bae7870376df9a81c2032a00ff5523b609f1eb5cfb27170537"
+    }
+  },
+  "counts_toward_verdict": false
+}

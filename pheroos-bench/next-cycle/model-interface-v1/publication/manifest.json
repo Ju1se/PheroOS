@@ -1,0 +1,177 @@
+{
+  "version": "publication_evidence_v1",
+  "namespace": "model_interface_preparation_v1",
+  "repository": "Ju1se/PheroOS",
+  "base_commit": "89650f532198abe86c2bd74cf8b5c679a1ae260c",
+  "counts_toward_verdict": false,
+  "archives": [],
+  "files": [
+    {
+      "path": ".github/workflows/coordination-repair.yml",
+      "sha256": "8a5b372c68a35b87bb3e9afe56576623c11e7b5a7ba090a21418beab2f19ed01",
+      "size_bytes": 3010,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/integration/model-interface-v1/test_model_interface_cli.py",
+      "sha256": "4a266310905bcc82e724cc426adf201726cc0ed993c8a13a5f36404e9f7dd8fc",
+      "size_bytes": 3871,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/integration/model-interface-v1/test_model_interface_session.py",
+      "sha256": "284dd8fc6fe76f6894f568718f6e6536af54da70dd5c04cd7d8eb1f53e6a9971",
+      "size_bytes": 4828,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-v1/README.md",
+      "sha256": "2cb4bf8ff1aaf4d31968fe59e41f00fdccf6e3fa7e1a6fe99e3fdd412b404456",
+      "size_bytes": 8367,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-v1/artifacts/accepted/pheroos_bench-0.1.1.dev5-py3-none-any.whl",
+      "sha256": "eaf9ad0c637152c6c9f4b12f708ca76de40881096d86f6a984ed55134e4285fc",
+      "size_bytes": 180021,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-v1/artifacts/pheroos_runtime-0.1.0.dev4-py3-none-any.whl",
+      "sha256": "0d4e3d58c8fc23bae7870376df9a81c2032a00ff5523b609f1eb5cfb27170537",
+      "size_bytes": 41229,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-v1/historical-integrity.json",
+      "sha256": "702ede840386cdfefcacf4f90409a68a4228cfe4e4490ac28557ab3c35ea8534",
+      "size_bytes": 857,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-v1/installation-inputs.json",
+      "sha256": "942c936be167480fe48e7d065a701a9a97e5534e27726ba37aa03e42b235f7e0",
+      "size_bytes": 372,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-v1/pilot-config-proposal.json",
+      "sha256": "af045ce2a3e4f41a3cfc4c1f25235bb5f42846135b2a6288b2a0ef03ac8ec88e",
+      "size_bytes": 3080,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-v1/regressions/bench-full.json",
+      "sha256": "c948f2f0b905176202dab7299a84bb857d4e0c450707b2e025844622278c2210",
+      "size_bytes": 741,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-v1/regressions/bench-full.log",
+      "sha256": "138bd7af273f6d53986f934b5bbd911f1722c627990007c55b2ede3721fe655e",
+      "size_bytes": 1641,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-v1/regressions/installed-attempt-1.json",
+      "sha256": "30ae20b98c975f099b3ff552033e6c8de9479ccd91f42f41fd5a04eb86891e82",
+      "size_bytes": 1086,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-v1/regressions/installed-attempt-1.log",
+      "sha256": "7a556f4e887de4d63c7544100cf15ff821fad400d6a236c91bd239b1f823923d",
+      "size_bytes": 1410,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-v1/regressions/installed-dev5.json",
+      "sha256": "7a556f4e887de4d63c7544100cf15ff821fad400d6a236c91bd239b1f823923d",
+      "size_bytes": 1410,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-v1/regressions/predecessor-data-head-ci.json",
+      "sha256": "0fc9ea59a3dc48a54ae8eb94ebdd748757e81d95f809147205c21ba875a0cd16",
+      "size_bytes": 33738,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-v1/status.json",
+      "sha256": "eeaff157da1026471f06b28a054545e02af67808f366f14e5663a1fa03275c90",
+      "size_bytes": 3177,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-v1/tokenizer-preflight.json",
+      "sha256": "2c12f0eb847a134dc2867f5d0d171b3c34ca9f4d516da6fe07b254b20dfa3086",
+      "size_bytes": 11846,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-v1/tokenizer-preflight.py",
+      "sha256": "c8965627d8ae8eefd12caf8187d9797376a1bfa0487dcf9a3c825d1b53cc3332",
+      "size_bytes": 2645,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/pyproject.toml",
+      "sha256": "32b208b16f87082b288848e5a06e6c466cf19c44e39f88ace40bddde6ce05df5",
+      "size_bytes": 950,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/src/pheroos_bench/model_interface_v1.py",
+      "sha256": "31e073b273c2ddadda2fc5b99b608320006b545685eb36b6f7ba3de7854f959f",
+      "size_bytes": 15212,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/src/pheroos_bench/model_interface_v1_pilot.py",
+      "sha256": "f48f052f6114409e0f11510cd7fa75308d0510541c87c21978cea3a34ec4030e",
+      "size_bytes": 11864,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/tests/test_model_interface_v1.py",
+      "sha256": "8e241ae65a3190e88516fa29d664b7e045a6b583103dbe57eace493dad1a9aef",
+      "size_bytes": 6153,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/tools/verify_model_interface_install.py",
+      "sha256": "712ff5c48c2ab9a0ac5dd1704902dbd8695f5eb957aad29128878d94718effc8",
+      "size_bytes": 4100,
+      "mode": "100644",
+      "storage": "direct"
+    }
+  ],
+  "source_files": 23,
+  "source_bytes": 341608,
+  "outside_manifest": [
+    "pheroos-bench/next-cycle/model-interface-v1/publication/manifest.json",
+    "pheroos-bench/next-cycle/model-interface-v1/publication/verification.json"
+  ]
+}

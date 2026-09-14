@@ -1,0 +1,15 @@
+{
+  "profile": "model_interface_independent_runtime_preflight_v1",
+  "status": "PASS",
+  "source_review_only": true,
+  "runtime_fixed_members": 19,
+  "core_fixed_members": 619,
+  "runtime_modules": 15,
+  "runtime_wheel_sha256": "0d4e3d58c8fc23bae7870376df9a81c2032a00ff5523b609f1eb5cfb27170537",
+  "prior_tokens": 65662,
+  "prior_intents": 114,
+  "unknown_tokens": 0,
+  "current_authority_before_generate": true,
+  "live_calls": 0,
+  "counts_toward_verdict": false
+}

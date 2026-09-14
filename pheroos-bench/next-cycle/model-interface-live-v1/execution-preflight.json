@@ -1,0 +1,26 @@
+{
+  "python": "3.12.3",
+  "kernel": "6.18.33.2-microsoft-standard-WSL2",
+  "torch": "2.11.0+cu128",
+  "cuda_runtime": "12.8",
+  "gpu": "NVIDIA GeForce RTX 5070 Laptop GPU",
+  "packages": {
+    "pheroos": "0.1.0",
+    "pheroos-runtime": "0.1.0.dev4",
+    "pheroos-bench": "0.1.1.dev5",
+    "transformers": "4.57.3"
+  },
+  "imports": [
+    "/tmp/pheroos-interface-dev5-site/pheroos/__init__.py",
+    "/tmp/pheroos-interface-dev5-site/pheroos_runtime/__init__.py",
+    "/tmp/pheroos-interface-dev5-site/pheroos_bench/__init__.py"
+  ],
+  "nvidia_smi": "name, uuid, driver_version, memory.total [MiB], memory.used [MiB], power.limit [W]\nNVIDIA GeForce RTX 5070 Laptop GPU, GPU-fad9657b-fe37-2a76-0046-6e7ca26904b9, 616.92, 8151 MiB, 1153 MiB, [N/A]\n",
+  "observed_utc": "2026-09-14T15:38:03.646646+00:00",
+  "configured_inference_capacity": 1,
+  "synchronous_adapter": true,
+  "power_mode": "NOT_OBSERVED",
+  "free_disk_bytes": 981794623488,
+  "model_inference_in_preflight": false,
+  "counts_toward_verdict": false
+}

@@ -1,0 +1,11 @@
+{
+  "profile": "model_interface_terminal_identity_v1",
+  "status": "VERIFIED",
+  "source_commit": "4ea5208ae5d7d6cd8c847f89e51f44a914143c8d",
+  "runtime_commit": "2222d59bb05785528e4301dc14d164d538408ac6",
+  "installed_members_unchanged": 685,
+  "accepted_wheels_relocated_without_imports": true,
+  "relocated_site": "/tmp/pheroos-interface-relocated-wheel-site",
+  "model_calls_in_verification": 0,
+  "counts_toward_verdict": false
+}
