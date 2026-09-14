@@ -1,0 +1,257 @@
+{
+  "schema": "coordination_repair_v2_independent_readiness_audit_v1",
+  "created_utc": "2026-09-14T03:35:34.187867+00:00",
+  "status": "PREPARATION_CHECKED_COLLECTION_UNAUTHORIZED",
+  "full_goal_complete": false,
+  "counts_toward_verdict": false,
+  "live_pilot_complete": false,
+  "source_checkout": "/tmp/pheroos-repair-v2-preparation",
+  "source_head": "9393527fd830aff218b2f41b44438a1aa4136cf3",
+  "tracked_changes": [
+    ".github/workflows/coordination-repair.yml",
+    "pheroos-bench/pyproject.toml",
+    "pheroos-bench/tools/verify_coordination_repair_install.py"
+  ],
+  "configuration": {
+    "proposal": {
+      "path": "/tmp/pheroos-repair-v2-preparation/pheroos-bench/next-cycle/coordination-repair-v2/pilot-config-proposal.json",
+      "bytes": 5164,
+      "sha256": "c60dcfd87d03a9388102efa5020ee5ee6e677c4f52f8e537ffc9d7f4d4b45a64"
+    },
+    "unchanged_design_sections": {
+      "actionability": true,
+      "collaboration": true,
+      "model": true,
+      "generation": true,
+      "context_tokens": true,
+      "max_new_tokens": true,
+      "seed": true,
+      "attention": true,
+      "stop_rule": true
+    },
+    "changed_paths": [
+      "bench_version",
+      "config_version",
+      "continuation",
+      "cycle_caps.model_dispatches",
+      "model_adapter",
+      "record_profile",
+      "runtime_version"
+    ],
+    "stored_proposal_matches_function": true,
+    "actionability_rows": 28,
+    "collaboration_rows": 28,
+    "token_cap": 500000,
+    "new_dispatch_intent_cap": 999,
+    "retained_predecessor_intents": 1,
+    "total_intent_cap": 1000
+  },
+  "authorization": {
+    "default_collect_rejected_before_any_IO": true,
+    "separate_authorization_required": true,
+    "present_for_live_retry": false,
+    "live_records_found": [],
+    "live_model_dispatches_in_v2_evidence": 0,
+    "inference": "No live campaign records or model identity/ledger files in the prepared v2 namespace; only provider-free/synthetic test receipts. No network/model call performed in this audit."
+  },
+  "predecessor": {
+    "known_tokens": 0,
+    "token_upper_bound": 0,
+    "retained_intent_slots": 1,
+    "settled_preparation_tools": 3,
+    "observed_model_dispatches": 0,
+    "accounting_sha256": "a92a92aca3658534c19c9f175541f9f33de300a5120b8519a1550c10bc0b52dd"
+  },
+  "frozen_integrity": {
+    "files_checked": 361,
+    "mismatches": [],
+    "all_identical": true,
+    "scope": "Entire v1 next-cycle directory, v1 consumer/task/pilot/measurement/fork source and historical publication/evidence-v1, compared to HEAD blob identity without SQLite open."
+  },
+  "runtime_checkout": {
+    "head": "8d5c363c53c2e37e77163877b0a3aed34e0228e9",
+    "working_tree_clean": true,
+    "status_paths": []
+  },
+  "readiness_checks": {
+    "incomplete_phase_analysis_invalid": true,
+    "empty_actionability_unmeasured_not_admitted": true,
+    "complete_rollout_required_by_parent_and_forks": true,
+    "actionability_full_source_bound_records_rechecked": true,
+    "complete_declared_grid_required": true,
+    "before_after_branch_frozen_source_guard": true,
+    "unknown_campaign_blocks_phase": true,
+    "v1_call_units_include_control_unchanged": true,
+    "accepted_wheel_matches_final_install_receipt": true
+  },
+  "terminal_validation_observed": {
+    "bench-final.json": {
+      "receipt": {
+        "path": "/tmp/pheroos-repair-v2-preparation/pheroos-bench/next-cycle/coordination-repair-v2/regressions/bench-final.json",
+        "bytes": 760,
+        "sha256": "e0a7c4a2114da3f42a29a5818fea6d15605b0b8089f904d2fb96b84c975bb0a4"
+      },
+      "status": null,
+      "exit_code": 0
+    },
+    "installed-dev3-final.json": {
+      "receipt": {
+        "path": "/tmp/pheroos-repair-v2-preparation/pheroos-bench/next-cycle/coordination-repair-v2/regressions/installed-dev3-final.json",
+        "bytes": 1256,
+        "sha256": "5389aa37ff5948606992e6a4930f6d153dcc73aa8f95c60d074057e758b21fca"
+      },
+      "status": "PASS",
+      "exit_code": null,
+      "test_output_summary": "150 passed in 46.03s"
+    },
+    "bench_final_log": {
+      "identity": {
+        "path": "/tmp/pheroos-repair-v2-preparation/pheroos-bench/next-cycle/coordination-repair-v2/regressions/bench-final.log",
+        "bytes": 1641,
+        "sha256": "b827343cad1ddd49f563f1e89c8682c2315794c64c9a4fe8383392ee31dcee4c"
+      },
+      "summary": "1373 passed, 12 subtests passed in 140.72s (0:02:20)"
+    }
+  },
+  "audit_correction": {
+    "supersedes_claim_only": "v1 completion-audit checklist item7.1 prose",
+    "correct_fact": "paired_call_export call_units = model_calls + tool_calls + control_operations. Original v1 source, method and raw records are unchanged; token/money units remain separate.",
+    "frozen_audit_edited": false
+  },
+  "secret_scan": {
+    "selected_files": 21,
+    "matches": [],
+    "cache_environment_model_flags": [],
+    "archives": [
+      {
+        "path": "pheroos-bench/next-cycle/coordination-repair-v2/artifacts/accepted/pheroos_bench-0.1.1.dev3-py3-none-any.whl",
+        "members": 46,
+        "unsafe_paths": []
+      },
+      {
+        "path": "pheroos-bench/next-cycle/coordination-repair-v2/artifacts/pheroos_bench-0.1.1.dev3-py3-none-any.whl",
+        "members": 46,
+        "unsafe_paths": []
+      }
+    ],
+    "credential_text_disclosed": false
+  },
+  "engineering_blockers": [],
+  "collection_blockers": [
+    "No separate authorization for another live actionability campaign. Collaboration also requires complete, source-bound actionability admission."
+  ],
+  "source_and_artifact_identities": [
+    {
+      "path": "/tmp/pheroos-repair-v2-preparation/.github/workflows/coordination-repair.yml",
+      "bytes": 1560,
+      "sha256": "3eb1a85ece87cfea5593caec470e191f9280e31824bfea45b39fea065d43e924"
+    },
+    {
+      "path": "/tmp/pheroos-repair-v2-preparation/pheroos-bench/integration/coordination-repair-v2/test_coordination_repair_v2_orchestration.py",
+      "bytes": 6684,
+      "sha256": "d35318b983de924366f97d91c8a91127034b62c04b99feda1bd887164cb4c146"
+    },
+    {
+      "path": "/tmp/pheroos-repair-v2-preparation/pheroos-bench/integration/coordination-repair-v2/test_coordination_repair_v2_session.py",
+      "bytes": 5342,
+      "sha256": "8f4f633210bc9f57d7015b5428ef7893a3f8324a2b5f7a4e1dd267350efb76e8"
+    },
+    {
+      "path": "/tmp/pheroos-repair-v2-preparation/pheroos-bench/next-cycle/coordination-repair-v2/README.md",
+      "bytes": 6380,
+      "sha256": "79d4470d9a55ff5c508e3ec941515126e8307aa9ed6f901a44766706fdffef49"
+    },
+    {
+      "path": "/tmp/pheroos-repair-v2-preparation/pheroos-bench/next-cycle/coordination-repair-v2/artifacts/accepted/pheroos_bench-0.1.1.dev3-py3-none-any.whl",
+      "bytes": 170100,
+      "sha256": "bc274b567650d1862a93e4b20e7545ca2e9065aeb1d216ccf8a149df02e7414d"
+    },
+    {
+      "path": "/tmp/pheroos-repair-v2-preparation/pheroos-bench/next-cycle/coordination-repair-v2/artifacts/pheroos_bench-0.1.1.dev3-py3-none-any.whl",
+      "bytes": 169670,
+      "sha256": "cb67042e7623c99cecebd70b3d85d4a95e0a0f041705b1af01ae4b47b7bc1bff"
+    },
+    {
+      "path": "/tmp/pheroos-repair-v2-preparation/pheroos-bench/next-cycle/coordination-repair-v2/pilot-config-proposal.json",
+      "bytes": 5164,
+      "sha256": "c60dcfd87d03a9388102efa5020ee5ee6e677c4f52f8e537ffc9d7f4d4b45a64"
+    },
+    {
+      "path": "/tmp/pheroos-repair-v2-preparation/pheroos-bench/next-cycle/coordination-repair-v2/regressions/bench-final.json",
+      "bytes": 760,
+      "sha256": "e0a7c4a2114da3f42a29a5818fea6d15605b0b8089f904d2fb96b84c975bb0a4"
+    },
+    {
+      "path": "/tmp/pheroos-repair-v2-preparation/pheroos-bench/next-cycle/coordination-repair-v2/regressions/bench-final.log",
+      "bytes": 1641,
+      "sha256": "b827343cad1ddd49f563f1e89c8682c2315794c64c9a4fe8383392ee31dcee4c"
+    },
+    {
+      "path": "/tmp/pheroos-repair-v2-preparation/pheroos-bench/next-cycle/coordination-repair-v2/regressions/bench-full.json",
+      "bytes": 193,
+      "sha256": "a307efcb1cc5fc26e9899ba384d6ecb4a0761b603a48474463e8aa3231cd2c17"
+    },
+    {
+      "path": "/tmp/pheroos-repair-v2-preparation/pheroos-bench/next-cycle/coordination-repair-v2/regressions/bench-full.log",
+      "bytes": 1641,
+      "sha256": "96790b34140e1d4c81de9c530afac99b6def0410a9ff7390a31cacaef770bf9e"
+    },
+    {
+      "path": "/tmp/pheroos-repair-v2-preparation/pheroos-bench/next-cycle/coordination-repair-v2/regressions/installed-dev3-final.json",
+      "bytes": 1256,
+      "sha256": "5389aa37ff5948606992e6a4930f6d153dcc73aa8f95c60d074057e758b21fca"
+    },
+    {
+      "path": "/tmp/pheroos-repair-v2-preparation/pheroos-bench/next-cycle/coordination-repair-v2/regressions/installed-dev3.json",
+      "bytes": 1278,
+      "sha256": "227503196b12a9df5db872edfe3954ecb98495a1fd1f8e5962a2134b85a97497"
+    },
+    {
+      "path": "/tmp/pheroos-repair-v2-preparation/pheroos-bench/next-cycle/coordination-repair-v2/regressions/installed-legacy-dev2.json",
+      "bytes": 1197,
+      "sha256": "b6daf9ca7372da59ef2af07363e2e6f7f7991cceabd595b572417a38ba01d765"
+    },
+    {
+      "path": "/tmp/pheroos-repair-v2-preparation/pheroos-bench/next-cycle/coordination-repair-v2/status.json",
+      "bytes": 2577,
+      "sha256": "f3c7b86e4760e6bf95e038abde83f90fc881d76aefa3ee92da4528723b636aa4"
+    },
+    {
+      "path": "/tmp/pheroos-repair-v2-preparation/pheroos-bench/pyproject.toml",
+      "bytes": 950,
+      "sha256": "9d8550df3df7f77e45e07bd59ae5a0c17b16fbc926bd9663ca7579c2c37dce03"
+    },
+    {
+      "path": "/tmp/pheroos-repair-v2-preparation/pheroos-bench/src/pheroos_bench/coordination_repair_v2.py",
+      "bytes": 16392,
+      "sha256": "b4d4bdd30379f5fbcd66816f3a88819e3e12c8ff05124c8b78d3ebab0934912b"
+    },
+    {
+      "path": "/tmp/pheroos-repair-v2-preparation/pheroos-bench/src/pheroos_bench/coordination_repair_v2_pilot.py",
+      "bytes": 19719,
+      "sha256": "a5559144aceba9a1ef4c1901f0d1e73b05a457ec40b24ec4cd67fd518e09e496"
+    },
+    {
+      "path": "/tmp/pheroos-repair-v2-preparation/pheroos-bench/tests/test_coordination_repair_v2.py",
+      "bytes": 11273,
+      "sha256": "c10ff329ffa40b6ab232d7a497b6b14d441e528a91a4ca637ac23d0c55d3b78b"
+    },
+    {
+      "path": "/tmp/pheroos-repair-v2-preparation/pheroos-bench/tests/test_coordination_repair_v2_pilot.py",
+      "bytes": 7970,
+      "sha256": "c8837c0f27bee24b41d9d7db5171092c1174e4eac00971ac04fcf99c34240fd3"
+    },
+    {
+      "path": "/tmp/pheroos-repair-v2-preparation/pheroos-bench/tools/verify_coordination_repair_install.py",
+      "bytes": 4923,
+      "sha256": "564a5ae559d3e4ccddf696d67b1479621e197a1492fb255008861459168e1d78"
+    }
+  ],
+  "limits": [
+    "Independent finite source/config/record audit; full test suites were not rerun.",
+    "Terminal reports became available during this audit and are cited by identity; they do not establish learned capability or efficacy.",
+    "Secret-pattern scan is heuristic; archive members scanned without extraction.",
+    "Runtime code was read, not edited. All SQLite evidence was treated as bytes, never opened.",
+    "No claim that a mailbox-free consumer has demonstrated message-dedup benefit; its zero delivery count is CHANNEL_NOT_USED."
+  ]
+}

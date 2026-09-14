@@ -28,6 +28,7 @@ def main():
     parser.add_argument("--site", type=Path)
     parser.add_argument("--retain-wheel", type=Path)
     parser.add_argument("--runtime-cohort", choices=("dev2", "dev3"), default="dev2")
+    parser.add_argument("--bench-cohort", choices=("dev2", "dev3"), default="dev2")
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[1]
     artifacts = root / "next-cycle/coordination-repair-v1/artifacts"
@@ -57,15 +58,18 @@ def main():
             "'versions':{n:m.version(n) for n in ['pheroos','pheroos-runtime','pheroos-bench']}}))"],external,env))
         if any(not Path(p).is_relative_to(site) for p in identities["paths"]):
             raise RuntimeError("source checkout leaked into installed consumer")
-        if identities["versions"]["pheroos-runtime"] != "0.1.0." + args.runtime_cohort or identities["versions"]["pheroos-bench"] != "0.1.1.dev2":
+        if identities["versions"]["pheroos-runtime"] != "0.1.0." + args.runtime_cohort or identities["versions"]["pheroos-bench"] != "0.1.1." + args.bench_cohort:
             raise RuntimeError("experimental cohort identity mismatch")
         config = staging / "pytest.ini"
         config.write_text("[pytest]\n")
+        cases = ["integration/coordination-repair-v1", "tests/test_coordination_repair_v1_tasks.py",
+                 "tests/test_coordination_repair_v1_measurement.py", "tests/test_coordination_repair_v1_pilot.py"]
+        if args.bench_cohort == "dev3":
+            cases += ["tests/test_coordination_repair_v2.py", "tests/test_coordination_repair_v2_pilot.py"]
+            if args.runtime_cohort == "dev3":
+                cases += ["integration/coordination-repair-v2"]
         tests = run([sys.executable,"-m","pytest","-q","-rs","-c",str(config),
-                     str(root/"integration/coordination-repair-v1"),
-                     str(root/"tests/test_coordination_repair_v1_tasks.py"),
-                     str(root/"tests/test_coordination_repair_v1_measurement.py"),
-                     str(root/"tests/test_coordination_repair_v1_pilot.py")],external,env)
+                     *[str(root/name) for name in cases]],external,env)
         if "skipped" in tests:
             raise RuntimeError("missing integration coverage cannot count as a pass: " + tests)
         if args.retain_wheel:
