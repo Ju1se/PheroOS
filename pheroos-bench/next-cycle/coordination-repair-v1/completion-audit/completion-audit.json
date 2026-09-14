@@ -1,0 +1,931 @@
+{
+  "schema": "coordination_repair_completion_audit_v1",
+  "created_utc": "2026-09-14T01:43:59.991505+00:00",
+  "scope": "Read-only independent requirement and publication-readiness audit; source edits may continue after this cutoff.",
+  "recommended_cycle_state": "IMPLEMENTED_COLLECTION_BLOCKED",
+  "full_goal_complete": false,
+  "live_pilot_complete": false,
+  "counts_toward_verdict": false,
+  "publication_authorized": true,
+  "status_semantics": {
+    "complete": "bounded obligation supported at audited identities; no efficacy or production claim",
+    "weak": "partly supported or narrower than requested; limitation explicit",
+    "incomplete": "implementation/delivery or execution obligation still absent"
+  },
+  "evidence_roots": {
+    "core": "/tmp/pheroos-next-cycle-core",
+    "bench": "/tmp/pheroos-next-cycle-core/pheroos-bench",
+    "runtime": "/tmp/pheroos-next-cycle-runtime",
+    "result": "/tmp/pheroos-next-cycle-core/pheroos-bench/next-cycle/coordination-repair-v1",
+    "audit": "/tmp/pheroos-next-cycle-completion-audit-v1"
+  },
+  "repositories": [
+    {
+      "path": "/tmp/pheroos-next-cycle-core",
+      "head": "3604f5ce358ed6051c67e48906d240ac0b581f14",
+      "branch": "codex/coordination-repair-v1",
+      "tracked_diff_names": [
+        "pheroos-bench/pyproject.toml"
+      ]
+    },
+    {
+      "path": "/tmp/pheroos-next-cycle-runtime",
+      "head": "c94a2efd13ace1ac424b5ccb1dc0f885b810f82c",
+      "branch": "codex/coordination-repair-runtime-v1",
+      "tracked_diff_names": [
+        "MANIFEST.in",
+        "README.md",
+        "pyproject.toml"
+      ]
+    }
+  ],
+  "identities": [
+    {
+      "path": "/mnt/c/Users/24410/Downloads/PheroOS_Next_Cycle_Codex_Goal.md",
+      "sha256": "f4668325f60f900ee2eb4319f8a14607c4f811fc15693d396e97c486857b6ac9",
+      "bytes": 22204
+    },
+    {
+      "path": "/tmp/pheroos-next-cycle-core/pheroos-bench/src/pheroos_bench/coordination_repair_v1.py",
+      "sha256": "4c22ce447c1364b27eb40571fdeb5c6aa5fc203e97fd7a919b2d27b3c4fdd9e4",
+      "bytes": 27831
+    },
+    {
+      "path": "/tmp/pheroos-next-cycle-core/pheroos-bench/src/pheroos_bench/coordination_repair_v1_forks.py",
+      "sha256": "3b31d0af711b5cdfb341e923c52cedb021c4ddf0c789bddb35b4531268caf178",
+      "bytes": 5646
+    },
+    {
+      "path": "/tmp/pheroos-next-cycle-core/pheroos-bench/src/pheroos_bench/coordination_repair_v1_measurement.py",
+      "sha256": "e8a2c03cce77f4abec3544aacde3c9aea7d3be36d535191f8fc30568e674eef9",
+      "bytes": 6057
+    },
+    {
+      "path": "/tmp/pheroos-next-cycle-core/pheroos-bench/src/pheroos_bench/coordination_repair_v1_pilot.py",
+      "sha256": "4e68473824672bd1c1682e9889a3a4ad2dae8fdf256e173809eac38110c1f628",
+      "bytes": 15155
+    },
+    {
+      "path": "/tmp/pheroos-next-cycle-core/pheroos-bench/src/pheroos_bench/coordination_repair_v1_tasks.py",
+      "sha256": "715d82fca4a0f7995df8c424e510972716e9d983e47784b2eade10f2d1578d2b",
+      "bytes": 20023
+    },
+    {
+      "path": "/tmp/pheroos-next-cycle-runtime/src/pheroos_runtime/coordination_v1.py",
+      "sha256": "2abe73fb83099d2dffb705559bc62276fc6ced813732e4dee45e27c0697d006b",
+      "bytes": 27951
+    },
+    {
+      "path": "/tmp/pheroos-next-cycle-runtime/src/pheroos_runtime/campaign_v1.py",
+      "sha256": "7dd9ada21e7375519765bcd768bdaefa63c57746e240ef8ef691321c328473e8",
+      "bytes": 9770
+    },
+    {
+      "path": "/tmp/pheroos-next-cycle-runtime/src/pheroos_runtime/recorded_local_v1.py",
+      "sha256": "d05f5ae8c764bb5c05d9ad6dbf342e5a912c9a972de5ba413311c522a5f45c32",
+      "bytes": 2551
+    },
+    {
+      "path": "/tmp/pheroos-next-cycle-runtime/src/pheroos_runtime/recorded_local_v2.py",
+      "sha256": "2c0a0e27e460782afb04837c3c6da517f9bd8efd343bfea60e413aa45021cd5a",
+      "bytes": 858
+    },
+    {
+      "path": "/tmp/pheroos-next-cycle-runtime/src/pheroos_runtime/session_v1.py",
+      "sha256": "a1c0750b12ea2d3b3cfabc42c29f2616c6160ef0b1641cd573d67db3d6d9a39e",
+      "bytes": 24647
+    },
+    {
+      "path": "/tmp/pheroos-next-cycle-runtime/src/pheroos_runtime/session_driver_v1.py",
+      "sha256": "4bc372f2f64d01efa0b4c1da896db27793b8ef473bd85e20cbba025e13839b08",
+      "bytes": 5513
+    },
+    {
+      "path": "/tmp/pheroos-next-cycle-core/pheroos-bench/next-cycle/coordination-repair-v1/input-manifest.json",
+      "sha256": "487a001d3861c64c77ff5a68795813be08bb59d0f0942370258b9cc500282de1",
+      "bytes": 7417
+    },
+    {
+      "path": "/tmp/pheroos-next-cycle-core/pheroos-bench/next-cycle/coordination-repair-v1/pilot-config.json",
+      "sha256": "e4cf1d1eca84b3a144b50fd619cea49dde4a670643f99a41a6719c7c57a945ca",
+      "bytes": 3633
+    },
+    {
+      "path": "/tmp/pheroos-next-cycle-core/pheroos-bench/next-cycle/coordination-repair-v1/ABORT-REVIEW-v1.json",
+      "sha256": "0018954e30dbadc7de58802e2c6a9097599a22bb6c4b1135a308674b96a3f84f",
+      "bytes": 1079
+    },
+    {
+      "path": "/tmp/pheroos-next-cycle-core/pheroos-bench/next-cycle/coordination-repair-v1/provider-free/summary.json",
+      "sha256": "c0f328400a46ea6b7af650f5a9c7fed34604371f2ae3411b534f7fbcb1739e82",
+      "bytes": 3287
+    },
+    {
+      "path": "/tmp/pheroos-next-cycle-core/pheroos-bench/next-cycle/coordination-repair-v1/provider-free/functional-intervention.json",
+      "sha256": "24ddd6990080d1bfc1f38999d908ef821a241940c206a396efb7ae163b936c66",
+      "bytes": 14366
+    },
+    {
+      "path": "/tmp/pheroos-next-cycle-core/pheroos-bench/next-cycle/coordination-repair-v1/regressions/bench-regressions-v1.json",
+      "sha256": "035b63a2a36e412eb1b211b50fd244eefa515408ce89bcac3c2d8a84ccb1b547",
+      "bytes": 786
+    },
+    {
+      "path": "/tmp/pheroos-next-cycle-core/pheroos-bench/next-cycle/coordination-repair-v1/regressions/installed-consumer-v2.json",
+      "sha256": "933f668a75323118dfabd0f55587b6441f6f46767c599884152ad887cea3796c",
+      "bytes": 1194
+    },
+    {
+      "path": "/tmp/pheroos-next-cycle-core/pheroos-bench/next-cycle/coordination-repair-v1/local-cycle-v1/actionability/accounting.json",
+      "sha256": "a92a92aca3658534c19c9f175541f9f33de300a5120b8519a1550c10bc0b52dd",
+      "bytes": 787
+    },
+    {
+      "path": "/tmp/pheroos-next-cycle-core/pheroos-bench/next-cycle/coordination-repair-v1/local-cycle-v1/actionability/campaign-completion.json",
+      "sha256": "94850c3769e69e08bb2fcf4b863aba864031e057fcfe05720f72b1a7acfee036",
+      "bytes": 5436
+    },
+    {
+      "path": "/tmp/pheroos-next-cycle-core/pheroos-bench/next-cycle/coordination-repair-v1/local-cycle-v1/actionability/admission.json",
+      "sha256": "3ebd96359e05e430578ca79e0ce648a9baf8d761e129b8f63c557d9848dba9c7",
+      "bytes": 590
+    }
+  ],
+  "abort_verification": {
+    "status": "INVALID_ABORT",
+    "raw_primary_stage": "transport_format",
+    "audited_stage": "capability_permission",
+    "source": "PermissionError: payload must be a nonempty canonical JSON object; fractional model identity metadata fails authority canonicalization before dispatch",
+    "model_calls_dispatched": 0,
+    "tool_calls_settled": 3,
+    "model_reservation_states": [
+      "abandoned"
+    ],
+    "model_reserved_upper_bounds": [
+      902
+    ],
+    "known_tokens": 0,
+    "unknown_tokens": 0,
+    "unknown_calls": 0,
+    "campaign": {
+      "allotments": [
+        {
+          "id": "actionability-000-single-n1-D0",
+          "path": "/tmp/pheroos-next-cycle-core/pheroos-bench/next-cycle/coordination-repair-v1/local-cycle-v1/actionability/actionability-000-single-n1-D0/session.sqlite",
+          "tokens": 2048,
+          "calls": 12,
+          "model_cap": 1,
+          "held_tokens": 0,
+          "held_calls": 1,
+          "state": "terminal",
+          "snapshot_digest": "15151cc4d3d6a4ce78716f1a7866289fc14c67fcaed238140d6fb1dcb546576c",
+          "known_tokens": 0,
+          "unknown_tokens": 0
+        }
+      ],
+      "campaign": [
+        {
+          "token_cap": 500000,
+          "dispatch_cap": 1000,
+          "config_digest": "fbedef437ebca5228c148a98ff53c23d296ddee5ba298f9253881caea4317682",
+          "violation": null
+        }
+      ],
+      "model_slots": [
+        {
+          "allocation_id": "actionability-000-single-n1-D0",
+          "call_id": "model-0"
+        }
+      ]
+    },
+    "model_action_denominator": 0,
+    "unstarted_episodes": 27,
+    "interpretation": "No observed model validity/capability rate. No model inference occurred; configured serial capacity=1. Preparation costs and conservative held call slot remain visible."
+  },
+  "checklist": [
+    {
+      "id": "M1",
+      "requirement": "Diagnosed and improved action interface",
+      "status": "weak",
+      "finding": "Concrete legal actions and public rejection taxonomy implemented; first live diagnostic aborted before any response.",
+      "evidence": [
+        "bench:src/pheroos_bench/coordination_repair_v1_tasks.py",
+        "result:ABORT-REVIEW-v1.json"
+      ],
+      "remaining": "Live actionability remains unmeasured; adapter repair needs its own retained validation."
+    },
+    {
+      "id": "M2",
+      "requirement": "Retrievable version-aware evidence, attention and private errors separated",
+      "status": "complete",
+      "finding": "Durable scoped index, explicit metered reads, current versions, TTL prominence and private bounded feedback are implemented.",
+      "evidence": [
+        "runtime:src/pheroos_runtime/coordination_v1.py",
+        "runtime:tests/test_coordination_v1.py"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "M3",
+      "requirement": "Less duplicate work through safe reuse and ownership",
+      "status": "weak",
+      "finding": "Mocked repeated-inspection and failure-pressure counterexamples change actual tool work; clean reference policies remain functionally identical.",
+      "evidence": [
+        "bench:integration/coordination-repair-v1/test_coordination_repair_v1_consumer_audit.py",
+        "result:provider-free/functional-intervention.json"
+      ],
+      "remaining": "No learned-model reduction measured."
+    },
+    {
+      "id": "M4",
+      "requirement": "Genuine 2\u20134-agent collaboration experiment with downstream rollouts",
+      "status": "incomplete",
+      "finding": "Grid and full forks implemented; 28 reference parent episodes and 9 reference branches executed. No live collaboration episode.",
+      "evidence": [
+        "result:pilot-config.json",
+        "result:provider-free/summary.json"
+      ],
+      "remaining": "Live collection is unexecuted, not a negative efficacy result."
+    },
+    {
+      "id": "M5",
+      "requirement": "Bounded reproducible handoff including negatives",
+      "status": "weak",
+      "finding": "Source identities, raw abort, reference null findings, install evidence retained. Publication is authorized by the later user message.",
+      "evidence": [
+        "result:input-manifest.json",
+        "result:provider-free/REPORT.md",
+        "result:ABORT-REVIEW-v1.json"
+      ],
+      "remaining": "Final report/reproduction/status and final publication identities were being prepared at this audit cutoff."
+    },
+    {
+      "id": "1.1",
+      "requirement": "Inspect instructions, branches, dirty state, packages, support and sources",
+      "status": "complete",
+      "finding": "Input manifest resolves dirty original main workspaces versus isolated reviewed PR bases; support and prior audits reviewed before implementation.",
+      "evidence": [
+        "result:input-manifest.json",
+        "result:baseline-audit/"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "1.2",
+      "requirement": "Independently verify historical R1/R2/R4 findings",
+      "status": "complete",
+      "finding": "Earlier independent audit recomputed raw R1 overhead, R2 FIFO identity, R4 rejection/repeat/same-input and private high-N reachability findings.",
+      "evidence": [
+        "result:baseline-audit/"
+      ],
+      "remaining": "Finite selected-artifact verification; not a rerun of all historical models."
+    },
+    {
+      "id": "2.1",
+      "requirement": "Owning modules, public interfaces, unchanged provider-neutral core",
+      "status": "complete",
+      "finding": "Only new bench experiment and external runtime extension; no protocol-core executable changes identified. Session remains accounting and authority owner.",
+      "evidence": [
+        "bench:src/pheroos_bench/coordination_repair_v1.py",
+        "runtime:src/pheroos_runtime/coordination_v1.py"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "2.2",
+      "requirement": "Preserve history, frozen failures/configs and original SQLite",
+      "status": "complete",
+      "finding": "New namespace and additive abort review; this audit only reads immutable byte copies of six databases and verifies unchanged originals.",
+      "evidence": [
+        "audit:raw-ledger-audit.json",
+        "audit:fork-lineage-audit.json",
+        "result:ABORT-REVIEW-v1.json"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "2.3",
+      "requirement": "No unauthorized push/service/model/environment change",
+      "status": "complete",
+      "finding": "Later user explicitly authorized PR publication. No model/network/provider operation performed by this audit; no automatic rerun is implied by publication authorization.",
+      "evidence": [
+        "result:input-manifest.json",
+        "result:local-cycle-v1/actionability/campaign-completion.json"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "A1.1",
+      "requirement": "Stable stages distinguish syntax, target, permission, evidence, semantics, runtime, budget and hidden objective",
+      "status": "weak",
+      "finding": "All stage names declared and public failures decomposed. Frozen pre-dispatch PermissionError was classified transport_format; additive review correctly distinguishes capability_permission.",
+      "evidence": [
+        "bench:src/pheroos_bench/coordination_repair_v1_tasks.py",
+        "result:ABORT-REVIEW-v1.json"
+      ],
+      "remaining": "Future execution stage classification should test PermissionError explicitly; preserve frozen raw category."
+    },
+    {
+      "id": "A1.2",
+      "requirement": "Raw/normalized response, feedback, costs and invalid denominators; hidden answers never execution feedback",
+      "status": "complete",
+      "finding": "Turn records retain messages, response, normalized validation and feedback; evaluator runs after public stop. Aborted model response is absent, explicitly retained.",
+      "evidence": [
+        "bench:src/pheroos_bench/coordination_repair_v1.py",
+        "bench:tests/test_coordination_repair_v1_tasks.py",
+        "result:local-cycle-v1/actionability/actionability-000-single-n1-D0/episode.json"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "A2.1",
+      "requirement": "Concrete legal IDs/schema and common interface without semantic repair",
+      "status": "complete",
+      "finding": "Strict duplicate-key/closed-field parsing and concrete inspect/submit actions; optional single-fence syntax normalization only; identical interface across arms.",
+      "evidence": [
+        "bench:src/pheroos_bench/coordination_repair_v1_tasks.py",
+        "bench:tests/test_coordination_repair_v1_tasks.py"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "A2.2",
+      "requirement": "Retries charged, actionable private feedback, permissions separate from syntax",
+      "status": "complete",
+      "finding": "Every decision validates through a metered tool and current authority; rejected calls retain costs and private errors are bounded.",
+      "evidence": [
+        "bench:integration/coordination-repair-v1/test_coordination_repair_v1_consumer_audit.py",
+        "runtime:tests/test_coordination_v1.py"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "A3.1",
+      "requirement": "Separately declared D0/D1 supplied-current evidence and D2 autonomous diagnostics",
+      "status": "complete",
+      "finding": "All three conditions exist; D0/D1 pin final current version, charge prep tools, and differ in forced/free action selection.",
+      "evidence": [
+        "result:pilot-config.json",
+        "bench:integration/coordination-repair-v1/test_coordination_repair_v1_consumer_audit.py"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "A3.2",
+      "requirement": "Freeze IDs, budgets, models, validity gates and stops before one campaign",
+      "status": "complete",
+      "finding": "Frozen 28-row actionability grid, model revision and limits precede attempted dispatch; terminal abort halts remaining rows.",
+      "evidence": [
+        "result:local-cycle-v1/frozen-config.json",
+        "result:local-cycle-v1/actionability/freeze.json",
+        "result:local-cycle-v1/actionability/expected-grid.json"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "A3.3",
+      "requirement": "Execute D0/D1/D2 live capability diagnostics",
+      "status": "incomplete",
+      "finding": "One D0 started then aborted after prep; zero model calls/outputs and 27 unstarted rows.",
+      "evidence": [
+        "result:local-cycle-v1/actionability/campaign-completion.json",
+        "audit:raw-ledger-audit.json"
+      ],
+      "remaining": "Requires separately authorized, separately frozen retry; no automatic campaign restart."
+    },
+    {
+      "id": "A4.1",
+      "requirement": "Independent public-tool reference solves primary conditions within same access/budgets",
+      "status": "complete",
+      "finding": "24 development diagnostics plus 28 pilot condition references and 9 branches all succeed without hidden answer access.",
+      "evidence": [
+        "result:provider-free/summary.json",
+        "bench:tests/test_coordination_repair_v1_tasks.py"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "A4.2",
+      "requirement": "Post-update acquisition opportunities and sharing-helpful/unnecessary tasks",
+      "status": "complete",
+      "finding": "Four different finite families, 8 development/4 pilot worlds; correction at global step 2 leaves six opportunities in eight-step D2. Single-source correction supplies unnecessary-sharing case.",
+      "evidence": [
+        "bench:src/pheroos_bench/coordination_repair_v1_tasks.py",
+        "result:provider-free/REPORT.md"
+      ],
+      "remaining": "Twelve constructed worlds are not population/generalization evidence."
+    },
+    {
+      "id": "A.GATE",
+      "requirement": "Do not proceed to collaboration when dominant interface failure remains unexplained",
+      "status": "complete",
+      "finding": "Live collaboration is stopped; failure diagnosed at adapter identity/authority serialization before model execution.",
+      "evidence": [
+        "result:local-cycle-v1/actionability/admission.json",
+        "result:ABORT-REVIEW-v1.json"
+      ],
+      "remaining": "Admission zero/one fractions with model denominator zero are fail-closed sentinels, not observed model failure rates."
+    },
+    {
+      "id": "B1.1",
+      "requirement": "Scope-bound immutable provenance/version index and explicit supersession",
+      "status": "complete",
+      "finding": "Index reuses Session artifacts, keys identity/version/state and records immutable source receipt lineage; superseded versions remain historical.",
+      "evidence": [
+        "runtime:src/pheroos_runtime/coordination_v1.py",
+        "runtime:tests/test_coordination_v1.py"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "B1.2",
+      "requirement": "TTL prominence does not erase evidence or create semantic truth/authority",
+      "status": "complete",
+      "finding": "Attention cap four and TTL three only affect recent_activity; allowed current receipts remain queryable and metered independently of errors.",
+      "evidence": [
+        "bench:src/pheroos_bench/coordination_repair_v1.py",
+        "runtime:docs/coordination-v1.md"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "B2.1",
+      "requirement": "Bounded metered manifests/reads/refresh/materialization/serialization and actual tokens",
+      "status": "complete",
+      "finding": "Control operations and overlapping logical byte counters are separate from Session model/tool usage; reads require current lease and authorization.",
+      "evidence": [
+        "runtime:docs/coordination-v1.md",
+        "runtime:tests/test_coordination_v1.py"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "B2.2",
+      "requirement": "Private feedback and ACL preserve evidence access; public version metadata only",
+      "status": "complete",
+      "finding": "Private errors do not displace durable receipts; manifests require per-agent rights; updates expose public identity/version, content only through source tool.",
+      "evidence": [
+        "runtime:tests/test_coordination_v1.py",
+        "bench:src/pheroos_bench/coordination_repair_v1.py"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "B3.1",
+      "requirement": "Version/state-aware pure inspection cache and concurrent ownership",
+      "status": "complete",
+      "finding": "Equivalence binds scope/tool/version/arguments/source state. Candidate reuse and claim/release have concrete consumer calls and process-race tests.",
+      "evidence": [
+        "runtime:src/pheroos_runtime/coordination_v1.py",
+        "runtime:tests/test_coordination_v1.py",
+        "bench:integration/coordination-repair-v1/test_coordination_repair_v1_consumer_audit.py"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "B3.2",
+      "requirement": "No independent support from reuse or unknown redispatch; revoke/expire/version fences",
+      "status": "complete",
+      "finding": "Unknown dispatched work cannot be released/redispatched; late settlement reconciles usage without stale authority revival; cross-scope/private access denied.",
+      "evidence": [
+        "runtime:tests/test_coordination_v1.py"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "B4.1",
+      "requirement": "Duplicate/reorder/concurrent claim/update/stale/cross-scope/cancel/unknown/late tests",
+      "status": "complete",
+      "finding": "Explicit runtime tests cover listed finite boundaries, including barrier-driven process races and source/revocation controls outside attention TTL.",
+      "evidence": [
+        "runtime:tests/test_coordination_v1.py",
+        "runtime:results/coordination-repair-v1/final-validation-v1.json"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "B4.2",
+      "requirement": "Separate message duplicates, selected-provenance duplicates, repeated tool work and reusable artifacts",
+      "status": "incomplete",
+      "finding": "Selected-provenance, repeated inspection, reuse counts and denominators exist. No explicit message-duplicate metric in current consumer export; mailbox is unused in inspected abort.",
+      "evidence": [
+        "bench:src/pheroos_bench/coordination_repair_v1.py",
+        "audit:raw-ledger-audit.json"
+      ],
+      "remaining": "Add a versioned metric/derived additive observation with explicit message boundary and denominator, or document unsupported/N/A rather than substitute another duplicate metric."
+    },
+    {
+      "id": "C.1",
+      "requirement": "Finite eligible work/public decomposition and actual local ownership/demand",
+      "status": "weak",
+      "finding": "Candidate selects unresolved source owners with observable failure pressure and releases deviated claims. Runtime work dependencies are empty; work_dag is omitted from model prompt, while required-source metadata and public submit receipt validation enforce a finite acquisition prerequisite.",
+      "evidence": [
+        "bench:src/pheroos_bench/coordination_repair_v1.py",
+        "bench:src/pheroos_bench/coordination_repair_v1_tasks.py"
+      ],
+      "remaining": "Document as finite source acquisition/submit organization; no general scheduler DAG resolution or learned allocation claim."
+    },
+    {
+      "id": "C.2",
+      "requirement": "Bounded local state, claim/produce/publish/release/reassign and no oracle",
+      "status": "complete",
+      "finding": "Agent-private feedback, scoped source references and observable failure pressure drive finite scheduling; source ownership never reads hidden answers. Mocked behavior tests change actual source selection/reuse.",
+      "evidence": [
+        "bench:integration/coordination-repair-v1/test_coordination_repair_v1_consumer_audit.py"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "C.3",
+      "requirement": "Single resident GPU model, record actual concurrency honestly",
+      "status": "weak",
+      "finding": "Configured serial capacity is one. Frozen abort incorrectly labels actual_inference_concurrency=1 despite zero dispatched inference.",
+      "evidence": [
+        "result:local-cycle-v1/actionability/actionability-000-single-n1-D0/episode.json",
+        "audit:raw-ledger-audit.json"
+      ],
+      "remaining": "Additive report must distinguish configured capacity one from observed no inference; do not rewrite raw metadata."
+    },
+    {
+      "id": "C1.1",
+      "requirement": "Lean same-budget single/blackboard N2/N4/candidate N2/N4 controls",
+      "status": "complete",
+      "finding": "Seven-arm pilot includes required strong simple controls, no_ownership and no_reuse ablations; common tools/runtime/evaluator and no hidden larger verifier.",
+      "evidence": [
+        "result:pilot-config.json"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "C1.2",
+      "requirement": "Candidate allocation/reuse isolated rather than hidden interface upgrade",
+      "status": "complete",
+      "finding": "All arms share durable retrieval and dedup/TTL prominence; only candidate allocation/reuse differ, with separate ablations.",
+      "evidence": [
+        "bench:src/pheroos_bench/coordination_repair_v1.py",
+        "result:provider-free/summary.json"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "C2.1",
+      "requirement": "Measure functional relevance before large collection and preserve relabeling null",
+      "status": "weak",
+      "finding": "Independent stricter action/materialized-provenance comparison finds 0/8 changes; broad 7/8 includes labels/suggestions. Mocked failure/repeat counterexamples demonstrate reachable differences, but live relevance is unmeasured.",
+      "evidence": [
+        "result:provider-free/functional-intervention.json",
+        "result:provider-free/REPORT.md",
+        "bench:integration/coordination-repair-v1/test_coordination_repair_v1_consumer_audit.py"
+      ],
+      "remaining": "Do not use broad 7/8 as proof of useful intervention. No larger grid without valid diagnostic evidence."
+    },
+    {
+      "id": "D.1",
+      "requirement": "Predeclared relevant/withheld/irrelevant forks preserve required permissions",
+      "status": "complete",
+      "finding": "Fixed step-1 eligibility uses current unseen optional artifacts, no success conditioning; existing agent knowledge is preserved; current imports validated by parent publication.",
+      "evidence": [
+        "bench:src/pheroos_bench/coordination_repair_v1_forks.py",
+        "bench:integration/coordination-repair-v1/test_coordination_repair_v1_consumer_audit.py"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "D.2",
+      "requirement": "Independent branch ledgers, fresh authority, origin lineage and no live lease transplant",
+      "status": "complete",
+      "finding": "Sampled one eligible world/all branches: all four current scopes and permission-root sets are disjoint; imports are metered and bind original parent Session/artifact refs.",
+      "evidence": [
+        "audit:fork-lineage-audit.json",
+        "bench:src/pheroos_bench/coordination_repair_v1.py"
+      ],
+      "remaining": "Trusted host boundary, not hostile-host security proof; only one world independently audited at DB level."
+    },
+    {
+      "id": "D.3",
+      "requirement": "Complete downstream rollout under equal remaining budget/seed/update schedule",
+      "status": "weak",
+      "finding": "Nine scripted branches completed; scheduler offset/failure pressure/private knowledge restored, remaining budgets and absolute source schedule recorded. No live-model branches executed.",
+      "evidence": [
+        "result:provider-free/fork-records.json",
+        "bench:src/pheroos_bench/coordination_repair_v1_forks.py"
+      ],
+      "remaining": "complete_rollout=True is currently unconditional in wrapper even if branch aborts; status must govern completed-versus-aborted reporting."
+    },
+    {
+      "id": "D.4",
+      "requirement": "Eligible/ineligible/executed denominators and unconditional downstream success/cost",
+      "status": "complete",
+      "finding": "Three eligible/one ineligible prefix and nine executed reference branches reported; invalid/unresolved/missing records fail explicitly and invalid actions remain in downstream denominators.",
+      "evidence": [
+        "result:provider-free/summary.json",
+        "bench:src/pheroos_bench/coordination_repair_v1_measurement.py",
+        "bench:tests/test_coordination_repair_v1_measurement.py"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "D.5",
+      "requirement": "Irrelevant information has no false authority; actual token residual disclosed",
+      "status": "complete",
+      "finding": "Unrelated note is not a receipt or permission. Tokenizer-only diagnostic reports approximate matching residuals rather than claiming exact length matching.",
+      "evidence": [
+        "result:provider-free/context-fit.json",
+        "result:provider-free/REPORT.md"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "D.6",
+      "requirement": "Nested world units; prefix/incremental/full parent total expense separate",
+      "status": "complete",
+      "finding": "New nested_forks method averages within world before across worlds; prefix, incremental, full parent and total diagnostic tokens are separate.",
+      "evidence": [
+        "bench:src/pheroos_bench/coordination_repair_v1_measurement.py",
+        "bench:tests/test_coordination_repair_v1_measurement.py"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "7.1",
+      "requirement": "New IDs, unchanged R0 meaning and compatible call export",
+      "status": "complete",
+      "finding": "coordination_repair_session_v1, tasks_v1, nested_forks_v1 are separate; paired_call_export uses actual model+tool dispatch counts, not control operations.",
+      "evidence": [
+        "bench:src/pheroos_bench/coordination_repair_v1_measurement.py"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "7.2",
+      "requirement": "Objective/stages, global/retained/accessible/materialized coverage and repeats/reuse",
+      "status": "weak",
+      "finding": "Per-turn four-layer source coverage, objective and duplication/reuse metrics exist. Message duplicate measurement remains absent; permission error stage requires additive interpretation.",
+      "evidence": [
+        "bench:src/pheroos_bench/coordination_repair_v1.py"
+      ],
+      "remaining": "B4.2 and A1.1 remain explicit gaps."
+    },
+    {
+      "id": "7.3",
+      "requirement": "Tokens/calls/control/logical bytes; failed/rejected/cancelled/late costs",
+      "status": "complete",
+      "finding": "Session calls/events retained, response_rejected usage tested, invalid/unknown statuses explicit; money remains null and overlapping bytes not physical I/O.",
+      "evidence": [
+        "bench:integration/coordination-repair-v1/test_coordination_repair_v1_consumer_audit.py",
+        "runtime:tests/test_campaign_v1.py",
+        "audit:raw-ledger-audit.json"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "7.4",
+      "requirement": "First verified progress vs final/stable success; public stop only",
+      "status": "weak",
+      "finding": "Public stop and hidden scoring separation are implemented. First progress currently considers decision-turn inspections only, so D0 preparation yields null despite three verified prep artifacts.",
+      "evidence": [
+        "bench:src/pheroos_bench/coordination_repair_v1.py",
+        "result:local-cycle-v1/actionability/actionability-000-single-n1-D0/episode.json"
+      ],
+      "remaining": "Label decision-turn-only metric or add separate preparation-progress metric; do not imply no verified prep work."
+    },
+    {
+      "id": "7.5",
+      "requirement": "Signed cost and 10+90 equal-world statistical checks",
+      "status": "complete",
+      "finding": "New synthetic test verifies 0.10 equal-world quality, signed nonzero cost and reverse signs against unchanged R0; nested forks tested separately.",
+      "evidence": [
+        "bench:tests/test_coordination_repair_v1_measurement.py",
+        "result:regressions/bench-regressions-v1.json"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "7.6",
+      "requirement": "No confirmatory evidence; proposal/power/test partition distinguished",
+      "status": "incomplete",
+      "finding": "All outputs exclude verdict/confirmatory use. No live pilot data exist to inform power assumptions; confirmatory study not executed.",
+      "evidence": [
+        "result:pilot-config.json",
+        "result:provider-free/REPORT.md"
+      ],
+      "remaining": "Final handoff should state confirmatory proposal deferred pending valid diagnostic/pilot data, without invented effect/power estimates."
+    },
+    {
+      "id": "8.1",
+      "requirement": "Existing local environment/model revisions/settings/hardware/source identities",
+      "status": "complete",
+      "finding": "Existing Qwen 3B revision and local CUDA identity frozen; tokenizer basis/generation settings and source hashes retained, no backend substitution in frozen run.",
+      "evidence": [
+        "result:local-cycle-v1/actionability/model-identity.json",
+        "result:local-cycle-v1/actionability/freeze.json",
+        "result:provider-free/frozen-source-manifest.json"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "8.2",
+      "requirement": "Provider-free first; 500k/1000/one-A/one-C caps; no paid/download/confirmatory",
+      "status": "complete",
+      "finding": "Reference instrument ran first; one live A attempted, C blocked, no paid calls. No automatic rerun performed.",
+      "evidence": [
+        "result:provider-free/summary.json",
+        "result:local-cycle-v1/actionability/accounting.json",
+        "result:ABORT-REVIEW-v1.json"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "8.3",
+      "requirement": "Shared campaign worst-case reservation and unknown retention",
+      "status": "complete",
+      "finding": "Raw campaign DB matches cap500000/dispatch1000, known0/unknown0/heldtokens0, one conservative held call slot, no violation. Model reservation902 was abandoned before dispatch.",
+      "evidence": [
+        "audit:raw-ledger-audit.json",
+        "runtime:tests/test_campaign_v1.py"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "8.4",
+      "requirement": "Retain raw output/prompt/token basis/generated IDs and receipt lineage",
+      "status": "weak",
+      "finding": "Prompt/request identity retained; generated-token adapter exists but no output was generated. New v2 authority-safe metadata adapter under separate validation.",
+      "evidence": [
+        "runtime:src/pheroos_runtime/recorded_local_v1.py",
+        "runtime:src/pheroos_runtime/recorded_local_v2.py",
+        "result:local-cycle-v1/actionability/model-identity.json"
+      ],
+      "remaining": "No empirical generated-token reconstruction claim from this aborted campaign."
+    },
+    {
+      "id": "9.1",
+      "requirement": "Real barrier races, late cancellation receipts and fake-clock restart semantics",
+      "status": "complete",
+      "finding": "Spawned process barriers test claim and cancel/dispatch/publication; late settlement and backward/forward clocks tested without host clock changes.",
+      "evidence": [
+        "runtime:tests/test_coordination_v1.py",
+        "runtime:results/coordination-repair-v1/final-validation-v1.json"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "9.2",
+      "requirement": "Bounded retention and transactional current authority; no out-of-scope systems",
+      "status": "complete",
+      "finding": "Explicit index/feedback/control bounds; existing Session transaction boundaries retained; no multi-host/soak/new Governance framework.",
+      "evidence": [
+        "runtime:docs/coordination-v1.md",
+        "runtime:src/pheroos_runtime/coordination_v1.py"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "9.3",
+      "requirement": "Distinct experimental package and prior cohort retained; installed Session CI no skips",
+      "status": "complete",
+      "finding": "Runtime dev2 and bench dev2 retained wheels plus source-independent consumer111-pass evidence; CI invokes exact-artifact installed consumer and fails skips. New adapter cohort validation is separate.",
+      "evidence": [
+        "result:regressions/installed-consumer-v2.json",
+        "core:.github/workflows/coordination-repair.yml",
+        "bench:tools/verify_coordination_repair_install.py"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "9.4",
+      "requirement": "Relevant core/runtime/bench/install regressions and honest unfinished suites",
+      "status": "weak",
+      "finding": "Bench1343+12 subtests/no skips; focused R0 73; installed consumer111; runtime wheel/sdist189+12 each. Root full core suite was still running at assignment; not marked pass here.",
+      "evidence": [
+        "result:regressions/bench-regressions-v1.json",
+        "result:regressions/installed-consumer-v2.json",
+        "runtime:results/coordination-repair-v1/final-validation-v1.json",
+        "result:regressions/core-pytest.log"
+      ],
+      "remaining": "Obtain terminal core result and separate v2-adapter final validation before final claim; existing results only cover exact source hashes."
+    },
+    {
+      "id": "10.1",
+      "requirement": "Baseline audit, scope, exact input identities",
+      "status": "complete",
+      "finding": "Baseline audit and input manifest retained.",
+      "evidence": [
+        "result:baseline-audit/",
+        "result:input-manifest.json"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "10.2",
+      "requirement": "Targeted changes in owning repositories",
+      "status": "complete",
+      "finding": "New isolated bench/runtime files; core unchanged.",
+      "evidence": [
+        "bench:src/pheroos_bench/coordination_repair_v1.py",
+        "runtime:src/pheroos_runtime/coordination_v1.py"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "10.3",
+      "requirement": "Behavior/contract tests and regression results",
+      "status": "weak",
+      "finding": "Substantial finite and installed coverage retained; final full-core/new-adapter outcome pending at cutoff.",
+      "evidence": [
+        "result:regressions/",
+        "runtime:results/coordination-repair-v1/"
+      ],
+      "remaining": "Complete terminal evidence before claiming final all-suites pass."
+    },
+    {
+      "id": "10.4",
+      "requirement": "Actionability and reachability diagnostics",
+      "status": "weak",
+      "finding": "Reference reachability complete; live actionability aborted pre-dispatch.",
+      "evidence": [
+        "result:provider-free/summary.json",
+        "result:local-cycle-v1/actionability/"
+      ],
+      "remaining": "Live diagnostics incomplete."
+    },
+    {
+      "id": "10.5",
+      "requirement": "Frozen config/raw records/summaries/accounting",
+      "status": "complete",
+      "finding": "Original abort and all27 unstarted rows retained with frozen configs and ledgers.",
+      "evidence": [
+        "result:local-cycle-v1/",
+        "result:ABORT-REVIEW-v1.json"
+      ],
+      "remaining": "This is complete abort accounting, not a completed live pilot."
+    },
+    {
+      "id": "10.6",
+      "requirement": "Intervention relevance and full-rollout sharing diagnostics",
+      "status": "weak",
+      "finding": "Scripted null and nine full reference branches retained; no live sharing outcomes.",
+      "evidence": [
+        "result:provider-free/functional-intervention.json",
+        "result:provider-free/fork-records.json"
+      ],
+      "remaining": "Do not label live experimental deliverable complete."
+    },
+    {
+      "id": "10.7",
+      "requirement": "Installation/reproduction guide",
+      "status": "incomplete",
+      "finding": "Executable installed check and artifacts exist; concise final reproduction guide absent at audit cutoff.",
+      "evidence": [
+        "bench:tools/verify_coordination_repair_install.py",
+        "result:artifacts/"
+      ],
+      "remaining": "Root is preparing final guide; retain old artifact cohort and explain restore into isolated paths."
+    },
+    {
+      "id": "10.8",
+      "requirement": "Final report and machine-readable status",
+      "status": "incomplete",
+      "finding": "Root final handoff was in preparation; this checklist is independent requirement audit.",
+      "evidence": [
+        "audit:completion-audit.json",
+        "audit:REPORT.md"
+      ],
+      "remaining": "Use IMPLEMENTED_COLLECTION_BLOCKED, distinguish six claim categories, never mark full goal or unexecuted pilot complete."
+    },
+    {
+      "id": "11.1",
+      "requirement": "Execute bounded vertical slice and pause only real blocked/changed frozen campaign",
+      "status": "complete",
+      "finding": "Implementation, reference diagnostics and regressions executed. One live campaign attempted and abort retained; no automatic spending or campaign restart.",
+      "evidence": [
+        "result:provider-free/REPORT.md",
+        "result:ABORT-REVIEW-v1.json"
+      ],
+      "remaining": ""
+    },
+    {
+      "id": "11.2",
+      "requirement": "No complexity tuning to force positive result; simple default when null",
+      "status": "weak",
+      "finding": "Clean candidate/control null retained, no efficacy promotion. Preferred simple-default statement should be explicit in final report.",
+      "evidence": [
+        "result:provider-free/functional-intervention.json"
+      ],
+      "remaining": "Finalize honest blocked handoff; do not infer algorithm failure from missing model data."
+    }
+  ],
+  "status_counts": {
+    "weak": 16,
+    "complete": 42,
+    "incomplete": 6
+  },
+  "audit_limitations": [
+    "No model/network/provider calls in this audit.",
+    "No full test suite rerun here; inspected exact retained validation reports and finite source/tests.",
+    "Original databases were never opened via SQLite; only isolated immutable byte copies.",
+    "One eligible fork world independently checked at database level; other reference outcomes inspected from retained reports.",
+    "Core suite terminal result and v2 adapter validation were not available at assignment; do not infer pass.",
+    "Final report, guide, metric fixes or package rebuilds after cutoff require additive follow-up evidence."
+  ]
+}

@@ -1,0 +1,340 @@
+{
+  "sample": "one of three eligible worlds, all three branches",
+  "rows": [
+    {
+      "name": "parent",
+      "source": "/tmp/pheroos-next-cycle-core/pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/interval_intersection/pilot_a/candidate-2/session.sqlite",
+      "sha256": "d819250a7652d7751740ee4adf6cd75ab52bad0d5501a0424d2a09d3c9a05d94",
+      "source_unchanged": true,
+      "run_id": "f82a3b2ee39ee301881b5d459ec4eadc33be7e3ddbe406bfc166f92121604a61",
+      "scopes": [
+        "sha256:a2c041efed9ed4ce607a673e406dc93d76ad84e48344add97a02af19a1afd6f7"
+      ],
+      "permission_roots": [
+        "sha256:20cf79b87fb36e820f2f32ac1e61ed4a1c73c7ed795486c767c421772d84af99",
+        "sha256:4a3d7a4d1b3bf68ebee408cf046bae5c1b9c21b5e0fe6c95ee4db504fe659923",
+        "sha256:6a0e0912a3001742807a825ea5ee7c3d047b09aaf0422e1a15b8d1a639fc1cab",
+        "sha256:769aaab1ae62ffa2ff49f3334abe5f015edac1c9afde500a2e7c14e13e66c661",
+        "sha256:77bde29323956c3fcfdc724790795f161c39bd8eff199cc1d9d280c339f0e78d",
+        "sha256:bd821f20ae380471ffc74e5dd7d18e4df7b53ee7ee1e8f425825f166bf9e43ba",
+        "sha256:e7a58850d70b087405f3ef8da1a48f17d725a02e8f44d9dbcca4c6204b6e0e3d"
+      ],
+      "calls": 7,
+      "imports": []
+    },
+    {
+      "name": "relevant",
+      "source": "/tmp/pheroos-next-cycle-core/pheroos-bench/next-cycle/coordination-repair-v1/provider-free/forks/interval_intersection/pilot_a/relevant/session.sqlite",
+      "sha256": "ba73a8c7bd1b016cf224cd8068563ae129224ab850d641187bc9c7123c427906",
+      "source_unchanged": true,
+      "run_id": "fork-548a007dc47b3f51a431f1d5d23f3190c5c4249c",
+      "scopes": [
+        "sha256:697cd687d4fde6d4e5388873bfbfe0232af5150354fd9acc18e19e0dcbb27851"
+      ],
+      "permission_roots": [
+        "sha256:767306414f3ad077e3d645018856f45c5532ab606e4b9c203e084fc5cd2bff95",
+        "sha256:7b264b541abf6dfb0cfeb84e564b6f0fcc0326a7d9a55f009185725cf1b64477",
+        "sha256:d39ed4745af2eea6da9de203676e6f0676fb3312a08e91936d22cf0534a92669",
+        "sha256:d6fd5eb00aac4e7f45b52c3a79e612e6d6f9a4d0cabc685d18740dda0f39c24a",
+        "sha256:f6539ef70eba2522a17c22354fc1299926da3306a166f05d993b2633da4f0e08"
+      ],
+      "calls": 5,
+      "imports": [
+        {
+          "call_id": "import-0",
+          "request": {
+            "arguments": {
+              "origin": {
+                "artifact_ref": "sha256:faa3d878d269bd6c9f1b85de09ec3ac4ee4019547d529e9406b90a6bd9c9a48c",
+                "session": "/tmp/pheroos-next-cycle-core/pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/interval_intersection/pilot_a/candidate-2/session.sqlite"
+              },
+              "value": {
+                "content": {
+                  "bounds": [
+                    4,
+                    7
+                  ]
+                },
+                "data_version": "coordination_repair_tasks_v1",
+                "kind": "source_receipt",
+                "receipt_identity": "sha256:3d651694ff7a53fa23909a08a8842fb96ad057ac2da894c5368f4bb3b19d6737",
+                "source_id": "lower_bounds",
+                "source_version": 1,
+                "world_id": "interval_intersection/pilot_a"
+              }
+            },
+            "task_id": "prefix-import-0",
+            "tool_ref": "import_verified_prefix",
+            "version": 1
+          },
+          "authority": {
+            "action": "tool.evaluate",
+            "authority_contract": "pheroos-baseline-output-result-v2",
+            "authority_store": "pheroos-in-memory-governance-state-store-v2",
+            "output_payload_root": "sha256:e313fd86b23ff355225254548dfd06a65d53d8775d09cdf0f2aa7dc1d124cb2d",
+            "permission_root": "sha256:d6fd5eb00aac4e7f45b52c3a79e612e6d6f9a4d0cabc685d18740dda0f39c24a",
+            "result_root": "sha256:c68e65ae7f29c9861df375214c909c9ca0a621d78b42ac2ad69cf4f043ad5301",
+            "reusable_authority": false,
+            "scope_ref": "sha256:697cd687d4fde6d4e5388873bfbfe0232af5150354fd9acc18e19e0dcbb27851",
+            "target_ref": "task:b4bd25a7ccb0d18eba836e376efb3ac6634b44b57459d3e32abc504e2d36cf44",
+            "task_id": "prefix-import-0",
+            "version": 1
+          }
+        },
+        {
+          "call_id": "import-1",
+          "request": {
+            "arguments": {
+              "origin": {
+                "artifact_ref": "sha256:8d87f288599b2c01437507817b1702bab3fdc407280bd2c37513d6c848cc60bb",
+                "session": "/tmp/pheroos-next-cycle-core/pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/interval_intersection/pilot_a/candidate-2/session.sqlite"
+              },
+              "value": {
+                "content": {
+                  "bounds": [
+                    15,
+                    12
+                  ]
+                },
+                "data_version": "coordination_repair_tasks_v1",
+                "kind": "source_receipt",
+                "receipt_identity": "sha256:134edfcde2a6bf5cbb431f6ab3f36cf2a2b5d7007ef4b0a32a2ae45c294f1cbe",
+                "source_id": "upper_bounds",
+                "source_version": 1,
+                "world_id": "interval_intersection/pilot_a"
+              }
+            },
+            "task_id": "prefix-import-1",
+            "tool_ref": "import_verified_prefix",
+            "version": 1
+          },
+          "authority": {
+            "action": "tool.evaluate",
+            "authority_contract": "pheroos-baseline-output-result-v2",
+            "authority_store": "pheroos-in-memory-governance-state-store-v2",
+            "output_payload_root": "sha256:08a2c2cd9d5ee63c55858d4f2864bc1476f184d0a366fac8f01d20231a480b85",
+            "permission_root": "sha256:d39ed4745af2eea6da9de203676e6f0676fb3312a08e91936d22cf0534a92669",
+            "result_root": "sha256:e0720a0bcd6ecf683522a45fb1123dcf9ceb77da50867a06acc49a7d58a4435e",
+            "reusable_authority": false,
+            "scope_ref": "sha256:697cd687d4fde6d4e5388873bfbfe0232af5150354fd9acc18e19e0dcbb27851",
+            "target_ref": "task:864dd686b240a4dd8759f894e99b7b8e84471580be5f68328936ece8d84a99a2",
+            "task_id": "prefix-import-1",
+            "version": 1
+          }
+        }
+      ]
+    },
+    {
+      "name": "withheld",
+      "source": "/tmp/pheroos-next-cycle-core/pheroos-bench/next-cycle/coordination-repair-v1/provider-free/forks/interval_intersection/pilot_a/withheld/session.sqlite",
+      "sha256": "597d5136c200d8ec7684fbfb45b955145c7697e3d9a508e1488873b79a4d1e97",
+      "source_unchanged": true,
+      "run_id": "fork-16ba8472b8fb0ace396e3ad00059af4a5f6d96e8",
+      "scopes": [
+        "sha256:01c3ba3af26ff01b19fa63482f10a60015926e5def575ef4d258405102a19a26"
+      ],
+      "permission_roots": [
+        "sha256:171c90587d431892c47719876bfeffb15d117a2754b5467184ae633e234fcd78",
+        "sha256:1a8bc921f7409cca134fb4f89e1f4a2435462743dd596a81403c01c90a96079e",
+        "sha256:815986234efb8ff225b0b6bd54ee9d16526ee08922670da60666f32adcc110e7",
+        "sha256:868ce95708cd37f6e972dc296f21bd1829c932c2b2419942b3883ceb97a827f0",
+        "sha256:9c7cad1adc85eefbb16c7ec35bf7cb9cf4bf9ddb858cc15fafcdb50e65f95683"
+      ],
+      "calls": 5,
+      "imports": [
+        {
+          "call_id": "import-0",
+          "request": {
+            "arguments": {
+              "origin": {
+                "artifact_ref": "sha256:faa3d878d269bd6c9f1b85de09ec3ac4ee4019547d529e9406b90a6bd9c9a48c",
+                "session": "/tmp/pheroos-next-cycle-core/pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/interval_intersection/pilot_a/candidate-2/session.sqlite"
+              },
+              "value": {
+                "content": {
+                  "bounds": [
+                    4,
+                    7
+                  ]
+                },
+                "data_version": "coordination_repair_tasks_v1",
+                "kind": "source_receipt",
+                "receipt_identity": "sha256:3d651694ff7a53fa23909a08a8842fb96ad057ac2da894c5368f4bb3b19d6737",
+                "source_id": "lower_bounds",
+                "source_version": 1,
+                "world_id": "interval_intersection/pilot_a"
+              }
+            },
+            "task_id": "prefix-import-0",
+            "tool_ref": "import_verified_prefix",
+            "version": 1
+          },
+          "authority": {
+            "action": "tool.evaluate",
+            "authority_contract": "pheroos-baseline-output-result-v2",
+            "authority_store": "pheroos-in-memory-governance-state-store-v2",
+            "output_payload_root": "sha256:e313fd86b23ff355225254548dfd06a65d53d8775d09cdf0f2aa7dc1d124cb2d",
+            "permission_root": "sha256:868ce95708cd37f6e972dc296f21bd1829c932c2b2419942b3883ceb97a827f0",
+            "result_root": "sha256:709c9d9fea2fa37ee1a02dae2ebcddb9b2fd74e58b606bc5d11137a8d568397c",
+            "reusable_authority": false,
+            "scope_ref": "sha256:01c3ba3af26ff01b19fa63482f10a60015926e5def575ef4d258405102a19a26",
+            "target_ref": "task:b4bd25a7ccb0d18eba836e376efb3ac6634b44b57459d3e32abc504e2d36cf44",
+            "task_id": "prefix-import-0",
+            "version": 1
+          }
+        },
+        {
+          "call_id": "import-1",
+          "request": {
+            "arguments": {
+              "origin": {
+                "artifact_ref": "sha256:8d87f288599b2c01437507817b1702bab3fdc407280bd2c37513d6c848cc60bb",
+                "session": "/tmp/pheroos-next-cycle-core/pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/interval_intersection/pilot_a/candidate-2/session.sqlite"
+              },
+              "value": {
+                "content": {
+                  "bounds": [
+                    15,
+                    12
+                  ]
+                },
+                "data_version": "coordination_repair_tasks_v1",
+                "kind": "source_receipt",
+                "receipt_identity": "sha256:134edfcde2a6bf5cbb431f6ab3f36cf2a2b5d7007ef4b0a32a2ae45c294f1cbe",
+                "source_id": "upper_bounds",
+                "source_version": 1,
+                "world_id": "interval_intersection/pilot_a"
+              }
+            },
+            "task_id": "prefix-import-1",
+            "tool_ref": "import_verified_prefix",
+            "version": 1
+          },
+          "authority": {
+            "action": "tool.evaluate",
+            "authority_contract": "pheroos-baseline-output-result-v2",
+            "authority_store": "pheroos-in-memory-governance-state-store-v2",
+            "output_payload_root": "sha256:08a2c2cd9d5ee63c55858d4f2864bc1476f184d0a366fac8f01d20231a480b85",
+            "permission_root": "sha256:1a8bc921f7409cca134fb4f89e1f4a2435462743dd596a81403c01c90a96079e",
+            "result_root": "sha256:5abd58207771562e87dd409b9a4e1f095fa619e039a1321518f4c745718f1a9b",
+            "reusable_authority": false,
+            "scope_ref": "sha256:01c3ba3af26ff01b19fa63482f10a60015926e5def575ef4d258405102a19a26",
+            "target_ref": "task:864dd686b240a4dd8759f894e99b7b8e84471580be5f68328936ece8d84a99a2",
+            "task_id": "prefix-import-1",
+            "version": 1
+          }
+        }
+      ]
+    },
+    {
+      "name": "irrelevant",
+      "source": "/tmp/pheroos-next-cycle-core/pheroos-bench/next-cycle/coordination-repair-v1/provider-free/forks/interval_intersection/pilot_a/irrelevant/session.sqlite",
+      "sha256": "9c582758c84498e20b3595a068abe8e9f12e85acd9ad9aa6ec22ccdd9669e683",
+      "source_unchanged": true,
+      "run_id": "fork-6ec802f359ed89ad45db4b17297b057998ef9749",
+      "scopes": [
+        "sha256:98914b394ae7f37cc164889c5cf8b43194f2ae0609d935197c5368fd5a681ac0"
+      ],
+      "permission_roots": [
+        "sha256:247f5891dede82728ea643d6c4a57bd5606c6ec97f851071f97283c1271011e4",
+        "sha256:272242977069f17cb96095a829551dbdee891a6deb3e6d1b99de4cc9b0203ef3",
+        "sha256:809167f063432273057fb1260fe71ee5a0e2c5724f5a76c45e6641b750fd66f0",
+        "sha256:fc5b1740275008b44c2bbf1284bf64a2806f06c7fb857d5c794ae18597e3fd9d",
+        "sha256:fea77e4fea4be3347ad744cd26b5af21869d07273cfea7f47ab9f72acd1068c1"
+      ],
+      "calls": 5,
+      "imports": [
+        {
+          "call_id": "import-0",
+          "request": {
+            "arguments": {
+              "origin": {
+                "artifact_ref": "sha256:faa3d878d269bd6c9f1b85de09ec3ac4ee4019547d529e9406b90a6bd9c9a48c",
+                "session": "/tmp/pheroos-next-cycle-core/pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/interval_intersection/pilot_a/candidate-2/session.sqlite"
+              },
+              "value": {
+                "content": {
+                  "bounds": [
+                    4,
+                    7
+                  ]
+                },
+                "data_version": "coordination_repair_tasks_v1",
+                "kind": "source_receipt",
+                "receipt_identity": "sha256:3d651694ff7a53fa23909a08a8842fb96ad057ac2da894c5368f4bb3b19d6737",
+                "source_id": "lower_bounds",
+                "source_version": 1,
+                "world_id": "interval_intersection/pilot_a"
+              }
+            },
+            "task_id": "prefix-import-0",
+            "tool_ref": "import_verified_prefix",
+            "version": 1
+          },
+          "authority": {
+            "action": "tool.evaluate",
+            "authority_contract": "pheroos-baseline-output-result-v2",
+            "authority_store": "pheroos-in-memory-governance-state-store-v2",
+            "output_payload_root": "sha256:e313fd86b23ff355225254548dfd06a65d53d8775d09cdf0f2aa7dc1d124cb2d",
+            "permission_root": "sha256:fea77e4fea4be3347ad744cd26b5af21869d07273cfea7f47ab9f72acd1068c1",
+            "result_root": "sha256:fc24e8ea153e99f1fefd709ff37e77eaf33d9546e8e9de9405f760f903ca3f31",
+            "reusable_authority": false,
+            "scope_ref": "sha256:98914b394ae7f37cc164889c5cf8b43194f2ae0609d935197c5368fd5a681ac0",
+            "target_ref": "task:b4bd25a7ccb0d18eba836e376efb3ac6634b44b57459d3e32abc504e2d36cf44",
+            "task_id": "prefix-import-0",
+            "version": 1
+          }
+        },
+        {
+          "call_id": "import-1",
+          "request": {
+            "arguments": {
+              "origin": {
+                "artifact_ref": "sha256:8d87f288599b2c01437507817b1702bab3fdc407280bd2c37513d6c848cc60bb",
+                "session": "/tmp/pheroos-next-cycle-core/pheroos-bench/next-cycle/coordination-repair-v1/provider-free/pilot/interval_intersection/pilot_a/candidate-2/session.sqlite"
+              },
+              "value": {
+                "content": {
+                  "bounds": [
+                    15,
+                    12
+                  ]
+                },
+                "data_version": "coordination_repair_tasks_v1",
+                "kind": "source_receipt",
+                "receipt_identity": "sha256:134edfcde2a6bf5cbb431f6ab3f36cf2a2b5d7007ef4b0a32a2ae45c294f1cbe",
+                "source_id": "upper_bounds",
+                "source_version": 1,
+                "world_id": "interval_intersection/pilot_a"
+              }
+            },
+            "task_id": "prefix-import-1",
+            "tool_ref": "import_verified_prefix",
+            "version": 1
+          },
+          "authority": {
+            "action": "tool.evaluate",
+            "authority_contract": "pheroos-baseline-output-result-v2",
+            "authority_store": "pheroos-in-memory-governance-state-store-v2",
+            "output_payload_root": "sha256:08a2c2cd9d5ee63c55858d4f2864bc1476f184d0a366fac8f01d20231a480b85",
+            "permission_root": "sha256:809167f063432273057fb1260fe71ee5a0e2c5724f5a76c45e6641b750fd66f0",
+            "result_root": "sha256:e66ddfdd63033501846858c2abded7b185e69ef291a7001fe781f8843ba4f23e",
+            "reusable_authority": false,
+            "scope_ref": "sha256:98914b394ae7f37cc164889c5cf8b43194f2ae0609d935197c5368fd5a681ac0",
+            "target_ref": "task:864dd686b240a4dd8759f894e99b7b8e84471580be5f68328936ece8d84a99a2",
+            "task_id": "prefix-import-1",
+            "version": 1
+          }
+        }
+      ]
+    }
+  ],
+  "distinct_current_scopes": true,
+  "distinct_permission_roots": true,
+  "import_tool_calls_each_branch": [
+    2,
+    2,
+    2
+  ],
+  "limitations": "Samples one world. Trusted wrapper verifies original published value via parent Session.artifact. Not a hostile-host proof."
+}

@@ -1,0 +1,53 @@
+{
+  "status": "PASS",
+  "records": [
+    {
+      "command": [
+        "/home/scott/projects/PheroOS/.venv/bin/python",
+        "-m",
+        "pheroos.cli.main",
+        "validate",
+        "examples/toy-protocol/capability.json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\n  \"$schema\": \"https://pheroos.dev/schemas/conformance-report-v2.schema.json\",\n  \"artifact_digest\": \"sha256:1a77b2c6761f7063e18f087fb72addf8fd02d24d868e0c0abd48bcabc8dc8cbd\",\n  \"check_projection\": [\n    {\n      \"detail\": \"\",\n      \"name\": \"manifest_schema\",\n      \"ok\": true\n    },\n    {\n      \"detail\": \"\",\n      \"name\": \"profile_contract\",\n      \"ok\": true\n    }\n  ],\n  \"checks\": [\n    {\n      \"detail\": \"\",\n      \"name\": \"manifest_schema\",\n      \"ok\": true\n    },\n    {\n      \"detail\": \"\",\n      \"name\": \"profile_contract\",\n      \"ok\": true\n    }\n  ],\n  \"implementation_identity\": \"pheroos.protocol-core\",\n  \"ok\": true,\n  \"profile\": \"pheroos-manifest-v1\",\n  \"report_version\": \"pheroos-conformance-report-v2\",\n  \"subject_kind\": \"manifest\",\n  \"target\": \"examples/toy-protocol/capability.json\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/home/scott/projects/PheroOS/.venv/bin/python",
+        "-m",
+        "pheroos.cli.main",
+        "conformance",
+        "examples/toy-protocol"
+      ],
+      "exit_code": 0,
+      "stdout": "{\n  \"$schema\": \"https://pheroos.dev/schemas/conformance-report-v2.schema.json\",\n  \"artifact_digest\": \"sha256:1a77b2c6761f7063e18f087fb72addf8fd02d24d868e0c0abd48bcabc8dc8cbd\",\n  \"check_projection\": [\n    {\n      \"detail\": \"\",\n      \"name\": \"manifest_schema\",\n      \"ok\": true\n    },\n    {\n      \"detail\": \"\",\n      \"name\": \"candidate_declaration\",\n      \"ok\": true\n    },\n    {\n      \"detail\": \"\",\n      \"name\": \"quorum_policy\",\n      \"ok\": true\n    },\n    {\n      \"detail\": \"\",\n      \"name\": \"recovery_policy\",\n      \"ok\": true\n    },\n    {\n      \"detail\": \"\",\n      \"name\": \"output_contract\",\n      \"ok\": true\n    },\n    {\n      \"detail\": \"\",\n      \"name\": \"trace_contract\",\n      \"ok\": true\n    },\n    {\n      \"detail\": \"\",\n      \"name\": \"driver_contract\",\n      \"ok\": true\n    },\n    {\n      \"detail\": \"\",\n      \"name\": \"kernel_contract\",\n      \"ok\": true\n    },\n    {\n      \"detail\": \"\",\n      \"name\": \"extension_contract\",\n      \"ok\": true\n    },\n    {\n      \"detail\": \"\",\n      \"name\": \"profile_contract\",\n      \"ok\": true\n    }\n  ],\n  \"checks\": [\n    {\n      \"detail\": \"\",\n      \"name\": \"manifest_schema\",\n      \"ok\": true\n    },\n    {\n      \"detail\": \"\",\n      \"name\": \"candidate_declaration\",\n      \"ok\": true\n    },\n    {\n      \"detail\": \"\",\n      \"name\": \"quorum_policy\",\n      \"ok\": true\n    },\n    {\n      \"detail\": \"\",\n      \"name\": \"recovery_policy\",\n      \"ok\": true\n    },\n    {\n      \"detail\": \"\",\n      \"name\": \"output_contract\",\n      \"ok\": true\n    },\n    {\n      \"detail\": \"\",\n      \"name\": \"trace_contract\",\n      \"ok\": true\n    },\n    {\n      \"detail\": \"\",\n      \"name\": \"driver_contract\",\n      \"ok\": true\n    },\n    {\n      \"detail\": \"\",\n      \"name\": \"kernel_contract\",\n      \"ok\": true\n    },\n    {\n      \"detail\": \"\",\n      \"name\": \"extension_contract\",\n      \"ok\": true\n    },\n    {\n      \"detail\": \"\",\n      \"name\": \"profile_contract\",\n      \"ok\": true\n    }\n  ],\n  \"implementation_identity\": \"pheroos.protocol-core\",\n  \"ok\": true,\n  \"profile\": \"pheroos-core-v1\",\n  \"report_version\": \"pheroos-conformance-report-v2\",\n  \"subject_kind\": \"manifest\",\n  \"target\": \"examples/toy-protocol\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/home/scott/projects/PheroOS/.venv/bin/python",
+        "-m",
+        "pheroos.cli.main",
+        "validate",
+        "examples/swarm-protocol/capability.json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\n  \"$schema\": \"https://pheroos.dev/schemas/conformance-report-v2.schema.json\",\n  \"artifact_digest\": \"sha256:cd654ac827aab76a7d21ed661f0282f2e6fc439e83df9051baa1d3241b2ad651\",\n  \"check_projection\": [\n    {\n      \"detail\": \"\",\n      \"name\": \"manifest_schema\",\n      \"ok\": true\n    },\n    {\n      \"detail\": \"\",\n      \"name\": \"profile_contract\",\n      \"ok\": true\n    }\n  ],\n  \"checks\": [\n    {\n      \"detail\": \"\",\n      \"name\": \"manifest_schema\",\n      \"ok\": true\n    },\n    {\n      \"detail\": \"\",\n      \"name\": \"profile_contract\",\n      \"ok\": true\n    }\n  ],\n  \"implementation_identity\": \"pheroos.protocol-core\",\n  \"ok\": true,\n  \"profile\": \"pheroos-manifest-v1\",\n  \"report_version\": \"pheroos-conformance-report-v2\",\n  \"subject_kind\": \"manifest\",\n  \"target\": \"examples/swarm-protocol/capability.json\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/home/scott/projects/PheroOS/.venv/bin/python",
+        "-m",
+        "pheroos.cli.main",
+        "conformance",
+        "examples/swarm-protocol"
+      ],
+      "exit_code": 0,
+      "stdout": "{\n  \"$schema\": \"https://pheroos.dev/schemas/conformance-report-v2.schema.json\",\n  \"artifact_digest\": \"sha256:cd654ac827aab76a7d21ed661f0282f2e6fc439e83df9051baa1d3241b2ad651\",\n  \"check_projection\": [\n    {\n      \"detail\": \"\",\n      \"name\": \"manifest_schema\",\n      \"ok\": true\n    },\n    {\n      \"detail\": \"\",\n      \"name\": \"candidate_declaration\",\n      \"ok\": true\n    },\n    {\n      \"detail\": \"\",\n      \"name\": \"quorum_policy\",\n      \"ok\": true\n    },\n    {\n      \"detail\": \"\",\n      \"name\": \"recovery_policy\",\n      \"ok\": true\n    },\n    {\n      \"detail\": \"\",\n      \"name\": \"output_contract\",\n      \"ok\": true\n    },\n    {\n      \"detail\": \"\",\n      \"name\": \"trace_contract\",\n      \"ok\": true\n    },\n    {\n      \"detail\": \"\",\n      \"name\": \"driver_contract\",\n      \"ok\": true\n    },\n    {\n      \"detail\": \"\",\n      \"name\": \"kernel_contract\",\n      \"ok\": true\n    },\n    {\n      \"detail\": \"\",\n      \"name\": \"extension_contract\",\n      \"ok\": true\n    },\n    {\n      \"detail\": \"\",\n      \"name\": \"profile_contract\",\n      \"ok\": true\n    }\n  ],\n  \"checks\": [\n    {\n      \"detail\": \"\",\n      \"name\": \"manifest_schema\",\n      \"ok\": true\n    },\n    {\n      \"detail\": \"\",\n      \"name\": \"candidate_declaration\",\n      \"ok\": true\n    },\n    {\n      \"detail\": \"\",\n      \"name\": \"quorum_policy\",\n      \"ok\": true\n    },\n    {\n      \"detail\": \"\",\n      \"name\": \"recovery_policy\",\n      \"ok\": true\n    },\n    {\n      \"detail\": \"\",\n      \"name\": \"output_contract\",\n      \"ok\": true\n    },\n    {\n      \"detail\": \"\",\n      \"name\": \"trace_contract\",\n      \"ok\": true\n    },\n    {\n      \"detail\": \"\",\n      \"name\": \"driver_contract\",\n      \"ok\": true\n    },\n    {\n      \"detail\": \"\",\n      \"name\": \"kernel_contract\",\n      \"ok\": true\n    },\n    {\n      \"detail\": \"\",\n      \"name\": \"extension_contract\",\n      \"ok\": true\n    },\n    {\n      \"detail\": \"\",\n      \"name\": \"profile_contract\",\n      \"ok\": true\n    }\n  ],\n  \"implementation_identity\": \"pheroos.protocol-core\",\n  \"ok\": true,\n  \"profile\": \"pheroos-core-v1\",\n  \"report_version\": \"pheroos-conformance-report-v2\",\n  \"subject_kind\": \"manifest\",\n  \"target\": \"examples/swarm-protocol\"\n}\n",
+      "stderr": ""
+    }
+  ]
+}

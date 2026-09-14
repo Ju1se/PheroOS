@@ -1,0 +1,86 @@
+{
+  "review_version": "coordination_repair_moonshot_cn_review_v1",
+  "status": "PROPOSAL_ONLY_NOT_AUTHORIZED_NOT_IMPLEMENTED",
+  "retrieved_utc": "2026-09-14T01:25:44Z",
+  "public_document_reads_only": true,
+  "provider_api_calls": 0,
+  "credential_access": false,
+  "counts_toward_verdict": false,
+  "endpoint": {
+    "origin": "https://api.moonshot.cn",
+    "base_path": "/v1",
+    "chat": "/v1/chat/completions",
+    "estimate": "/v1/tokenizers/estimate-token-count",
+    "source": "https://platform.kimi.com/docs/api/overview"
+  },
+  "documented_model_choices": [
+    {"model": "kimi-k2.6", "context_display": "256K", "thinking_can_disable": true, "default_output_legacy_max_tokens": 32768, "maximum_output_independently_verified": null},
+    {"model": "kimi-k2.7-code", "context_display": "256K", "thinking_can_disable": false, "preserved_thinking_required": true, "default_output_legacy_max_tokens": 32768, "maximum_output_independently_verified": null},
+    {"model": "kimi-k2.7-code-highspeed", "context_display": "256K", "thinking_can_disable": false, "preserved_thinking_required": true, "maximum_output_independently_verified": null},
+    {"model": "kimi-k3", "context_display": "1M", "thinking_can_disable": false, "preserved_thinking_required": true, "reasoning_effort": ["low", "high", "max"], "default_reasoning_effort": "max", "default_max_completion_tokens": 131072, "maximum_max_completion_tokens": 1048576}
+  ],
+  "immutable_backend_revision_available": "NOT_ESTABLISHED",
+  "request_seed_determinism": "NOT_ESTABLISHED",
+  "retired": {"kimi-k2.5": "2026-08-31", "moonshot-v1_series": "2026-08-31", "kimi-k2_series": "2026-05-25"},
+  "usage": {
+    "retain_raw": true,
+    "documented_fields": ["prompt_tokens", "completion_tokens", "total_tokens", "cached_tokens"],
+    "reasoning_counts_against_input_output_and_output_bound": true,
+    "guaranteed_separate_reasoning_tokens_field": "NOT_ESTABLISHED",
+    "missing_breakdown": "UNKNOWN_NOT_ZERO",
+    "provider_cache": "automatic; request order and cache policy are potential confounds"
+  },
+  "token_estimation": {
+    "method": "POST",
+    "response_field": "data.total_tokens",
+    "exact_settlement_equality_guarantee": false,
+    "direct_page_fetch": "TIMEOUT",
+    "route_schema_evidence": "official indexed page and current official documentation index",
+    "current_k3_k27_support": "NOT_VERIFIED",
+    "estimation_request_cost": "NOT_VERIFIED"
+  },
+  "pricing": {"numeric_rates": null, "currency": null, "effective_date": null, "reason": "No verified dated numeric model table recovered; no rates inferred from region or cached snippets."},
+  "runtime_source_identities": {
+    "session_v1.py": "a1c0750b12ea2d3b3cfabc42c29f2616c6160ef0b1641cd573d67db3d6d9a39e",
+    "session_driver_v1.py": "4bc372f2f64d01efa0b4c1da896db27793b8ef473bd85e20cbba025e13839b08"
+  },
+  "runtime_compatibility": {
+    "existing_prompt_count_contract": "Session receive requires provider prompt_tokens == reserved exact prompt count",
+    "remote_estimate_mismatch": "cannot represent truthfully through unchanged exact-count ModelAdapter alone",
+    "proposed_profile": "separately versioned external remote reservation/receipt profile with one ledger",
+    "core_change_required": false,
+    "historical_session_semantics_may_change": false,
+    "automatic_retry_or_unknown_redispatch": false,
+    "post_dispatch_unknown_liability": "retain upper bound; do not convert to zero",
+    "actual_over_bound_usage": "preserve receipt and record explicit violation"
+  },
+  "missing_configuration_and_authorization": [
+    "authorization_to_depart_from_local_only_scope",
+    "exact_model_id_and_thinking_profile",
+    "outbound_data_scope",
+    "maximum_monetary_spend_and_currency",
+    "total_dispatch_and_token_caps_including_diagnostics",
+    "token_estimation_request_allowance",
+    "timeout_and_unknown_liability_stop_rule",
+    "verified_input_reservation_upper_bound_and_rate_schedule"
+  ],
+  "official_sources": [
+    "https://platform.kimi.com/docs/api/overview",
+    "https://platform.kimi.com/docs/models",
+    "https://platform.kimi.com/docs/api/models-overview",
+    "https://platform.kimi.com/docs/api/chat",
+    "https://platform.kimi.com/docs/api/estimate",
+    "https://platform.kimi.com/docs/guide/use-thinking-models",
+    "https://platform.kimi.com/docs/guide/kimi-k2-6-quickstart",
+    "https://platform.kimi.com/docs/guide/kimi-k2-7-code-quickstart",
+    "https://platform.kimi.com/docs/guide/use-context-caching-feature-of-kimi-api",
+    "https://platform.kimi.com/docs/pricing/chat",
+    "https://platform.kimi.com/docs/llms.txt"
+  ],
+  "limitations": [
+    "No authenticated provider availability, balance, tokenizer or generation check.",
+    "Search engine model snippets lag live catalog; live model page used for current choices.",
+    "Official docs support compatibility design, not empirical actionability or efficacy claims.",
+    "This conditional proposal does not amend the frozen local-only campaign or authorize paid collection."
+  ]
+}

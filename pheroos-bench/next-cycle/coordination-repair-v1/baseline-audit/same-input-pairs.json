@@ -1,0 +1,758 @@
+[
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-small-blackboard-n2",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-small-blackboard-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "evidence_revision/ready_window"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-small-versioned-n2",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-small-versioned-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "code_repair/bounded_increment"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-small-dedup_ttl-n32",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-small-dedup_ttl-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "code_repair/bounded_increment"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-small-blackboard-n8",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-small-blackboard-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "evidence_revision/route_quota"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-small-dedup_ttl-n2",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-small-dedup_ttl-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "code_repair/bounded_increment"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-small-dedup_ttl-n32",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-small-dedup_ttl-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "evidence_revision/route_quota"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-small-dedup_ttl-n4",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-small-dedup_ttl-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "evidence_revision/ready_window"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-small-dedup_ttl-n4",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-small-dedup_ttl-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "evidence_revision/route_quota"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-small-dedup_ttl-n2",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-small-dedup_ttl-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "evidence_revision/route_quota"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-small-blackboard-n32",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-small-blackboard-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "evidence_revision/ready_window"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-small-versioned-n32",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-small-versioned-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "code_repair/cyclic_offset"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-small-versioned-n8",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-small-versioned-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "code_repair/cyclic_offset"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-small-versioned-n16",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-small-versioned-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "code_repair/cyclic_offset"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-small-dedup_ttl-n16",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-small-dedup_ttl-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "evidence_revision/ready_window"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-small-blackboard-n8",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-small-blackboard-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "evidence_revision/ready_window"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-small-versioned-n16",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-small-versioned-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "code_repair/bounded_increment"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-small-versioned-n4",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-small-versioned-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "code_repair/bounded_increment"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-small-blackboard-n32",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-small-blackboard-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "code_repair/cyclic_offset"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-small-dedup_ttl-n8",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-small-dedup_ttl-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "evidence_revision/ready_window"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-small-versioned-n32",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-small-versioned-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "code_repair/bounded_increment"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-small-blackboard-n4",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-small-blackboard-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "evidence_revision/ready_window"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-small-blackboard-n32",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-small-blackboard-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "evidence_revision/route_quota"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-small-versioned-n2",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-small-versioned-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "code_repair/cyclic_offset"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-small-versioned-n8",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-small-versioned-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "code_repair/bounded_increment"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-small-dedup_ttl-n8",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-small-dedup_ttl-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "evidence_revision/route_quota"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-small-dedup_ttl-n2",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-small-dedup_ttl-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "evidence_revision/ready_window"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-small-blackboard-n16",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-small-blackboard-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "evidence_revision/route_quota"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-small-versioned-n16",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-small-versioned-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "evidence_revision/route_quota"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-small-blackboard-n4",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-small-blackboard-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "evidence_revision/route_quota"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-small-blackboard-n8",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-small-blackboard-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "code_repair/bounded_increment"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-small-dedup_ttl-n16",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-small-dedup_ttl-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "code_repair/bounded_increment"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-small-dedup_ttl-n16",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-small-dedup_ttl-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "code_repair/cyclic_offset"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-small-blackboard-n8",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-small-blackboard-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "code_repair/cyclic_offset"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-small-versioned-n8",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-small-versioned-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "evidence_revision/route_quota"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-small-dedup_ttl-n4",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-small-dedup_ttl-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "code_repair/bounded_increment"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-small-dedup_ttl-n16",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-small-dedup_ttl-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "evidence_revision/route_quota"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-small-blackboard-n2",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-small-blackboard-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "code_repair/bounded_increment"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-small-blackboard-n16",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-small-blackboard-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "code_repair/bounded_increment"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-small-blackboard-n16",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-small-blackboard-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "evidence_revision/ready_window"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-small-versioned-n2",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-small-versioned-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "evidence_revision/route_quota"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-small-blackboard-n32",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-small-blackboard-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "code_repair/bounded_increment"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-small-blackboard-n4",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-small-blackboard-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "code_repair/bounded_increment"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-small-dedup_ttl-n8",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-small-dedup_ttl-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "code_repair/cyclic_offset"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-small-versioned-n2",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-small-versioned-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "evidence_revision/ready_window"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-small-dedup_ttl-n4",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-small-dedup_ttl-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "code_repair/cyclic_offset"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-small-dedup_ttl-n8",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-small-dedup_ttl-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "code_repair/bounded_increment"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-small-blackboard-n2",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-small-blackboard-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "code_repair/cyclic_offset"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-small-versioned-n32",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-small-versioned-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "evidence_revision/route_quota"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-small-dedup_ttl-n2",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-small-dedup_ttl-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "code_repair/cyclic_offset"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-small-blackboard-n16",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-small-blackboard-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "code_repair/cyclic_offset"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-small-dedup_ttl-n32",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-small-dedup_ttl-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "code_repair/cyclic_offset"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-small-dedup_ttl-n32",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-small-dedup_ttl-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "evidence_revision/ready_window"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-small-versioned-n8",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-small-versioned-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "evidence_revision/ready_window"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-small-versioned-n16",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-small-versioned-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "evidence_revision/ready_window"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-small-blackboard-n4",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-small-blackboard-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "code_repair/cyclic_offset"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-small-versioned-n4",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-small-versioned-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "evidence_revision/ready_window"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-small-blackboard-n2",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-small-blackboard-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "evidence_revision/route_quota"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-small-versioned-n4",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-small-versioned-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "code_repair/cyclic_offset"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-small-versioned-n4",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-small-versioned-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "evidence_revision/route_quota"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-small-versioned-n32",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-small-versioned-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "evidence_revision/ready_window"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-medium-blackboard-n16",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-medium-blackboard-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "evidence_revision/route_quota"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-medium-blackboard-n4",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-medium-blackboard-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "code_repair/cyclic_offset"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-medium-blackboard-n32",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-medium-blackboard-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "evidence_revision/route_quota"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-medium-blackboard-n32",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-medium-blackboard-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "code_repair/bounded_increment"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-medium-blackboard-n32",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-medium-blackboard-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "code_repair/cyclic_offset"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-medium-blackboard-n16",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-medium-blackboard-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "code_repair/bounded_increment"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-medium-blackboard-n16",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-medium-blackboard-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "evidence_revision/ready_window"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-medium-blackboard-n4",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-medium-blackboard-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "code_repair/bounded_increment"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-medium-blackboard-n4",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-medium-blackboard-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "evidence_revision/route_quota"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-medium-blackboard-n4",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-medium-blackboard-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "evidence_revision/ready_window"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-medium-blackboard-n16",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-medium-blackboard-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "code_repair/cyclic_offset"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-medium-blackboard-n32",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-medium-blackboard-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "evidence_revision/ready_window"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-mixed-blackboard-n32",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-mixed-blackboard-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "evidence_revision/route_quota"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-mixed-blackboard-n4",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-mixed-blackboard-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "code_repair/cyclic_offset"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-mixed-blackboard-n32",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-mixed-blackboard-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "code_repair/bounded_increment"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-mixed-blackboard-n16",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-mixed-blackboard-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "evidence_revision/route_quota"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-mixed-blackboard-n16",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-mixed-blackboard-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "evidence_revision/ready_window"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-mixed-blackboard-n4",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-mixed-blackboard-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "evidence_revision/ready_window"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-mixed-blackboard-n16",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-mixed-blackboard-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "code_repair/cyclic_offset"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-mixed-blackboard-n32",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-mixed-blackboard-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "code_repair/cyclic_offset"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-mixed-blackboard-n4",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-mixed-blackboard-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "evidence_revision/route_quota"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-mixed-blackboard-n32",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-mixed-blackboard-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "evidence_revision/ready_window"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-mixed-blackboard-n4",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-mixed-blackboard-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "code_repair/bounded_increment"
+  },
+  {
+    "common_steps": 32,
+    "condition": "fixed_calls-mixed-blackboard-n16",
+    "equal_step_sets": true,
+    "reference": "fixed_calls-mixed-blackboard-n1",
+    "same_inputs": 32,
+    "same_responses": 32,
+    "world": "code_repair/bounded_increment"
+  }
+]
