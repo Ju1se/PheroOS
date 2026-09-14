@@ -1,0 +1,21 @@
+{
+  "created_utc": "2026-09-13T18:49:59.507284+00:00",
+  "source_sha256": {
+    "pheroos-bench/results/r4-session-scaling-pilot-v1/freeze.json": "fc535ea621a7d26582fd2888cac088b1f3f0604efdb98a4b54d0bdf147714e1c",
+    "pheroos-bench/results/r4-session-scaling-pilot-v1/summary.json": "f28d0da3e63a2c56941c710318ad7b5cea195e31f966b2604ff25ef29d160f91",
+    "pheroos-bench/results/r4-session-scaling-pilot-v1/episodes.jsonl": "8e32f12dd47767741080d89450979021c894f9cd1b69f1f54f934342993c75a4",
+    "pheroos-bench/results/r4-session-scaling-pilot-v1/order.json": "e42ddfbfd9c0979ca0111041ada6bfe53bd0af30346c947d063826778332fe9d"
+  },
+  "last_complete_episode_index": 203,
+  "last_complete_episode_mtime_utc": "2026-09-13T07:58:19.185279+00:00",
+  "aborted_episode_index": 204,
+  "aborted_episode_mtime_utc": "2026-09-13T17:14:43.407305+00:00",
+  "aborted_episode_monotonic_execution_seconds": 22.33385442,
+  "declared_work_lease_seconds": 3600,
+  "lease_clock": "time.time",
+  "execution_clock": "time.monotonic_ns",
+  "trace_has_wall_timestamps": false,
+  "cancel_preserves_expiry": false,
+  "cause_status": "UNRESOLVED_CLOCK_ENVIRONMENT_HYPOTHESIS",
+  "interpretation": "Wall/monotonic divergence is consistent with pause or clock adjustment, but file modification times and untimestamped Trace cannot prove a host suspend or exact failed lease predicate. Known late usage settled; no evaluate-7 reservation or publication exists."
+}

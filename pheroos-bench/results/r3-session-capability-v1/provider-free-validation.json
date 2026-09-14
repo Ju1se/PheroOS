@@ -1,0 +1,35 @@
+{
+  "kind": "g5_session_capability_provider_free_validation_v1",
+  "counts_toward_verdict": false,
+  "gpu_inference_run": false,
+  "cwd": "/tmp",
+  "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+  "interpreter": "/home/scott/projects/PheroOS-runtime/.local/venv312/bin/python",
+  "runtime_target": "/tmp/pheroos-session-site",
+  "installed_runtime_wheel_sha256": "db93bf05c2a6bedc854933c51164033f9847a5eed27df6ddfb054cb98e9b44d2",
+  "checks": [
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 PYTHONPATH=/tmp/pheroos-session-site:/home/scott/projects/PheroOS/pheroos-bench/src /home/scott/projects/PheroOS-runtime/.local/venv312/bin/python -m pytest -q -p no:cacheprovider /home/scott/projects/PheroOS/pheroos-bench/tests/test_r3_session_capability.py",
+      "exit_code": 0,
+      "passed": 18,
+      "seconds": 54.38
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 PYTHONPATH=/tmp/pheroos-session-site:/home/scott/projects/PheroOS/pheroos-bench/src /home/scott/projects/PheroOS-runtime/.local/venv312/bin/python -m pytest -q -p no:cacheprovider /home/scott/projects/PheroOS/pheroos-bench/tests/test_r3_tool_tasks.py /home/scott/projects/PheroOS/pheroos-bench/tests/test_r3_framed_pilot.py /home/scott/projects/PheroOS/pheroos-bench/tests/test_r3_tool_pilot.py",
+      "exit_code": 0,
+      "passed": 235,
+      "seconds": 1.49
+    }
+  ],
+  "files_sha256": {
+    "/home/scott/projects/PheroOS/pheroos-bench/src/pheroos_bench/r3_session_capability.py": "e08d0585800b02302391915216bc0c5eeed5ecbcf37fbffa139227bdb26102ab",
+    "/home/scott/projects/PheroOS/pheroos-bench/tests/test_r3_session_capability.py": "ea9e82ee85ddecf1956bfe3a6ba24f29f6f6048d3826d8536754a997942ddda1",
+    "/home/scott/projects/PheroOS/pheroos-bench/r3-session-capability-v1.json": "9976a1276881c320524e78e1cf29adb3e191abf16555c8e90bb5f922a6252c94",
+    "/home/scott/projects/PheroOS/pheroos-bench/R3-session-capability-v1-contract.md": "54e627d6daec5e6a0a6f50cfb1d10f181b5bc5475f513bbc40dfd48ebd8deb1c"
+  },
+  "limitations": [
+    "Fake adapters only; actual GPU collection requires root sequential gate.",
+    "New Session prompts contain Session artifact references; no historical prompt or efficacy equivalence claim.",
+    "No R4/G5 completion verdict."
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "files": {
+    "tools/restore_evidence_v1.py": {
+      "sha256": "92298195ead99cdc4331f64d3f8a485a94ad94f00437777f725094602bd63106",
+      "size_bytes": 9865
+    },
+    "tests/test_restore_evidence_v1.py": {
+      "sha256": "1ca4e838a6bc08916e6d38b2a1110a964b50dd6080b21362780e3798e571c32f",
+      "size_bytes": 9867
+    },
+    "RESTORE-EVIDENCE-v1.md": {
+      "sha256": "545219d9a560df03fd8c84f00398aafb1d4fdeae47efacb8b84ce4942bd722a3",
+      "size_bytes": 2320
+    }
+  },
+  "tests": {
+    "command": "/home/scott/projects/PheroOS/pheroos-bench/.venv/bin/python -m unittest discover -s /tmp/pheroos-pr-support/tests -q",
+    "result": "22 passed",
+    "elapsed_seconds": 0.931,
+    "python_version": "3.12.3"
+  },
+  "counts_toward_verdict": false
+}

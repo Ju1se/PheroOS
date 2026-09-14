@@ -1,0 +1,1057 @@
+{
+  "status": "descriptive_frozen_evaluation_not_confirmatory",
+  "independent_unit": "world_seed",
+  "summaries": {
+    "pilot": {
+      "all": {
+        "arms": {
+          "full_relevant": {
+            "episodes": 8,
+            "errors": 0,
+            "success_rate": 1,
+            "mean_accounted_bytes": 613828.625,
+            "mean_data_deliveries": 798,
+            "mean_duplicate_deliveries": 768,
+            "correction_delays_observed": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "missed_corrections": 0
+          },
+          "matched_sparse_random": {
+            "episodes": 8,
+            "errors": 0,
+            "success_rate": 0.25,
+            "mean_accounted_bytes": 261199.625,
+            "mean_data_deliveries": 30,
+            "mean_duplicate_deliveries": 10.125,
+            "correction_delays_observed": [
+              0
+            ],
+            "missed_corrections": 7
+          },
+          "source_version_ttl": {
+            "episodes": 8,
+            "errors": 0,
+            "success_rate": 1,
+            "mean_accounted_bytes": 297685.125,
+            "mean_data_deliveries": 30,
+            "mean_duplicate_deliveries": 0,
+            "correction_delays_observed": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "missed_corrections": 0
+          },
+          "candidate": {
+            "episodes": 8,
+            "errors": 0,
+            "success_rate": 1,
+            "mean_accounted_bytes": 316085.875,
+            "mean_data_deliveries": 30,
+            "mean_duplicate_deliveries": 0,
+            "correction_delays_observed": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "missed_corrections": 0
+          },
+          "no_reactivation": {
+            "episodes": 8,
+            "errors": 0,
+            "success_rate": 0.25,
+            "mean_accounted_bytes": 296790.875,
+            "mean_data_deliveries": 24,
+            "mean_duplicate_deliveries": 0,
+            "correction_delays_observed": [],
+            "missed_corrections": 8
+          }
+        },
+        "candidate_minus_control": {
+          "full_relevant": {
+            "mean_world_success_difference": 0,
+            "mean_world_bytes_difference": -297742.75
+          },
+          "matched_sparse_random": {
+            "mean_world_success_difference": 0.75,
+            "mean_world_bytes_difference": 54886.25
+          },
+          "source_version_ttl": {
+            "mean_world_success_difference": 0,
+            "mean_world_bytes_difference": 18400.75
+          },
+          "candidate": {
+            "mean_world_success_difference": 0,
+            "mean_world_bytes_difference": 0
+          },
+          "no_reactivation": {
+            "mean_world_success_difference": 0.75,
+            "mean_world_bytes_difference": 19295
+          }
+        }
+      },
+      "no_update": {
+        "arms": {
+          "full_relevant": {
+            "episodes": 2,
+            "errors": 0,
+            "success_rate": 1,
+            "mean_accounted_bytes": 607258,
+            "mean_data_deliveries": 792,
+            "mean_duplicate_deliveries": 768,
+            "correction_delays_observed": [],
+            "missed_corrections": 0
+          },
+          "matched_sparse_random": {
+            "episodes": 2,
+            "errors": 0,
+            "success_rate": 1,
+            "mean_accounted_bytes": 255175,
+            "mean_data_deliveries": 24,
+            "mean_duplicate_deliveries": 6.5,
+            "correction_delays_observed": [],
+            "missed_corrections": 0
+          },
+          "source_version_ttl": {
+            "episodes": 2,
+            "errors": 0,
+            "success_rate": 1,
+            "mean_accounted_bytes": 291031,
+            "mean_data_deliveries": 24,
+            "mean_duplicate_deliveries": 0,
+            "correction_delays_observed": [],
+            "missed_corrections": 0
+          },
+          "candidate": {
+            "episodes": 2,
+            "errors": 0,
+            "success_rate": 1,
+            "mean_accounted_bytes": 310615,
+            "mean_data_deliveries": 24,
+            "mean_duplicate_deliveries": 0,
+            "correction_delays_observed": [],
+            "missed_corrections": 0
+          },
+          "no_reactivation": {
+            "episodes": 2,
+            "errors": 0,
+            "success_rate": 1,
+            "mean_accounted_bytes": 294295,
+            "mean_data_deliveries": 24,
+            "mean_duplicate_deliveries": 0,
+            "correction_delays_observed": [],
+            "missed_corrections": 0
+          }
+        },
+        "candidate_minus_control": {
+          "full_relevant": {
+            "mean_world_success_difference": 0,
+            "mean_world_bytes_difference": -296643
+          },
+          "matched_sparse_random": {
+            "mean_world_success_difference": 0,
+            "mean_world_bytes_difference": 55440
+          },
+          "source_version_ttl": {
+            "mean_world_success_difference": 0,
+            "mean_world_bytes_difference": 19584
+          },
+          "candidate": {
+            "mean_world_success_difference": 0,
+            "mean_world_bytes_difference": 0
+          },
+          "no_reactivation": {
+            "mean_world_success_difference": 0,
+            "mean_world_bytes_difference": 16320
+          }
+        }
+      },
+      "source_update": {
+        "arms": {
+          "full_relevant": {
+            "episodes": 2,
+            "errors": 0,
+            "success_rate": 1,
+            "mean_accounted_bytes": 613695.5,
+            "mean_data_deliveries": 798,
+            "mean_duplicate_deliveries": 768,
+            "correction_delays_observed": [
+              0,
+              0
+            ],
+            "missed_corrections": 0
+          },
+          "matched_sparse_random": {
+            "episodes": 2,
+            "errors": 0,
+            "success_rate": 0,
+            "mean_accounted_bytes": 261445,
+            "mean_data_deliveries": 30,
+            "mean_duplicate_deliveries": 8.5,
+            "correction_delays_observed": [],
+            "missed_corrections": 2
+          },
+          "source_version_ttl": {
+            "episodes": 2,
+            "errors": 0,
+            "success_rate": 1,
+            "mean_accounted_bytes": 297013.5,
+            "mean_data_deliveries": 30,
+            "mean_duplicate_deliveries": 0,
+            "correction_delays_observed": [
+              0,
+              0
+            ],
+            "missed_corrections": 0
+          },
+          "candidate": {
+            "episodes": 2,
+            "errors": 0,
+            "success_rate": 1,
+            "mean_accounted_bytes": 315180.5,
+            "mean_data_deliveries": 30,
+            "mean_duplicate_deliveries": 0,
+            "correction_delays_observed": [
+              0,
+              0
+            ],
+            "missed_corrections": 0
+          },
+          "no_reactivation": {
+            "episodes": 2,
+            "errors": 0,
+            "success_rate": 0,
+            "mean_accounted_bytes": 295970.5,
+            "mean_data_deliveries": 24,
+            "mean_duplicate_deliveries": 0,
+            "correction_delays_observed": [],
+            "missed_corrections": 2
+          }
+        },
+        "candidate_minus_control": {
+          "full_relevant": {
+            "mean_world_success_difference": 0,
+            "mean_world_bytes_difference": -298515
+          },
+          "matched_sparse_random": {
+            "mean_world_success_difference": 1,
+            "mean_world_bytes_difference": 53735.5
+          },
+          "source_version_ttl": {
+            "mean_world_success_difference": 0,
+            "mean_world_bytes_difference": 18167
+          },
+          "candidate": {
+            "mean_world_success_difference": 0,
+            "mean_world_bytes_difference": 0
+          },
+          "no_reactivation": {
+            "mean_world_success_difference": 1,
+            "mean_world_bytes_difference": 19210
+          }
+        }
+      },
+      "constraint_update": {
+        "arms": {
+          "full_relevant": {
+            "episodes": 2,
+            "errors": 0,
+            "success_rate": 1,
+            "mean_accounted_bytes": 613703,
+            "mean_data_deliveries": 798,
+            "mean_duplicate_deliveries": 768,
+            "correction_delays_observed": [
+              0,
+              0
+            ],
+            "missed_corrections": 0
+          },
+          "matched_sparse_random": {
+            "episodes": 2,
+            "errors": 0,
+            "success_rate": 0,
+            "mean_accounted_bytes": 261269.5,
+            "mean_data_deliveries": 30,
+            "mean_duplicate_deliveries": 11.5,
+            "correction_delays_observed": [],
+            "missed_corrections": 2
+          },
+          "source_version_ttl": {
+            "episodes": 2,
+            "errors": 0,
+            "success_rate": 1,
+            "mean_accounted_bytes": 298332,
+            "mean_data_deliveries": 30,
+            "mean_duplicate_deliveries": 0,
+            "correction_delays_observed": [
+              0,
+              0
+            ],
+            "missed_corrections": 0
+          },
+          "candidate": {
+            "episodes": 2,
+            "errors": 0,
+            "success_rate": 1,
+            "mean_accounted_bytes": 316554,
+            "mean_data_deliveries": 30,
+            "mean_duplicate_deliveries": 0,
+            "correction_delays_observed": [
+              0,
+              0
+            ],
+            "missed_corrections": 0
+          },
+          "no_reactivation": {
+            "episodes": 2,
+            "errors": 0,
+            "success_rate": 0,
+            "mean_accounted_bytes": 297324,
+            "mean_data_deliveries": 24,
+            "mean_duplicate_deliveries": 0,
+            "correction_delays_observed": [],
+            "missed_corrections": 2
+          }
+        },
+        "candidate_minus_control": {
+          "full_relevant": {
+            "mean_world_success_difference": 0,
+            "mean_world_bytes_difference": -297149
+          },
+          "matched_sparse_random": {
+            "mean_world_success_difference": 1,
+            "mean_world_bytes_difference": 55284.5
+          },
+          "source_version_ttl": {
+            "mean_world_success_difference": 0,
+            "mean_world_bytes_difference": 18222
+          },
+          "candidate": {
+            "mean_world_success_difference": 0,
+            "mean_world_bytes_difference": 0
+          },
+          "no_reactivation": {
+            "mean_world_success_difference": 1,
+            "mean_world_bytes_difference": 19230
+          }
+        }
+      },
+      "mixed": {
+        "arms": {
+          "full_relevant": {
+            "episodes": 2,
+            "errors": 0,
+            "success_rate": 1,
+            "mean_accounted_bytes": 620658,
+            "mean_data_deliveries": 804,
+            "mean_duplicate_deliveries": 768,
+            "correction_delays_observed": [
+              0,
+              0,
+              0,
+              0
+            ],
+            "missed_corrections": 0
+          },
+          "matched_sparse_random": {
+            "episodes": 2,
+            "errors": 0,
+            "success_rate": 0,
+            "mean_accounted_bytes": 266909,
+            "mean_data_deliveries": 36,
+            "mean_duplicate_deliveries": 14,
+            "correction_delays_observed": [
+              0
+            ],
+            "missed_corrections": 3
+          },
+          "source_version_ttl": {
+            "episodes": 2,
+            "errors": 0,
+            "success_rate": 1,
+            "mean_accounted_bytes": 304364,
+            "mean_data_deliveries": 36,
+            "mean_duplicate_deliveries": 0,
+            "correction_delays_observed": [
+              0,
+              0,
+              0,
+              0
+            ],
+            "missed_corrections": 0
+          },
+          "candidate": {
+            "episodes": 2,
+            "errors": 0,
+            "success_rate": 1,
+            "mean_accounted_bytes": 321994,
+            "mean_data_deliveries": 36,
+            "mean_duplicate_deliveries": 0,
+            "correction_delays_observed": [
+              0,
+              0,
+              0,
+              0
+            ],
+            "missed_corrections": 0
+          },
+          "no_reactivation": {
+            "episodes": 2,
+            "errors": 0,
+            "success_rate": 0,
+            "mean_accounted_bytes": 299574,
+            "mean_data_deliveries": 24,
+            "mean_duplicate_deliveries": 0,
+            "correction_delays_observed": [],
+            "missed_corrections": 4
+          }
+        },
+        "candidate_minus_control": {
+          "full_relevant": {
+            "mean_world_success_difference": 0,
+            "mean_world_bytes_difference": -298664
+          },
+          "matched_sparse_random": {
+            "mean_world_success_difference": 1,
+            "mean_world_bytes_difference": 55085
+          },
+          "source_version_ttl": {
+            "mean_world_success_difference": 0,
+            "mean_world_bytes_difference": 17630
+          },
+          "candidate": {
+            "mean_world_success_difference": 0,
+            "mean_world_bytes_difference": 0
+          },
+          "no_reactivation": {
+            "mean_world_success_difference": 1,
+            "mean_world_bytes_difference": 22420
+          }
+        }
+      }
+    },
+    "evaluation": {
+      "all": {
+        "arms": {
+          "full_relevant": {
+            "episodes": 32,
+            "errors": 0,
+            "success_rate": 1,
+            "mean_accounted_bytes": 613892.59375,
+            "mean_data_deliveries": 798,
+            "mean_duplicate_deliveries": 768,
+            "correction_delays_observed": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "missed_corrections": 0
+          },
+          "matched_sparse_random": {
+            "episodes": 32,
+            "errors": 0,
+            "success_rate": 0.15625,
+            "mean_accounted_bytes": 260666.84375,
+            "mean_data_deliveries": 30,
+            "mean_duplicate_deliveries": 11.28125,
+            "correction_delays_observed": [
+              0,
+              2,
+              0,
+              2,
+              0,
+              0,
+              0
+            ],
+            "missed_corrections": 25
+          },
+          "source_version_ttl": {
+            "episodes": 32,
+            "errors": 0,
+            "success_rate": 1,
+            "mean_accounted_bytes": 297693.03125,
+            "mean_data_deliveries": 30,
+            "mean_duplicate_deliveries": 0,
+            "correction_delays_observed": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "missed_corrections": 0
+          },
+          "candidate": {
+            "episodes": 32,
+            "errors": 0,
+            "success_rate": 1,
+            "mean_accounted_bytes": 315959.71875,
+            "mean_data_deliveries": 30,
+            "mean_duplicate_deliveries": 0,
+            "correction_delays_observed": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "missed_corrections": 0
+          },
+          "no_reactivation": {
+            "episodes": 32,
+            "errors": 0,
+            "success_rate": 0.25,
+            "mean_accounted_bytes": 296713.46875,
+            "mean_data_deliveries": 24,
+            "mean_duplicate_deliveries": 0,
+            "correction_delays_observed": [],
+            "missed_corrections": 32
+          }
+        },
+        "candidate_minus_control": {
+          "full_relevant": {
+            "mean_world_success_difference": 0,
+            "mean_world_bytes_difference": -297932.875
+          },
+          "matched_sparse_random": {
+            "mean_world_success_difference": 0.84375,
+            "mean_world_bytes_difference": 55292.875
+          },
+          "source_version_ttl": {
+            "mean_world_success_difference": 0,
+            "mean_world_bytes_difference": 18266.6875
+          },
+          "candidate": {
+            "mean_world_success_difference": 0,
+            "mean_world_bytes_difference": 0
+          },
+          "no_reactivation": {
+            "mean_world_success_difference": 0.75,
+            "mean_world_bytes_difference": 19246.25
+          }
+        }
+      },
+      "no_update": {
+        "arms": {
+          "full_relevant": {
+            "episodes": 8,
+            "errors": 0,
+            "success_rate": 1,
+            "mean_accounted_bytes": 607272.75,
+            "mean_data_deliveries": 792,
+            "mean_duplicate_deliveries": 768,
+            "correction_delays_observed": [],
+            "missed_corrections": 0
+          },
+          "matched_sparse_random": {
+            "episodes": 8,
+            "errors": 0,
+            "success_rate": 0.5,
+            "mean_accounted_bytes": 253985.125,
+            "mean_data_deliveries": 24,
+            "mean_duplicate_deliveries": 8.375,
+            "correction_delays_observed": [],
+            "missed_corrections": 0
+          },
+          "source_version_ttl": {
+            "episodes": 8,
+            "errors": 0,
+            "success_rate": 1,
+            "mean_accounted_bytes": 291031,
+            "mean_data_deliveries": 24,
+            "mean_duplicate_deliveries": 0,
+            "correction_delays_observed": [],
+            "missed_corrections": 0
+          },
+          "candidate": {
+            "episodes": 8,
+            "errors": 0,
+            "success_rate": 1,
+            "mean_accounted_bytes": 310615,
+            "mean_data_deliveries": 24,
+            "mean_duplicate_deliveries": 0,
+            "correction_delays_observed": [],
+            "missed_corrections": 0
+          },
+          "no_reactivation": {
+            "episodes": 8,
+            "errors": 0,
+            "success_rate": 1,
+            "mean_accounted_bytes": 294295,
+            "mean_data_deliveries": 24,
+            "mean_duplicate_deliveries": 0,
+            "correction_delays_observed": [],
+            "missed_corrections": 0
+          }
+        },
+        "candidate_minus_control": {
+          "full_relevant": {
+            "mean_world_success_difference": 0,
+            "mean_world_bytes_difference": -296657.75
+          },
+          "matched_sparse_random": {
+            "mean_world_success_difference": 0.5,
+            "mean_world_bytes_difference": 56629.875
+          },
+          "source_version_ttl": {
+            "mean_world_success_difference": 0,
+            "mean_world_bytes_difference": 19584
+          },
+          "candidate": {
+            "mean_world_success_difference": 0,
+            "mean_world_bytes_difference": 0
+          },
+          "no_reactivation": {
+            "mean_world_success_difference": 0,
+            "mean_world_bytes_difference": 16320
+          }
+        }
+      },
+      "source_update": {
+        "arms": {
+          "full_relevant": {
+            "episodes": 8,
+            "errors": 0,
+            "success_rate": 1,
+            "mean_accounted_bytes": 613822.875,
+            "mean_data_deliveries": 798,
+            "mean_duplicate_deliveries": 768,
+            "correction_delays_observed": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "missed_corrections": 0
+          },
+          "matched_sparse_random": {
+            "episodes": 8,
+            "errors": 0,
+            "success_rate": 0,
+            "mean_accounted_bytes": 259974.75,
+            "mean_data_deliveries": 30,
+            "mean_duplicate_deliveries": 11.625,
+            "correction_delays_observed": [],
+            "missed_corrections": 8
+          },
+          "source_version_ttl": {
+            "episodes": 8,
+            "errors": 0,
+            "success_rate": 1,
+            "mean_accounted_bytes": 297056.125,
+            "mean_data_deliveries": 30,
+            "mean_duplicate_deliveries": 0,
+            "correction_delays_observed": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "missed_corrections": 0
+          },
+          "candidate": {
+            "episodes": 8,
+            "errors": 0,
+            "success_rate": 1,
+            "mean_accounted_bytes": 314906.875,
+            "mean_data_deliveries": 30,
+            "mean_duplicate_deliveries": 0,
+            "correction_delays_observed": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "missed_corrections": 0
+          },
+          "no_reactivation": {
+            "episodes": 8,
+            "errors": 0,
+            "success_rate": 0,
+            "mean_accounted_bytes": 295811.875,
+            "mean_data_deliveries": 24,
+            "mean_duplicate_deliveries": 0,
+            "correction_delays_observed": [],
+            "missed_corrections": 8
+          }
+        },
+        "candidate_minus_control": {
+          "full_relevant": {
+            "mean_world_success_difference": 0,
+            "mean_world_bytes_difference": -298916
+          },
+          "matched_sparse_random": {
+            "mean_world_success_difference": 1,
+            "mean_world_bytes_difference": 54932.125
+          },
+          "source_version_ttl": {
+            "mean_world_success_difference": 0,
+            "mean_world_bytes_difference": 17850.75
+          },
+          "candidate": {
+            "mean_world_success_difference": 0,
+            "mean_world_bytes_difference": 0
+          },
+          "no_reactivation": {
+            "mean_world_success_difference": 1,
+            "mean_world_bytes_difference": 19095
+          }
+        }
+      },
+      "constraint_update": {
+        "arms": {
+          "full_relevant": {
+            "episodes": 8,
+            "errors": 0,
+            "success_rate": 1,
+            "mean_accounted_bytes": 613826.5,
+            "mean_data_deliveries": 798,
+            "mean_duplicate_deliveries": 768,
+            "correction_delays_observed": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "missed_corrections": 0
+          },
+          "matched_sparse_random": {
+            "episodes": 8,
+            "errors": 0,
+            "success_rate": 0.125,
+            "mean_accounted_bytes": 261337.125,
+            "mean_data_deliveries": 30,
+            "mean_duplicate_deliveries": 11.375,
+            "correction_delays_observed": [
+              0
+            ],
+            "missed_corrections": 7
+          },
+          "source_version_ttl": {
+            "episodes": 8,
+            "errors": 0,
+            "success_rate": 1,
+            "mean_accounted_bytes": 298332,
+            "mean_data_deliveries": 30,
+            "mean_duplicate_deliveries": 0,
+            "correction_delays_observed": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "missed_corrections": 0
+          },
+          "candidate": {
+            "episodes": 8,
+            "errors": 0,
+            "success_rate": 1,
+            "mean_accounted_bytes": 316719,
+            "mean_data_deliveries": 30,
+            "mean_duplicate_deliveries": 0,
+            "correction_delays_observed": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "missed_corrections": 0
+          },
+          "no_reactivation": {
+            "episodes": 8,
+            "errors": 0,
+            "success_rate": 0,
+            "mean_accounted_bytes": 297429,
+            "mean_data_deliveries": 24,
+            "mean_duplicate_deliveries": 0,
+            "correction_delays_observed": [],
+            "missed_corrections": 8
+          }
+        },
+        "candidate_minus_control": {
+          "full_relevant": {
+            "mean_world_success_difference": 0,
+            "mean_world_bytes_difference": -297107.5
+          },
+          "matched_sparse_random": {
+            "mean_world_success_difference": 0.875,
+            "mean_world_bytes_difference": 55381.875
+          },
+          "source_version_ttl": {
+            "mean_world_success_difference": 0,
+            "mean_world_bytes_difference": 18387
+          },
+          "candidate": {
+            "mean_world_success_difference": 0,
+            "mean_world_bytes_difference": 0
+          },
+          "no_reactivation": {
+            "mean_world_success_difference": 1,
+            "mean_world_bytes_difference": 19290
+          }
+        }
+      },
+      "mixed": {
+        "arms": {
+          "full_relevant": {
+            "episodes": 8,
+            "errors": 0,
+            "success_rate": 1,
+            "mean_accounted_bytes": 620648.25,
+            "mean_data_deliveries": 804,
+            "mean_duplicate_deliveries": 768,
+            "correction_delays_observed": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "missed_corrections": 0
+          },
+          "matched_sparse_random": {
+            "episodes": 8,
+            "errors": 0,
+            "success_rate": 0,
+            "mean_accounted_bytes": 267370.375,
+            "mean_data_deliveries": 36,
+            "mean_duplicate_deliveries": 13.75,
+            "correction_delays_observed": [
+              0,
+              2,
+              0,
+              2,
+              0,
+              0
+            ],
+            "missed_corrections": 10
+          },
+          "source_version_ttl": {
+            "episodes": 8,
+            "errors": 0,
+            "success_rate": 1,
+            "mean_accounted_bytes": 304353,
+            "mean_data_deliveries": 36,
+            "mean_duplicate_deliveries": 0,
+            "correction_delays_observed": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "missed_corrections": 0
+          },
+          "candidate": {
+            "episodes": 8,
+            "errors": 0,
+            "success_rate": 1,
+            "mean_accounted_bytes": 321598,
+            "mean_data_deliveries": 36,
+            "mean_duplicate_deliveries": 0,
+            "correction_delays_observed": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "missed_corrections": 0
+          },
+          "no_reactivation": {
+            "episodes": 8,
+            "errors": 0,
+            "success_rate": 0,
+            "mean_accounted_bytes": 299318,
+            "mean_data_deliveries": 24,
+            "mean_duplicate_deliveries": 0,
+            "correction_delays_observed": [],
+            "missed_corrections": 16
+          }
+        },
+        "candidate_minus_control": {
+          "full_relevant": {
+            "mean_world_success_difference": 0,
+            "mean_world_bytes_difference": -299050.25
+          },
+          "matched_sparse_random": {
+            "mean_world_success_difference": 1,
+            "mean_world_bytes_difference": 54227.625
+          },
+          "source_version_ttl": {
+            "mean_world_success_difference": 0,
+            "mean_world_bytes_difference": 17245
+          },
+          "candidate": {
+            "mean_world_success_difference": 0,
+            "mean_world_bytes_difference": 0
+          },
+          "no_reactivation": {
+            "mean_world_success_difference": 1,
+            "mean_world_bytes_difference": 22280
+          }
+        }
+      }
+    }
+  },
+  "freeze_hashes_unchanged": true,
+  "complete_measurement": true
+}

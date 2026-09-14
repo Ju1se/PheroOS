@@ -1,0 +1,1399 @@
+{
+  "arms": {
+    "candidate": {
+      "episodes": 8,
+      "mean_accounted_bytes": 393127.375,
+      "mean_accounted_operations": 6356.5,
+      "mean_data_deliveries": 98.75,
+      "mean_duplicate_deliveries": 68.75,
+      "missed_corrections": 0,
+      "observed_correction_delays": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "successes": 7
+    },
+    "dedup_ttl": {
+      "episodes": 8,
+      "mean_accounted_bytes": 327623.375,
+      "mean_accounted_operations": 5527.75,
+      "mean_data_deliveries": 108.25,
+      "mean_duplicate_deliveries": 78.25,
+      "missed_corrections": 0,
+      "observed_correction_delays": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "successes": 7
+    },
+    "full_relevant": {
+      "episodes": 8,
+      "mean_accounted_bytes": 650263.375,
+      "mean_accounted_operations": 7377.0,
+      "mean_data_deliveries": 798.0,
+      "mean_duplicate_deliveries": 768.0,
+      "missed_corrections": 0,
+      "observed_correction_delays": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "successes": 7
+    },
+    "matched_sparse_random": {
+      "episodes": 8,
+      "mean_accounted_bytes": 306206.0,
+      "mean_accounted_operations": 4555.25,
+      "mean_data_deliveries": 98.75,
+      "mean_duplicate_deliveries": 69.75,
+      "missed_corrections": 0,
+      "observed_correction_delays": [
+        2,
+        0,
+        7,
+        0,
+        4,
+        0,
+        4,
+        0
+      ],
+      "successes": 7
+    },
+    "no_dedup": {
+      "episodes": 8,
+      "mean_accounted_bytes": 724699.375,
+      "mean_accounted_operations": 8858.0,
+      "mean_data_deliveries": 773.5,
+      "mean_duplicate_deliveries": 743.5,
+      "missed_corrections": 0,
+      "observed_correction_delays": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "successes": 7
+    },
+    "no_reactivation": {
+      "episodes": 8,
+      "mean_accounted_bytes": 388266.375,
+      "mean_accounted_operations": 6346.75,
+      "mean_data_deliveries": 96.0,
+      "mean_duplicate_deliveries": 66.25,
+      "missed_corrections": 0,
+      "observed_correction_delays": [
+        2,
+        0,
+        3,
+        0,
+        2,
+        0,
+        2,
+        0
+      ],
+      "successes": 7
+    },
+    "no_relevance": {
+      "episodes": 8,
+      "mean_accounted_bytes": 810533.125,
+      "mean_accounted_operations": 12256.0,
+      "mean_data_deliveries": 395.0,
+      "mean_duplicate_deliveries": 275.0,
+      "missed_corrections": 0,
+      "observed_correction_delays": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "successes": 7
+    },
+    "source_version_ttl": {
+      "episodes": 8,
+      "mean_accounted_bytes": 331248.375,
+      "mean_accounted_operations": 5527.75,
+      "mean_data_deliveries": 108.25,
+      "mean_duplicate_deliveries": 78.25,
+      "missed_corrections": 0,
+      "observed_correction_delays": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "successes": 7
+    }
+  },
+  "comparisons": {
+    "dedup_ttl": {
+      "bootstrap_resamples": 2000,
+      "by_cell_arm": [
+        {
+          "arm": "candidate",
+          "budget_exceeded_episodes": 0,
+          "cell": "constraint_update",
+          "cost_total": 12712,
+          "n_episodes": 2,
+          "outcomes": {
+            "cancelled": 0,
+            "failed": 0,
+            "rejected": 0,
+            "success": 2,
+            "timeout": 0
+          },
+          "quality_mean": 1.0,
+          "unknown_cost_units": 0
+        },
+        {
+          "arm": "dedup_ttl",
+          "budget_exceeded_episodes": 0,
+          "cell": "constraint_update",
+          "cost_total": 11022,
+          "n_episodes": 2,
+          "outcomes": {
+            "cancelled": 0,
+            "failed": 0,
+            "rejected": 0,
+            "success": 2,
+            "timeout": 0
+          },
+          "quality_mean": 1.0,
+          "unknown_cost_units": 0
+        },
+        {
+          "arm": "candidate",
+          "budget_exceeded_episodes": 0,
+          "cell": "mixed",
+          "cost_total": 12794,
+          "n_episodes": 2,
+          "outcomes": {
+            "cancelled": 0,
+            "failed": 1,
+            "rejected": 0,
+            "success": 1,
+            "timeout": 0
+          },
+          "quality_mean": 0.5,
+          "unknown_cost_units": 0
+        },
+        {
+          "arm": "dedup_ttl",
+          "budget_exceeded_episodes": 0,
+          "cell": "mixed",
+          "cost_total": 11270,
+          "n_episodes": 2,
+          "outcomes": {
+            "cancelled": 0,
+            "failed": 1,
+            "rejected": 0,
+            "success": 1,
+            "timeout": 0
+          },
+          "quality_mean": 0.5,
+          "unknown_cost_units": 0
+        },
+        {
+          "arm": "candidate",
+          "budget_exceeded_episodes": 0,
+          "cell": "no_update",
+          "cost_total": 12622,
+          "n_episodes": 2,
+          "outcomes": {
+            "cancelled": 0,
+            "failed": 0,
+            "rejected": 0,
+            "success": 2,
+            "timeout": 0
+          },
+          "quality_mean": 1.0,
+          "unknown_cost_units": 0
+        },
+        {
+          "arm": "dedup_ttl",
+          "budget_exceeded_episodes": 0,
+          "cell": "no_update",
+          "cost_total": 10846,
+          "n_episodes": 2,
+          "outcomes": {
+            "cancelled": 0,
+            "failed": 0,
+            "rejected": 0,
+            "success": 2,
+            "timeout": 0
+          },
+          "quality_mean": 1.0,
+          "unknown_cost_units": 0
+        },
+        {
+          "arm": "candidate",
+          "budget_exceeded_episodes": 0,
+          "cell": "source_update",
+          "cost_total": 12724,
+          "n_episodes": 2,
+          "outcomes": {
+            "cancelled": 0,
+            "failed": 0,
+            "rejected": 0,
+            "success": 2,
+            "timeout": 0
+          },
+          "quality_mean": 1.0,
+          "unknown_cost_units": 0
+        },
+        {
+          "arm": "dedup_ttl",
+          "budget_exceeded_episodes": 0,
+          "cell": "source_update",
+          "cost_total": 11084,
+          "n_episodes": 2,
+          "outcomes": {
+            "cancelled": 0,
+            "failed": 0,
+            "rejected": 0,
+            "success": 2,
+            "timeout": 0
+          },
+          "quality_mean": 1.0,
+          "unknown_cost_units": 0
+        }
+      ],
+      "confidence": 0.95,
+      "contrast": {
+        "candidate": "candidate",
+        "control": "dedup_ttl"
+      },
+      "cost": {
+        "ci_high": 837.0,
+        "ci_low": 820.5,
+        "ci_status": "OK",
+        "mean": 828.75,
+        "n_worlds": 8
+      },
+      "cost_unit": "call_units",
+      "counts_toward_verdict": false,
+      "experimental": true,
+      "interval": "two_sided_paired_world_percentile",
+      "mapping": {
+        "call_units": "logical metered stage operations summed across delivered, routing, encoding, state_read, state_write; not provider calls, tokens, or bytes",
+        "cell": "case = (no_update, source_update, constraint_update, mixed)[seed % 4]",
+        "cost": "cost.total_accounted_operations",
+        "invalid": "any invalid source row or incomplete full-arm grid blocks all records",
+        "outcome": "complete success=1 -> success; complete success=0 -> failed",
+        "phase": "pilot source -> instrument_check R0 wire contract",
+        "repetition": "0; one episode per declared seed and arm",
+        "world_id": "seed:<base-10 seed>"
+      },
+      "method_version": "r_paired_world_mean_v1",
+      "n_episodes": 16,
+      "n_worlds": 8,
+      "phase": "instrument_check",
+      "quality": {
+        "ci_high": 0.0,
+        "ci_low": 0.0,
+        "ci_status": "INSUFFICIENT_RESOLUTION",
+        "mean": 0.0,
+        "n_worlds": 8
+      },
+      "repetitions": 1,
+      "seed": 37,
+      "source_phase": "pilot",
+      "source_record_version": "r1_coordination_episode_v2",
+      "status": "VALID_MEASUREMENT",
+      "weighting": "equal_world; repetitions averaged; cells stratified with declared world counts"
+    },
+    "full_relevant": {
+      "bootstrap_resamples": 2000,
+      "by_cell_arm": [
+        {
+          "arm": "candidate",
+          "budget_exceeded_episodes": 0,
+          "cell": "constraint_update",
+          "cost_total": 12712,
+          "n_episodes": 2,
+          "outcomes": {
+            "cancelled": 0,
+            "failed": 0,
+            "rejected": 0,
+            "success": 2,
+            "timeout": 0
+          },
+          "quality_mean": 1.0,
+          "unknown_cost_units": 0
+        },
+        {
+          "arm": "full_relevant",
+          "budget_exceeded_episodes": 0,
+          "cell": "constraint_update",
+          "cost_total": 14752,
+          "n_episodes": 2,
+          "outcomes": {
+            "cancelled": 0,
+            "failed": 0,
+            "rejected": 0,
+            "success": 2,
+            "timeout": 0
+          },
+          "quality_mean": 1.0,
+          "unknown_cost_units": 0
+        },
+        {
+          "arm": "candidate",
+          "budget_exceeded_episodes": 0,
+          "cell": "mixed",
+          "cost_total": 12794,
+          "n_episodes": 2,
+          "outcomes": {
+            "cancelled": 0,
+            "failed": 1,
+            "rejected": 0,
+            "success": 1,
+            "timeout": 0
+          },
+          "quality_mean": 0.5,
+          "unknown_cost_units": 0
+        },
+        {
+          "arm": "full_relevant",
+          "budget_exceeded_episodes": 0,
+          "cell": "mixed",
+          "cost_total": 14874,
+          "n_episodes": 2,
+          "outcomes": {
+            "cancelled": 0,
+            "failed": 1,
+            "rejected": 0,
+            "success": 1,
+            "timeout": 0
+          },
+          "quality_mean": 0.5,
+          "unknown_cost_units": 0
+        },
+        {
+          "arm": "candidate",
+          "budget_exceeded_episodes": 0,
+          "cell": "no_update",
+          "cost_total": 12622,
+          "n_episodes": 2,
+          "outcomes": {
+            "cancelled": 0,
+            "failed": 0,
+            "rejected": 0,
+            "success": 2,
+            "timeout": 0
+          },
+          "quality_mean": 1.0,
+          "unknown_cost_units": 0
+        },
+        {
+          "arm": "full_relevant",
+          "budget_exceeded_episodes": 0,
+          "cell": "no_update",
+          "cost_total": 14638,
+          "n_episodes": 2,
+          "outcomes": {
+            "cancelled": 0,
+            "failed": 0,
+            "rejected": 0,
+            "success": 2,
+            "timeout": 0
+          },
+          "quality_mean": 1.0,
+          "unknown_cost_units": 0
+        },
+        {
+          "arm": "candidate",
+          "budget_exceeded_episodes": 0,
+          "cell": "source_update",
+          "cost_total": 12724,
+          "n_episodes": 2,
+          "outcomes": {
+            "cancelled": 0,
+            "failed": 0,
+            "rejected": 0,
+            "success": 2,
+            "timeout": 0
+          },
+          "quality_mean": 1.0,
+          "unknown_cost_units": 0
+        },
+        {
+          "arm": "full_relevant",
+          "budget_exceeded_episodes": 0,
+          "cell": "source_update",
+          "cost_total": 14752,
+          "n_episodes": 2,
+          "outcomes": {
+            "cancelled": 0,
+            "failed": 0,
+            "rejected": 0,
+            "success": 2,
+            "timeout": 0
+          },
+          "quality_mean": 1.0,
+          "unknown_cost_units": 0
+        }
+      ],
+      "confidence": 0.95,
+      "contrast": {
+        "candidate": "candidate",
+        "control": "full_relevant"
+      },
+      "cost": {
+        "ci_high": -1014.0,
+        "ci_low": -1027.0,
+        "ci_status": "OK",
+        "mean": -1020.5,
+        "n_worlds": 8
+      },
+      "cost_unit": "call_units",
+      "counts_toward_verdict": false,
+      "experimental": true,
+      "interval": "two_sided_paired_world_percentile",
+      "mapping": {
+        "call_units": "logical metered stage operations summed across delivered, routing, encoding, state_read, state_write; not provider calls, tokens, or bytes",
+        "cell": "case = (no_update, source_update, constraint_update, mixed)[seed % 4]",
+        "cost": "cost.total_accounted_operations",
+        "invalid": "any invalid source row or incomplete full-arm grid blocks all records",
+        "outcome": "complete success=1 -> success; complete success=0 -> failed",
+        "phase": "pilot source -> instrument_check R0 wire contract",
+        "repetition": "0; one episode per declared seed and arm",
+        "world_id": "seed:<base-10 seed>"
+      },
+      "method_version": "r_paired_world_mean_v1",
+      "n_episodes": 16,
+      "n_worlds": 8,
+      "phase": "instrument_check",
+      "quality": {
+        "ci_high": 0.0,
+        "ci_low": 0.0,
+        "ci_status": "INSUFFICIENT_RESOLUTION",
+        "mean": 0.0,
+        "n_worlds": 8
+      },
+      "repetitions": 1,
+      "seed": 37,
+      "source_phase": "pilot",
+      "source_record_version": "r1_coordination_episode_v2",
+      "status": "VALID_MEASUREMENT",
+      "weighting": "equal_world; repetitions averaged; cells stratified with declared world counts"
+    },
+    "matched_sparse_random": {
+      "bootstrap_resamples": 2000,
+      "by_cell_arm": [
+        {
+          "arm": "candidate",
+          "budget_exceeded_episodes": 0,
+          "cell": "constraint_update",
+          "cost_total": 12712,
+          "n_episodes": 2,
+          "outcomes": {
+            "cancelled": 0,
+            "failed": 0,
+            "rejected": 0,
+            "success": 2,
+            "timeout": 0
+          },
+          "quality_mean": 1.0,
+          "unknown_cost_units": 0
+        },
+        {
+          "arm": "matched_sparse_random",
+          "budget_exceeded_episodes": 0,
+          "cell": "constraint_update",
+          "cost_total": 9103,
+          "n_episodes": 2,
+          "outcomes": {
+            "cancelled": 0,
+            "failed": 0,
+            "rejected": 0,
+            "success": 2,
+            "timeout": 0
+          },
+          "quality_mean": 1.0,
+          "unknown_cost_units": 0
+        },
+        {
+          "arm": "candidate",
+          "budget_exceeded_episodes": 0,
+          "cell": "mixed",
+          "cost_total": 12794,
+          "n_episodes": 2,
+          "outcomes": {
+            "cancelled": 0,
+            "failed": 1,
+            "rejected": 0,
+            "success": 1,
+            "timeout": 0
+          },
+          "quality_mean": 0.5,
+          "unknown_cost_units": 0
+        },
+        {
+          "arm": "matched_sparse_random",
+          "budget_exceeded_episodes": 0,
+          "cell": "mixed",
+          "cost_total": 9199,
+          "n_episodes": 2,
+          "outcomes": {
+            "cancelled": 0,
+            "failed": 1,
+            "rejected": 0,
+            "success": 1,
+            "timeout": 0
+          },
+          "quality_mean": 0.5,
+          "unknown_cost_units": 0
+        },
+        {
+          "arm": "candidate",
+          "budget_exceeded_episodes": 0,
+          "cell": "no_update",
+          "cost_total": 12622,
+          "n_episodes": 2,
+          "outcomes": {
+            "cancelled": 0,
+            "failed": 0,
+            "rejected": 0,
+            "success": 2,
+            "timeout": 0
+          },
+          "quality_mean": 1.0,
+          "unknown_cost_units": 0
+        },
+        {
+          "arm": "matched_sparse_random",
+          "budget_exceeded_episodes": 0,
+          "cell": "no_update",
+          "cost_total": 9005,
+          "n_episodes": 2,
+          "outcomes": {
+            "cancelled": 0,
+            "failed": 0,
+            "rejected": 0,
+            "success": 2,
+            "timeout": 0
+          },
+          "quality_mean": 1.0,
+          "unknown_cost_units": 0
+        },
+        {
+          "arm": "candidate",
+          "budget_exceeded_episodes": 0,
+          "cell": "source_update",
+          "cost_total": 12724,
+          "n_episodes": 2,
+          "outcomes": {
+            "cancelled": 0,
+            "failed": 0,
+            "rejected": 0,
+            "success": 2,
+            "timeout": 0
+          },
+          "quality_mean": 1.0,
+          "unknown_cost_units": 0
+        },
+        {
+          "arm": "matched_sparse_random",
+          "budget_exceeded_episodes": 0,
+          "cell": "source_update",
+          "cost_total": 9135,
+          "n_episodes": 2,
+          "outcomes": {
+            "cancelled": 0,
+            "failed": 0,
+            "rejected": 0,
+            "success": 2,
+            "timeout": 0
+          },
+          "quality_mean": 1.0,
+          "unknown_cost_units": 0
+        }
+      ],
+      "confidence": 0.95,
+      "contrast": {
+        "candidate": "candidate",
+        "control": "matched_sparse_random"
+      },
+      "cost": {
+        "ci_high": 1806.5,
+        "ci_low": 1796.0,
+        "ci_status": "OK",
+        "mean": 1801.25,
+        "n_worlds": 8
+      },
+      "cost_unit": "call_units",
+      "counts_toward_verdict": false,
+      "experimental": true,
+      "interval": "two_sided_paired_world_percentile",
+      "mapping": {
+        "call_units": "logical metered stage operations summed across delivered, routing, encoding, state_read, state_write; not provider calls, tokens, or bytes",
+        "cell": "case = (no_update, source_update, constraint_update, mixed)[seed % 4]",
+        "cost": "cost.total_accounted_operations",
+        "invalid": "any invalid source row or incomplete full-arm grid blocks all records",
+        "outcome": "complete success=1 -> success; complete success=0 -> failed",
+        "phase": "pilot source -> instrument_check R0 wire contract",
+        "repetition": "0; one episode per declared seed and arm",
+        "world_id": "seed:<base-10 seed>"
+      },
+      "method_version": "r_paired_world_mean_v1",
+      "n_episodes": 16,
+      "n_worlds": 8,
+      "phase": "instrument_check",
+      "quality": {
+        "ci_high": 0.0,
+        "ci_low": 0.0,
+        "ci_status": "INSUFFICIENT_RESOLUTION",
+        "mean": 0.0,
+        "n_worlds": 8
+      },
+      "repetitions": 1,
+      "seed": 37,
+      "source_phase": "pilot",
+      "source_record_version": "r1_coordination_episode_v2",
+      "status": "VALID_MEASUREMENT",
+      "weighting": "equal_world; repetitions averaged; cells stratified with declared world counts"
+    },
+    "no_dedup": {
+      "bootstrap_resamples": 2000,
+      "by_cell_arm": [
+        {
+          "arm": "candidate",
+          "budget_exceeded_episodes": 0,
+          "cell": "constraint_update",
+          "cost_total": 12712,
+          "n_episodes": 2,
+          "outcomes": {
+            "cancelled": 0,
+            "failed": 0,
+            "rejected": 0,
+            "success": 2,
+            "timeout": 0
+          },
+          "quality_mean": 1.0,
+          "unknown_cost_units": 0
+        },
+        {
+          "arm": "no_dedup",
+          "budget_exceeded_episodes": 0,
+          "cell": "constraint_update",
+          "cost_total": 17808,
+          "n_episodes": 2,
+          "outcomes": {
+            "cancelled": 0,
+            "failed": 0,
+            "rejected": 0,
+            "success": 2,
+            "timeout": 0
+          },
+          "quality_mean": 1.0,
+          "unknown_cost_units": 0
+        },
+        {
+          "arm": "candidate",
+          "budget_exceeded_episodes": 0,
+          "cell": "mixed",
+          "cost_total": 12794,
+          "n_episodes": 2,
+          "outcomes": {
+            "cancelled": 0,
+            "failed": 1,
+            "rejected": 0,
+            "success": 1,
+            "timeout": 0
+          },
+          "quality_mean": 0.5,
+          "unknown_cost_units": 0
+        },
+        {
+          "arm": "no_dedup",
+          "budget_exceeded_episodes": 0,
+          "cell": "mixed",
+          "cost_total": 17606,
+          "n_episodes": 2,
+          "outcomes": {
+            "cancelled": 0,
+            "failed": 1,
+            "rejected": 0,
+            "success": 1,
+            "timeout": 0
+          },
+          "quality_mean": 0.5,
+          "unknown_cost_units": 0
+        },
+        {
+          "arm": "candidate",
+          "budget_exceeded_episodes": 0,
+          "cell": "no_update",
+          "cost_total": 12622,
+          "n_episodes": 2,
+          "outcomes": {
+            "cancelled": 0,
+            "failed": 0,
+            "rejected": 0,
+            "success": 2,
+            "timeout": 0
+          },
+          "quality_mean": 1.0,
+          "unknown_cost_units": 0
+        },
+        {
+          "arm": "no_dedup",
+          "budget_exceeded_episodes": 0,
+          "cell": "no_update",
+          "cost_total": 17806,
+          "n_episodes": 2,
+          "outcomes": {
+            "cancelled": 0,
+            "failed": 0,
+            "rejected": 0,
+            "success": 2,
+            "timeout": 0
+          },
+          "quality_mean": 1.0,
+          "unknown_cost_units": 0
+        },
+        {
+          "arm": "candidate",
+          "budget_exceeded_episodes": 0,
+          "cell": "source_update",
+          "cost_total": 12724,
+          "n_episodes": 2,
+          "outcomes": {
+            "cancelled": 0,
+            "failed": 0,
+            "rejected": 0,
+            "success": 2,
+            "timeout": 0
+          },
+          "quality_mean": 1.0,
+          "unknown_cost_units": 0
+        },
+        {
+          "arm": "no_dedup",
+          "budget_exceeded_episodes": 0,
+          "cell": "source_update",
+          "cost_total": 17644,
+          "n_episodes": 2,
+          "outcomes": {
+            "cancelled": 0,
+            "failed": 0,
+            "rejected": 0,
+            "success": 2,
+            "timeout": 0
+          },
+          "quality_mean": 1.0,
+          "unknown_cost_units": 0
+        }
+      ],
+      "confidence": 0.95,
+      "contrast": {
+        "candidate": "candidate",
+        "control": "no_dedup"
+      },
+      "cost": {
+        "ci_high": -2484.0,
+        "ci_low": -2519.0,
+        "ci_status": "OK",
+        "mean": -2501.5,
+        "n_worlds": 8
+      },
+      "cost_unit": "call_units",
+      "counts_toward_verdict": false,
+      "experimental": true,
+      "interval": "two_sided_paired_world_percentile",
+      "mapping": {
+        "call_units": "logical metered stage operations summed across delivered, routing, encoding, state_read, state_write; not provider calls, tokens, or bytes",
+        "cell": "case = (no_update, source_update, constraint_update, mixed)[seed % 4]",
+        "cost": "cost.total_accounted_operations",
+        "invalid": "any invalid source row or incomplete full-arm grid blocks all records",
+        "outcome": "complete success=1 -> success; complete success=0 -> failed",
+        "phase": "pilot source -> instrument_check R0 wire contract",
+        "repetition": "0; one episode per declared seed and arm",
+        "world_id": "seed:<base-10 seed>"
+      },
+      "method_version": "r_paired_world_mean_v1",
+      "n_episodes": 16,
+      "n_worlds": 8,
+      "phase": "instrument_check",
+      "quality": {
+        "ci_high": 0.0,
+        "ci_low": 0.0,
+        "ci_status": "INSUFFICIENT_RESOLUTION",
+        "mean": 0.0,
+        "n_worlds": 8
+      },
+      "repetitions": 1,
+      "seed": 37,
+      "source_phase": "pilot",
+      "source_record_version": "r1_coordination_episode_v2",
+      "status": "VALID_MEASUREMENT",
+      "weighting": "equal_world; repetitions averaged; cells stratified with declared world counts"
+    },
+    "no_reactivation": {
+      "bootstrap_resamples": 2000,
+      "by_cell_arm": [
+        {
+          "arm": "candidate",
+          "budget_exceeded_episodes": 0,
+          "cell": "constraint_update",
+          "cost_total": 12712,
+          "n_episodes": 2,
+          "outcomes": {
+            "cancelled": 0,
+            "failed": 0,
+            "rejected": 0,
+            "success": 2,
+            "timeout": 0
+          },
+          "quality_mean": 1.0,
+          "unknown_cost_units": 0
+        },
+        {
+          "arm": "no_reactivation",
+          "budget_exceeded_episodes": 0,
+          "cell": "constraint_update",
+          "cost_total": 12712,
+          "n_episodes": 2,
+          "outcomes": {
+            "cancelled": 0,
+            "failed": 0,
+            "rejected": 0,
+            "success": 2,
+            "timeout": 0
+          },
+          "quality_mean": 1.0,
+          "unknown_cost_units": 0
+        },
+        {
+          "arm": "candidate",
+          "budget_exceeded_episodes": 0,
+          "cell": "mixed",
+          "cost_total": 12794,
+          "n_episodes": 2,
+          "outcomes": {
+            "cancelled": 0,
+            "failed": 1,
+            "rejected": 0,
+            "success": 1,
+            "timeout": 0
+          },
+          "quality_mean": 0.5,
+          "unknown_cost_units": 0
+        },
+        {
+          "arm": "no_reactivation",
+          "budget_exceeded_episodes": 0,
+          "cell": "mixed",
+          "cost_total": 12766,
+          "n_episodes": 2,
+          "outcomes": {
+            "cancelled": 0,
+            "failed": 1,
+            "rejected": 0,
+            "success": 1,
+            "timeout": 0
+          },
+          "quality_mean": 0.5,
+          "unknown_cost_units": 0
+        },
+        {
+          "arm": "candidate",
+          "budget_exceeded_episodes": 0,
+          "cell": "no_update",
+          "cost_total": 12622,
+          "n_episodes": 2,
+          "outcomes": {
+            "cancelled": 0,
+            "failed": 0,
+            "rejected": 0,
+            "success": 2,
+            "timeout": 0
+          },
+          "quality_mean": 1.0,
+          "unknown_cost_units": 0
+        },
+        {
+          "arm": "no_reactivation",
+          "budget_exceeded_episodes": 0,
+          "cell": "no_update",
+          "cost_total": 12622,
+          "n_episodes": 2,
+          "outcomes": {
+            "cancelled": 0,
+            "failed": 0,
+            "rejected": 0,
+            "success": 2,
+            "timeout": 0
+          },
+          "quality_mean": 1.0,
+          "unknown_cost_units": 0
+        },
+        {
+          "arm": "candidate",
+          "budget_exceeded_episodes": 0,
+          "cell": "source_update",
+          "cost_total": 12724,
+          "n_episodes": 2,
+          "outcomes": {
+            "cancelled": 0,
+            "failed": 0,
+            "rejected": 0,
+            "success": 2,
+            "timeout": 0
+          },
+          "quality_mean": 1.0,
+          "unknown_cost_units": 0
+        },
+        {
+          "arm": "no_reactivation",
+          "budget_exceeded_episodes": 0,
+          "cell": "source_update",
+          "cost_total": 12674,
+          "n_episodes": 2,
+          "outcomes": {
+            "cancelled": 0,
+            "failed": 0,
+            "rejected": 0,
+            "success": 2,
+            "timeout": 0
+          },
+          "quality_mean": 1.0,
+          "unknown_cost_units": 0
+        }
+      ],
+      "confidence": 0.95,
+      "contrast": {
+        "candidate": "candidate",
+        "control": "no_reactivation"
+      },
+      "cost": {
+        "ci_high": 15.5,
+        "ci_low": 4.0,
+        "ci_status": "OK",
+        "mean": 9.75,
+        "n_worlds": 8
+      },
+      "cost_unit": "call_units",
+      "counts_toward_verdict": false,
+      "experimental": true,
+      "interval": "two_sided_paired_world_percentile",
+      "mapping": {
+        "call_units": "logical metered stage operations summed across delivered, routing, encoding, state_read, state_write; not provider calls, tokens, or bytes",
+        "cell": "case = (no_update, source_update, constraint_update, mixed)[seed % 4]",
+        "cost": "cost.total_accounted_operations",
+        "invalid": "any invalid source row or incomplete full-arm grid blocks all records",
+        "outcome": "complete success=1 -> success; complete success=0 -> failed",
+        "phase": "pilot source -> instrument_check R0 wire contract",
+        "repetition": "0; one episode per declared seed and arm",
+        "world_id": "seed:<base-10 seed>"
+      },
+      "method_version": "r_paired_world_mean_v1",
+      "n_episodes": 16,
+      "n_worlds": 8,
+      "phase": "instrument_check",
+      "quality": {
+        "ci_high": 0.0,
+        "ci_low": 0.0,
+        "ci_status": "INSUFFICIENT_RESOLUTION",
+        "mean": 0.0,
+        "n_worlds": 8
+      },
+      "repetitions": 1,
+      "seed": 37,
+      "source_phase": "pilot",
+      "source_record_version": "r1_coordination_episode_v2",
+      "status": "VALID_MEASUREMENT",
+      "weighting": "equal_world; repetitions averaged; cells stratified with declared world counts"
+    },
+    "no_relevance": {
+      "bootstrap_resamples": 2000,
+      "by_cell_arm": [
+        {
+          "arm": "candidate",
+          "budget_exceeded_episodes": 0,
+          "cell": "constraint_update",
+          "cost_total": 12712,
+          "n_episodes": 2,
+          "outcomes": {
+            "cancelled": 0,
+            "failed": 0,
+            "rejected": 0,
+            "success": 2,
+            "timeout": 0
+          },
+          "quality_mean": 1.0,
+          "unknown_cost_units": 0
+        },
+        {
+          "arm": "no_relevance",
+          "budget_exceeded_episodes": 0,
+          "cell": "constraint_update",
+          "cost_total": 24490,
+          "n_episodes": 2,
+          "outcomes": {
+            "cancelled": 0,
+            "failed": 0,
+            "rejected": 0,
+            "success": 2,
+            "timeout": 0
+          },
+          "quality_mean": 1.0,
+          "unknown_cost_units": 0
+        },
+        {
+          "arm": "candidate",
+          "budget_exceeded_episodes": 0,
+          "cell": "mixed",
+          "cost_total": 12794,
+          "n_episodes": 2,
+          "outcomes": {
+            "cancelled": 0,
+            "failed": 1,
+            "rejected": 0,
+            "success": 1,
+            "timeout": 0
+          },
+          "quality_mean": 0.5,
+          "unknown_cost_units": 0
+        },
+        {
+          "arm": "no_relevance",
+          "budget_exceeded_episodes": 0,
+          "cell": "mixed",
+          "cost_total": 24560,
+          "n_episodes": 2,
+          "outcomes": {
+            "cancelled": 0,
+            "failed": 1,
+            "rejected": 0,
+            "success": 1,
+            "timeout": 0
+          },
+          "quality_mean": 0.5,
+          "unknown_cost_units": 0
+        },
+        {
+          "arm": "candidate",
+          "budget_exceeded_episodes": 0,
+          "cell": "no_update",
+          "cost_total": 12622,
+          "n_episodes": 2,
+          "outcomes": {
+            "cancelled": 0,
+            "failed": 0,
+            "rejected": 0,
+            "success": 2,
+            "timeout": 0
+          },
+          "quality_mean": 1.0,
+          "unknown_cost_units": 0
+        },
+        {
+          "arm": "no_relevance",
+          "budget_exceeded_episodes": 0,
+          "cell": "no_update",
+          "cost_total": 24430,
+          "n_episodes": 2,
+          "outcomes": {
+            "cancelled": 0,
+            "failed": 0,
+            "rejected": 0,
+            "success": 2,
+            "timeout": 0
+          },
+          "quality_mean": 1.0,
+          "unknown_cost_units": 0
+        },
+        {
+          "arm": "candidate",
+          "budget_exceeded_episodes": 0,
+          "cell": "source_update",
+          "cost_total": 12724,
+          "n_episodes": 2,
+          "outcomes": {
+            "cancelled": 0,
+            "failed": 0,
+            "rejected": 0,
+            "success": 2,
+            "timeout": 0
+          },
+          "quality_mean": 1.0,
+          "unknown_cost_units": 0
+        },
+        {
+          "arm": "no_relevance",
+          "budget_exceeded_episodes": 0,
+          "cell": "source_update",
+          "cost_total": 24568,
+          "n_episodes": 2,
+          "outcomes": {
+            "cancelled": 0,
+            "failed": 0,
+            "rejected": 0,
+            "success": 2,
+            "timeout": 0
+          },
+          "quality_mean": 1.0,
+          "unknown_cost_units": 0
+        }
+      ],
+      "confidence": 0.95,
+      "contrast": {
+        "candidate": "candidate",
+        "control": "no_relevance"
+      },
+      "cost": {
+        "ci_high": -5882.25,
+        "ci_low": -5916.75,
+        "ci_status": "OK",
+        "mean": -5899.5,
+        "n_worlds": 8
+      },
+      "cost_unit": "call_units",
+      "counts_toward_verdict": false,
+      "experimental": true,
+      "interval": "two_sided_paired_world_percentile",
+      "mapping": {
+        "call_units": "logical metered stage operations summed across delivered, routing, encoding, state_read, state_write; not provider calls, tokens, or bytes",
+        "cell": "case = (no_update, source_update, constraint_update, mixed)[seed % 4]",
+        "cost": "cost.total_accounted_operations",
+        "invalid": "any invalid source row or incomplete full-arm grid blocks all records",
+        "outcome": "complete success=1 -> success; complete success=0 -> failed",
+        "phase": "pilot source -> instrument_check R0 wire contract",
+        "repetition": "0; one episode per declared seed and arm",
+        "world_id": "seed:<base-10 seed>"
+      },
+      "method_version": "r_paired_world_mean_v1",
+      "n_episodes": 16,
+      "n_worlds": 8,
+      "phase": "instrument_check",
+      "quality": {
+        "ci_high": 0.0,
+        "ci_low": 0.0,
+        "ci_status": "INSUFFICIENT_RESOLUTION",
+        "mean": 0.0,
+        "n_worlds": 8
+      },
+      "repetitions": 1,
+      "seed": 37,
+      "source_phase": "pilot",
+      "source_record_version": "r1_coordination_episode_v2",
+      "status": "VALID_MEASUREMENT",
+      "weighting": "equal_world; repetitions averaged; cells stratified with declared world counts"
+    },
+    "source_version_ttl": {
+      "bootstrap_resamples": 2000,
+      "by_cell_arm": [
+        {
+          "arm": "candidate",
+          "budget_exceeded_episodes": 0,
+          "cell": "constraint_update",
+          "cost_total": 12712,
+          "n_episodes": 2,
+          "outcomes": {
+            "cancelled": 0,
+            "failed": 0,
+            "rejected": 0,
+            "success": 2,
+            "timeout": 0
+          },
+          "quality_mean": 1.0,
+          "unknown_cost_units": 0
+        },
+        {
+          "arm": "source_version_ttl",
+          "budget_exceeded_episodes": 0,
+          "cell": "constraint_update",
+          "cost_total": 11022,
+          "n_episodes": 2,
+          "outcomes": {
+            "cancelled": 0,
+            "failed": 0,
+            "rejected": 0,
+            "success": 2,
+            "timeout": 0
+          },
+          "quality_mean": 1.0,
+          "unknown_cost_units": 0
+        },
+        {
+          "arm": "candidate",
+          "budget_exceeded_episodes": 0,
+          "cell": "mixed",
+          "cost_total": 12794,
+          "n_episodes": 2,
+          "outcomes": {
+            "cancelled": 0,
+            "failed": 1,
+            "rejected": 0,
+            "success": 1,
+            "timeout": 0
+          },
+          "quality_mean": 0.5,
+          "unknown_cost_units": 0
+        },
+        {
+          "arm": "source_version_ttl",
+          "budget_exceeded_episodes": 0,
+          "cell": "mixed",
+          "cost_total": 11270,
+          "n_episodes": 2,
+          "outcomes": {
+            "cancelled": 0,
+            "failed": 1,
+            "rejected": 0,
+            "success": 1,
+            "timeout": 0
+          },
+          "quality_mean": 0.5,
+          "unknown_cost_units": 0
+        },
+        {
+          "arm": "candidate",
+          "budget_exceeded_episodes": 0,
+          "cell": "no_update",
+          "cost_total": 12622,
+          "n_episodes": 2,
+          "outcomes": {
+            "cancelled": 0,
+            "failed": 0,
+            "rejected": 0,
+            "success": 2,
+            "timeout": 0
+          },
+          "quality_mean": 1.0,
+          "unknown_cost_units": 0
+        },
+        {
+          "arm": "source_version_ttl",
+          "budget_exceeded_episodes": 0,
+          "cell": "no_update",
+          "cost_total": 10846,
+          "n_episodes": 2,
+          "outcomes": {
+            "cancelled": 0,
+            "failed": 0,
+            "rejected": 0,
+            "success": 2,
+            "timeout": 0
+          },
+          "quality_mean": 1.0,
+          "unknown_cost_units": 0
+        },
+        {
+          "arm": "candidate",
+          "budget_exceeded_episodes": 0,
+          "cell": "source_update",
+          "cost_total": 12724,
+          "n_episodes": 2,
+          "outcomes": {
+            "cancelled": 0,
+            "failed": 0,
+            "rejected": 0,
+            "success": 2,
+            "timeout": 0
+          },
+          "quality_mean": 1.0,
+          "unknown_cost_units": 0
+        },
+        {
+          "arm": "source_version_ttl",
+          "budget_exceeded_episodes": 0,
+          "cell": "source_update",
+          "cost_total": 11084,
+          "n_episodes": 2,
+          "outcomes": {
+            "cancelled": 0,
+            "failed": 0,
+            "rejected": 0,
+            "success": 2,
+            "timeout": 0
+          },
+          "quality_mean": 1.0,
+          "unknown_cost_units": 0
+        }
+      ],
+      "confidence": 0.95,
+      "contrast": {
+        "candidate": "candidate",
+        "control": "source_version_ttl"
+      },
+      "cost": {
+        "ci_high": 837.0,
+        "ci_low": 820.5,
+        "ci_status": "OK",
+        "mean": 828.75,
+        "n_worlds": 8
+      },
+      "cost_unit": "call_units",
+      "counts_toward_verdict": false,
+      "experimental": true,
+      "interval": "two_sided_paired_world_percentile",
+      "mapping": {
+        "call_units": "logical metered stage operations summed across delivered, routing, encoding, state_read, state_write; not provider calls, tokens, or bytes",
+        "cell": "case = (no_update, source_update, constraint_update, mixed)[seed % 4]",
+        "cost": "cost.total_accounted_operations",
+        "invalid": "any invalid source row or incomplete full-arm grid blocks all records",
+        "outcome": "complete success=1 -> success; complete success=0 -> failed",
+        "phase": "pilot source -> instrument_check R0 wire contract",
+        "repetition": "0; one episode per declared seed and arm",
+        "world_id": "seed:<base-10 seed>"
+      },
+      "method_version": "r_paired_world_mean_v1",
+      "n_episodes": 16,
+      "n_worlds": 8,
+      "phase": "instrument_check",
+      "quality": {
+        "ci_high": 0.0,
+        "ci_low": 0.0,
+        "ci_status": "INSUFFICIENT_RESOLUTION",
+        "mean": 0.0,
+        "n_worlds": 8
+      },
+      "repetitions": 1,
+      "seed": 37,
+      "source_phase": "pilot",
+      "source_record_version": "r1_coordination_episode_v2",
+      "status": "VALID_MEASUREMENT",
+      "weighting": "equal_world; repetitions averaged; cells stratified with declared world counts"
+    }
+  },
+  "counts_toward_verdict": false,
+  "episodes": 64,
+  "freeze_hashes_unchanged": true,
+  "invalid_episodes": 0,
+  "known_accounted_operations": 454440,
+  "phase": "pilot",
+  "scheduled_episodes": 64,
+  "status": "PILOT_COMPLETE",
+  "unknown_cost_units": 0
+}

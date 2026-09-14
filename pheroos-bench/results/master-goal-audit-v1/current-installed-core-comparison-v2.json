@@ -1,0 +1,13 @@
+{
+  "checked_utc": "2026-09-13T05:28:07.464688+00:00",
+  "source_root": "/home/scott/projects/PheroOS/pheroos",
+  "installed_root": "/tmp/pheroos-session-site/pheroos",
+  "compared": 613,
+  "differences": [],
+  "installed_only": [],
+  "status": "IDENTICAL_FILES",
+  "note": "Correct source root pheroos/. All 613 installed Python/JSON files exactly match current source, with no source-only files. git diff pheroos/ from runtime pin b4845e5972e74425af55ad9f306b17535957c68d to current b154472becea561ac1f5fc442a7ccf372ab154f8 is empty. Historical bench pin 4f292de799b01e57bdbb87e915191f310d219579 is a different preserved cohort. Package metadata remains separately pinned. Earlier wrong-path check is explicitly INVALID_CHECK.",
+  "source_only": [],
+  "runtime_pin_tree_matches_current": true,
+  "historical_bench_pin_tree_matches_current": false
+}

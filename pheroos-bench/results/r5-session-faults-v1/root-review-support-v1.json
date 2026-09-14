@@ -1,0 +1,154 @@
+{
+  "activity": {
+    "frozen_report_edits": 0,
+    "gpu_calls": 0,
+    "long_audit_reruns": 0,
+    "model_generations": 0,
+    "source_edits": 0,
+    "study_reruns": 0
+  },
+  "all_available_accounting": {
+    "all_observed_unique_available_dispatches": {
+      "model_dispatches": 13,
+      "tool_dispatches": 25
+    },
+    "all_observed_unique_available_ledger_components": {
+      "actual_tokens": 18,
+      "reserved_tokens": 0,
+      "unknown_calls": 10,
+      "unknown_tokens": 70
+    },
+    "auxiliary_ledgers": [
+      {
+        "accounting": {
+          "actual_tokens": 0,
+          "reserved_tokens": 0,
+          "unknown_calls": 0,
+          "unknown_tokens": 0
+        },
+        "ledger": "foreign.sqlite",
+        "model_dispatches": 0,
+        "tool_dispatches": 1
+      }
+    ],
+    "coverage": "Only verified available ledgers are summed. Auxiliary and intact-before-corruption work is separate; damaged or missing primary accounting stays unavailable. Shared sidecars are counted once.",
+    "intact_originals": [
+      {
+        "accounting": {
+          "actual_tokens": 0,
+          "reserved_tokens": 0,
+          "unknown_calls": 0,
+          "unknown_tokens": 0
+        },
+        "action_counts": {
+          "model_dispatches": 0,
+          "tool_dispatches": 1
+        },
+        "case": "corrupted_database_copy:default"
+      }
+    ],
+    "primary_dispatches": {
+      "model_dispatches": 13,
+      "tool_dispatches": 23
+    },
+    "primary_known_components": {
+      "actual_tokens": 18,
+      "reserved_tokens": 0,
+      "unknown_calls": 10,
+      "unknown_tokens": 70
+    },
+    "sidecar_effect_invocations": 33,
+    "unavailable_primary_cases": [
+      "corrupted_database_copy:default"
+    ],
+    "unverified_effect_case_ids": [],
+    "verified_primary_ledgers": 37
+  },
+  "authority_projections": 53,
+  "checks": {
+    "audit_source_sha256": {
+      "all_match": true,
+      "count": 4
+    },
+    "frozen_input_sha256": {
+      "all_match": true,
+      "count": 628
+    },
+    "original_evidence_sha256": {
+      "all_match": true,
+      "count": 165
+    }
+  },
+  "counts_toward_verdict": false,
+  "created_utc": "2026-09-13T23:13:00.911052+00:00",
+  "execution_receipt_artifact_hashes_all_match": true,
+  "limits": "This support receipt rechecks report projections, original hashes and two final work/run states. It is not a new study or an independent repetition of the full v2 authority/receipt audit.",
+  "method": "r5_root_review_support_v1",
+  "original_study_hashes": {
+    "all_match": true,
+    "count": 163
+  },
+  "preserved_legacy_failure": {
+    "receipt_sha256": "d01c778091a87e6ebdc9bf5cad52b1f33a1f675afcaf605197d9b1feb2abf9b1",
+    "sha256": "c08b741735d9e542c9cb4edb5f319793b61dab765864412798f90354f70095ec",
+    "status": "AUDIT_MISMATCH"
+  },
+  "primary_accounting_recomputed": {
+    "actual_tokens": 18,
+    "reserved_tokens": 0,
+    "unknown_calls": 10,
+    "unknown_tokens": 70
+  },
+  "prose_clarification": {
+    "finding": "mailbox:reverse also has inspect and submit done, then ends cancelled. Only coordinator_restart_after_checkpoint:default ends with run status COMPLETED. The report table already records the correct dispositions.",
+    "handling": "Frozen RESULTS.md remains unchanged; root was asked to record the correction in an additive gate/addendum.",
+    "quoted_report_sentence": "Only the coordinator-checkpoint restart case completes both work items.",
+    "verification": [
+      {
+        "case": "coordinator_restart_after_checkpoint:default",
+        "run_status": "completed",
+        "snapshot_case": "/home/scott/projects/PheroOS/pheroos-bench/results/r5-session-faults-v1/cases/07-coordinator_restart_after_checkpoint-default/case.json",
+        "sqlite_sha256": "8814bb00b918d87b83883ac6f12a9eaa64bae685301bf4d89f003775967b7b1a",
+        "work_status": {
+          "inspect": "done",
+          "submit": "done"
+        }
+      },
+      {
+        "case": "mailbox:reverse",
+        "run_status": "cancelled",
+        "snapshot_case": "/home/scott/projects/PheroOS/pheroos-bench/results/r5-session-faults-v1/cases/17-mailbox-reverse/case.json",
+        "sqlite_sha256": "2163dd7fa5a9d5d5cfd4c174be95e91665e1cfcca81807a0ffd308e2866d79fc",
+        "work_status": {
+          "inspect": "done",
+          "submit": "done"
+        }
+      }
+    ]
+  },
+  "report_case_rows_exact": 38,
+  "retained_sigkill_observations": 9,
+  "review_status": "NUMERICAL_AND_IDENTITY_PASS_WITH_PROSE_CLARIFICATION",
+  "reviewed_artifact_sha256": {
+    "/home/scott/projects/PheroOS/pheroos-bench/results/r5-session-faults-v1/RESULTS.md": "9b3e5829e74691da2b90b98dcf056151556329437c0fa8099b863d7a51105501",
+    "/home/scott/projects/PheroOS/pheroos-bench/results/r5-session-faults-v1/freeze.json": "3b1948fe9b7429801daa075ec9b15ac2e2969ff1dc12c2381216c3e274faa648",
+    "/home/scott/projects/PheroOS/pheroos-bench/results/r5-session-faults-v1/independent-audit-execution-v2.json": "c8bef7349660f9aa65e03e2c866ad5ab22a6f1131b930ac2ccd412c89204790c",
+    "/home/scott/projects/PheroOS/pheroos-bench/results/r5-session-faults-v1/independent-audit-v2.json": "9f0ba43d43c9a997f7634fe1d4d43e2558984f7fc1d269afc61071b757a1eb9f",
+    "/home/scott/projects/PheroOS/pheroos-bench/results/r5-session-faults-v1/outcomes.json": "54fff525859ab95830d657a644e5de0d0520a6c8f5c3730dce44d34a9bd4d3da",
+    "/home/scott/projects/PheroOS/pheroos-bench/results/r5-session-faults-v1/summary.json": "f0597a36b097be055b72f77df6ebddda032bdf3db144804c7c56a009bb3fde3e"
+  },
+  "root_gate": "PENDING_ROOT_DECISION",
+  "runtime_dispositions": {
+    "ABORT_UNAVAILABLE": 1,
+    "CANCELLED": 11,
+    "COMPLETED": 1,
+    "REVOKED": 2,
+    "RUNNING": 13,
+    "UNRESOLVED": 10
+  },
+  "source_outcomes": {
+    "FAIL": 0,
+    "INVALID_ABORT": 0,
+    "PASS": 38
+  }
+}

@@ -1,0 +1,7 @@
+The [root R5 gate](R5-gate-review.json) accepts the 38-case study as bounded engineering evidence after the [v2 independent audit](independent-audit-v2.json). This addendum resolves the pending wording in the hash-pinned [phase report](RESULTS.md); that report, the study, and the original failed v1 audit remain unchanged.
+
+Root rechecked 628 frozen inputs, 165 retained evidence files and all four checker sources/tests, and independently ran the 12 v2 correction tests on Python 3.12. All cases pass their declared invariants. Accounting retains 18 known synthetic tokens, 70 unknown tokens across 10 unknown calls, and unavailable accounting for the corrupted copy. Available primary, foreign and intact-original ledgers reconcile 13 synthetic-model and 25 tool dispatches with 33 sidecar invocations.
+
+The gate does not turn unresolved work into completed recovery. It establishes neither general robustness nor production readiness. The next gate is final experimental consumer and architecture acceptance with exact package retention; no additional fault run, real model generation or soak follows automatically.
+
+One wording correction to the preserved report: coordinator restart is the only case whose final **run status** is `COMPLETED`. `mailbox:reverse` also completes and publishes both work items, then explicitly cancels the run. Its final `CANCELLED` disposition and the report's table/counts are correct. Root verified both retained publication receipts; the distinction changes no outcome or gate invariant.

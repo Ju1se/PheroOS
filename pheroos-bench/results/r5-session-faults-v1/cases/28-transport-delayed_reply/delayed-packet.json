@@ -1,0 +1,1 @@
+{"raw_packet":"{\"call_id\":\"one\",\"response\":{\"artifact\":{\"kind\":\"bounded_verified_fact\",\"value\":1,\"version\":1,\"work_id\":\"inspect\"},\"completion_tokens\":1,\"prompt_tokens\":2,\"text\":\"synthetic proposal\"}}\n"}

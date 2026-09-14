@@ -1,0 +1,15 @@
+{
+  "expected_count": 480,
+  "actual_count": 480,
+  "exact_episode_set": true,
+  "all_complete_measurements": true,
+  "source_hashes_match": true,
+  "all_tokens_and_calls_zero": true,
+  "all_episodes_exactly_reproduce": true,
+  "all_480_traces_independently_check_dependencies_capabilities_exclusivity_leases_tool_limit_and_results": true,
+  "workload_hash_equal_across_arms": true,
+  "fifo_and_ablation_identical_trajectories": true,
+  "candidate_and_fifo_same_generated_trajectories": true,
+  "negative_control_pressure_inactive": true,
+  "fault_execution_cost_within_shared_capacity": true
+}

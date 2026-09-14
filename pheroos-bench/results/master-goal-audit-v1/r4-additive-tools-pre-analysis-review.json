@@ -1,0 +1,14 @@
+{
+  "created_utc": "2026-09-13T05:38:32.107648+00:00",
+  "status": "PRE_ANALYSIS_REVIEW_PASS",
+  "study_executed_by_tools": false,
+  "collected_outcomes_read_by_analysis_author": false,
+  "synthetic_checks_passed": 14,
+  "synthetic_seconds": 0.114,
+  "independent_review": "Output finalization invalidates all matched comparisons after failures; model-load schema, timing and identity are strict. Read-only recheck passed. Heavy audits await terminal collection.",
+  "source_sha256": {
+    "pheroos-bench/tools/audit_r4_session_scaling.py": "37566becd0d2ef9da1cad9e344eca372e3c6e45dd1d2528466643d9c85071877",
+    "pheroos-bench/tools/analyze_r4_session_scaling.py": "37df3d0b482d6c7016cc63e4b2ec88ac93f4e46ac5ab66481cde8bc50e6eb22e",
+    "pheroos-bench/tools/check_r4_analysis.py": "652385f8742e964c676fe2df67ea83368867bde529b801357d18c8f2ebfb79a2"
+  }
+}

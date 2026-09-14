@@ -1,0 +1,114 @@
+{
+  "$schema": "https://pheroos.dev/schemas/conformance-report-v2.schema.json",
+  "artifact_digest": "sha256:1a77b2c6761f7063e18f087fb72addf8fd02d24d868e0c0abd48bcabc8dc8cbd",
+  "check_projection": [
+    {
+      "detail": "",
+      "name": "manifest_schema",
+      "ok": true
+    },
+    {
+      "detail": "",
+      "name": "candidate_declaration",
+      "ok": true
+    },
+    {
+      "detail": "",
+      "name": "quorum_policy",
+      "ok": true
+    },
+    {
+      "detail": "",
+      "name": "recovery_policy",
+      "ok": true
+    },
+    {
+      "detail": "",
+      "name": "output_contract",
+      "ok": true
+    },
+    {
+      "detail": "",
+      "name": "trace_contract",
+      "ok": true
+    },
+    {
+      "detail": "",
+      "name": "driver_contract",
+      "ok": true
+    },
+    {
+      "detail": "",
+      "name": "kernel_contract",
+      "ok": true
+    },
+    {
+      "detail": "",
+      "name": "extension_contract",
+      "ok": true
+    },
+    {
+      "detail": "",
+      "name": "profile_contract",
+      "ok": true
+    }
+  ],
+  "checks": [
+    {
+      "detail": "",
+      "name": "manifest_schema",
+      "ok": true
+    },
+    {
+      "detail": "",
+      "name": "candidate_declaration",
+      "ok": true
+    },
+    {
+      "detail": "",
+      "name": "quorum_policy",
+      "ok": true
+    },
+    {
+      "detail": "",
+      "name": "recovery_policy",
+      "ok": true
+    },
+    {
+      "detail": "",
+      "name": "output_contract",
+      "ok": true
+    },
+    {
+      "detail": "",
+      "name": "trace_contract",
+      "ok": true
+    },
+    {
+      "detail": "",
+      "name": "driver_contract",
+      "ok": true
+    },
+    {
+      "detail": "",
+      "name": "kernel_contract",
+      "ok": true
+    },
+    {
+      "detail": "",
+      "name": "extension_contract",
+      "ok": true
+    },
+    {
+      "detail": "",
+      "name": "profile_contract",
+      "ok": true
+    }
+  ],
+  "implementation_identity": "pheroos.protocol-core",
+  "ok": true,
+  "profile": "pheroos-core-v1",
+  "report_version": "pheroos-conformance-report-v2",
+  "subject_kind": "manifest",
+  "target": "/home/scott/projects/PheroOS/examples/toy-protocol"
+}

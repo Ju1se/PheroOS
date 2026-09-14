@@ -1,0 +1,20 @@
+{
+  ".gitignore": "95a9539cec190aeef889b45f0f492199d32e7f90b5bc9ba442b1e013af3a3c0f",
+  "INDEPENDENT-AUDIT.md": "0d052cf896f27145a4421ed094c886283a542d75a143ad50527ac7a1d102559a",
+  "RESULTS.md": "5acfd0184e4f17a8b225883b4a71b308c4b5217ee4927f99a3dfdbcea86067b2",
+  "environment.json": "2eed794773b1b4ed95062efd1abc8417fc3e14765373efddc98e8b6408c8f22f",
+  "episodes.jsonl": "2dfc560ed51f7c5691d46944d04a067cb27073a81292a534eb5cb242077fcafa",
+  "freeze.json": "3153497998d5260c69fed61c54e990e3e9204f91457b592ddaf934c66a50314d",
+  "independent_audit.json": "1872f50f66a38e7d2c51444a5008374361449d6bd30457429c0a715eb35ca231",
+  "independent_audit.py": "9231b61762a0186947d96155d03fa626f79b11fa2823764cb992fe4855fea339",
+  "independent_prompt_recount.json": "d701c8f5f268d8ef7fd932d4397c5a2ec347ac6f5cfc3c48e5d2eef46fe7269a",
+  "independent_prompt_recount.py": "f02033777f9df93efaf37df6e16544ff0e6785fb4cec4d81299d480f43aa3a81",
+  "model-stderr.log": "aaa09aab886de1f83917ae74ece127a8014d80045ef3ee7b773ad46683d03832",
+  "runtime-install-acceptance.json": "0b7616942f41f20501eae8a90a8bc14946efce97cd48a350ed26f19309c18b38",
+  "runtime-install-acceptance.log": "0b7616942f41f20501eae8a90a8bc14946efce97cd48a350ed26f19309c18b38",
+  "runtime-packages.txt": "98eda808bc1964046b65bae5e2f6f1685cef346e81a42cfc33f59a1863880d85",
+  "runtime-tests.log": "87f1fcb93cc2639e2eda037de562c2e5bd0aee2dd26c1d51cc8d62e52b6c5b9a",
+  "summary.json": "dccbeff2617c9fa0781c0bcf893bf3901076bac16c81ec61dce8ff49457b4082",
+  "trace.jsonl": "92d85f2a597c06d2d2ee75710b383f3810fb24f6fe68bce0b77945f26e516978",
+  "validation.json": "c865658917f493bb8b1f442092c3c9dd0966b31c55beeea84336d2466b4811c6"
+}

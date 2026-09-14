@@ -1,0 +1,58 @@
+{
+  "config": {
+    "method_version": "r3_local_closed_loop_pilot_v1",
+    "arms": [
+      "single",
+      "independent",
+      "manager_graph",
+      "blackboard",
+      "versioned_blackboard"
+    ],
+    "worlds": [
+      "code_repair/clamp",
+      "code_repair/chunk_count",
+      "evidence_revision/dispatch_limit",
+      "evidence_revision/channel_route"
+    ],
+    "steps": 4,
+    "max_new_tokens": 256,
+    "episode_token_cap": 8192,
+    "seed": 37
+  },
+  "source_sha256": {
+    "/home/scott/projects/PheroOS/pheroos-bench/src/pheroos_bench/r3_pilot.py": "212f71d66f3b22a03115b2a30bf9baef5ebbd647effe4b209583245369e03895",
+    "/home/scott/projects/PheroOS/pheroos-bench/src/pheroos_bench/r3_tasks.py": "35abeeae2f65a39ea535dba64ee90be19c1093534d9a2d4926740be969d454e5",
+    "/home/scott/projects/PheroOS/pheroos-bench/r3-pilot-v1.json": "33d746111a5fe1846077d5daf1867f042e8a77fc7de8f16155db4d8d1e4b039a",
+    "/home/scott/projects/PheroOS/pheroos-bench/R3-data-contract.md": "5c7b8268773c473fa5c134a6fd8362e83a424bc45dae839f60cec9c500b26e2a",
+    "/home/scott/projects/PheroOS/pheroos-bench/tests/test_r3_pilot.py": "c2915b3524f68e3a5f13c02751b2151ec1910cc6d80837b897c632e7f2e6e2f3",
+    "/home/scott/projects/PheroOS/pheroos-bench/tests/test_r3_tasks.py": "8fd1756328cf29bbeb5fa107dbb5b920d2c9f757da45463ae83cada74fea7663",
+    "/tmp/PheroOS-runtime/src/pheroos_runtime/__init__.py": "2e7d73f9f9f17a20efc184cd33b58ae67807ff36e687032399a99862b3929ce4",
+    "/tmp/PheroOS-runtime/src/pheroos_runtime/adapters.py": "c5c1db4a9d62bddb9c064cc7be533fc7972d481c6ed8556f8d5db7f0c05170e9",
+    "/tmp/PheroOS-runtime/src/pheroos_runtime/authority.py": "d93fbbd24c5091478896d5678fbe56599c2b21ca34430a0175f0ade5f243a57c",
+    "/tmp/PheroOS-runtime/src/pheroos_runtime/cli.py": "f332d74a4a89fd6a365a761c84a3b92904e0a7608e557d1eb28b5ccbfbad74ae",
+    "/tmp/PheroOS-runtime/src/pheroos_runtime/engine.py": "8304ddc5a2b3d87b480caf22be9012fff728ae0896900e278d2d68412252df28",
+    "/tmp/PheroOS-runtime/src/pheroos_runtime/r3_ledger.py": "6f49e370c95a912a2c73ed028748517f9c18c5113318c35bc2992328f6448ee9",
+    "/tmp/PheroOS-runtime/src/pheroos_runtime/r3_local.py": "f438455a8401b59d29a0184b8b36a78540c1761f5d20057a46041005c3e13343",
+    "/tmp/PheroOS-runtime/src/pheroos_runtime/store.py": "e8004958aa007a734204bc7e8dd97cfee4bb1abf47ef603d5f22facbe8d75e81",
+    "/tmp/PheroOS-runtime/tests/test_r3_ledger.py": "585ed8141a5dd0229fde67bc80d9467445f33e449424ed0197d8cb8008f8f8b4",
+    "/tmp/PheroOS-runtime/tests/test_r3_local.py": "5941fb47e4e735c4da277c214c1c93810f14e76cb08f2cf0de4ae47594cb7b69"
+  },
+  "model": {
+    "repository": "Qwen/Qwen2.5-Coder-1.5B-Instruct",
+    "revision": "2e1fd397ee46e1388853d2af2c993145b0f1098a",
+    "precision": "float16",
+    "quantization": null,
+    "sha256": {
+      "LICENSE": "832dd9e00a68dd83b3c3fb9f5588dad7dcf337a0db50f7d9483f310cd292e92e",
+      "config.json": "88f9a17863c05fb313515d2ff74b1098e0c35579f99068e32beda00618508ae0",
+      "generation_config.json": "1a628a5775bc69cde01c6749a531150ca4d3189652c618a174f7077923acf3b1",
+      "merges.txt": "599bab54075088774b1733fde865d5bd747cbcc7a547c5bc12610e874e26f5e3",
+      "model.safetensors": "c1b9b30e907950516ba3c646bdf570d8084c25a6410a0cdca80cf04b11bc13a8",
+      "tokenizer.json": "c0382117ea329cdf097041132f6d735924b697924d6f6fc3945713e96ce87539",
+      "tokenizer_config.json": "959e7f1d9a1b7641a6d6ce05ca97b75c7894fcb66cbe5a040406458fb1128ee4",
+      "vocab.json": "ca10d7e9fb3ed18575dd1e277a2579c16d108e32f27439684afa0e10b1440910"
+    },
+    "size_bytes": 3098967011
+  },
+  "frozen_before_calls": true
+}

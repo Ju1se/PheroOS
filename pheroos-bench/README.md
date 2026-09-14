@@ -83,12 +83,6 @@ collection aborts.
 
 ## R0 instrument checks
 
-The [full reviewed runtime/research plan](docs/reviewed-runtime-plan.md) is a
-versioned planning snapshot. The separate [G0/G1 runtime repository](https://github.com/Ju1se/pheroos-runtime)
-contains its implementation and acceptance data; it must be cloned separately.
-Use the [Mac/WSL2 replication guide](https://github.com/Ju1se/pheroos-runtime/blob/main/docs/replication.md)
-to reproduce the fixed G1 and R0 versions in separate package environments.
-
 The [R0 data contract](R0-data-contract.md) adds a separate
 `r_paired_world_mean_v1` instrument-only entry. It pairs independent worlds,
 averages repetitions within worlds, retains legitimate flat cells, and aborts
@@ -104,6 +98,78 @@ python -m pheroos_bench.r0_self_check --output synthetic-checks.json
 event accounting. An optional external-runtime capture tool is under
 `tools/capture_r0_runtime.py`; it requires the separately installed mock runtime.
 Neither R0 entry invokes a paid provider or produces a treatment verdict.
+
+The [WSL2 replication record](results/r0-replication/wsl2-20260911/RESULTS.md)
+compares the frozen Mac evidence with fresh execution on the RTX 5070 laptop.
+`tools/compare_r0_replication.py` checks the fixed G1 DAG, receipt bindings,
+causal ordering and cancellation semantics before normalizing execution IDs.
+It is an acceptance tool, not a new measurement method or treatment gate.
+
+## R1–R5 finite experiments
+
+The [Session capability diagnostic](R3-session-capability-v1-contract.md) adds
+two pinned local model sizes through the separately installed experimental
+runtime. The [R4 scaling design](R4-session-scaling-v1-contract.md) separates
+logical agent count, model capability, token scarcity and deadlines. These are
+pilot mechanisms and measurement infrastructure; their results do not promote
+coordination policies into protocol-core or establish swarm efficacy.
+
+The [original R4 collection](results/r4-session-scaling-pilot-v1/RESULTS.md)
+remains `INVALID_ABORT`: 204 complete episodes, one LeaseLost episode and
+59 unstarted rows. Its [independent abort audit passed](results/r4-session-scaling-pilot-v1/ABORT-AUDIT-ADDENDUM.md),
+preserving 2,824,212 known tokens and the original null/INVALID accounting;
+the interruption cause remains undetermined. The single
+[separately frozen replication](results/r4-session-scaling-replication-v1/RESULTS.md)
+completed the unchanged 264-episode grid and passed the
+[R4 engineering/measurement gate](results/r4-session-scaling-replication-v1/GATE-ADDENDUM.md).
+It retains 3,402,842 tokens, giving 6,227,054 known tokens across both attempts;
+the original null rows remain explicit. All 56 policy exports are descriptive,
+every quality interval includes zero, and no general coordination advantage is
+demonstrated. Original rows are neither repaired nor pooled as new worlds.
+
+The [38-case Session fault study](results/r5-session-faults-v1/RESULTS.md) also
+passed its [bounded R5 gate](results/r5-session-faults-v1/GATE-ADDENDUM.md).
+It retains 18 known synthetic tokens and 70 unknown tokens in ten calls, plus
+unavailable accounting for a damaged copy. Passing includes unresolved and
+fenced outcomes; it does not mean universal recovery or production robustness.
+The original failed audit and narrow offline correction remain preserved.
+
+The [master-goal phase map](MASTER-GOAL-status.md) tracks the evidence-driven
+OS research target separately from current supported interfaces. The
+[initial gate audit](results/master-goal-audit-v1/report.json) binds current
+starting evidence. The [master report](results/master-goal-audit-v1/FINAL-REPORT.md)
+now records the completed finite phases and [accepted finite consumer](results/master-goal-audit-v1/consumer-exit-decision-v1.md).
+Its exact packages and installation instructions are [persistently archived](results/master-goal-audit-v1/consumer-artifacts-v1/INSTALL.md);
+the [final preservation check](results/master-goal-audit-v1/final-integrity-v1.json)
+passes 3,588 unique retained file identities. The [final root acceptance](results/master-goal-audit-v1/MASTER-ACCEPTANCE-v1.json)
+completes the experimental candidate, including a fresh offline archive install
+and provider-free two-agent journey. No model or coordination policy is promoted.
+
+[R1 coordination v2](R1-coordination-v2-contract.md) adds a separate experimental,
+pilot-only runner with dedup+TTL and version-aware baselines, component ablations,
+delivery-aware suppression, and pairwise `r_paired_world_mean_v1` exports. Run
+`python -m pheroos_bench.r1_coordination --config r1-coordination-pilot-v2.json
+--output results/r1-coordination-pilot-v2` from this directory. The v1 freeze
+and evidence remain unchanged; no pilot result counts toward confirmation.
+
+The separately frozen [R1 signal experiment](results/r1-pilot-v1/RESULTS.md)
+and [R2 scheduling experiment](results/r2-pilot-v1/RESULTS.md) retain all paired
+worlds and negative results. Their candidates do not improve on the competent
+simple baselines in these workloads, so neither becomes a default policy.
+The [R2 capacity addendum](results/r2-capacity-audit-v1/RESULTS.md) reconciles
+worker occupancy without adding independent observations. The
+[R3 format audit](results/r3-format-audit-v1/GATE-REPORT.md) diagnoses the
+frozen tool pilot's action-format failures without changing its outcomes.
+
+The [R3 contract](R3-data-contract.md) defines a small real-model pilot with
+closed task fixtures, public/hidden verification, five context-sharing controls,
+and one total token cap per episode. Run `python -m pheroos_bench.r3_pilot --help`
+for its explicit external-runtime interpreter and local-model inputs. Model
+dependencies, GPU execution and token reservations belong to the independent
+runtime. The [first GPU pilot](results/r3-pilot-v1/RESULTS.md) completed all 80
+calls with known costs, but did not demonstrate useful semantic improvement
+from shared work. These finite experiments do not establish swarm efficacy
+or replace the existing E-series contracts.
 
 ## Package checks
 

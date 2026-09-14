@@ -1,0 +1,281 @@
+{
+  "audit_sources": {
+    "/home/scott/projects/PheroOS/pheroos-bench/tests/test_r3_format_audit.py": "3de5b36cd13e58898ed598c9cd57e79fd1a0859d5d3a3ea73139024d2598fec9",
+    "/home/scott/projects/PheroOS/pheroos-bench/tools/audit_r3_format.py": "bc507896b668fe2d1ed1a7353639f8247f90c007281f0544cc6551d4905c9472"
+  },
+  "counts_toward_verdict": false,
+  "frozen_sources_verified": [
+    {
+      "original_path": "/home/scott/projects/PheroOS/pheroos-bench/src/pheroos_bench/r3_tool_pilot.py",
+      "resolved_path": "/home/scott/projects/PheroOS/pheroos-bench/src/pheroos_bench/r3_tool_pilot.py",
+      "sha256": "23d2d8ed90516ece2a8c6207ee7d6dacb654b061a8da13e32ee84d3db0e73583"
+    },
+    {
+      "original_path": "/home/scott/projects/PheroOS/pheroos-bench/src/pheroos_bench/r3_tool_tasks.py",
+      "resolved_path": "/home/scott/projects/PheroOS/pheroos-bench/src/pheroos_bench/r3_tool_tasks.py",
+      "sha256": "6f96dbfbf006384f9a7c4ac13b5aca9e82fe80a12aea4a0d9a33b34506844b57"
+    },
+    {
+      "original_path": "/home/scott/projects/PheroOS/pheroos-bench/src/pheroos_bench/r3_pilot.py",
+      "resolved_path": "/home/scott/projects/PheroOS/pheroos-bench/src/pheroos_bench/r3_pilot.py",
+      "sha256": "212f71d66f3b22a03115b2a30bf9baef5ebbd647effe4b209583245369e03895"
+    },
+    {
+      "original_path": "/home/scott/projects/PheroOS/pheroos-bench/src/pheroos_bench/r3_tasks.py",
+      "resolved_path": "/home/scott/projects/PheroOS/pheroos-bench/src/pheroos_bench/r3_tasks.py",
+      "sha256": "35abeeae2f65a39ea535dba64ee90be19c1093534d9a2d4926740be969d454e5"
+    },
+    {
+      "original_path": "/home/scott/projects/PheroOS/pheroos-bench/r3-tool-pilot-v2.json",
+      "resolved_path": "/home/scott/projects/PheroOS/pheroos-bench/r3-tool-pilot-v2.json",
+      "sha256": "fbb52bff6c9fe3c6253c06e968bf5d5f5e8861b7fb1b81539cdda8650b95795b"
+    },
+    {
+      "original_path": "/home/scott/projects/PheroOS/pheroos-bench/R3-tool-loop-v2-contract.md",
+      "resolved_path": "/home/scott/projects/PheroOS/pheroos-bench/R3-tool-loop-v2-contract.md",
+      "sha256": "432f4e10522ecf6b3ca855982541d8b16fe3f04bb96063466207113c3233016c"
+    },
+    {
+      "original_path": "/home/scott/projects/PheroOS/pheroos-bench/tests/test_r3_tool_pilot.py",
+      "resolved_path": "/home/scott/projects/PheroOS/pheroos-bench/tests/test_r3_tool_pilot.py",
+      "sha256": "44910432fed9fbb3f8395a554c00fdd39b141c0b7f880ce8b178256c3c9ae78f"
+    },
+    {
+      "original_path": "/home/scott/projects/PheroOS/pheroos-bench/tests/test_r3_tool_tasks.py",
+      "resolved_path": "/home/scott/projects/PheroOS/pheroos-bench/tests/test_r3_tool_tasks.py",
+      "sha256": "f987d2c7cda1bbde4b247efe796b6e7f7c56278a8af48cd2ddddb078d2dbb852"
+    },
+    {
+      "original_path": "/home/scott/projects/PheroOS-runtime/src/pheroos_runtime/__init__.py",
+      "resolved_path": "/home/scott/projects/PheroOS-runtime/src/pheroos_runtime/__init__.py",
+      "sha256": "2e7d73f9f9f17a20efc184cd33b58ae67807ff36e687032399a99862b3929ce4"
+    },
+    {
+      "original_path": "/home/scott/projects/PheroOS-runtime/src/pheroos_runtime/adapters.py",
+      "resolved_path": "/home/scott/projects/PheroOS-runtime/src/pheroos_runtime/adapters.py",
+      "sha256": "c5c1db4a9d62bddb9c064cc7be533fc7972d481c6ed8556f8d5db7f0c05170e9"
+    },
+    {
+      "original_path": "/home/scott/projects/PheroOS-runtime/src/pheroos_runtime/authority.py",
+      "resolved_path": "/home/scott/projects/PheroOS-runtime/src/pheroos_runtime/authority.py",
+      "sha256": "d93fbbd24c5091478896d5678fbe56599c2b21ca34430a0175f0ade5f243a57c"
+    },
+    {
+      "original_path": "/home/scott/projects/PheroOS-runtime/src/pheroos_runtime/cli.py",
+      "resolved_path": "/home/scott/projects/PheroOS-runtime/src/pheroos_runtime/cli.py",
+      "sha256": "f332d74a4a89fd6a365a761c84a3b92904e0a7608e557d1eb28b5ccbfbad74ae"
+    },
+    {
+      "original_path": "/home/scott/projects/PheroOS-runtime/src/pheroos_runtime/engine.py",
+      "resolved_path": "/home/scott/projects/PheroOS-runtime/src/pheroos_runtime/engine.py",
+      "sha256": "8304ddc5a2b3d87b480caf22be9012fff728ae0896900e278d2d68412252df28"
+    },
+    {
+      "original_path": "/home/scott/projects/PheroOS-runtime/src/pheroos_runtime/r3_ledger.py",
+      "resolved_path": "/home/scott/projects/PheroOS-runtime/src/pheroos_runtime/r3_ledger.py",
+      "sha256": "6f49e370c95a912a2c73ed028748517f9c18c5113318c35bc2992328f6448ee9"
+    },
+    {
+      "original_path": "/home/scott/projects/PheroOS-runtime/src/pheroos_runtime/r3_local.py",
+      "resolved_path": "/home/scott/projects/PheroOS-runtime/src/pheroos_runtime/r3_local.py",
+      "sha256": "f438455a8401b59d29a0184b8b36a78540c1761f5d20057a46041005c3e13343"
+    },
+    {
+      "original_path": "/home/scott/projects/PheroOS-runtime/src/pheroos_runtime/store.py",
+      "resolved_path": "/home/scott/projects/PheroOS-runtime/src/pheroos_runtime/store.py",
+      "sha256": "e8004958aa007a734204bc7e8dd97cfee4bb1abf47ef603d5f22facbe8d75e81"
+    }
+  ],
+  "method_version": "r3_format_posthoc_audit_v1",
+  "source_directory": "/home/scott/projects/PheroOS/pheroos-bench/results/r3-tool-pilot-v2",
+  "source_files": {
+    "000-single-probe.sqlite": {
+      "bytes": 24576,
+      "sha256": "deb3e1d2669399a4c309f141a1f88c30323cefc6d161c1f8bfe724b4a161c5e6"
+    },
+    "000-single.sqlite": {
+      "bytes": 40960,
+      "sha256": "7099d3e70302910095aaddb667f67a969373b9612bd1172e5eba2f93ead2b2ce"
+    },
+    "001-independent-probe.sqlite": {
+      "bytes": 24576,
+      "sha256": "c1a62087e81f5a16622d71bd90d732e4b874eda3e6bcd581d3f4e611f8f6e7a3"
+    },
+    "001-independent.sqlite": {
+      "bytes": 40960,
+      "sha256": "97d4b43ae2a5dba0fc9afb7774ce4d679526748d40f45288e0573006b38a0a01"
+    },
+    "002-manager_graph-probe.sqlite": {
+      "bytes": 24576,
+      "sha256": "433736fce0ea5e8861043cb1c39064491a5996acc9a0e60c48eb41cfdb2b76ff"
+    },
+    "002-manager_graph.sqlite": {
+      "bytes": 40960,
+      "sha256": "7a6c20a53cc5c488e152c75f80e876f6a0f6557b999141699861e230b75edf25"
+    },
+    "003-blackboard-probe.sqlite": {
+      "bytes": 24576,
+      "sha256": "911c3209aefa997c49d28ab92f597cd830118729f409aec5347b79a02f805ebc"
+    },
+    "003-blackboard.sqlite": {
+      "bytes": 40960,
+      "sha256": "9beb9e84a4955d35fef04014bc980ae13cf640d6b3d0e79e60a6f9390d690268"
+    },
+    "004-versioned_blackboard-probe.sqlite": {
+      "bytes": 24576,
+      "sha256": "a30da3b313d976d3fb987b665542dd79fb45a801cf336220dce9f15b7ad1dce6"
+    },
+    "004-versioned_blackboard.sqlite": {
+      "bytes": 40960,
+      "sha256": "ce96b00a7acf8d3411e510a59e9efebe756d00e001fad29c1f554994e64abce5"
+    },
+    "005-independent-probe.sqlite": {
+      "bytes": 24576,
+      "sha256": "f28076d7e30aa97a662341f8d6d09e208916f1c0dd280cfc90bb8e6aacb4d87e"
+    },
+    "005-independent.sqlite": {
+      "bytes": 40960,
+      "sha256": "219a561c7a05e84ceea3703054708295fae62bd005b7ecb9af1bc673a46069e3"
+    },
+    "006-manager_graph-probe.sqlite": {
+      "bytes": 24576,
+      "sha256": "8949c40d94ceb07fe19e5e339319ba597ebf83d9b3d68efe0cb54b5328c061fa"
+    },
+    "006-manager_graph.sqlite": {
+      "bytes": 40960,
+      "sha256": "44ef2c0050ad359d1801e74ddb2bc58698ae2e1783f29d5c6897cce21a18fc6c"
+    },
+    "007-blackboard-probe.sqlite": {
+      "bytes": 24576,
+      "sha256": "a165b0ebb3ee13530ff2f385d000ccb68385490ad23ab977b4e8ce471b1e344c"
+    },
+    "007-blackboard.sqlite": {
+      "bytes": 40960,
+      "sha256": "aa9acd7e5b8e7c43df7acb266ed532ef816a39ff021138a518963e46feee3f21"
+    },
+    "008-versioned_blackboard-probe.sqlite": {
+      "bytes": 24576,
+      "sha256": "0ae36e51e6a0b73bf8f452ea0a8c09d880356943320da32516f809d73ba31ac2"
+    },
+    "008-versioned_blackboard.sqlite": {
+      "bytes": 40960,
+      "sha256": "36c6d95f122c5cf742409a4a9186e12a2a28452cb4f9e4fd314fca5ebda13391"
+    },
+    "009-single-probe.sqlite": {
+      "bytes": 24576,
+      "sha256": "e5a16265e7bbb2f51c78e4174e3d620f9c1ad04e942f090b87df2aadae209028"
+    },
+    "009-single.sqlite": {
+      "bytes": 40960,
+      "sha256": "5408b5fc5615c069534e4cd8d2d39930c7fdc6159ee6822f35d5a475a13dd3eb"
+    },
+    "010-manager_graph-probe.sqlite": {
+      "bytes": 24576,
+      "sha256": "3b21c2a1f83c51c2a6ebd356b0869db604ebb0118019d1c12bd5e7f96563300c"
+    },
+    "010-manager_graph.sqlite": {
+      "bytes": 40960,
+      "sha256": "48fe98459e8f7a5d329a52f1c41d9c4ba9ab5b9ff0f872877897b2545d438912"
+    },
+    "011-blackboard-probe.sqlite": {
+      "bytes": 24576,
+      "sha256": "a0657a9027cf2eded4b278440c2ca9c43cafe9838f51af8ee7095b3de4bf0039"
+    },
+    "011-blackboard.sqlite": {
+      "bytes": 40960,
+      "sha256": "d05f55cdf1305eaa28b867928d427aea81ea4dd3b55738126a8dbc91e4d4a062"
+    },
+    "012-versioned_blackboard-probe.sqlite": {
+      "bytes": 24576,
+      "sha256": "6ad566f07b413a1af3414fe9a762029233bdbe503465cc9eac57716d727c03fb"
+    },
+    "012-versioned_blackboard.sqlite": {
+      "bytes": 40960,
+      "sha256": "8a81d72834e8451cc552cb70cd57269a556ac86d0f747e0d7756fabe1c9e05a2"
+    },
+    "013-single-probe.sqlite": {
+      "bytes": 24576,
+      "sha256": "9c01c2c6b703f195e52ec79d855d5c85faae3edab8deb48ff935e16888be08c5"
+    },
+    "013-single.sqlite": {
+      "bytes": 40960,
+      "sha256": "b2cba7962f788da618a9006e741a333aefe85dfac23f5f581df57c4ae153f1e7"
+    },
+    "014-independent-probe.sqlite": {
+      "bytes": 24576,
+      "sha256": "3de6f33ca56e797785285d334f10576e8129a9fcc0839b6dd5f62ba909bcee74"
+    },
+    "014-independent.sqlite": {
+      "bytes": 40960,
+      "sha256": "7b1563750df31e24bf069de00e8926d4f52a7d7704f1302648b8d25b414c2819"
+    },
+    "015-blackboard-probe.sqlite": {
+      "bytes": 24576,
+      "sha256": "dfec901c879b3c626975b6888ef86df0f66e5e44ed22491141886a2698d36179"
+    },
+    "015-blackboard.sqlite": {
+      "bytes": 40960,
+      "sha256": "93d84caa779e4a072c68ce04d2781c780261f8870790eac719bd76ff91ffb766"
+    },
+    "016-versioned_blackboard-probe.sqlite": {
+      "bytes": 24576,
+      "sha256": "bf95dabe64a85d170a8df10a66313c7bc88bf8e22df01d01b027f7f362c22def"
+    },
+    "016-versioned_blackboard.sqlite": {
+      "bytes": 40960,
+      "sha256": "62c5f09d20a2c83c7f9085c61d56fdafe58ee22e55edd0c09f14ea3a1135f889"
+    },
+    "017-single-probe.sqlite": {
+      "bytes": 24576,
+      "sha256": "3d8f8b4c50b4834c0790d6ff0c4c7f41cc48490c28318bcf71911ef18d76f196"
+    },
+    "017-single.sqlite": {
+      "bytes": 40960,
+      "sha256": "e5a2fefabc6bb8d62cd410b4542be5dda0e5c910e269005b664275fd7bc1249b"
+    },
+    "018-independent-probe.sqlite": {
+      "bytes": 24576,
+      "sha256": "2b64ac66824e1ccfee5b731a07d9b39df374a58eb0ebd2844203cbe8c1a902e0"
+    },
+    "018-independent.sqlite": {
+      "bytes": 40960,
+      "sha256": "d8d7c49556c9952a20a5dc945b15c557050f3f565bcfc1d3b38dae000fc8f8ee"
+    },
+    "019-manager_graph-probe.sqlite": {
+      "bytes": 24576,
+      "sha256": "f9a12edaa9176e87e70bd5ff602d0567fcc00636363d95247f6a9518de947d93"
+    },
+    "019-manager_graph.sqlite": {
+      "bytes": 40960,
+      "sha256": "9479bd553acd42e6760575cbab78f6c984cf6451c69d5038ac6b738f49e06bf7"
+    },
+    "environment.json": {
+      "bytes": 1192,
+      "sha256": "2eed794773b1b4ed95062efd1abc8417fc3e14765373efddc98e8b6408c8f22f"
+    },
+    "episodes.jsonl": {
+      "bytes": 426873,
+      "sha256": "01330eeff4f3d518a2d6b6b52a55c1ed1d2d89417a2b253afe7f0500c2fb5041"
+    },
+    "freeze.json": {
+      "bytes": 3881,
+      "sha256": "cd0071a3ff6cd4f31aff1996a17a6b17b493655219580f7686e3d3f0a11353fa"
+    },
+    "model-stderr.log": {
+      "bytes": 50,
+      "sha256": "aaa09aab886de1f83917ae74ece127a8014d80045ef3ee7b773ad46683d03832"
+    },
+    "probes.jsonl": {
+      "bytes": 415880,
+      "sha256": "b18c2b6baed593f2d1565195ee2a852158bfbaac3149c208df79e6f9174c8844"
+    },
+    "summary.json": {
+      "bytes": 6566,
+      "sha256": "1bda0fb0f225a3c95401488030e5cac692a210e4a6c9b9627453feac442cbcbd"
+    },
+    "trace.jsonl": {
+      "bytes": 1788912,
+      "sha256": "24453880d369fb2b9360ac9c544824e5a168d237a04e84c81e42090dfb06f34e"
+    }
+  }
+}

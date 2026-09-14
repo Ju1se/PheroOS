@@ -1,0 +1,18 @@
+{
+  "bench_tests": {
+    "command": "/tmp/pheroos-wsl2-bench-env/bin/python -m pytest -q",
+    "cwd": "/home/scott/projects/PheroOS/pheroos-bench",
+    "exit_status": 0,
+    "result": "304 passed in 7.22s"
+  },
+  "runtime_source_tests": {
+    "exit_status": 0,
+    "result": "78 passed in 27.73s"
+  },
+  "runtime_install_tests": {
+    "exit_status": 0,
+    "wheel": "78 passed in 42.02s",
+    "sdist": "78 passed in 46.02s"
+  },
+  "frozen_source_unchanged": true
+}

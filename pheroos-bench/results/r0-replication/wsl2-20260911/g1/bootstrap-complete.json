@@ -1,0 +1,5 @@
+{
+  "runtime_interpreter": "/tmp/pheroos-wsl2-runtime-g1/.venv/bin/python",
+  "core_wheel": "/tmp/pheroos-wsl2-runtime-core/dist/pheroos-0.1.0-py3-none-any.whl",
+  "runtime_wheel": "/tmp/pheroos-wsl2-runtime-g1/dist/pheroos_runtime-0.1.0.dev1-py3-none-any.whl"
+}

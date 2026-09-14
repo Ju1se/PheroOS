@@ -1,0 +1,18 @@
+{
+  "created_utc": "2026-09-13T19:20:00.362774+00:00",
+  "status": "LAUNCHED_PENDING_COLLECTION",
+  "session_id": 99417,
+  "method_version": "r4_full_grid_replication_v1",
+  "inner_method_version": "r4_session_scaling_pilot_v1",
+  "counts_toward_verdict": false,
+  "command": "PYTHONPATH=/tmp/pheroos-session-site:/home/scott/projects/PheroOS/pheroos-bench/src /home/scott/projects/PheroOS-runtime/.local/venv312/bin/python /home/scott/projects/PheroOS/pheroos-bench/tools/run_scaling_replication.py --config /home/scott/projects/PheroOS/pheroos-bench/scaling-full-grid-replication-v1.json --output /home/scott/projects/PheroOS/pheroos-bench/results/r4-session-scaling-replication-v1",
+  "cwd": "/home/scott/projects/PheroOS/pheroos-bench",
+  "prelaunch_review_sha256": "d1ce20bece6464b132cca7692a7ae83d0e1025ecc197b1f060a6c9a5a9532628",
+  "attempts": 1,
+  "automatic_retry": false,
+  "paid_api": false,
+  "original_status": "INVALID_ABORT",
+  "original_costs_retained": true,
+  "collection_expected_episodes": 264,
+  "required_next_gate": "Full new campaign and independent collection/measurement audit before R5."
+}

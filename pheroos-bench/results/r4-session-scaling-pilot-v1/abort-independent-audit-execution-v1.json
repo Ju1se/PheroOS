@@ -1,0 +1,78 @@
+{
+  "aborted_episode_external_cause": "UNDETERMINED",
+  "artifact_sha256": {
+    "/home/scott/projects/PheroOS/pheroos-bench/results/r4-session-scaling-pilot-v1/abort-independent-audit-v1.json": "723d36f07fc5cccd1466d55ca6e890983c0a41f68c817e7212189666c31d8bf5",
+    "/home/scott/projects/PheroOS/pheroos-bench/results/r4-session-scaling-pilot-v1/abort-independent-audit-v1.progress.jsonl": "ebdba0aac31b8fd86d8e771c6f2dd9b222e532605ccb8d29c04ce06ccdaacfed",
+    "/home/scott/projects/PheroOS/pheroos-bench/results/r4-session-scaling-pilot-v1/aborted-episode-audit-v1.json": "1d421b6a798796cc0134906862cbbcd1d0fea0c17a318f8e0021f6164619c888",
+    "/home/scott/projects/PheroOS/pheroos-bench/tools/audit_r3_session_capability.py": "e39c1ce04abcc31a067c835c9689c8f2d9641a02fde6bac60fd153c4ec473b3b",
+    "/home/scott/projects/PheroOS/pheroos-bench/tools/audit_r4_session_scaling.py": "37566becd0d2ef9da1cad9e344eca372e3c6e45dd1d2528466643d9c85071877",
+    "/home/scott/projects/PheroOS/pheroos-bench/tools/audit_r4_session_scaling_abort.py": "64749115975131c0f248dd373820ca4fbd0398204cc84701e0d02e37a804a757"
+  },
+  "audit_status": "ACCOUNTING_AND_ABORT_INTEGRITY_PASS",
+  "counts_toward_verdict": false,
+  "created_utc": "2026-09-13T19:16:58.050748+00:00",
+  "execution": {
+    "argv": [
+      "/home/scott/projects/PheroOS-runtime/.local/venv312/bin/python",
+      "/home/scott/projects/PheroOS/pheroos-bench/tools/audit_r4_session_scaling_abort.py",
+      "--output",
+      "/home/scott/projects/PheroOS/pheroos-bench/results/r4-session-scaling-pilot-v1",
+      "--audit-output",
+      "/home/scott/projects/PheroOS/pheroos-bench/results/r4-session-scaling-pilot-v1/abort-independent-audit-v1.json"
+    ],
+    "command": "PYTHONDONTWRITEBYTECODE=1 CUDA_VISIBLE_DEVICES='' TOKENIZERS_PARALLELISM=false PYTHONPATH=/tmp/pheroos-session-site:/home/scott/projects/PheroOS/pheroos-bench/src /home/scott/projects/PheroOS-runtime/.local/venv312/bin/python /home/scott/projects/PheroOS/pheroos-bench/tools/audit_r4_session_scaling_abort.py --output /home/scott/projects/PheroOS/pheroos-bench/results/r4-session-scaling-pilot-v1 --audit-output /home/scott/projects/PheroOS/pheroos-bench/results/r4-session-scaling-pilot-v1/abort-independent-audit-v1.json",
+    "environment_overrides": {
+      "CUDA_VISIBLE_DEVICES": "",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "PYTHONPATH": "/tmp/pheroos-session-site:/home/scott/projects/PheroOS/pheroos-bench/src",
+      "TOKENIZERS_PARALLELISM": "false"
+    },
+    "observed_exit_code": 0,
+    "tool_session_id": 8911,
+    "working_directory": "/tmp"
+  },
+  "final_recheck": {
+    "all_match_audit_hashes": true,
+    "audit_source_files_count": 3,
+    "frozen_inputs_count": 660,
+    "original_evidence_files_count": 621
+  },
+  "gate": "Original collection is audited INVALID_ABORT. No usable paired export, efficacy verdict, R4 completion, or phase promotion is authorized by this receipt.",
+  "generated_model_calls": 0,
+  "inference_status": "FULL_GRID_INVALID_NO_USABLE_PAIRED_EXPORT",
+  "known_attempted_accounting": {
+    "actual_tokens": 2824212,
+    "communication_bytes": 4453115,
+    "control_operations": 186609,
+    "elapsed_ns": 9990389279252,
+    "evaluator_elapsed_ns": 5915783523,
+    "event_bytes": 22006096,
+    "model_calls": 5891,
+    "model_elapsed_ns": 7560848975610,
+    "model_load_ns": 623249709044,
+    "processing_bytes": 144023853,
+    "request_bytes": 29468791,
+    "reserved_tokens": 0,
+    "response_bytes": 4821424,
+    "tool_calls": 5890,
+    "unknown_calls": 0,
+    "unknown_tokens": 0
+  },
+  "limitations": [
+    "59 unstarted cells retain null accounting.",
+    "Clock timestamps and the original lease expiry were not retained; the external cause remains undetermined.",
+    "The source collection was incomplete; a passed integrity audit does not validate a selected subset."
+  ],
+  "receipt_method": "r4_original_abort_audit_execution_v1",
+  "scope": {
+    "attempted_aborted_episodes": 1,
+    "authority_checks": 17671,
+    "causal_events": 53353,
+    "completed_episodes": 204,
+    "declared_episodes": 264,
+    "publications": 5890,
+    "tokenizer_checks": 5935,
+    "unstarted_episodes": 59
+  },
+  "source_status": "INVALID_ABORT"
+}

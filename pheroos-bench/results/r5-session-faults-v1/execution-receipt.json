@@ -1,0 +1,23 @@
+{
+  "created_utc": "2026-09-13T22:52:43.162603+00:00",
+  "command": "CUDA_VISIBLE_DEVICES='' /home/scott/projects/PheroOS-runtime/.local/venv312/bin/python /home/scott/projects/PheroOS/pheroos-bench/tools/r5_session_faults.py --runtime-python /home/scott/projects/PheroOS-runtime/.local/venv312/bin/python --runtime-site /tmp/pheroos-session-site --config /home/scott/projects/PheroOS/pheroos-bench/r5-session-faults-v1.json --output /home/scott/projects/PheroOS/pheroos-bench/results/r5-session-faults-v1",
+  "cwd": "/tmp",
+  "session_id": 23472,
+  "exit_code": 0,
+  "attempts": 1,
+  "source_outcomes": {
+    "FAIL": 0,
+    "INVALID_ABORT": 0,
+    "PASS": 38
+  },
+  "r4_gate_sha256": "4b93903b8802d15f2690ba1d46aeaf561496a0f4f44ccc04564a9a8e6687cd8e",
+  "evidence_sha256": {
+    "freeze.json": "3b1948fe9b7429801daa075ec9b15ac2e2969ff1dc12c2381216c3e274faa648",
+    "outcomes.json": "54fff525859ab95830d657a644e5de0d0520a6c8f5c3730dce44d34a9bd4d3da",
+    "summary.json": "f0597a36b097be055b72f77df6ebddda032bdf3db144804c7c56a009bb3fde3e"
+  },
+  "status": "COLLECTED_PENDING_INDEPENDENT_AUDIT",
+  "counts_toward_verdict": false,
+  "actual_model_generations": 0,
+  "paid_api_calls": 0
+}

@@ -1,0 +1,43 @@
+{
+  "method_version": "r4_replication_analysis_execution_receipt_v1",
+  "phase": "pilot_descriptive_analysis",
+  "counts_toward_verdict": false,
+  "created_utc": "2026-09-13T22:25:01.697378+00:00",
+  "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=/tmp/pheroos-session-site:/home/scott/projects/PheroOS/pheroos-bench/src /home/scott/projects/PheroOS-runtime/.local/venv312/bin/python /home/scott/projects/PheroOS/pheroos-bench/tools/analyze_r4_session_scaling.py --results /home/scott/projects/PheroOS/pheroos-bench/results/r4-session-scaling-replication-v1/collection --output /home/scott/projects/PheroOS/pheroos-bench/results/r4-session-scaling-replication-v1/analysis",
+  "exit_code": 0,
+  "status": "DESCRIPTIVE_PILOT_COMPLETE",
+  "analyzer_sha256": "37df3d0b482d6c7016cc63e4b2ec88ac93f4e46ac5ab66481cde8bc50e6eb22e",
+  "source_grid_sha256": "4a38175d6f5dc0cf745cef9ae75ecfab806dbe3388a99a30d0b59daba6b3fff7",
+  "raw_episodes_sha256": "b4160e71a66a0977ad39995de1c5481eecfbb1baed7f20a4e590f35d00d9675c",
+  "reviewed_checks": {
+    "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=/tmp/pheroos-session-site:/home/scott/projects/PheroOS/pheroos-bench/src /home/scott/projects/PheroOS-runtime/.local/venv312/bin/python pheroos-bench/tools/check_r4_analysis.py -q",
+    "tests": 14,
+    "exit_code": 0,
+    "elapsed_seconds": 0.123,
+    "source_sha256": "652385f8742e964c676fe2df67ea83368867bde529b801357d18c8f2ebfb79a2"
+  },
+  "stored_output_checks": {
+    "artifact_hashes_matched": 61,
+    "paired_exports": 56,
+    "records_per_pair": 8,
+    "independent_worlds": 4,
+    "pilot_flags_and_full_source_grid_hash": true,
+    "representative_frozen_oracle": {
+      "candidate": "fixed_calls-medium-blackboard-n1",
+      "control": "fixed_calls-medium-private-n1",
+      "status": "EXACT_MATCH"
+    }
+  },
+  "artifacts": {
+    "analysis.json": "ccb2beaf0fa91acdd17b67da42fdaa42acd472400f7af93ef79975d3637adabc",
+    "paired-index.json": "5019172c24defd390f6a3f8c150a06a265d349f9a48dfc2330bef6b1e45ca1aa",
+    "episode-metrics.jsonl": "03844d361f1956b422428b35af46f7219b235b33d0e9847f37f7f91502230e24",
+    "expected-null-controls.json": "ee766b9f098cfdfdb3ec12ab3fe50b68fe5f02d6960a41edf47141879a26bf5c",
+    "artifact-hashes.json": "999810ae0c2adfcddf43e64780562672b3bd635eb99e29c93f40e47f005fcfef"
+  },
+  "limitations": [
+    "No new generation or tuning.",
+    "Independent SQLite/authority/full checkpoint audit remains a separate gate.",
+    "Original aborted collection is excluded from pair rows but all costs remain reported separately."
+  ]
+}

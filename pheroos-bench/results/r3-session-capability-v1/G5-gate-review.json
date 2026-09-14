@@ -1,0 +1,19 @@
+{
+  "gate": "G5_session_followup_v1",
+  "status": "PASS_BOUNDED_ENGINEERING",
+  "counts_toward_verdict": false,
+  "reviewed_utc": "2026-09-13T05:02:03.349406+00:00",
+  "decision": "Proceed to separately frozen R4 development study. No coordination, model superiority, robustness or production promotion.",
+  "evidence_sha256": {
+    "freeze.json": "4eb0a168b9cd3821b88c899042251068c33a6524c3b9b39bee2c9e1538b364d6",
+    "summary.json": "c0a7d1a42d8761a975986d93f919f3a1bfa9a3a650b01aa4f2d8958eb43c06b2",
+    "independent_audit.json": "45abb62fef07542ecd55882fa70247171a5a1033213edba1336542be1cf2ddfa",
+    "RESULTS.md": "65dbeacb997e66b376f0a3b2dfabbbca34e5e5aa09c5b0e9c516afa8a4f58441"
+  },
+  "limitations": [
+    "Four previously observed development worlds; no held-out efficacy evidence.",
+    "Larger model is not established as generally stronger.",
+    "Supplied current inspections preserve free action choice; invalid target choices do not isolate reasoning capability.",
+    "R4 and R5 remain required."
+  ]
+}

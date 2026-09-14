@@ -1,0 +1,32 @@
+{
+  "method_version": "r3_framed_action_pilot_v3",
+  "arms": [
+    "single",
+    "independent",
+    "manager_graph",
+    "blackboard",
+    "versioned_blackboard"
+  ],
+  "worlds": [
+    "code_repair/clamp",
+    "code_repair/chunk_count",
+    "evidence_revision/dispatch_limit",
+    "evidence_revision/channel_route"
+  ],
+  "steps": 6,
+  "max_new_tokens": 256,
+  "episode_token_cap": 12288,
+  "probe_steps": [
+    2,
+    4
+  ],
+  "probe_token_cap": 4096,
+  "seed": 1073,
+  "model": {
+    "repository": "Qwen/Qwen2.5-Coder-1.5B-Instruct",
+    "revision": "2e1fd397ee46e1388853d2af2c993145b0f1098a",
+    "precision": "float16",
+    "quantization": null
+  },
+  "counts_toward_verdict": false
+}

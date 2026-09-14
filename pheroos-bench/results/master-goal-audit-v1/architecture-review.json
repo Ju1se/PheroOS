@@ -1,0 +1,313 @@
+{
+  "schema": "master_goal_architecture_review_v1",
+  "reviewed_utc": "2026-09-13T05:13:16.695978+00:00",
+  "status": "COHERENT_FINITE_CONSUMER_PENDING_R4_R5_AND_FINAL_EXIT",
+  "goal_complete": false,
+  "counts_toward_verdict": false,
+  "review_scope": "Read-only source and existing receipt audit; additive audit artifacts only. No experiment outcome sampling during active R4 collection.",
+  "controlling_scope": "Accepted finite master target; older reviewed plan is informative, not an additional acceptance checklist.",
+  "base_commits": {
+    "core_bench": "b154472becea561ac1f5fc442a7ccf372ab154f8",
+    "runtime": "e3ef1e8ed0812296601e4a901768af4a1068b5e0"
+  },
+  "dirty_source_identity": "Exact content hashes supplement base commits; no clean-commit claim.",
+  "tests_launched_by_this_audit": 0,
+  "model_calls_launched_by_this_audit": 0,
+  "runtime_source_edits": false,
+  "frozen_input_edits": false,
+  "source_and_installed_identity_checks": [
+    {
+      "module": "__init__.py",
+      "accepted_sha256": "2e7d73f9f9f17a20efc184cd33b58ae67807ff36e687032399a99862b3929ce4",
+      "external_source_sha256": "2e7d73f9f9f17a20efc184cd33b58ae67807ff36e687032399a99862b3929ce4",
+      "installed_sha256": "2e7d73f9f9f17a20efc184cd33b58ae67807ff36e687032399a99862b3929ce4",
+      "source_matches": true,
+      "installed_matches": true
+    },
+    {
+      "module": "adapters.py",
+      "accepted_sha256": "c5c1db4a9d62bddb9c064cc7be533fc7972d481c6ed8556f8d5db7f0c05170e9",
+      "external_source_sha256": "c5c1db4a9d62bddb9c064cc7be533fc7972d481c6ed8556f8d5db7f0c05170e9",
+      "installed_sha256": "c5c1db4a9d62bddb9c064cc7be533fc7972d481c6ed8556f8d5db7f0c05170e9",
+      "source_matches": true,
+      "installed_matches": true
+    },
+    {
+      "module": "authority.py",
+      "accepted_sha256": "d93fbbd24c5091478896d5678fbe56599c2b21ca34430a0175f0ade5f243a57c",
+      "external_source_sha256": "d93fbbd24c5091478896d5678fbe56599c2b21ca34430a0175f0ade5f243a57c",
+      "installed_sha256": "d93fbbd24c5091478896d5678fbe56599c2b21ca34430a0175f0ade5f243a57c",
+      "source_matches": true,
+      "installed_matches": true
+    },
+    {
+      "module": "cli.py",
+      "accepted_sha256": "f332d74a4a89fd6a365a761c84a3b92904e0a7608e557d1eb28b5ccbfbad74ae",
+      "external_source_sha256": "f332d74a4a89fd6a365a761c84a3b92904e0a7608e557d1eb28b5ccbfbad74ae",
+      "installed_sha256": "f332d74a4a89fd6a365a761c84a3b92904e0a7608e557d1eb28b5ccbfbad74ae",
+      "source_matches": true,
+      "installed_matches": true
+    },
+    {
+      "module": "engine.py",
+      "accepted_sha256": "8304ddc5a2b3d87b480caf22be9012fff728ae0896900e278d2d68412252df28",
+      "external_source_sha256": "8304ddc5a2b3d87b480caf22be9012fff728ae0896900e278d2d68412252df28",
+      "installed_sha256": "8304ddc5a2b3d87b480caf22be9012fff728ae0896900e278d2d68412252df28",
+      "source_matches": true,
+      "installed_matches": true
+    },
+    {
+      "module": "r3_ledger.py",
+      "accepted_sha256": "6f49e370c95a912a2c73ed028748517f9c18c5113318c35bc2992328f6448ee9",
+      "external_source_sha256": "6f49e370c95a912a2c73ed028748517f9c18c5113318c35bc2992328f6448ee9",
+      "installed_sha256": "6f49e370c95a912a2c73ed028748517f9c18c5113318c35bc2992328f6448ee9",
+      "source_matches": true,
+      "installed_matches": true
+    },
+    {
+      "module": "r3_local.py",
+      "accepted_sha256": "f438455a8401b59d29a0184b8b36a78540c1761f5d20057a46041005c3e13343",
+      "external_source_sha256": "f438455a8401b59d29a0184b8b36a78540c1761f5d20057a46041005c3e13343",
+      "installed_sha256": "f438455a8401b59d29a0184b8b36a78540c1761f5d20057a46041005c3e13343",
+      "source_matches": true,
+      "installed_matches": true
+    },
+    {
+      "module": "session_driver_v1.py",
+      "accepted_sha256": "4bc372f2f64d01efa0b4c1da896db27793b8ef473bd85e20cbba025e13839b08",
+      "external_source_sha256": "4bc372f2f64d01efa0b4c1da896db27793b8ef473bd85e20cbba025e13839b08",
+      "installed_sha256": "4bc372f2f64d01efa0b4c1da896db27793b8ef473bd85e20cbba025e13839b08",
+      "source_matches": true,
+      "installed_matches": true
+    },
+    {
+      "module": "session_v1.py",
+      "accepted_sha256": "a1c0750b12ea2d3b3cfabc42c29f2616c6160ef0b1641cd573d67db3d6d9a39e",
+      "external_source_sha256": "a1c0750b12ea2d3b3cfabc42c29f2616c6160ef0b1641cd573d67db3d6d9a39e",
+      "installed_sha256": "a1c0750b12ea2d3b3cfabc42c29f2616c6160ef0b1641cd573d67db3d6d9a39e",
+      "source_matches": true,
+      "installed_matches": true
+    },
+    {
+      "module": "store.py",
+      "accepted_sha256": "e8004958aa007a734204bc7e8dd97cfee4bb1abf47ef603d5f22facbe8d75e81",
+      "external_source_sha256": "e8004958aa007a734204bc7e8dd97cfee4bb1abf47ef603d5f22facbe8d75e81",
+      "installed_sha256": "e8004958aa007a734204bc7e8dd97cfee4bb1abf47ef603d5f22facbe8d75e81",
+      "source_matches": true,
+      "installed_matches": true
+    }
+  ],
+  "installed_acceptance": {
+    "rerun_by_this_audit": false,
+    "report_sha256": "e7d38a6afc0ee6d805ac063eecf12a732437eb10e1c5de6ece25a2a3ee0ddd48",
+    "source_independent": true,
+    "core_commit": "b4845e5972e74425af55ad9f306b17535957c68d",
+    "core_wheel_sha256": "758f7e3d8135ff3ced2f7ed21aa0710b57a106530b464bbf8d939413c22170fc",
+    "distributions": [
+      {
+        "artifact": "pheroos_runtime-0.1.0.dev1-py3-none-any.whl",
+        "reported_sha256": "db93bf05c2a6bedc854933c51164033f9847a5eed27df6ddfb054cb98e9b44d2",
+        "reported_tests_passed": 131,
+        "test_output": "........................................................................ [ 54%]\n...........................................................              [100%]\n131 passed in 39.07s"
+      },
+      {
+        "artifact": "pheroos_runtime-0.1.0.dev1.tar.gz",
+        "reported_sha256": "4cd8e6194edd093722495a54af637ea55f7fee3be65c3ffbdcf8254e95fac69b",
+        "reported_tests_passed": 131,
+        "test_output": "........................................................................ [ 54%]\n...........................................................              [100%]\n131 passed in 40.76s"
+      }
+    ],
+    "note": "131 is the full runtime suite including historical tests; artifact hashes are from the retained acceptance receipt, not rehashed wheels by this audit."
+  },
+  "ownership": {
+    "execution_state_and_tokens": "Session SQLite only for new Session consumers",
+    "model_and_tool_execution": "SessionDriver / replaceable adapter outside SQL transaction",
+    "attention_and_hidden_objective": "bench",
+    "current_authority": "fresh public-core callback under Session lease/permission serialization; trusted-host development profile",
+    "trace": "canonical pheroos.trace.TraceEvent",
+    "legacy_owners": "G1 Store and R3 PilotLedger retained for separate compatibility/reproduction consumers"
+  },
+  "required_remaining": [
+    {
+      "id": "R4",
+      "status": "RUNNING_NO_TERMINAL_SUMMARY_AT_REVIEW",
+      "work": "Finish or explicitly account for interruption; independent raw-receipt, identity, full-grid, accounting, common-objective and export audit; phase report and gate."
+    },
+    {
+      "id": "R5",
+      "status": "STUDY_NOT_RUN_AT_REVIEW",
+      "work": "After R4 gate, execute frozen 38-case Session fault matrix and audit every outcome, injection boundary, effect count, known/unknown accounting and Trace before engineering acceptance."
+    },
+    {
+      "id": "FINAL_CONSUMER_EXIT",
+      "status": "PENDING_R4_R5",
+      "work": "Record exact experimental consumer cohort, supported backend guarantees, simplest supported profile/default, compatibility retention and non-claims."
+    }
+  ],
+  "new_required_implementation_gap_identified": null,
+  "gap_interpretation": "No additional implementation was identified as necessary for the accepted finite target. R5 invariant failures would be implementation gaps, not harmless negative efficacy findings.",
+  "r4_design_at_review": {
+    "method": "r4_session_scaling_pilot_v1",
+    "conditions": 66,
+    "worlds": 4,
+    "episodes": 264,
+    "agent_counts": [
+      1,
+      2,
+      4,
+      8,
+      16,
+      32
+    ],
+    "cohorts": [
+      "medium",
+      "mixed",
+      "small"
+    ],
+    "regimes": [
+      "fixed_calls",
+      "fixed_deadline",
+      "fixed_tokens"
+    ],
+    "context_tokens": 2048,
+    "model_families": 1,
+    "logical_execution_concurrency": 1,
+    "summary_exists": false
+  },
+  "r5_result_directory_exists": false,
+  "limits": [
+    "Fixed declarations and finite DAG; no dynamic service/process-supervision claim.",
+    "Finite consumer enforces concurrency/deadline admission; no general Session scheduler claim.",
+    "Retained mailbox/context bounded; repeated trusted checkpoint/send/ack can grow Trace without lifetime bound.",
+    "Trusted callbacks/bounded fixture interpreter; no general arbitrary-code sandbox or external-effect exactly-once.",
+    "One SQLite backend; no power-loss, multi-host, hostile-store integrity, corruption repair or production issuer-custody guarantee.",
+    "Two model sizes from one family, one context band, four constructed development worlds; no universal capability threshold.",
+    "No 8-hour/24-hour soak or confirmatory evidence; tests are not R5 study evidence."
+  ],
+  "compatibility_recommendation": {
+    "status": "EXPERIMENTAL_VERSIONED_COHORT_ONLY",
+    "consumer_modules": [
+      "pheroos_runtime.session_v1",
+      "pheroos_runtime.session_driver_v1"
+    ],
+    "identity": "source, installed core and wheel hashes; shared 0.1.0.dev1 label insufficient",
+    "database_migration": "none; new Session database paths",
+    "legacy_exit": "retain frozen G1/R3 consumers and evidence; remove only after separate declared migration and compatibility evidence",
+    "default": "retain simplest explicit single-agent/simple-sharing path; no R1 candidate promotion; any R4-specific decision waits for frozen analysis and R5 acceptance"
+  },
+  "audit_inputs": [
+    {
+      "path": "pheroos-bench/MASTER-GOAL-status.md",
+      "sha256": "b56c749586f01630acb7d3a48941df8f1fb0e1789fc92a396352471ab0421975"
+    },
+    {
+      "path": "pheroos-bench/EXPERIMENTAL-OS-CANDIDATE.md",
+      "sha256": "01b2b44c6c2861c51f89ac7849d32bc77c89db12d6407a5abebc4051b67cdbea"
+    },
+    {
+      "path": "pheroos-bench/r4-session-scaling-pilot-v1.json",
+      "sha256": "fa2618d606b2bd03c826d651f33a292a384bda03cef8b91a956b510804ec22ff"
+    },
+    {
+      "path": "pheroos-bench/R4-session-scaling-v1-contract.md",
+      "sha256": "bad7f0af86a477cf7963773219dc3d8ccfcb7f53f1c5801f0b2138c0332b282e"
+    },
+    {
+      "path": "pheroos-bench/src/pheroos_bench/r4_tasks.py",
+      "sha256": "6d15eba2cbef758affda0259a5748cd94f605f315aa87a58382106ac801831d3"
+    },
+    {
+      "path": "pheroos-bench/src/pheroos_bench/r4_session_scaling.py",
+      "sha256": "0b60f0c2a7d988afd9ef2915769be9f5fd86026ca9615d71aa0a1af88acd95de"
+    },
+    {
+      "path": "pheroos-bench/src/pheroos_bench/r4_measurement.py",
+      "sha256": "1b02cfe3e2271bd128157ee0f0aebee8c884db1df3300741167865c1768ac543"
+    },
+    {
+      "path": "pheroos-bench/r5-session-faults-v1.json",
+      "sha256": "4ac51c2c114a29cffbfa0c73b47147e801a9e20c9c798e8eeff672f8cc5754d8"
+    },
+    {
+      "path": "pheroos-bench/R5-session-faults-v1-contract.md",
+      "sha256": "e294b3063c8cdcf6f940c7f88c16d521ed99c93bfb80eb83079128ae444e0c24"
+    },
+    {
+      "path": "pheroos-bench/tools/r5_session_faults.py",
+      "sha256": "04c447e434a697106552984921c3fecc4d9d7e2c1b373b92a344f338c6484745"
+    },
+    {
+      "path": "pheroos-bench/tests/test_r5_session_faults.py",
+      "sha256": "8d6db18fb3d3df91790efaa9c1d6c8b16bb5f2b1898985726c215f1b2d37d310"
+    },
+    {
+      "path": "pheroos-bench/results/master-goal-audit-v1/regression-receipt.json",
+      "sha256": "6ea297ef45900fb5ffe236200cdc5d9c460980eb289dd61e427fa31339c508f0"
+    },
+    {
+      "path": "pheroos-bench/results/r1-coordination-pilot-v2/summary.json",
+      "sha256": "1f4f05cad6617a065592c23345febaab0551b1eeda7eeac66589d95183a49365"
+    },
+    {
+      "path": "pheroos-bench/results/r1-coordination-pilot-v2/audit.json",
+      "sha256": "3033a21420ed95480ad17fc2c3772441e740b7d1708aad4403708c2d87bb2068"
+    },
+    {
+      "path": "pheroos-bench/results/r1-coordination-pilot-v2/RESULTS.md",
+      "sha256": "fa6944055e5e339916ab84359d7d90279c17b31d1eae1c21714b7afa9f74ca68"
+    },
+    {
+      "path": "pheroos-bench/results/r2-pilot-v1/summary.json",
+      "sha256": "0fe7da5184fbe31e5936299f7e7fdab90d71a36fb14a7c1144ab40fb82048878"
+    },
+    {
+      "path": "pheroos-bench/results/r2-capacity-audit-v1/summary.json",
+      "sha256": "9fe2f2f9115078b2891ccdcac70cf77de317c4a3927f9df59f257fa8b682a67f"
+    },
+    {
+      "path": "pheroos-bench/results/r2-capacity-audit-v1/RESULTS.md",
+      "sha256": "1ae9cb498bcc7713a558360facb084222ff0f6c24fc957ebb379f6eb6f240ec0"
+    },
+    {
+      "path": "pheroos-bench/results/r3-framed-pilot-v3/summary.json",
+      "sha256": "d285f8dae72880c62dce90e3def288ecad8ab60025788646ee4fd372316367cb"
+    },
+    {
+      "path": "pheroos-bench/results/r3-session-capability-v1/summary.json",
+      "sha256": "c0a7d1a42d8761a975986d93f919f3a1bfa9a3a650b01aa4f2d8958eb43c06b2"
+    },
+    {
+      "path": "pheroos-bench/results/r3-session-capability-v1/independent_audit.json",
+      "sha256": "45abb62fef07542ecd55882fa70247171a5a1033213edba1336542be1cf2ddfa"
+    },
+    {
+      "path": "pheroos-bench/results/r3-session-capability-v1/G5-gate-review.json",
+      "sha256": "878b4e1242c054d0f328bdd6204c01d0b4bbc81e8493e920bcd4e34063a772ab"
+    },
+    {
+      "path": "/home/scott/projects/PheroOS-runtime/replication/session-v1-installed-acceptance/installed-acceptance.json",
+      "sha256": "e7d38a6afc0ee6d805ac063eecf12a732437eb10e1c5de6ece25a2a3ee0ddd48"
+    },
+    {
+      "path": "/home/scott/projects/PheroOS-runtime/replication/session-v1-installed-acceptance/acceptance-context.json",
+      "sha256": "f396bd2e85cf620ce6ef96658bf4e3fd974f4aaaf35cfe49825543f273f2d64c"
+    },
+    {
+      "path": "/home/scott/projects/PheroOS-runtime/replication/session-v1-installed-acceptance/adoption.json",
+      "sha256": "a03c8d395b5d8ba151c02e564ceb25c4e6fd77b1e5a0331201614ea24752965d"
+    },
+    {
+      "path": "/home/scott/projects/PheroOS-runtime/docs/reviewed-plan.md",
+      "sha256": "02b8a7454cdb6dc29fb6f0cdc5c3c7856736f87861bd73ec2355750ce7a366d5"
+    },
+    {
+      "path": "/home/scott/projects/PheroOS-runtime/docs/session-v1.md",
+      "sha256": "9dc5c5da01274e9ddf62edf2fe7911db3152e77be48e2e5f8b05028fbac83f28"
+    },
+    {
+      "path": "/home/scott/projects/PheroOS-runtime/tools/run_session_journey_v1.py",
+      "sha256": "bf8ed56fee1e0e32ae50e605a933afbd6e98c37a1b3afac96225b02629f574d1"
+    }
+  ],
+  "markdown_sha256": "6b9a6054b66bef99146e453a9ea5afca7947cb89d7083ec4a4857bbe0cf1858c"
+}

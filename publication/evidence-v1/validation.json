@@ -1,0 +1,28 @@
+{
+  "version": "publication_validation_v1",
+  "counts_toward_verdict": false,
+  "created_utc": "2026-09-13T23:44:42.651380+00:00",
+  "restore": {
+    "command": "/home/scott/projects/PheroOS-runtime/.local/venv312/bin/python pheroos-bench/tools/restore_evidence_v1.py --manifest publication/evidence-v1/manifest.json --root .",
+    "cwd": "/tmp/pheroos-pr-restore-core",
+    "exit_code": 0,
+    "status": "RESTORED",
+    "files_verified": 2298,
+    "archives_verified": 29,
+    "files_restored": 1855
+  },
+  "tests": {
+    "command": "PYTHONPATH=/tmp/pheroos-pr-restore-core/pheroos-bench/src /home/scott/projects/PheroOS/pheroos-bench/.venv/bin/python -m pytest -q -rs",
+    "cwd": "/tmp/pheroos-pr-restore-core/pheroos-bench",
+    "exit_code": 0,
+    "passed": 1205,
+    "skipped": 17,
+    "subtests_passed": 12,
+    "elapsed_seconds": 19.18,
+    "skip_reason": "17 explicit separately installed Session checks unavailable in bench environment"
+  },
+  "new_model_generations": 0,
+  "fault_study_reruns": 0,
+  "original_evidence_modified": false,
+  "note": "Includes22 new publication-restoration tests; original benchmark/regression receipts remain unchanged. Source runtime suite uses the exact accepted installed core cohort. This is packaging/engineering validation, not another study."
+}

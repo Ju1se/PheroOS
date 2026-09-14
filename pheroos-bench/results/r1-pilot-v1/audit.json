@@ -1,0 +1,13 @@
+{
+  "expected_count": 200,
+  "actual_count": 200,
+  "exact_episode_set": true,
+  "all_complete": true,
+  "source_hashes_match": true,
+  "source_support_never_exceeds_three": true,
+  "all_control_deliveries": true,
+  "token_calls_zero": true,
+  "all_cost_components_nonnegative": true,
+  "all_episodes_exactly_reproduce": false,
+  "all_sparse_quotas_match": true
+}

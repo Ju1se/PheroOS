@@ -1,0 +1,69 @@
+{
+  "method": "experimental_consumer_archive_install_check_v1",
+  "created_utc": "2026-09-13T23:19:21.182501+00:00",
+  "status": "PASS",
+  "counts_toward_verdict": false,
+  "generated_model_calls": 0,
+  "study_reruns": 0,
+  "commands": [
+    {
+      "argv": [
+        "/home/scott/projects/PheroOS-runtime/.local/venv312/bin/python",
+        "-m",
+        "venv",
+        "/tmp/pheroos-final-consumer-_bwor2i0/venv"
+      ],
+      "cwd": "/tmp",
+      "exit_code": 0,
+      "elapsed_ns": 1783449446,
+      "stdout": "/home/scott/projects/PheroOS/pheroos-bench/results/master-goal-audit-v1/consumer-install-check-v1/0.stdout.log",
+      "stderr": "/home/scott/projects/PheroOS/pheroos-bench/results/master-goal-audit-v1/consumer-install-check-v1/0.stderr.log"
+    },
+    {
+      "argv": [
+        "/tmp/pheroos-final-consumer-_bwor2i0/venv/bin/python",
+        "-m",
+        "pip",
+        "install",
+        "--no-index",
+        "--no-deps",
+        "/home/scott/projects/PheroOS/pheroos-bench/results/master-goal-audit-v1/consumer-artifacts-v1/artifacts/pheroos-0.1.0-py3-none-any.whl",
+        "/home/scott/projects/PheroOS/pheroos-bench/results/master-goal-audit-v1/consumer-artifacts-v1/artifacts/pheroos_runtime-0.1.0.dev1-py3-none-any.whl"
+      ],
+      "cwd": "/tmp",
+      "exit_code": 0,
+      "elapsed_ns": 1019795115,
+      "stdout": "/home/scott/projects/PheroOS/pheroos-bench/results/master-goal-audit-v1/consumer-install-check-v1/1.stdout.log",
+      "stderr": "/home/scott/projects/PheroOS/pheroos-bench/results/master-goal-audit-v1/consumer-install-check-v1/1.stderr.log"
+    },
+    {
+      "argv": [
+        "/tmp/pheroos-final-consumer-_bwor2i0/venv/bin/python",
+        "/home/scott/projects/PheroOS/pheroos-bench/results/master-goal-audit-v1/consumer-artifacts-v1/consumer/run_session_journey_v1.py",
+        "--output",
+        "/home/scott/projects/PheroOS/pheroos-bench/results/master-goal-audit-v1/consumer-install-check-v1/journey"
+      ],
+      "cwd": "/tmp",
+      "exit_code": 0,
+      "elapsed_ns": 470569793,
+      "stdout": "/home/scott/projects/PheroOS/pheroos-bench/results/master-goal-audit-v1/consumer-install-check-v1/2.stdout.log",
+      "stderr": "/home/scott/projects/PheroOS/pheroos-bench/results/master-goal-audit-v1/consumer-install-check-v1/2.stderr.log"
+    }
+  ],
+  "note": "Fresh offline environment installs exact archived wheels and runs the archived provider-free default journey. This checks the install recipe, not another experimental sample or a repeat of the full installed acceptance suite.",
+  "archive_receipt_sha256": "57969d8bd5956b4eabc925e72d63958b6ed05e3c16a87057342bd0d4af027ba2",
+  "output_file_sha256": {
+    "0.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "2.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "0.stdout.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "2.stdout.log": "155cddda5b6ff4ac5af43df566edc39a926b00bb810ebcef2e1a8fc70bba27da",
+    "1.stderr.log": "22a3cdb581cee3e5f6012faceedb6becda9833041232f3b99319c57c8647974e",
+    "1.stdout.log": "03f55f792d42fa5ab4ce2fcfa1099694ed2b219cc49de49a3c0f98bea79b560b",
+    "journey/proposal.json": "38e0b9de817f645c4bec37c0d4a3e58baecccb040f5718dc069a72c7385a0bed",
+    "journey/config.json": "d8af5e5b8e85972f535005a8ea542b9a828f6a5f3490e71088669877cc0b1add",
+    "journey/session.sqlite": "33f048023e1a4e211a4a049cf8e8ecdebffe08590fbb98f5293a31f12bfe943b",
+    "journey/snapshot.json": "821cc0bdbbf557783a878988b6c63b2f43d0e9b0ac0d099c8db76221f33b6416",
+    "journey/raw_error.json": "38e0b9de817f645c4bec37c0d4a3e58baecccb040f5718dc069a72c7385a0bed",
+    "journey/report.json": "17c0c4d8cb351546e007d4f065237d2d021b8141d9315baf1ec5ead203117a8d"
+  }
+}

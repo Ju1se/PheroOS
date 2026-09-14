@@ -1,0 +1,15 @@
+{
+  "method": "r4_session_scaling_pilot_v1",
+  "created_utc": "2026-09-13T05:05:43.413495+00:00",
+  "collection": "RUNNING",
+  "freeze_file_mtime_utc": "2026-09-13T05:02:53.044235+00:00",
+  "conditions": 66,
+  "worlds": 4,
+  "episodes": 264,
+  "counts_toward_verdict": false,
+  "execution_session": 79769,
+  "gpu_concurrency": 1,
+  "paid_api": false,
+  "command": "PYTHONPATH=/tmp/pheroos-session-site:/home/scott/projects/PheroOS/pheroos-bench/src /home/scott/projects/PheroOS-runtime/.local/venv312/bin/python -m pheroos_bench.r4_session_scaling --config /home/scott/projects/PheroOS/pheroos-bench/r4-session-scaling-pilot-v1.json --output /home/scott/projects/PheroOS/pheroos-bench/results/r4-session-scaling-pilot-v1 --small-model /home/scott/projects/PheroOS-runtime/.local/models/qwen2.5-coder-1.5b --medium-model /home/scott/projects/PheroOS-runtime/.local/models/qwen2.5-coder-3b",
+  "timing_limit": "Other light CPU audit/tool preparation active. No simultaneous GPU workload. Deadline blocks will avoid substantial audit/test computation."
+}

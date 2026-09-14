@@ -1,0 +1,26 @@
+{
+  "status": "PASS_PRELAUNCH_REVIEW",
+  "created_utc": "2026-09-13T19:16:33.577781+00:00",
+  "original_status": "INVALID_ABORT",
+  "counts_toward_verdict": false,
+  "original_audit_sha256": {
+    "/home/scott/projects/PheroOS/pheroos-bench/results/r4-session-scaling-pilot-v1/abort-independent-audit-v1.json": "723d36f07fc5cccd1466d55ca6e890983c0a41f68c817e7212189666c31d8bf5"
+  },
+  "source_closure_unchanged": true,
+  "original_frozen_sources": 641,
+  "campaign_input_sha256": {
+    "/home/scott/projects/PheroOS/pheroos-bench/tools/run_scaling_replication.py": "9f74e5ca9171491dc2cfd2fff03624401ef0b1cc21a4090a16d0bd0deca9171e",
+    "/home/scott/projects/PheroOS/pheroos-bench/scaling-full-grid-replication-v1.json": "df9f3cea01a69c0718779c6086cbd644d3b9f80bc30ee9141d19e267eebca00e",
+    "/home/scott/projects/PheroOS/pheroos-bench/SCALING-replication-v1-contract.md": "cb87dd23b0ef2852f36c3e32a1cfbd2febd95739c87058600415ef2a5614248a",
+    "/home/scott/projects/PheroOS/pheroos-bench/tests/test_scaling_replication.py": "c1c989df35a473b8c5c947f3ee21287138c9f49372c7600583efc7bcb7ea5167"
+  },
+  "validation": {
+    "command": "/home/scott/projects/PheroOS-runtime/.local/venv312/bin/python -m pytest -q /home/scott/projects/PheroOS/pheroos-bench/tests/test_scaling_replication.py",
+    "cwd": "/tmp",
+    "exit_code": 0,
+    "passed": 35,
+    "elapsed_seconds": 0.19
+  },
+  "decision": "One fresh full-grid attempt authorized by master goal and reviewed replication contract; no automatic retry, no policy promotion, no original subset export.",
+  "required_next_gate": "Complete outer campaign and independent complete-grid audit/measurement before R5."
+}

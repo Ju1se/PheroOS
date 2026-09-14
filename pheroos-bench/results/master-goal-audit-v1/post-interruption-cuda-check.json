@@ -1,0 +1,10 @@
+{
+  "checked_utc": "2026-09-13T18:52:12.254179+00:00",
+  "status": "PASS",
+  "torch": "2.11.0+cu128",
+  "gpu": "NVIDIA GeForce RTX 5070 Laptop GPU",
+  "check": "CUDA available; tensor [2.0] squared on cuda equals4.0",
+  "model_calls": 0,
+  "paid_api_calls": 0,
+  "purpose": "Hardware visibility after the aborted R4 clock discrepancy; not task or efficacy evidence."
+}

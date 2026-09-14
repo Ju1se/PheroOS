@@ -1,0 +1,11 @@
+{
+  "method_version": "r3_tool_loop_pilot_v2",
+  "arms": ["single", "independent", "manager_graph", "blackboard", "versioned_blackboard"],
+  "worlds": ["code_repair/clamp", "code_repair/chunk_count", "evidence_revision/dispatch_limit", "evidence_revision/channel_route"],
+  "steps": 6,
+  "max_new_tokens": 256,
+  "episode_token_cap": 12288,
+  "probe_steps": [2, 4],
+  "probe_token_cap": 4096,
+  "seed": 71
+}
