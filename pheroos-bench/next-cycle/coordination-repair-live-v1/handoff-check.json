@@ -1,0 +1,13 @@
+{
+  "profile": "coordination_repair_live_handoff_check_v1",
+  "status": "PASS",
+  "source_commit": "cbbf105804dca286846771ee7560f245ffcd42e7",
+  "tracked_preexisting_files_changed": [],
+  "selected_files_checked": 170,
+  "selected_bytes": 12375629,
+  "audit_inputs_still_identical": 139,
+  "private_key_pattern_matches": 0,
+  "unexpected_database_sidecars": 0,
+  "counts_toward_verdict": false,
+  "scope": "New live directory only; no historical report/config/data or study code edits"
+}
