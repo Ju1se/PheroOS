@@ -1,0 +1,2109 @@
+{
+  "version": "publication_evidence_v1",
+  "namespace": "model_interface_live_publication_v1",
+  "repository": "Ju1se/PheroOS",
+  "base_commit": "4ea5208ae5d7d6cd8c847f89e51f44a914143c8d",
+  "counts_toward_verdict": false,
+  "archives": [],
+  "files": [
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/README.md",
+      "sha256": "98decd5e9d84d70058d7aa9d5dc07d560547577dfc5a5a7802594a705020d55b",
+      "size_bytes": 11130,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/audit-helper-tests.json",
+      "sha256": "59e2c0f51fd21bd91bae619f3077c4b52180e2e272e334f81cecf7ec45579858",
+      "size_bytes": 271,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/audit.py",
+      "sha256": "3991412bd6ab7e2d59400cc0e9aed28dc24bb83a7116e9b6b8a4db55c43f1d63",
+      "size_bytes": 40312,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/authorization.json",
+      "sha256": "6d5336069cc3b1f4bd26d379947d911ff551de84f9d061a6045e1e268d487163",
+      "size_bytes": 1700,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/behavior-observations.json",
+      "sha256": "231b97e6f9a8d579389446827e78801dce3eade1e9b529e089fa745fd4f4d2a9",
+      "size_bytes": 64961,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/behavior-observations.py",
+      "sha256": "566f965f81693437c57866b6eb1db0e3391fe7f2734154fde079c45aca766824",
+      "size_bytes": 11789,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/ci-before-dispatch.json",
+      "sha256": "e31c6f0fa807567cff48702b3f939329227d762f1753f84157f2b93f3c1fb730",
+      "size_bytes": 37016,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/ci-latest.json",
+      "sha256": "e31c6f0fa807567cff48702b3f939329227d762f1753f84157f2b93f3c1fb730",
+      "size_bytes": 37016,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/ci-observations.jsonl",
+      "sha256": "f91d2fd107778f9f2a0f7ab082b5b426be9dcbaf14541455fefd4398c0924f26",
+      "size_bytes": 471022,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/clock-observation.json",
+      "sha256": "7d0d4ad637aac1720843bf3e487d3b4481d13405f133da09396903ecfd2dcae1",
+      "size_bytes": 385,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/accounting.json",
+      "sha256": "d61474e97f349ff651144b936fe5d2fe39cbaabaafb6c00d1a8aaaedb88e390b",
+      "size_bytes": 22751,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/campaign-completion.json",
+      "sha256": "6c7d9057cc5802cfc1a1c87ba4c76022fb1f7dddc104e47a5258b58591d90180",
+      "size_bytes": 194,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/campaign.sqlite",
+      "sha256": "c2d6cc5e54699ce8d5aed028a914927f546f6e4b278ebd88eb65cde84ad8977e",
+      "size_bytes": 53248,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/combined-accounting.json",
+      "sha256": "e21daf19e36eb92029bd342a4fe71b9c8dd2c90e9758bc6c760d0b340073aeb2",
+      "size_bytes": 23060,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/completed.jsonl",
+      "sha256": "0f31684b95c88ed49898b70a41ce60f5d05b6f96689e0de68f8ca061cfecb0bc",
+      "size_bytes": 561471,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-000-direct_json_256/coordination-accounting.json",
+      "sha256": "d1322a94c2b1cad9785d64143f9f5019580e7e62a8c12aad318348fe158feb68",
+      "size_bytes": 1111,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-000-direct_json_256/episode.json",
+      "sha256": "b0a1cf6c4ccf3e20712df7544784a12a94ace2f29d8128104a9956b92cb22ea3",
+      "size_bytes": 5455,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-000-direct_json_256/session-snapshot.json",
+      "sha256": "ee40de3318e466974b716c4ee7539092f34d9fe4e34cba07d187f0ef4516b771",
+      "size_bytes": 36635,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-000-direct_json_256/session.sqlite",
+      "sha256": "b77b3cba420e858bbead71e4e94abd9134d7dc539e8585e0b822b850d6900916",
+      "size_bytes": 135168,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-001-compact_action_256/coordination-accounting.json",
+      "sha256": "d1322a94c2b1cad9785d64143f9f5019580e7e62a8c12aad318348fe158feb68",
+      "size_bytes": 1111,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-001-compact_action_256/episode.json",
+      "sha256": "6965fa98a30a1848c8fbf245089f191a118e2fc6ad6b5f45fea204ff58d50d06",
+      "size_bytes": 6100,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-001-compact_action_256/session-snapshot.json",
+      "sha256": "1b8e68e83b077479fa4e8b3c0c450954dda0e683e3237785b0dd1fd68747a71e",
+      "size_bytes": 37643,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-001-compact_action_256/session.sqlite",
+      "sha256": "940a907669d44b67ac04f33d1e6e40621a50dcc239f8f39cc8c3887f6bcc9ec6",
+      "size_bytes": 135168,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-002-envelope_256/coordination-accounting.json",
+      "sha256": "d1322a94c2b1cad9785d64143f9f5019580e7e62a8c12aad318348fe158feb68",
+      "size_bytes": 1111,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-002-envelope_256/episode.json",
+      "sha256": "691442673ef63a33bd0a6ec3fd6f60fe2c06ae26b9248fae7160bd1634cd8938",
+      "size_bytes": 9477,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-002-envelope_256/session-snapshot.json",
+      "sha256": "7947fb78773bcb83769f3296b42fec1ad439bcc9084d6c8fe6768aa5ac90d356",
+      "size_bytes": 42487,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-002-envelope_256/session.sqlite",
+      "sha256": "11249baf3ff10e5e02315b0e00e5dec4be28e6c1002641b263c7d853a160ce4b",
+      "size_bytes": 139264,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-003-envelope_1024/coordination-accounting.json",
+      "sha256": "d1322a94c2b1cad9785d64143f9f5019580e7e62a8c12aad318348fe158feb68",
+      "size_bytes": 1111,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-003-envelope_1024/episode.json",
+      "sha256": "569ee1b3dd1f423e47b928b8b799ea2ce4fd40a5a6dfdac72a39730fcfc058ca",
+      "size_bytes": 15421,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-003-envelope_1024/session-snapshot.json",
+      "sha256": "14c0340a8770638d4e3806abfc68ff9267b3acb89c16b86668345f7469cab02e",
+      "size_bytes": 53132,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-003-envelope_1024/session.sqlite",
+      "sha256": "f9c9afec79ef8fdeb5cfc0db3c083c03be553fb2742d59bd90f34d378d0b8c74",
+      "size_bytes": 147456,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-004-compact_action_256/coordination-accounting.json",
+      "sha256": "d1322a94c2b1cad9785d64143f9f5019580e7e62a8c12aad318348fe158feb68",
+      "size_bytes": 1111,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-004-compact_action_256/episode.json",
+      "sha256": "1b02181130ccad4286b44f50c9f2f8ded32a47c5f5c597041fd3f879daf98f77",
+      "size_bytes": 6100,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-004-compact_action_256/session-snapshot.json",
+      "sha256": "35334eeff9790bc75e505849f7bd1cf51895d68b03bf6ae23f5aea6eb744a1d9",
+      "size_bytes": 37643,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-004-compact_action_256/session.sqlite",
+      "sha256": "097dafc50b7aa41c1a15848e71d4d406b72a528ad9d87baf34d986695485556a",
+      "size_bytes": 135168,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-005-envelope_256/coordination-accounting.json",
+      "sha256": "d1322a94c2b1cad9785d64143f9f5019580e7e62a8c12aad318348fe158feb68",
+      "size_bytes": 1111,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-005-envelope_256/episode.json",
+      "sha256": "b5e124a68200dff6790206381c846fc6112e57bc9b623ef4149e97fb0c928e63",
+      "size_bytes": 9474,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-005-envelope_256/session-snapshot.json",
+      "sha256": "c14077afb940ba068f42867c23921d1da592d78879ba595c2390a584ef04d15a",
+      "size_bytes": 42485,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-005-envelope_256/session.sqlite",
+      "sha256": "006831683b261cb1aa432ff52723b0c1b9084729e0715f1abd4cabe6e0324902",
+      "size_bytes": 139264,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-006-envelope_1024/coordination-accounting.json",
+      "sha256": "d1322a94c2b1cad9785d64143f9f5019580e7e62a8c12aad318348fe158feb68",
+      "size_bytes": 1111,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-006-envelope_1024/episode.json",
+      "sha256": "2d88d398187503d99e57bd91c9d7545a414115e293e257def523a7a0f01b53fc",
+      "size_bytes": 15661,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-006-envelope_1024/session-snapshot.json",
+      "sha256": "68942db77f51f755e0150eb9e01d7b5116268dc1fdbd5ea454cb1915778d3832",
+      "size_bytes": 53548,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-006-envelope_1024/session.sqlite",
+      "sha256": "1fda0aad8ee89b89c093fb1cc18380a2ec35a351e82b129dd8217d7b02a562a5",
+      "size_bytes": 147456,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-007-direct_json_256/coordination-accounting.json",
+      "sha256": "d1322a94c2b1cad9785d64143f9f5019580e7e62a8c12aad318348fe158feb68",
+      "size_bytes": 1111,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-007-direct_json_256/episode.json",
+      "sha256": "f0a93ed384eb0b42cb8a1f1bb1811fb79840c551a769a6cb56156b8ad3abac80",
+      "size_bytes": 5496,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-007-direct_json_256/session-snapshot.json",
+      "sha256": "3aaeb06937e468ee2fd3f59e8527a4bf62fa8dcff175056e931b66349ac951e1",
+      "size_bytes": 36701,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-007-direct_json_256/session.sqlite",
+      "sha256": "efb285f42244bd45f21ab38d84f048e711de8ac5ccc6904c9a68e5fba0a08087",
+      "size_bytes": 135168,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-008-compact_action_256/coordination-accounting.json",
+      "sha256": "4b75da81a120060b3ed1939f196d55320619f6853c09c7eb2ce5e34fb9b4beb0",
+      "size_bytes": 1111,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-008-compact_action_256/episode.json",
+      "sha256": "f3a292bfd741c75b2220c2e4e2389301b04f5e8856e75000fa351c3482033365",
+      "size_bytes": 6146,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-008-compact_action_256/session-snapshot.json",
+      "sha256": "9de903d368e9513fffdf19c53de22889fd7f8d462bb5c1e8bb1ee14e4c6a334e",
+      "size_bytes": 37719,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-008-compact_action_256/session.sqlite",
+      "sha256": "4d21e81ac670cafa7374741cf43bcd4062192a7ed7c13d157d41fd90bdbac44c",
+      "size_bytes": 135168,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-009-envelope_256/coordination-accounting.json",
+      "sha256": "4b75da81a120060b3ed1939f196d55320619f6853c09c7eb2ce5e34fb9b4beb0",
+      "size_bytes": 1111,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-009-envelope_256/episode.json",
+      "sha256": "42a1ca41851c3bc9db193469c3897493cf9ba35857a4b54e8134718344cfa501",
+      "size_bytes": 9461,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-009-envelope_256/session-snapshot.json",
+      "sha256": "d8e22522a68e25a038037261cd7c3394b33402ebe74800f4d925ec06cefd5b3d",
+      "size_bytes": 42445,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-009-envelope_256/session.sqlite",
+      "sha256": "cb6795e711d36e67ea8ef8f39273f0a556fc5cdd0f808d1653664b9d74a76fd9",
+      "size_bytes": 139264,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-010-envelope_1024/coordination-accounting.json",
+      "sha256": "4b75da81a120060b3ed1939f196d55320619f6853c09c7eb2ce5e34fb9b4beb0",
+      "size_bytes": 1111,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-010-envelope_1024/episode.json",
+      "sha256": "66e7813fed561880353286be487110b75cd0a430c6662d76a305dfd2f2fb5658",
+      "size_bytes": 15448,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-010-envelope_1024/session-snapshot.json",
+      "sha256": "8a110bd38fd1501d0c19461a370b9773ea14fd6315d8b9dd5a4d1f9ffd099dc5",
+      "size_bytes": 53142,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-010-envelope_1024/session.sqlite",
+      "sha256": "f6f696835c024d8883ed96f5512fe9393aacc9f7c216bfaf390fd5ae467bcdaf",
+      "size_bytes": 147456,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-011-direct_json_256/coordination-accounting.json",
+      "sha256": "4b75da81a120060b3ed1939f196d55320619f6853c09c7eb2ce5e34fb9b4beb0",
+      "size_bytes": 1111,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-011-direct_json_256/episode.json",
+      "sha256": "cc9cb343d3aa2efb48d1dccc3b7f12c3daf9f422cd4cb1a9d34cb438f7472787",
+      "size_bytes": 5455,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-011-direct_json_256/session-snapshot.json",
+      "sha256": "631387aeab7e793549a40f8b4ef96f2322b42ccfb1311441eee4bd6e52ad5dbe",
+      "size_bytes": 36638,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-011-direct_json_256/session.sqlite",
+      "sha256": "64767465e20b2433f79fe23443bac997291386f8f7bba7e4a2dd4c0550f6e74b",
+      "size_bytes": 135168,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-012-envelope_256/coordination-accounting.json",
+      "sha256": "4b75da81a120060b3ed1939f196d55320619f6853c09c7eb2ce5e34fb9b4beb0",
+      "size_bytes": 1111,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-012-envelope_256/episode.json",
+      "sha256": "b92b27a7128f648dfc4989a9c0c8a4469a9eaf7c1b499137bc4410c42ad2f652",
+      "size_bytes": 9417,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-012-envelope_256/session-snapshot.json",
+      "sha256": "dbca82887f636a699d2a71e5ff8847d770bb7cdb767c7b5db25fcfa08eb0d639",
+      "size_bytes": 42420,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-012-envelope_256/session.sqlite",
+      "sha256": "394826ee1b0df9b90a50d2dc115d400d9e81b26565aa33a407a8b5c2a9c5a9de",
+      "size_bytes": 139264,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-013-envelope_1024/coordination-accounting.json",
+      "sha256": "4b75da81a120060b3ed1939f196d55320619f6853c09c7eb2ce5e34fb9b4beb0",
+      "size_bytes": 1111,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-013-envelope_1024/episode.json",
+      "sha256": "22c975a33ef49de3af9bc098052ccb0c1703579c1d0877d64447a8de4efd9150",
+      "size_bytes": 16055,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-013-envelope_1024/session-snapshot.json",
+      "sha256": "975fb054a4a415b2b0a736101bc8926719797eaf6ac1d0c952582e02e09f1fa0",
+      "size_bytes": 54264,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-013-envelope_1024/session.sqlite",
+      "sha256": "57d9bca1041aae90c983560b8e9bac866e8c7d21cc8a7d5c82d3d2b5fabc4f4d",
+      "size_bytes": 147456,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-014-direct_json_256/coordination-accounting.json",
+      "sha256": "4b75da81a120060b3ed1939f196d55320619f6853c09c7eb2ce5e34fb9b4beb0",
+      "size_bytes": 1111,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-014-direct_json_256/episode.json",
+      "sha256": "4791b87e889659b5c10c0ed0ba64e511a62befbb892bb0fc1fb6649392498950",
+      "size_bytes": 5498,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-014-direct_json_256/session-snapshot.json",
+      "sha256": "df3493a186ef922c6c359f4e94d78bc96ae30a51a54f4a504a5d63ebf07c0016",
+      "size_bytes": 36705,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-014-direct_json_256/session.sqlite",
+      "sha256": "de43db2ee3a114bcbe6babfac432e79be80a748d030fa46749d4dae40355efd0",
+      "size_bytes": 135168,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-015-compact_action_256/coordination-accounting.json",
+      "sha256": "4b75da81a120060b3ed1939f196d55320619f6853c09c7eb2ce5e34fb9b4beb0",
+      "size_bytes": 1111,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-015-compact_action_256/episode.json",
+      "sha256": "7d4a387618136741d06ace49bc2115891555924f501064389f59ca532773dccb",
+      "size_bytes": 6102,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-015-compact_action_256/session-snapshot.json",
+      "sha256": "0075e5f67da5efc950c1230a592d195e78fd087aa287f1369f68e77020449281",
+      "size_bytes": 37647,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-015-compact_action_256/session.sqlite",
+      "sha256": "384c5c484867786c62c2e3b3b0cd010e6c87b67bc03e85b1368e48b8d00a37ef",
+      "size_bytes": 135168,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-016-envelope_256/coordination-accounting.json",
+      "sha256": "0df3847eed9443ade1a0fe22f53cf275d2f7adb2df6a50b2b9f65901ba0196ce",
+      "size_bytes": 844,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-016-envelope_256/episode.json",
+      "sha256": "c442aa1b79f1036e821dfdac1eb5cd1e64fcae0c925a9a6b12919e2faa9270f7",
+      "size_bytes": 8957,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-016-envelope_256/session-snapshot.json",
+      "sha256": "9bb0251a2468d024fb98c4c5a6137c157ae89d7961181168cefb6cc58f5772c1",
+      "size_bytes": 34905,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-016-envelope_256/session.sqlite",
+      "sha256": "353d6d0a1ed63b66cfe29974f16e6d546a63891ad52a8fc0a75994e931e31525",
+      "size_bytes": 126976,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-017-envelope_1024/coordination-accounting.json",
+      "sha256": "0df3847eed9443ade1a0fe22f53cf275d2f7adb2df6a50b2b9f65901ba0196ce",
+      "size_bytes": 844,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-017-envelope_1024/episode.json",
+      "sha256": "52076fa5946eeb0a9b21689eb80eada1b1d53299f8d634fa5bf75ea21e202072",
+      "size_bytes": 14296,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-017-envelope_1024/session-snapshot.json",
+      "sha256": "571ceb440ad33df09e1cb458b4da45eaf6b81c3fe823b9f52e90df0f3ce56e45",
+      "size_bytes": 44589,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-017-envelope_1024/session.sqlite",
+      "sha256": "291a35b7a7b9a384d1c30a28bbd56dc7792a207b4310b70928c001b4515ccc54",
+      "size_bytes": 143360,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-018-direct_json_256/coordination-accounting.json",
+      "sha256": "0df3847eed9443ade1a0fe22f53cf275d2f7adb2df6a50b2b9f65901ba0196ce",
+      "size_bytes": 844,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-018-direct_json_256/episode.json",
+      "sha256": "e0143071efa410687b58c3e7c4eb3466f8aa3879fc7ba017bf88cdf3bb8968ea",
+      "size_bytes": 6676,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-018-direct_json_256/session-snapshot.json",
+      "sha256": "fb891737df9aff6e5a14b729008f18b9c42f49ca8edccdc18b67802f8f68684e",
+      "size_bytes": 31368,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-018-direct_json_256/session.sqlite",
+      "sha256": "7682ae72e8d88d10d6f4999d4e79bdaf69f2732c41cfa6247d8cca76acd1b320",
+      "size_bytes": 131072,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-019-compact_action_256/coordination-accounting.json",
+      "sha256": "0df3847eed9443ade1a0fe22f53cf275d2f7adb2df6a50b2b9f65901ba0196ce",
+      "size_bytes": 844,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-019-compact_action_256/episode.json",
+      "sha256": "ad2d6757c6c3ac2be16337c4d83089fbeeed3c565ed09381f749a59a1efa6a2d",
+      "size_bytes": 6116,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-019-compact_action_256/session-snapshot.json",
+      "sha256": "55eebca31d75e24ab105398c9c376271c086e9fdd1d3b10f2be638d3332ab14c",
+      "size_bytes": 30841,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-019-compact_action_256/session.sqlite",
+      "sha256": "215746b2342428228af6d96e8b0a8c36ed90f93b163290a00f99a6b31f111112",
+      "size_bytes": 122880,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-020-envelope_1024/coordination-accounting.json",
+      "sha256": "0df3847eed9443ade1a0fe22f53cf275d2f7adb2df6a50b2b9f65901ba0196ce",
+      "size_bytes": 844,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-020-envelope_1024/episode.json",
+      "sha256": "84f1f79840435dcd48f70973bba382ca7fd1981305802ffce8e32d3cc5dc5c6a",
+      "size_bytes": 14036,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-020-envelope_1024/session-snapshot.json",
+      "sha256": "73d288e9a19cb06597eca1dc94abae72da1a875fc22dca139656a9a14b194f97",
+      "size_bytes": 44143,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-020-envelope_1024/session.sqlite",
+      "sha256": "c626c378e22cf7274444673c03fa4b92b3332c7c1592249c540c9edd615fe4d4",
+      "size_bytes": 143360,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-021-direct_json_256/coordination-accounting.json",
+      "sha256": "0df3847eed9443ade1a0fe22f53cf275d2f7adb2df6a50b2b9f65901ba0196ce",
+      "size_bytes": 844,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-021-direct_json_256/episode.json",
+      "sha256": "90452f92d329e15504eb457e4d0aab881c35a5e3aacca27d85581b2cde136874",
+      "size_bytes": 5303,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-021-direct_json_256/session-snapshot.json",
+      "sha256": "ad772dc512d4a16caa66b998219247b6720a80a0bdb6841dece2c0accac22e13",
+      "size_bytes": 29498,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-021-direct_json_256/session.sqlite",
+      "sha256": "8b202509b324eb419e122cee4642933f8ae92244bcceea6a0e5fb372aed1bbee",
+      "size_bytes": 122880,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-022-compact_action_256/coordination-accounting.json",
+      "sha256": "0df3847eed9443ade1a0fe22f53cf275d2f7adb2df6a50b2b9f65901ba0196ce",
+      "size_bytes": 844,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-022-compact_action_256/episode.json",
+      "sha256": "262e6e5b41f8dfa2fe7dcc31d2028acc321c966b61a61c6c90f26675940c2323",
+      "size_bytes": 5860,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-022-compact_action_256/session-snapshot.json",
+      "sha256": "d44e9fa3682c84d7e493dcd4895432dc5eb9f73d98b2907e4686b248c2f3c07c",
+      "size_bytes": 30377,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-022-compact_action_256/session.sqlite",
+      "sha256": "f7c9f44a1576e160ce510ca74b1dc7a4a426b0ee1dfc3adb33b97a19e0f3e611",
+      "size_bytes": 122880,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-023-envelope_256/coordination-accounting.json",
+      "sha256": "0df3847eed9443ade1a0fe22f53cf275d2f7adb2df6a50b2b9f65901ba0196ce",
+      "size_bytes": 844,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-023-envelope_256/episode.json",
+      "sha256": "11cef56406617acc3065ecb054c1a7aaf68e19c9e5ba849d7bab0fef30360a25",
+      "size_bytes": 8967,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-023-envelope_256/session-snapshot.json",
+      "sha256": "b78dbcbf82a31dcc4930584d2748647e52b7e35f0e36ea7e2a28b551b03b3e37",
+      "size_bytes": 34923,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-023-envelope_256/session.sqlite",
+      "sha256": "118b75734b487498c3c225a563af7d4beb770e458f346506a40fe86f01c2d2c5",
+      "size_bytes": 126976,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-024-envelope_1024/coordination-accounting.json",
+      "sha256": "9bb85dbbdf400bba4deb8bf08db2f8b75cfa069fab0a7a3a5ca0fbd255ba9625",
+      "size_bytes": 844,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-024-envelope_1024/episode.json",
+      "sha256": "5e8ce1ae2efde5186bd32b4d9ef4f5e106963365a7b26a434db07eb0444f45f5",
+      "size_bytes": 13767,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-024-envelope_1024/session-snapshot.json",
+      "sha256": "1901e9589a7fa6ad3bf3d93c20a989282bbd19b3fbc7c4bd7ca79fba18045ec5",
+      "size_bytes": 43651,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-024-envelope_1024/session.sqlite",
+      "sha256": "e4c16883ac253fdcd1b9ac327608bd8a273863e4d8942f3e944d21eeffc33c5b",
+      "size_bytes": 143360,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-025-direct_json_256/coordination-accounting.json",
+      "sha256": "9bb85dbbdf400bba4deb8bf08db2f8b75cfa069fab0a7a3a5ca0fbd255ba9625",
+      "size_bytes": 844,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-025-direct_json_256/episode.json",
+      "sha256": "bff82b23242a186a03fe053499f3a6bc32b4f299f387fdf8233836fb21d423b1",
+      "size_bytes": 5210,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-025-direct_json_256/session-snapshot.json",
+      "sha256": "18a20e579634e6c6b143b617db820a521fb4a275df1f3994019bbbc5afa69e9b",
+      "size_bytes": 29317,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-025-direct_json_256/session.sqlite",
+      "sha256": "b42693b4d2a3ac5b2770ea7e36877182025ea5a400de1bf49abe5aaf7935d2f9",
+      "size_bytes": 122880,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-026-compact_action_256/coordination-accounting.json",
+      "sha256": "9bb85dbbdf400bba4deb8bf08db2f8b75cfa069fab0a7a3a5ca0fbd255ba9625",
+      "size_bytes": 844,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-026-compact_action_256/episode.json",
+      "sha256": "50c9e2945bd95c8b81a7cce1baef55bc513258a69dc74dddcd9fdc0c1252a22d",
+      "size_bytes": 5807,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-026-compact_action_256/session-snapshot.json",
+      "sha256": "cc7c8a56a5568129bef418f7a9783c792620a14a62b07c95ed8a823026eee14e",
+      "size_bytes": 30268,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-026-compact_action_256/session.sqlite",
+      "sha256": "6a86918d8a210a5378c93739b8ede51519ece964ae1c33c51d2c475052374f64",
+      "size_bytes": 122880,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-027-envelope_256/coordination-accounting.json",
+      "sha256": "9bb85dbbdf400bba4deb8bf08db2f8b75cfa069fab0a7a3a5ca0fbd255ba9625",
+      "size_bytes": 844,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-027-envelope_256/episode.json",
+      "sha256": "ce1776ae0a31713ae140e1270472b109e3cff50e8d39f7768d00e661b31155e2",
+      "size_bytes": 8887,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-027-envelope_256/session-snapshot.json",
+      "sha256": "43220cba0eb21609aecbfa8e29a8b330013b7b59bdebfff55e24e2bb8eb1e2b4",
+      "size_bytes": 34748,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-027-envelope_256/session.sqlite",
+      "sha256": "17a841224852a8e308ca8d22e5b68d4e8fd797b00e2b80ba0499849669f8aae9",
+      "size_bytes": 126976,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-028-direct_json_256/coordination-accounting.json",
+      "sha256": "9bb85dbbdf400bba4deb8bf08db2f8b75cfa069fab0a7a3a5ca0fbd255ba9625",
+      "size_bytes": 844,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-028-direct_json_256/episode.json",
+      "sha256": "5650629c1299f720b4361a1c9c3d4311665c6d84a00c5a18e4fdfbdf6007001c",
+      "size_bytes": 6648,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-028-direct_json_256/session-snapshot.json",
+      "sha256": "1cb12dfb4425041445746daa1b4c64ad3225921f682f58f9a0bdc5a5f510da60",
+      "size_bytes": 31289,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-028-direct_json_256/session.sqlite",
+      "sha256": "cebdf2045c19e6efc2e785817550d7447244730b68a7f4a3688d05a86adae69e",
+      "size_bytes": 131072,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-029-compact_action_256/coordination-accounting.json",
+      "sha256": "9bb85dbbdf400bba4deb8bf08db2f8b75cfa069fab0a7a3a5ca0fbd255ba9625",
+      "size_bytes": 844,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-029-compact_action_256/episode.json",
+      "sha256": "5e3d4ed5eaf431d9ebd78e5fe33fefff7feda00d3fe59c0ff29dbb15cf49b36d",
+      "size_bytes": 6065,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-029-compact_action_256/session-snapshot.json",
+      "sha256": "240e63e3383100ee9f8e7b61f09d89aaddd62d69f7b79e39156795bf05fc1d67",
+      "size_bytes": 30725,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-029-compact_action_256/session.sqlite",
+      "sha256": "3a30a1d67153d952487961bcef2d2edf3cdff41465d853ec9c050378252e61eb",
+      "size_bytes": 122880,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-030-envelope_256/coordination-accounting.json",
+      "sha256": "9bb85dbbdf400bba4deb8bf08db2f8b75cfa069fab0a7a3a5ca0fbd255ba9625",
+      "size_bytes": 844,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-030-envelope_256/episode.json",
+      "sha256": "0ca91bcdd8288dd01191248c4888e9019d95e7e612c37fc2a0b617d85219ef61",
+      "size_bytes": 8912,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-030-envelope_256/session-snapshot.json",
+      "sha256": "0cb80a373f393bd8200d501b3361df2d708fd5acbac1c6ef0633a0d1447cefab",
+      "size_bytes": 34799,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-030-envelope_256/session.sqlite",
+      "sha256": "7839bdf384346603cb331c3ea187409462d5bb458b6d2b92d6d37f76c1fcc8b7",
+      "size_bytes": 126976,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-031-envelope_1024/coordination-accounting.json",
+      "sha256": "9bb85dbbdf400bba4deb8bf08db2f8b75cfa069fab0a7a3a5ca0fbd255ba9625",
+      "size_bytes": 844,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-031-envelope_1024/episode.json",
+      "sha256": "042b149eefd157265aeec0f92bbeb181e41ee73abeec2fd5ee6618e462a03841",
+      "size_bytes": 14143,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-031-envelope_1024/session-snapshot.json",
+      "sha256": "04b3192b41f7829d75a1ab69d8398a402eeccd5f86b4baedb7bfcaf3d72429be",
+      "size_bytes": 44304,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-031-envelope_1024/session.sqlite",
+      "sha256": "6849faa1a973c9886b5a10ce78c44b702b08e1492162dcb8054bc495ed5bd13e",
+      "size_bytes": 143360,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-032-direct_json_256/coordination-accounting.json",
+      "sha256": "9c4018918ac943425ab53323307e69fb10bf5b4b8433ea49d8f0c9c36b388d97",
+      "size_bytes": 1113,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-032-direct_json_256/episode.json",
+      "sha256": "740318a8f9fdfbd866c066d333da67c55de035d27d224dc993102ac5a14c6181",
+      "size_bytes": 8117,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-032-direct_json_256/session-snapshot.json",
+      "sha256": "fc8ffe7a278f2b7a02a2dba339400a17b5f5a02b7a9da8e8156d6b9bb41b41d6",
+      "size_bytes": 41168,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-032-direct_json_256/session.sqlite",
+      "sha256": "05b32f5f403c3663d82c88e3dccea9d874aec5f2aec60e68892d6e3701682e15",
+      "size_bytes": 139264,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-033-compact_action_256/coordination-accounting.json",
+      "sha256": "9c4018918ac943425ab53323307e69fb10bf5b4b8433ea49d8f0c9c36b388d97",
+      "size_bytes": 1113,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-033-compact_action_256/episode.json",
+      "sha256": "2122c638dc0628365e3ca564517f706ccaa12a2202b18820d9ec7e41c3a8c2db",
+      "size_bytes": 7375,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-033-compact_action_256/session-snapshot.json",
+      "sha256": "b531e022b40d867600fede246842c143a14268455464759ad21bb66c0a662fa9",
+      "size_bytes": 40444,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-033-compact_action_256/session.sqlite",
+      "sha256": "d11ce4a019851e8da9ba187d1eab49d17a0999a4dd1192a2168ede8cefdfc1ae",
+      "size_bytes": 139264,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-034-envelope_256/coordination-accounting.json",
+      "sha256": "9c4018918ac943425ab53323307e69fb10bf5b4b8433ea49d8f0c9c36b388d97",
+      "size_bytes": 1113,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-034-envelope_256/episode.json",
+      "sha256": "4b91893eb372763fd7bc2290f1a9f67322a454bf957ca0a58ac3412fd9e030fb",
+      "size_bytes": 10160,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-034-envelope_256/session-snapshot.json",
+      "sha256": "0264ca90315ea96dbb08fd348810c97f6ae2daa332d7131ea8e6b5615dace855",
+      "size_bytes": 44241,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-034-envelope_256/session.sqlite",
+      "sha256": "a5eb28fdad9580cad32bf16af1ff378b1f2c3cbbe382586b952e6ea376dfbb01",
+      "size_bytes": 143360,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-035-envelope_1024/coordination-accounting.json",
+      "sha256": "9c4018918ac943425ab53323307e69fb10bf5b4b8433ea49d8f0c9c36b388d97",
+      "size_bytes": 1113,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-035-envelope_1024/episode.json",
+      "sha256": "d7251abc6c88578809f06df203d59ef9caf8c5f32bdce1e646c5bc7140c2777c",
+      "size_bytes": 16069,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-035-envelope_1024/session-snapshot.json",
+      "sha256": "dfb9abe057ab77e0406f6cd651a256f3ced20bea93791c96d8947d0e7224480f",
+      "size_bytes": 53857,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-035-envelope_1024/session.sqlite",
+      "sha256": "0081f993f10057251b30b04e863cc165d5519b9a1b3d5efd7b18878847a8fd0f",
+      "size_bytes": 151552,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-036-compact_action_256/coordination-accounting.json",
+      "sha256": "9c4018918ac943425ab53323307e69fb10bf5b4b8433ea49d8f0c9c36b388d97",
+      "size_bytes": 1113,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-036-compact_action_256/episode.json",
+      "sha256": "a190addca2fa787899e3ccb3e2bc2a792053de071319155c17baa0993747cbc4",
+      "size_bytes": 7375,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-036-compact_action_256/session-snapshot.json",
+      "sha256": "dc741acb5e75d88b276125d8f65e6d6a04d1d73fc8a8c5cae295657e24ec890f",
+      "size_bytes": 40445,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-036-compact_action_256/session.sqlite",
+      "sha256": "9960adec159b8974da83e78313e2d79da3ac5a3d414da9a26dfbf34f940b5362",
+      "size_bytes": 139264,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-037-envelope_256/coordination-accounting.json",
+      "sha256": "9c4018918ac943425ab53323307e69fb10bf5b4b8433ea49d8f0c9c36b388d97",
+      "size_bytes": 1113,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-037-envelope_256/episode.json",
+      "sha256": "f6b462a5a2a37deff84da3dc092103a855383e4305669a72763e849a5af03534",
+      "size_bytes": 10161,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-037-envelope_256/session-snapshot.json",
+      "sha256": "3be5994cefaef084c18f6522a27c45db931d50f865ecdffa7f8841ea13a18dc1",
+      "size_bytes": 44241,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-037-envelope_256/session.sqlite",
+      "sha256": "610ae7fd752713ed4ae70c6195f1723ac1c970dbfbf73dc94d89f72382e71930",
+      "size_bytes": 143360,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-038-envelope_1024/coordination-accounting.json",
+      "sha256": "9c4018918ac943425ab53323307e69fb10bf5b4b8433ea49d8f0c9c36b388d97",
+      "size_bytes": 1113,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-038-envelope_1024/episode.json",
+      "sha256": "03ca415f0652d9f0ab9bc53eff01d959795cf6c1c7b2df6ce4644b93ed3d8bd2",
+      "size_bytes": 16069,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-038-envelope_1024/session-snapshot.json",
+      "sha256": "ef90ef4711c152b914f41143a4d3bead180ba79f8e200309e6fe768f2a7c006f",
+      "size_bytes": 53857,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-038-envelope_1024/session.sqlite",
+      "sha256": "81717985dd8b720e3985920209905c5760eaeb4acdc7963535abaeafa370795e",
+      "size_bytes": 151552,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-039-direct_json_256/coordination-accounting.json",
+      "sha256": "9c4018918ac943425ab53323307e69fb10bf5b4b8433ea49d8f0c9c36b388d97",
+      "size_bytes": 1113,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-039-direct_json_256/episode.json",
+      "sha256": "7719a6e562ab8e7d721b547d66d8aa2cc23f92b5ca0835c6c6e3e8ea6b4ec57f",
+      "size_bytes": 6208,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-039-direct_json_256/session-snapshot.json",
+      "sha256": "f62c83141a20d32adc3228f942bd72305cfa0cce4c383873028b46f8e27e980e",
+      "size_bytes": 38506,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-039-direct_json_256/session.sqlite",
+      "sha256": "90a1f2eee5fc8e7aa2c2c3ef4eb5af51e3eeb5e48a922c5c653d6b5562a26da5",
+      "size_bytes": 139264,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-040-compact_action_256/coordination-accounting.json",
+      "sha256": "7e577d241bc04ecf2a8e975a27252f36226d346865e6aecf4cabc75078435a43",
+      "size_bytes": 1113,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-040-compact_action_256/episode.json",
+      "sha256": "77c541247b1456806c2e94211294c6746424843bac353ca77ac5c0855701f187",
+      "size_bytes": 7335,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-040-compact_action_256/session-snapshot.json",
+      "sha256": "449b640d4075dc7c3ddcd407d38a6cb7a344e5c5e1d118ca25d27fbc653b9f0c",
+      "size_bytes": 40389,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-040-compact_action_256/session.sqlite",
+      "sha256": "e52a41c93c5b0dd9a17a2fd938f7683b08c19fac2b924bfb9afb0cc7eb5e1dba",
+      "size_bytes": 139264,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-041-envelope_256/coordination-accounting.json",
+      "sha256": "7e577d241bc04ecf2a8e975a27252f36226d346865e6aecf4cabc75078435a43",
+      "size_bytes": 1113,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-041-envelope_256/episode.json",
+      "sha256": "40c0567d31376eba93d592cdff3c33f4faccdde11c082f1925d5e300f9ada9e8",
+      "size_bytes": 10169,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-041-envelope_256/session-snapshot.json",
+      "sha256": "5b55e6ee9e67b74c9aee144322ae899a68524b2054a57ae095a961c1b3aa7490",
+      "size_bytes": 44264,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-041-envelope_256/session.sqlite",
+      "sha256": "1005ac362f2a37398eeb05219ce38146665e721d45df43733b97c58260521d37",
+      "size_bytes": 143360,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-042-envelope_1024/coordination-accounting.json",
+      "sha256": "7e577d241bc04ecf2a8e975a27252f36226d346865e6aecf4cabc75078435a43",
+      "size_bytes": 1113,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-042-envelope_1024/episode.json",
+      "sha256": "0195eb871ef15f2290d50dfe0af875d26c1502b381f2663d2f8f1baf196d5c9b",
+      "size_bytes": 16092,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-042-envelope_1024/session-snapshot.json",
+      "sha256": "bf37d3737d8dfa9df4ee24d0ea5cb9046761872b35df46b21bd0d06c795ff808",
+      "size_bytes": 53903,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-042-envelope_1024/session.sqlite",
+      "sha256": "b4d11f4f97fe323591c3a436834fc0c05f08a950ce5ed8f90efa8983be3225c3",
+      "size_bytes": 151552,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-043-direct_json_256/coordination-accounting.json",
+      "sha256": "7e577d241bc04ecf2a8e975a27252f36226d346865e6aecf4cabc75078435a43",
+      "size_bytes": 1113,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-043-direct_json_256/episode.json",
+      "sha256": "297aa2fb99178a9d6629b9ad68709ad9f2a9519917cefa01004a2a06f84412bc",
+      "size_bytes": 6340,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-043-direct_json_256/session-snapshot.json",
+      "sha256": "27a94834c7a1589d2c2ec963e4dde159715ca69e582274c7c8c96f178a6896fd",
+      "size_bytes": 38705,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-043-direct_json_256/session.sqlite",
+      "sha256": "fd525aa49535a3da18db3b76a7c2028c890bb2f46eafed02f45774a0cb9b7474",
+      "size_bytes": 139264,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-044-envelope_256/coordination-accounting.json",
+      "sha256": "7e577d241bc04ecf2a8e975a27252f36226d346865e6aecf4cabc75078435a43",
+      "size_bytes": 1113,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-044-envelope_256/episode.json",
+      "sha256": "13e5396102cd6d4dbf6a3b7182a6f43d85088dfd0fe25791302b4a090a014c78",
+      "size_bytes": 10148,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-044-envelope_256/session-snapshot.json",
+      "sha256": "c4ad273766233e3de17c73535369eeaee3a991f6d574600366020224f331c4de",
+      "size_bytes": 44224,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-044-envelope_256/session.sqlite",
+      "sha256": "c21cd96ce490f10da473e741b77f685384608882a3cbd08409c38978e47b3436",
+      "size_bytes": 143360,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-045-envelope_1024/coordination-accounting.json",
+      "sha256": "7e577d241bc04ecf2a8e975a27252f36226d346865e6aecf4cabc75078435a43",
+      "size_bytes": 1113,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-045-envelope_1024/episode.json",
+      "sha256": "698f6a7dc7ff201b1e70382041d5c8bc8cd822526eaf51dc55edb3381c212cce",
+      "size_bytes": 16087,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-045-envelope_1024/session-snapshot.json",
+      "sha256": "ae720ef2f13f86885311a5d41b4fd6dd029df91cac56a043c13735b5440d68bd",
+      "size_bytes": 53898,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-045-envelope_1024/session.sqlite",
+      "sha256": "05cc62d1800259858cc3eec75c28ca573db3ec795447f734e74905c1ca0e597d",
+      "size_bytes": 151552,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-046-direct_json_256/coordination-accounting.json",
+      "sha256": "7e577d241bc04ecf2a8e975a27252f36226d346865e6aecf4cabc75078435a43",
+      "size_bytes": 1113,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-046-direct_json_256/episode.json",
+      "sha256": "673b3d441ac7d3234275aa814c335d2538c72b3500470686beedacf46e5bbe86",
+      "size_bytes": 8084,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-046-direct_json_256/session-snapshot.json",
+      "sha256": "48aefd8c0b963fae8e43025a6752a6b451a2851b4e5932fd62d835b7c092fcb3",
+      "size_bytes": 41128,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-046-direct_json_256/session.sqlite",
+      "sha256": "d0d747a1af03664e4243f81f145768def722b58daa841292d6e6d34b13a4e83d",
+      "size_bytes": 139264,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-047-compact_action_256/coordination-accounting.json",
+      "sha256": "7e577d241bc04ecf2a8e975a27252f36226d346865e6aecf4cabc75078435a43",
+      "size_bytes": 1113,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-047-compact_action_256/episode.json",
+      "sha256": "66bb19bca30e49e1aeda5914138926a3049d145da70e47701118efb4e8d506d4",
+      "size_bytes": 7021,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-047-compact_action_256/session-snapshot.json",
+      "sha256": "7f0f96bbe18177ab44def27e556900b6bb009ba5e6cb29b97e7e5ac55450d9a8",
+      "size_bytes": 39811,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-047-compact_action_256/session.sqlite",
+      "sha256": "f7f6a239e6d89fce58a6ddedbead12b07d121d15fb65b8a75b682f28b818a294",
+      "size_bytes": 139264,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-048-envelope_256/coordination-accounting.json",
+      "sha256": "3e0874bee969c9a6c24a1564c00e9662bd457f6bca89205c63474fdd8900a5d9",
+      "size_bytes": 573,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-048-envelope_256/episode.json",
+      "sha256": "5b731cc029ca299e92213d09791f5d19826dbb289d86fd267ce2ff24dedbed4f",
+      "size_bytes": 7746,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-048-envelope_256/session-snapshot.json",
+      "sha256": "52c690e9dbbd2ac3b30e4671f92fc9263f83ee0ba0de6d432d3c39f09fa618de",
+      "size_bytes": 26229,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-048-envelope_256/session.sqlite",
+      "sha256": "569a54c07ac3dbc429dad40c845f29ba9e11865bb9ef6f8c5c5dabe2054f959d",
+      "size_bytes": 122880,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-049-envelope_1024/coordination-accounting.json",
+      "sha256": "3e0874bee969c9a6c24a1564c00e9662bd457f6bca89205c63474fdd8900a5d9",
+      "size_bytes": 573,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-049-envelope_1024/episode.json",
+      "sha256": "f6a52c23611a8e2edbba7d5cb62a5dca955d5dd467150f34df5731b152b7f31b",
+      "size_bytes": 10406,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-049-envelope_1024/session-snapshot.json",
+      "sha256": "ea0e6cb15de18fd57ab187f5e5f7473e0c1a6e91cce06a05057e52483fd72e95",
+      "size_bytes": 31167,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-049-envelope_1024/session.sqlite",
+      "sha256": "2e650ff76c6a64f71166376a3f86dcdaf657f784d986f2acc29d0a1c59a86fb9",
+      "size_bytes": 126976,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-050-direct_json_256/coordination-accounting.json",
+      "sha256": "3e0874bee969c9a6c24a1564c00e9662bd457f6bca89205c63474fdd8900a5d9",
+      "size_bytes": 573,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-050-direct_json_256/episode.json",
+      "sha256": "2ffbbdd9a34a82c0ec33853ec3a776089bb8521522f3100a3145e1e8b44cb88c",
+      "size_bytes": 4445,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-050-direct_json_256/session-snapshot.json",
+      "sha256": "cb6b2e6094deb67afee61a26f4c09788869bfa49f96d823ee62c3034c047d7a4",
+      "size_bytes": 21222,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-050-direct_json_256/session.sqlite",
+      "sha256": "3a987b24b01e06c1933ec8b520b9ec7c781295f224a793963c02e04b21e61bec",
+      "size_bytes": 118784,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-051-compact_action_256/coordination-accounting.json",
+      "sha256": "3e0874bee969c9a6c24a1564c00e9662bd457f6bca89205c63474fdd8900a5d9",
+      "size_bytes": 573,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-051-compact_action_256/episode.json",
+      "sha256": "adf36364419f92144e96a1db36fc02efc24f780424c886b0221dcb272de14711",
+      "size_bytes": 4888,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-051-compact_action_256/session-snapshot.json",
+      "sha256": "cebe54ca0bdeed488ad6f61a3e28c1aed77b8b21e64ed6c5bd15532c4783f2dc",
+      "size_bytes": 21924,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-051-compact_action_256/session.sqlite",
+      "sha256": "83fdd93f26319442754c72c911db9977a7661e4155e07c7d1bdc612bfbfd6e40",
+      "size_bytes": 118784,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-052-envelope_1024/coordination-accounting.json",
+      "sha256": "3e0874bee969c9a6c24a1564c00e9662bd457f6bca89205c63474fdd8900a5d9",
+      "size_bytes": 573,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-052-envelope_1024/episode.json",
+      "sha256": "21c55d45264095e1411f61184ca58c1d7af08215b48518a052377d60c873cac0",
+      "size_bytes": 10446,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-052-envelope_1024/session-snapshot.json",
+      "sha256": "c2f3290faf856f2f09dbe8adc718d9e305987810016fc8a8cc67944404d25107",
+      "size_bytes": 31234,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-052-envelope_1024/session.sqlite",
+      "sha256": "93c1a546271a7832ae72414f524f08826db734119855ffe55ef1269ba0d9517d",
+      "size_bytes": 126976,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-053-direct_json_256/coordination-accounting.json",
+      "sha256": "3e0874bee969c9a6c24a1564c00e9662bd457f6bca89205c63474fdd8900a5d9",
+      "size_bytes": 573,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-053-direct_json_256/episode.json",
+      "sha256": "d18dfe407f1606ede194edb016bdb4eceedf5b70b6a776272d3bbe07b1f00670",
+      "size_bytes": 5496,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-053-direct_json_256/session-snapshot.json",
+      "sha256": "afbb77b92a160b85b049b59ecd6ae0fcaaeb7db388082eb94073cf4b23de32da",
+      "size_bytes": 22637,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-053-direct_json_256/session.sqlite",
+      "sha256": "8f06e52b56a2fa3603278655fd1e52bbbae109c078d01a29c798c434c3ff25e2",
+      "size_bytes": 118784,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-054-compact_action_256/coordination-accounting.json",
+      "sha256": "3e0874bee969c9a6c24a1564c00e9662bd457f6bca89205c63474fdd8900a5d9",
+      "size_bytes": 573,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-054-compact_action_256/episode.json",
+      "sha256": "2002ab5e4e76df10cd9a334485efe92902300958b8f7174d7f33f5c7e1f6072a",
+      "size_bytes": 5076,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-054-compact_action_256/session-snapshot.json",
+      "sha256": "645efa8876bb60c270ebc4650f538af87178b93db72ed309bb1e4e45e96187c8",
+      "size_bytes": 22250,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-054-compact_action_256/session.sqlite",
+      "sha256": "54c83e7518b05cb80458433a9c2a1c6cf8a6108f6de79337ddf11b7db6500296",
+      "size_bytes": 118784,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-055-envelope_256/coordination-accounting.json",
+      "sha256": "3e0874bee969c9a6c24a1564c00e9662bd457f6bca89205c63474fdd8900a5d9",
+      "size_bytes": 573,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-055-envelope_256/episode.json",
+      "sha256": "34eeb841e496246363232984cd6138b19262dcb96ef81bb1b99cd2855b94b355",
+      "size_bytes": 7746,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-055-envelope_256/session-snapshot.json",
+      "sha256": "9d017cb57495429f166a183b529ffe02d42a55b66ca83bf77f440d4b3c906ac2",
+      "size_bytes": 26233,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-055-envelope_256/session.sqlite",
+      "sha256": "a8b8ac831d279a19c76a4b9ce7aa3e8f92e4ccf18587a015a20c1a5f8122c867",
+      "size_bytes": 122880,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-056-envelope_1024/coordination-accounting.json",
+      "sha256": "27d8b142ebc6b98ce5876a47d1610a9425502d742a2704c647ff2e314fdae59c",
+      "size_bytes": 573,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-056-envelope_1024/episode.json",
+      "sha256": "dfe5d8e6c750f171de7cfe0a21066ca3b00fc0f00d8bdb6e2ab4f311539c672c",
+      "size_bytes": 10420,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-056-envelope_1024/session-snapshot.json",
+      "sha256": "898c83cbc89ebb9cf8fb1e463cc00e7e50635efe1af7c9348302aee37b588e2c",
+      "size_bytes": 31192,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-056-envelope_1024/session.sqlite",
+      "sha256": "a41ae8086567415bbe1da4ad96d6fa47624bace9c07b2d83d09478e2d1cedd3b",
+      "size_bytes": 126976,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-057-direct_json_256/coordination-accounting.json",
+      "sha256": "27d8b142ebc6b98ce5876a47d1610a9425502d742a2704c647ff2e314fdae59c",
+      "size_bytes": 573,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-057-direct_json_256/episode.json",
+      "sha256": "000420c4cdc5de3fdf40552e92435ba0681cde204234b9ced9ce68ece2e61bb3",
+      "size_bytes": 4433,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-057-direct_json_256/session-snapshot.json",
+      "sha256": "3e060913ee63d047b4bcc4292d46d3a6d08bc113feb8bd232ef24eaf9f616727",
+      "size_bytes": 21204,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-057-direct_json_256/session.sqlite",
+      "sha256": "61f59a5e0175a7ce883f55d788b1e113f7d861d51403c43f067e755d6493460c",
+      "size_bytes": 118784,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-058-compact_action_256/coordination-accounting.json",
+      "sha256": "27d8b142ebc6b98ce5876a47d1610a9425502d742a2704c647ff2e314fdae59c",
+      "size_bytes": 573,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-058-compact_action_256/episode.json",
+      "sha256": "4b5dc56d7c1417f2a7fbefe346f966c9d1e9ec0175b729034819bece7fac9742",
+      "size_bytes": 4876,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-058-compact_action_256/session-snapshot.json",
+      "sha256": "6cd31f84fa9f1ab99eac67aba315c84604954421f0ad4311843ca197d8e5eb9a",
+      "size_bytes": 21904,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-058-compact_action_256/session.sqlite",
+      "sha256": "565ef3f6e141633fe7d4d988e999b27ea472d7e7e7ceed9509872b53ebde2354",
+      "size_bytes": 118784,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-059-envelope_256/coordination-accounting.json",
+      "sha256": "27d8b142ebc6b98ce5876a47d1610a9425502d742a2704c647ff2e314fdae59c",
+      "size_bytes": 573,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-059-envelope_256/episode.json",
+      "sha256": "5355384ff4488c7767836079aca02c521dd8cbdbf555dca51265a310dbd8d9a5",
+      "size_bytes": 7745,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-059-envelope_256/session-snapshot.json",
+      "sha256": "8ae1412312ae461339d94ae1b1ac9f2d3307a51af9f72ca1afab9d6ab88d109d",
+      "size_bytes": 26230,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-059-envelope_256/session.sqlite",
+      "sha256": "70b00b3d0a0f545d801356524be4b50f4fea7291c002e6e88dd1f49eb548846d",
+      "size_bytes": 122880,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-060-direct_json_256/coordination-accounting.json",
+      "sha256": "27d8b142ebc6b98ce5876a47d1610a9425502d742a2704c647ff2e314fdae59c",
+      "size_bytes": 573,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-060-direct_json_256/episode.json",
+      "sha256": "2d772180b30e98eb1601cc6b75d18e1296f5186aecc2cadcd26bf123b8511c4d",
+      "size_bytes": 5481,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-060-direct_json_256/session-snapshot.json",
+      "sha256": "c5b39aef9f95a2197a6c45e2cd78311e1280bd2ae9ecb1204016b9c324cc224e",
+      "size_bytes": 22613,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-060-direct_json_256/session.sqlite",
+      "sha256": "1cafb899a6dc9e09046728fd5ebf64ace95c8c284a263dac7a4df7c4333bcbc6",
+      "size_bytes": 118784,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-061-compact_action_256/coordination-accounting.json",
+      "sha256": "27d8b142ebc6b98ce5876a47d1610a9425502d742a2704c647ff2e314fdae59c",
+      "size_bytes": 573,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-061-compact_action_256/episode.json",
+      "sha256": "ef9c760d54f1fc9ef47d3ceb9581376cc3df617bdc711287a7274a187b03c2b6",
+      "size_bytes": 4876,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-061-compact_action_256/session-snapshot.json",
+      "sha256": "22fa4c77722791b120620359e4c320e2d14e1e626654bf6b14081a2af1695113",
+      "size_bytes": 21904,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-061-compact_action_256/session.sqlite",
+      "sha256": "3f1382c88ff58ce4869ffba64059d613399fb0bc584ee93a881a5694213a487d",
+      "size_bytes": 118784,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-062-envelope_256/coordination-accounting.json",
+      "sha256": "27d8b142ebc6b98ce5876a47d1610a9425502d742a2704c647ff2e314fdae59c",
+      "size_bytes": 573,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-062-envelope_256/episode.json",
+      "sha256": "b7701fc926d66648a5b645be0978d3cebdae64c47cf078606debfb997b9386e6",
+      "size_bytes": 7745,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-062-envelope_256/session-snapshot.json",
+      "sha256": "4ac8a3af488632036c7c3fcac539703445911a33e4a03b6356ff3a909b9f8a79",
+      "size_bytes": 26230,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-062-envelope_256/session.sqlite",
+      "sha256": "0cdd14fde64e412718119b11540f3284096a953ec1e900f594c3ec52714150a5",
+      "size_bytes": 122880,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-063-envelope_1024/coordination-accounting.json",
+      "sha256": "27d8b142ebc6b98ce5876a47d1610a9425502d742a2704c647ff2e314fdae59c",
+      "size_bytes": 573,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-063-envelope_1024/episode.json",
+      "sha256": "38a403f8176f4ff57d76e693fb800a800a72e607e6eebf0812c27edf4046d265",
+      "size_bytes": 10420,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-063-envelope_1024/session-snapshot.json",
+      "sha256": "224e0f40e3c9607ad161555df2f2cdb29fbc6b87f6352e5c50910ed1d3f598f1",
+      "size_bytes": 31192,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/episode-063-envelope_1024/session.sqlite",
+      "sha256": "7bb5ec59fa8c042c54f736647216bcf51e9b0fc0c39a1248f2db046fff81c149",
+      "size_bytes": 126976,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/expected-grid.json",
+      "sha256": "eba44dae54d936f70c56c5dd2ffdefc3fdc131bd99664b0c182b5fe91187ccc0",
+      "size_bytes": 4818,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/freeze.json",
+      "sha256": "ee86cdc6c686c50ce17b2dd57b03c0cab757a650206b0793e3b74e439fc7a6a8",
+      "size_bytes": 2940,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/frozen-config.json",
+      "sha256": "af045ce2a3e4f41a3cfc4c1f25235bb5f42846135b2a6288b2a0ef03ac8ec88e",
+      "size_bytes": 3080,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/model-identity.json",
+      "sha256": "db14882a58ab258f5456e6d1112c4a48499ffcd645a9d485b625ec539bbf0e7e",
+      "size_bytes": 1585,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/records.json",
+      "sha256": "bf894582c8b056badaee372a7ca296c8f01aef23f2d7822addb7139db6e6db4e",
+      "size_bytes": 561473,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/collection/summary.json",
+      "sha256": "14ec92f931af821ba051a9471c90ed5dba7d6750ec49916f17cd55dd635c52a0",
+      "size_bytes": 4138,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/descriptive-export/episodes.csv",
+      "sha256": "1bd42743a6d2286e84b306668937821e3117b79f622e5cca69db36564c1e71b1",
+      "size_bytes": 27987,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/descriptive-export/manifest.json",
+      "sha256": "4f5d90796f646944db00cebae7f0317968887de433add7e045d34bb9e3265a8c",
+      "size_bytes": 472,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/descriptive-export/summary.json",
+      "sha256": "44ac0421add091542e97e7d5b59ffcbae643d156bbcf720a8664eae9e1b681d0",
+      "size_bytes": 89044,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/descriptive-export/world-seed-means.csv",
+      "sha256": "ea4e0eb8160206520d8981f472464674d49bcf86808169c74f058c34064bfa51",
+      "size_bytes": 6394,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/execution-preflight.json",
+      "sha256": "71b498dc6b03367297b8f4758ddbd7e43ed6419400465f48b4e2e750967ca0bd",
+      "size_bytes": 1015,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/export.py",
+      "sha256": "30311e8e3b8fa24a2d0fbab2f337046e306d5a11e82ce4d4cc8c5ec26478f56d",
+      "size_bytes": 10047,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/handoff-check.json",
+      "sha256": "48c6b2043f7effa0ddc0eaecec6f623bea6d954ae2f3970ecc2abd76148047bf",
+      "size_bytes": 54669,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/historical-integrity.json",
+      "sha256": "a12a183f0a9334ff35c8052a0967a0cc728aa7b202905160112119f21a5cd2d0",
+      "size_bytes": 372,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/independent-audit-attempt-1.json",
+      "sha256": "09e70c173a2d990ce706d945583a3b0017e03bb4522d187bf64ab4d9be6b8049",
+      "size_bytes": 171521,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/independent-runtime-preflight.json",
+      "sha256": "4f7692c168ea3b34e44fe503982ddf3bb8ed0da85c2bcbcc8feec8116104b891",
+      "size_bytes": 467,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/installed-artifacts.json",
+      "sha256": "eb5a14bd46e52eeac86a6cc19a3e4a080d3ac81ad833b8970a7ed8efb7580ce9",
+      "size_bytes": 87005,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/launch.py",
+      "sha256": "6bcb8157448ec16892a30c5ae6f67157cad54bffdb07834bfb1e6b52bb337169",
+      "size_bytes": 5960,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/post-collection-identity.json",
+      "sha256": "2a29b242e7552f37a8a30be70721b39e0a4b41c652613966cb633d1da1a3b536",
+      "size_bytes": 435,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/prepare.py",
+      "sha256": "bbd94eda9fd2dadc162aaf6493da470a5dc9f222675b20858ece35eba1f5c88d",
+      "size_bytes": 4229,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/process-start.json",
+      "sha256": "f9ec12d7f8062a4ef2294cdf77427f2ab76f80ad9a61d6719754a4214d689bf4",
+      "size_bytes": 1315,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/process.json",
+      "sha256": "e7f273cdeb2f83f6b31319be411ece01e15f6f944fd2d7f530b015b6ebc2dca8",
+      "size_bytes": 1519,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/process.log",
+      "sha256": "33a04a681bf38b17cb130d676dc6a7a2293c13d1ccb44e6aee143e9fb41bf2a6",
+      "size_bytes": 4600,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/relocated-audit-attempt-1.json",
+      "sha256": "51a38faf7cec5b9f504629c653fc8f6be8bc024befacc7124a36b3367994c2ff",
+      "size_bytes": 182615,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/relocated-export-verification.json",
+      "sha256": "2f1cf3a23b9600009549ae8b6cf9695973e6890b3a862abf855440889607212e",
+      "size_bytes": 524,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/status.json",
+      "sha256": "4b6979d2dbebe2391e7e8785e625aef8c30a33d8692c232697727927a0fad7b0",
+      "size_bytes": 8100,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/test_helpers.py",
+      "sha256": "1b06d4111b82d0cb20f6d577ada7ae01329b11bef2fe115e352a7c8e8b153ea9",
+      "size_bytes": 7040,
+      "mode": "100644",
+      "storage": "direct"
+    },
+    {
+      "path": "pheroos-bench/next-cycle/model-interface-live-v1/verify-ci.py",
+      "sha256": "545789310e17eca48f5311c54c176181bb1949c28f74b080d865991c9db8d772",
+      "size_bytes": 3398,
+      "mode": "100644",
+      "storage": "direct"
+    }
+  ],
+  "source_files": 299,
+  "source_bytes": 14114708,
+  "outside_manifest": [
+    "pheroos-bench/next-cycle/model-interface-live-v1/publication/manifest.json",
+    "pheroos-bench/next-cycle/model-interface-live-v1/publication/verification.json"
+  ]
+}

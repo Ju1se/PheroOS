@@ -1,0 +1,11 @@
+{
+  "profile": "model_interface_results_additive_integrity_v1",
+  "status": "PASS",
+  "source_commit": "4ea5208ae5d7d6cd8c847f89e51f44a914143c8d",
+  "preexisting_files_checked": 2249,
+  "preexisting_files_changed": [],
+  "protocol_core_changed": false,
+  "frozen_configs_or_thresholds_changed": false,
+  "prior_evidence_changed": false,
+  "counts_toward_verdict": false
+}
