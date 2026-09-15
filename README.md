@@ -1,84 +1,55 @@
 # PheroOS Interaction Lab
 
-A small experimental package for local evidence visibility and finite multi-agent
-interaction. This branch extracts the current v1/v2 behavior; it introduces no
-new coordination algorithm and is not the historical protocol-core product.
+活跃主线只保留交互算法、薄执行、必要的费用与安全边界，以及能检验机制的实验。
+当前核心为 `src/pheroos_interaction/` 中的 14 个模块，运行仅依赖 Python 标准库。
 
-Default runtime dependencies: **Python standard library only**. No old `pheroos`
-or `pheroos-runtime`, provider SDK, model, credentials or network is needed.
+## 保留的执行路径
 
-## Install and run
+- `visibility` / `factorial`：每个 agent 可见的信息、内容投影、顺序和动作解析。
+- `session` / `evidence` / `records`：有界状态、来源版本、读取权限、领取与释放。
+- `host` / `driver`：当前两 agent、两轮实验的有限执行与真实工具回复。
+- `accounting` / `adapters`：调用前预算预留、实际 usage、未知费用保留、显式远程适配。
+- `fixtures` / `evaluation` / `replay`：合成任务、独立评分、原输入匹配的历史回放。
+- `cli` 与包入口：运行上述路径。`tests/interaction` 验证必要边界和实验行为。
 
-```sh
-python -m pip install .
-pheroos-interaction mock --output /tmp/interaction-mock
-pheroos-interaction api-dry-run --output /tmp/interaction-dry
-```
+不再包含旧协议、治理、证书、BFT/finality、Conformance、schema/TCK、旧 E/R
+执行器及其 CI、测试和发布配置。范围是受信任的单机串行合成任务研究工具；
+局部 scope/version/readers、工具白名单、预算、取消和不隐藏重试仍是真实检查。
 
-The default mock uses a tiny synthetic `fresh_a/stale` task, two agents and two
-fixed decision windows. It exercises genuine source publication, version updates,
-historical reads, necessary inspections and final evaluation. Mock byte counts
-are instrumentation units, not provider token usage or model evidence.
+## 本地运行
 
-Select another unchanged factorial-v2 cell with `--world fresh_b/complete` and
-`--condition owner_script` (also owner_current, eligibility_script,
-eligibility_current). All output directories must be new.
-
-## Replay the retained observations
-
-The archive is separate from the active package; see [evidence/INDEX.md](evidence/INDEX.md).
-After restoring its payload, use the installed command from any directory:
+本目录的 `.venv` 安装的是精简包及测试依赖：
 
 ```sh
-pheroos-interaction replay --run /path/to/visibility-prototype-v1/run --output /tmp/v1-replay
-pheroos-interaction replay --run /path/to/visibility-factorial-v2/run --output /tmp/v2-replay
+.venv/bin/pheroos-interaction mock --output /tmp/interaction-mock
+.venv/bin/pheroos-interaction api-dry-run --output /tmp/interaction-dry
+.venv/bin/python -m pytest -q
 ```
 
-Replay reconstructs visible records, full projections and exact messages before
-using recorded responses. It compares parsing/rejection reasons, direct parents,
-real tools versus reuse, original usage, tariff and objective evaluation. A changed
-request fails. Replayed responses are labeled offline replay; they are never new
-provider receipts or predictions for changed prompts.
+新环境可运行 `python -m pip install '.[dev]'`。默认 mock 使用可见输入做合成运算；
+其字节计数不是提供商 token，也不是模型实验结果。API dry-run 只验证 payload，
+不读取凭据、不打开费用账本、不发请求。未来 `live` 需显式授权和既有共享账本；
+本次清理没有新增 API 调用。
 
-## Scope and execution checks
+## 当前实验数据
 
-The host is trusted, local and serialized, and the only built-in tool is a synthetic
-source read. Leases, source readers/current versions, declared tools/arguments,
-bounded private state, durable pre-dispatch reservations, cancellation and unknown
-spend retention are real checks. Duplicate IDs do not cause retries. One Session
-owns task/call/token state; one existing MoneyLedger owns monetary spending.
+`research-data/results/` 原样保留：
 
-Old authority, certificate, BFT/finality, hostile-host, multi-tenant security and
-distributed exactly-once guarantees are withdrawn. This is a distinct package/API
-and local storage format, not a compatible substitute for frozen core 0.1.0.
-Historical authority fields are read only as provenance during replay.
+| 数据 | 完整文件数 | 历史模型回复 | 工具执行 |
+| --- | ---: | ---: | ---: |
+| `visibility-prototype-v1/run` | 329 | 96 | 36 |
+| `visibility-factorial-v2/run` | 417 | 96 | 100 |
 
-## Optional API boundary
-
-`api-dry-run` validates actual text payloads from a mock path; it never opens a
-MoneyLedger, reads credentials or sends a request. Pure policy imports do not
-import adapters or task evaluators.
-
-`live` is explicit and requires a **new separate user authorization** for one
-exact four-request cell, plus an existing shared ledger. Existing keys or unused
-historical budgets are not authorization. `live --help` describes the required
-arguments. The authorization JSON must exactly name purpose
-`new-paid-interaction-cell`, model `kimi-k2.6`, max_requests `4`, the chosen `world`
-and `condition`, data_scope `synthetic-public-only`, and the resolved `ledger` path.
-It is a trusted-host declaration, not a security certificate. The adapter retains
-the archived tariff and ledger schema; reconfirm provider availability/pricing
-before any future separately authorized live work. This migration made no paid calls.
-
-## Tests and migration evidence
+共 746 文件、15,125,615 字节；SHA-256 清单位于 `research-data/MANIFEST.json`。
+这些是本地保留的不可变数据，不进入 wheel 或自动 Git 提交。其余历史实验保留在
+旧研究工作树和独立归档，路径见[证据索引](evidence/INDEX.md)。
 
 ```sh
-python -m pip install '.[dev]'
-python -m pytest -q
+.venv/bin/pheroos-interaction replay --run research-data/results/visibility-prototype-v1/run --output /tmp/interaction-v1
+.venv/bin/pheroos-interaction replay --run research-data/results/visibility-factorial-v2/run --output /tmp/interaction-v2
 ```
 
-Tests are network-blocked and use small fixtures and temporary ledgers; retired
-core tests are archived, not represented as passing here. The migration report
-records independent installation, exact historical replay, package contents,
-source/dependency counts, narrowed guarantees and remaining limitations.
+输出目录必须新建。回放先匹配原输入，再使用保留回复；它验证迁移与数据一致性，
+不产生新的供应商证据。费用的未知缓存字段不会伪装成已知 0。
 
-[Migration report](MIGRATION.md) · [Future experiment sketch](experiments/current/NEXT.md)
+下一项机制只留[局部需求与拥堵实验草案](experiments/current/NEXT.md)，尚未实现新算法。

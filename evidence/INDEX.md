@@ -1,43 +1,28 @@
-# Historical evidence boundary
+# 当前数据与外部历史
 
-The active package is `pheroos-interaction`, not a compatible distribution of
-`pheroos==0.1.0`. History was preserved and restored before removing active code.
+主目录的活跃代码只有 `pheroos_interaction`。历史治理实现、旧执行器及迁移审计
+工具均已移出活跃范围。历史回执中的 `authority` 字段只是原始数据，不是当前治理实现。
 
-## Verified archive
+## 当前机制实验
 
-[Archive and restore instructions](/Users/scottxie/Desktop/pheroos-interaction-history-20260914/README.md)
+- `research-data/results/visibility-prototype-v1/run`：完整 329 文件、96 个历史回复。
+- `research-data/results/visibility-factorial-v2/run`：完整 417 文件、96 个历史回复。
+- `research-data/MANIFEST.json`：原路径、大小及 SHA-256；数据不进入安装包。
 
-- Source/data payload: `history-payload.tar.gz`, SHA-256
-  `4afe2a7804869b628b0b2250dcf7fea57d3078d0cd11a5f9d17b184f0fd04ec9`.
-- 6,725 payload files verified after extraction. Git bundles plus dirty patches
-  and untracked/ignored snapshots reproduced all three original Git states.
-- Research baseline: `28c798cf6f858d7cd478f27fa5c144d0c1a6e450`, including its
-  separately archived dirty dev9 source and data.
-- Runtime baseline: `2222d59bb05785528e4301dc14d164d538408ac6`, including dirty dev5 changes.
-- Main baseline: `053a0d33d72a259d631ba5299e1452c0838aafe9`.
-- Clean offline restore: accepted core 0.1.0, runtime dev5, bench dev9, NumPy2.5.3;
-  678 package files and 11 frozen execution source files match their artifacts;
-  117 selected v1/v2 offline tests pass. This is not the full retired test suite.
-- Platform boundary: existing CPython3.14/macOS arm64; no system installation or
-  model download. A labeled installed-source setuptools84 fallback is preserved
-  because its original wheel was absent. Credentials are excluded and unread.
-  Private retired main/.local application state is also excluded and left in place;
-  see the archive's EXCLUSION-ADDENDUM.md.
+当前配置、投影、工具意图/实际执行、usage 与独立评分均保留。模型输出只在匹配
+原始请求后离线使用；回放不能证明新策略效果。
 
-Full before inventory, import measurements, category definitions and classification:
-[Inventory directory](/Users/scottxie/Desktop/pheroos-interaction-inventory-20260914).
-The report separates required installed source from representative loaded modules.
+## 外部保留与本次清理审计
 
-## Retained cohorts for exact-input replay
+- [本次清理审计](/Users/scottxie/Desktop/pheroos-cleanup-audit-20260914/README.md)：
+  删除范围、数据哈希、安装与测试结果、私有状态保留位置。
+- [已验证的历史归档](/Users/scottxie/Desktop/pheroos-interaction-history-20260914/README.md)：
+  源码、脏修改、全部旧实验、冻结包及离线恢复说明；封存 payload SHA-256 为
+  `4afe2a7804869b628b0b2250dcf7fea57d3078d0cd11a5f9d17b184f0fd04ec9`。
+- `/Users/scottxie/Desktop/pheroos-kimi-research` 与 `pheroos-kimi-runtime`：
+  用户明确要求保留的历史工作树，本次未修改。
+- `/Users/scottxie/Desktop/pheroos-interaction`：上一轮精简与迁移验证工作树，保留原样。
 
-Archives contain these paths under `payload/trees/research/pheroos-bench/results/`:
-
-- `visibility-prototype-v1/run`: 16 cells, 96 historical responses, 36 tool calls.
-- `visibility-factorial-v2/run`: 24 cells, 96 historical responses, 100 tool calls.
-- Previous Kimi worker, shared-dependency and other historical cohorts and builds
-  remain in the archive, with their original configurations, raw data and meaning.
-
-The new package reads these records only as external replay inputs. No historical
-raw dataset, old wheel, old runtime, core API or conformance catalog is bundled
-in the default lean wheel. Old receipts are observations, not a promise that
-remote generations can be recreated offline or proof of old authority guarantees.
+恢复边界已验证于本机 CPython 3.14/macOS arm64。私有凭据和旧应用状态不在公开
+实验归档内；本次只对其进行仓库外的可逆迁移，不读取内容。远程响应保留观察值，
+不承诺离线重新生成。
