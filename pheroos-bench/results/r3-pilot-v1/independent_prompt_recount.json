@@ -1,8 +1,0 @@
-{
-  "status": "PASS",
-  "calls_recounted": 80,
-  "prompt_tokens_recounted": 35584,
-  "model_files_hashed": 8,
-  "model_revision": "2e1fd397ee46e1388853d2af2c993145b0f1098a",
-  "gpu_generation_performed": false
-}

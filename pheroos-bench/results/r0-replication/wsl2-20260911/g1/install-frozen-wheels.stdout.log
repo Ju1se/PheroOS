@@ -1,5 +1,0 @@
-Processing /tmp/pheroos-wsl2-runtime-core/dist/pheroos-0.1.0-py3-none-any.whl
-Processing /tmp/pheroos-wsl2-runtime-g1/dist/pheroos_runtime-0.1.0.dev1-py3-none-any.whl
-Installing collected packages: pheroos-runtime, pheroos
-
-Successfully installed pheroos-0.1.0 pheroos-runtime-0.1.0.dev1

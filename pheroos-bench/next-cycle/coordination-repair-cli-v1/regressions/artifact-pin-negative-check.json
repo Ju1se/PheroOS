@@ -1,8 +1,0 @@
-{
-  "status": "PASS",
-  "purpose": "Wrong accepted-wheel hash fails before package installation and does not emit a PASS receipt.",
-  "actual_exit_code": 1,
-  "error": "accepted bench wheel identity mismatch",
-  "pass_receipt_written": false,
-  "model_calls": 0
-}

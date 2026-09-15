@@ -1,7 +1,0 @@
-`torch_dtype` is deprecated! Use `dtype` instead!
-
-Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]
-Loading checkpoint shards:  50%|█████     | 1/2 [00:01<00:01,  1.42s/it]
-Loading checkpoint shards: 100%|██████████| 2/2 [00:01<00:00,  1.23it/s]
-Loading checkpoint shards: 100%|██████████| 2/2 [00:01<00:00,  1.11it/s]
-{"admitted":false,"checks":{"complete_known_records":true,"d0_objective":false,"d0_public_submission":false,"d2_families":false,"d2_objective":false,"full_declared_grid":true,"interface_rejection":false,"intervention_relevance":true},"cli":{"exit_code":3,"profile":"coordination_repair_cli_v1","status":"NOT_ADMITTED"},"counts_toward_verdict":false,"d2_successful_families":["version_correction"],"fractions":{"d0_objective":0.0,"d0_public_submission":0.0,"d2_objective":0.25},"interface_rejection_fraction":0.7415730337078652,"intervention_comparisons":[{"blackboard_tool_calls":6,"candidate_tool_calls":7,"changed":true,"inspection_dispatch_change":1,"valid":true,"world":"interval_intersection/dev_b"},{"blackboard_tool_calls":6,"candidate_tool_calls":7,"changed":true,"inspection_dispatch_change":1,"valid":true,"world":"inventory_reconciliation/dev_b"}],"measurement_status":"COMPLETE","model_action_denominator":89,"stages":{"action_schema":32,"missing_or_stale_evidence":1,"transport_format":34}}

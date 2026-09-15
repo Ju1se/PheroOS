@@ -1,9 +1,0 @@
-{"config_sha256":"fbedef437ebca5228c148a98ff53c23d296ddee5ba298f9253881caea4317682","phase":"actionability","status":"FROZEN_LOADING_MODEL"}
-`torch_dtype` is deprecated! Use `dtype` instead!
-
-Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]
-Loading checkpoint shards:  50%|█████     | 1/2 [00:01<00:01,  1.54s/it]
-Loading checkpoint shards: 100%|██████████| 2/2 [00:01<00:00,  1.16it/s]
-Loading checkpoint shards: 100%|██████████| 2/2 [00:01<00:00,  1.04it/s]
-{"campaign_upper_bound":0,"episode":"actionability-000-single-n1-D0","status":"INVALID_ABORT","success":null,"tokens":0,"world":"interval_intersection/dev_a"}
-{"actual_budget":0,"phase":"actionability","report":{"admitted":false,"checks":{"complete_known_records":false,"d0_objective":false,"d0_public_submission":false,"d2_families":false,"d2_objective":false,"interface_rejection":false,"intervention_relevance":false},"counts_toward_verdict":false,"d2_successful_families":[],"fractions":{"d0_objective":0.0,"d0_public_submission":0.0,"d2_objective":0},"interface_rejection_fraction":1,"intervention_comparisons":[{"changed":null,"valid":false,"world":"interval_intersection/dev_b"},{"changed":null,"valid":false,"world":"inventory_reconciliation/dev_b"}],"model_action_denominator":0,"stages":{}}}

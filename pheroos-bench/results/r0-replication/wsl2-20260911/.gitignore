@@ -1,4 +1,0 @@
-# Rebuildable local distributions; source revisions and hashes are recorded.
-artifacts/
-g1/artifacts/
-g1/verify-build-artifacts/

@@ -1,4 +1,0 @@
-Processing /home/scott/projects/PheroOS/pheroos-bench/results/master-goal-audit-v1/consumer-artifacts-v1/artifacts/pheroos-0.1.0-py3-none-any.whl
-Processing /home/scott/projects/PheroOS/pheroos-bench/results/master-goal-audit-v1/consumer-artifacts-v1/artifacts/pheroos_runtime-0.1.0.dev1-py3-none-any.whl
-Installing collected packages: pheroos-runtime, pheroos
-Successfully installed pheroos-0.1.0 pheroos-runtime-0.1.0.dev1

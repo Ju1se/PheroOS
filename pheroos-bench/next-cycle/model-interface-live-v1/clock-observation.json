@@ -1,9 +1,0 @@
-{
-  "profile": "model_interface_clock_observation_v1",
-  "monotonic_process_seconds": 648.106709076,
-  "utc_timestamp_difference_seconds": 641.341775,
-  "monotonic_minus_utc_seconds": 6.764934076000031,
-  "duration_basis": "Retained monotonic durations; UTC timestamps label events, not elapsed-time authority.",
-  "discrepancy_cause": "UNMEASURED",
-  "counts_toward_verdict": false
-}
