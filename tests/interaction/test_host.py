@@ -3,12 +3,12 @@ from pathlib import Path
 
 import pytest
 
-from pheroos_interaction import factorial
-from pheroos_interaction.host import MockModel, run_episode
+from pheroos_interaction import policy
+from pheroos_interaction.runner.host import MockModel, run_episode
 
 
-@pytest.mark.parametrize('world', factorial.WORLDS)
-@pytest.mark.parametrize('condition', factorial.CONDITIONS)
+@pytest.mark.parametrize('world', policy.WORLDS)
+@pytest.mark.parametrize('condition', policy.CONDITIONS)
 def test_current_finite_mock_path_and_required_inspection_counts(tmp_path,world,condition):
     result = run_episode(tmp_path/'run',world_id=world,condition=condition)
     assert result['complete'], result['error_type']
@@ -52,8 +52,8 @@ def test_invalid_model_target_is_recorded_but_never_executed(tmp_path):
 
 
 def test_api_dry_run_never_reads_credentials_or_opens_money_database(tmp_path,monkeypatch):
-    from pheroos_interaction import adapters, accounting
-    from pheroos_interaction.cli import main
+    from pheroos_interaction.runner import adapters, accounting
+    from pheroos_interaction.runner.cli import main
     def denied(*args,**kwargs): raise AssertionError('forbidden dry-run effect')
     monkeypatch.setattr(adapters,'_credential',denied)
     monkeypatch.setattr(adapters.KimiCNAdapter,'_http',denied)
@@ -66,8 +66,8 @@ def test_api_dry_run_never_reads_credentials_or_opens_money_database(tmp_path,mo
 
 
 def test_live_requires_separate_exact_cell_authorization_before_adapter(tmp_path,monkeypatch):
-    from pheroos_interaction import adapters
-    from pheroos_interaction.cli import main
+    from pheroos_interaction.runner import adapters
+    from pheroos_interaction.runner.cli import main
     def denied(*args,**kwargs): raise AssertionError('adapter must not be constructed')
     monkeypatch.setattr(adapters.KimiCNAdapter,'__init__',denied)
     grant=tmp_path/'not-authorized.json';grant.write_text('{}')

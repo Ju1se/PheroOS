@@ -13,8 +13,8 @@ import json
 from pathlib import Path
 import sqlite3
 
-from . import factorial, visibility
-from .accounting import CACHED_RATE, CNY_UNITS, INPUT_RATE, OUTPUT_RATE, PRICE_VERSION
+from pheroos_interaction import policy as factorial, visibility
+from pheroos_interaction.runner.accounting import CACHED_RATE, CNY_UNITS, INPUT_RATE, OUTPUT_RATE, PRICE_VERSION
 from .evaluation import score_v1, score_v2
 from .fixtures import source_values_v1, source_values_v2
 

@@ -10,7 +10,7 @@ from hashlib import sha256
 import json
 
 from .session import Session, _duration, _id, _integer, _wire
-from .records import BudgetExceeded, Lease, LeaseLost, StateError
+from pheroos_interaction.records import BudgetExceeded, Lease, LeaseLost, StateError
 
 
 class CoordinationSession(Session):

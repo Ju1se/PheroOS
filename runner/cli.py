@@ -21,7 +21,7 @@ def main(argv=None):
     replay.add_argument('--output', required=True, type=Path)
     args = parser.parse_args(argv)
     if args.command == 'replay':
-        from .replay import run_replay
+        from pheroos_interaction.experiments.current.replay import run_replay
         report = run_replay(args.run, args.output)
         print(json.dumps(report, ensure_ascii=False))
         return 0

@@ -4,7 +4,7 @@ Never used for model-visible feedback, policy, dispatch or stopping. Source
 identities are recorded in visibility.py and factorial.py.
 """
 
-from .factorial import _case
+from pheroos_interaction.policy import _case
 
 
 def score_v1(world_id, round_index, parsed):

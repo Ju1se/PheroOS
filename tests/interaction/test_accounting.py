@@ -3,8 +3,8 @@ from pathlib import Path
 
 import pytest
 
-from pheroos_interaction import adapters
-from pheroos_interaction.accounting import MoneyLedger, BudgetExceeded, DuplicateCall, RemoteKimiError
+from pheroos_interaction.runner import adapters
+from pheroos_interaction.runner.accounting import MoneyLedger, BudgetExceeded, DuplicateCall, RemoteKimiError
 
 
 def receipt(cached=None):

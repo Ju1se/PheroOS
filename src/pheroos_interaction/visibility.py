@@ -1,6 +1,6 @@
-# Extracted without algorithm changes from /Users/scottxie/Desktop/pheroos-kimi-research/pheroos-bench/src/pheroos_bench/visibility_v1.py (MIT).
+# Extracted without algorithm changes from pheroos-bench/src/pheroos_bench/visibility_v1.py (MIT).
 # Source SHA256: c8ab54b110d8687b6a75066f34f49795fa1fb3758b66966766a62a2edc6eaa01
-# Ground-truth fixtures and scores moved to fixtures.py and evaluation.py.
+# Ground-truth fixtures and scores moved to experiments/current/fixtures.py and evaluation.py.
 """Finite, experimental request exposure for one bench pilot, not a core ABI.
 
 Recorded ancestry describes possible information paths, never statistical

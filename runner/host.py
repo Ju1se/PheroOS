@@ -11,11 +11,30 @@ import os
 from pathlib import Path
 from uuid import uuid4
 
-from . import factorial as design
+from pheroos_interaction import policy as design
 from .driver import SessionDriver
 from .evidence import CoordinationSession
-from .fixtures import source_values_v2
-from .evaluation import score_v2
+from pheroos_interaction.experiments.current.fixtures import source_values_v2
+from pheroos_interaction.experiments.current.evaluation import score_v2
+
+
+def _source_identity():
+    """Cover all installed or editable source roots, using portable module paths."""
+    import pheroos_interaction
+    from pheroos_interaction import runner, experiments
+    from pheroos_interaction.experiments import current
+
+    identity = {}
+    for package in (pheroos_interaction, runner, experiments, current):
+        for directory in package.__path__:
+            base = Path(directory)
+            for path in sorted(base.rglob('*.py')):
+                key = package.__name__.replace('.', '/') + '/' + path.relative_to(base).as_posix()
+                value = sha256(path.read_bytes()).hexdigest()
+                if key in identity and identity[key] != value:
+                    raise RuntimeError('conflicting source identity')
+                identity[key] = value
+    return dict(sorted(identity.items()))
 
 
 def save(path, value):
@@ -92,10 +111,9 @@ def run_episode(output, *, world_id='fresh_a/stale', condition='eligibility_curr
     output = Path(output)
     output.mkdir(parents=True, exist_ok=False)
     config = design.configuration()
-    source_paths = sorted(Path(__file__).parent.glob('*.py'))
-    frozen_sources = {p.name: sha256(p.read_bytes()).hexdigest() for p in source_paths}
+    frozen_sources = _source_identity()
     def unchanged():
-        if {p.name: sha256(p.read_bytes()).hexdigest() for p in source_paths} != frozen_sources:
+        if _source_identity() != frozen_sources:
             raise RuntimeError('source changed during fixed rollout')
     sources, work, inspections, lookup, preparations = declarations(world_id)
     session = CoordinationSession.create(output / 'session.sqlite', 'interaction-' + uuid4().hex,

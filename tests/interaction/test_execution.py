@@ -4,8 +4,8 @@ import sqlite3
 
 import pytest
 
-from pheroos_interaction.driver import SessionDriver
-from pheroos_interaction.evidence import CoordinationSession
+from pheroos_interaction.runner.driver import SessionDriver
+from pheroos_interaction.runner.evidence import CoordinationSession
 from pheroos_interaction.records import BudgetExceeded, LeaseLost, StateError
 
 
@@ -14,7 +14,7 @@ BODY = dict(source_id='x', source_version=1, value=7)
 
 def make_session(tmp_path, name='one', *, readers=None, token_cap=1000, max_calls=8):
     from hashlib import sha256
-    from pheroos_interaction.session import _wire
+    from pheroos_interaction.runner.session import _wire
     readers = ['a', 'b'] if readers is None else readers
     fingerprint = sha256(_wire(BODY).encode()).hexdigest()
     work = [dict(id='tool-'+a, version=1, dependencies=[], agents=[a], actions=['tool.evaluate']) for a in ['a', 'b']]

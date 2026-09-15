@@ -1,6 +1,6 @@
-# Extracted without algorithm changes from /Users/scottxie/Desktop/pheroos-kimi-research/pheroos-bench/src/pheroos_bench/visibility_factorial_v2.py (MIT).
+# Extracted without algorithm changes from pheroos-bench/src/pheroos_bench/visibility_factorial_v2.py (MIT).
 # Source SHA256: 44a3de11d0aa0047ef6c52326fd150554e87bd0a3ac85bdf68cdf3b0ff507e88
-# Ground-truth fixtures and scores moved to fixtures.py and evaluation.py.
+# Ground-truth fixtures and scores moved to experiments/current/fixtures.py and evaluation.py.
 """Finite 2x2 evidence-expression/action-cue pilot. No protocol authority changes."""
 
 from .visibility import ancestry, digest, parse_action as _parse_action, wire

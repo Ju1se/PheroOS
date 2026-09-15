@@ -9,20 +9,7 @@ from __future__ import annotations
 import json
 from hashlib import sha256
 from time import monotonic_ns
-from typing import Protocol
-
-
-
-class ModelAdapter(Protocol):
-    identity: dict
-
-    def count_tokens(self, messages: list[dict]) -> int: ...
-
-    def generate(self, messages: list[dict], max_new_tokens: int, seed: int) -> dict: ...
-
-
-
-
+from pheroos_interaction.ports import ModelAdapter
 
 
 def _copy(value):
@@ -38,7 +25,7 @@ class SessionDriver:
     never retries it. Committed receipt replay is explicit and has no authority.
     """
 
-    def __init__(self, session, *, models=None, tools=None,
+    def __init__(self, session, *, models: dict[str, ModelAdapter] | None = None, tools=None,
                  context_tokens=2048):
         if type(context_tokens) is not int or context_tokens < 1:
             raise ValueError("positive context bound required")

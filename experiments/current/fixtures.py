@@ -4,8 +4,8 @@ Host/evaluation only: renderers do not import this module. Exact function bodies
 come from the source identities recorded in visibility.py and factorial.py.
 """
 
-from .visibility import WORLDS
-from .factorial import _case
+from pheroos_interaction.visibility import WORLDS
+from pheroos_interaction.policy import _case
 
 
 def source_values_v1(world_id, round_index):

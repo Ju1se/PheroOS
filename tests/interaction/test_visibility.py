@@ -6,9 +6,9 @@ import sys
 
 import pytest
 
-from pheroos_interaction import factorial, visibility
-from pheroos_interaction.evaluation import score_v1, score_v2
-from pheroos_interaction.fixtures import source_values_v1, source_values_v2
+from pheroos_interaction import policy, visibility
+from pheroos_interaction.experiments.current.evaluation import score_v1, score_v2
+from pheroos_interaction.experiments.current.fixtures import source_values_v1, source_values_v2
 
 
 def record(identifier, owner, source, version, value):
@@ -23,16 +23,15 @@ def materialize(r):
         superseded=not current, source_id=r["body"]["source_id"], source_version=r["body"]["source_version"]))
 
 
-def test_renderer_imports_have_no_ground_truth_adapter_or_legacy_dependency():
+def test_core_imports_have_no_runner_ground_truth_or_legacy_dependency():
     code = """
 import sys
-import pheroos_interaction.visibility, pheroos_interaction.factorial
-assert 'pheroos_interaction.fixtures' not in sys.modules
-assert 'pheroos_interaction.evaluation' not in sys.modules
+from pheroos_interaction import records, visibility, policy, ports
+assert not any(n == 'pheroos_interaction.experiments' or n.startswith('pheroos_interaction.experiments.') for n in sys.modules)
 assert not any(n == 'pheroos' or n.startswith('pheroos.') or n.startswith('pheroos_runtime') for n in sys.modules)
-assert 'pheroos_interaction.adapters' not in sys.modules
+assert not any(n == 'pheroos_interaction.runner' or n.startswith('pheroos_interaction.runner.') for n in sys.modules)
 """
-    subprocess.run([sys.executable, "-c", code], check=True)
+    subprocess.run([sys.executable, "-I", "-c", code], check=True)
 
 
 def test_public_versions_are_separate_from_ground_truth_values():
@@ -50,30 +49,30 @@ def test_public_versions_are_separate_from_ground_truth_values():
 def test_exact_parser_rejections_are_preserved(raw):
     expected = dict(valid=False, action=None, reason="invalid_json_action_or_window")
     assert visibility.parse_action(raw, 1, [], world_id="simple_arithmetic") == expected
-    assert factorial.parse_action(raw, 1, ["multiplier", "bias"], world_id="fresh_a/complete") == expected
+    assert policy.parse_action(raw, 1, ["multiplier", "bias"], world_id="fresh_a/complete") == expected
 
 
 def test_stale_projection_is_explicit_and_does_not_become_current_citation():
     records = [record("mine", "a", "multiplier", 2, 4), record("peer-old", "b", "bias", 1, 8)]
-    context = factorial.build_request("fresh_a/stale", "a", "eligibility_current", 1, records, materialize)
+    context = policy.build_request("fresh_a/stale", "a", "eligibility_current", 1, records, materialize)
     assert context["sent_record_ids"] == ["mine", "peer-old"]
     assert context["state_diagnostics"]["missing_current_sources"] == ["bias"]
     sent = json.loads(context["messages"][1]["content"])
     assert sent["visible"][1]["eligible_for_current_citation"] is False
     assert "state_diagnostics" not in sent and "stale" not in sent["task"].values()
-    parsed = factorial.parse_action('{"action":"submit","answer":23,"citations":[{"source_id":"multiplier","source_version":2},{"source_id":"bias","source_version":2}]}',
+    parsed = policy.parse_action('{"action":"submit","answer":23,"citations":[{"source_id":"multiplier","source_version":2},{"source_id":"bias","source_version":2}]}',
                                     2, ["multiplier", "bias"], world_id="fresh_a/stale")
     assert score_v2("fresh_a/stale", parsed)
-    assert not factorial.current_citations("fresh_a/stale", parsed, context)
+    assert not policy.current_citations("fresh_a/stale", parsed, context)
 
 
 def test_peer_new_inspection_does_not_rescue_another_agent_and_order_is_real():
     records = [record("mine", "a", "multiplier", 2, 4), record("peer", "b", "bias", 2, 3)]
     records[1]["round_index"] = 1
-    context = factorial.build_request("fresh_a/missing", "a", "owner_current", 2, records, materialize)
+    context = policy.build_request("fresh_a/missing", "a", "owner_current", 2, records, materialize)
     assert context["sent_record_ids"] == ["mine"]
     records[1]["owner"] = "a"
-    context2 = factorial.build_request("fresh_a/missing", "a", "owner_current", 2, records, materialize)
+    context2 = policy.build_request("fresh_a/missing", "a", "owner_current", 2, records, materialize)
     assert context2["sent_record_ids"] == ["mine", "peer"]
     assert context2["messages_sha256"] != context["messages_sha256"]
 
@@ -85,7 +84,7 @@ def test_currentness_and_publisher_checks_keep_original_rejection_reason():
         result["metadata"]["publisher"] = "b"
         return result
     with pytest.raises(ValueError, match="source content, publisher or currentness differs from Session read"):
-        factorial.build_request("fresh_a/missing", "a", "owner_current", 1, [r], bad_metadata)
+        policy.build_request("fresh_a/missing", "a", "owner_current", 1, [r], bad_metadata)
 
 
 def test_score_semantics_stay_value_only_and_boolean_is_not_integer():

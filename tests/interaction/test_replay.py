@@ -8,7 +8,7 @@ import sqlite3
 import pytest
 
 from pheroos_interaction import visibility
-from pheroos_interaction.replay import ReplayMismatch, _hash, _replay_episode, _wire, run_replay
+from pheroos_interaction.experiments.current.replay import ReplayMismatch, _hash, _replay_episode, _wire, run_replay
 
 
 def save(path, value):

@@ -15,7 +15,7 @@ import sqlite3
 import time
 from uuid import uuid4
 
-from .records import BudgetExceeded, Lease, LeaseLost, StateError
+from pheroos_interaction.records import BudgetExceeded, Lease, LeaseLost, StateError
 
 
 def _wire(value):
