@@ -1,98 +1,46 @@
-# PheroOS Interaction Lab
+# PheroOS
 
-用于研究多 agent 如何利用局部信息、共享证据和工作状态选择行动。
-活跃主线只保留交互算法、薄执行、必要费用与安全边界，以及能检验机制的实验。
-运行依赖只有 Python 标准库；模型提供商仅在显式调用时接入。
-
-## 文件结构
-
-```text
-PheroOS/
-├── src/pheroos_interaction/     # 纯交互核心
-│   ├── records.py              # 局部租约、作用域标识和错误类型
-│   ├── visibility.py           # v1 投影、动作解析和直接父引用
-│   ├── policy.py               # 当前 v2 可见性与动作提示策略
-│   └── ports.py                # 执行器实际使用的模型接口
-├── runner/                     # 具体的本地执行
-│   ├── host.py                 # 有限轮次、工具执行和源码身份记录
-│   ├── driver.py               # 模型与工具分发
-│   ├── session.py              # 预算预留、调用状态与取消
-│   ├── evidence.py             # 来源版本、访问、领取与释放
-│   ├── adapters.py             # 延迟加载的 Kimi 适配器
-│   ├── accounting.py           # 唯一费用账本
-│   └── cli.py                  # mock、dry-run、replay、live 入口
-├── experiments/current/
-│   ├── fixtures.py             # 合成来源数据，仅供 host 与评估读取
-│   ├── evaluation.py           # 独立终局评分
-│   ├── replay.py               # 匹配原输入的历史回放
-│   └── NEXT.md                 # 下一项机制的简短实验草案
-├── tests/interaction/          # 机制行为、执行边界和安装布局测试
-├── evidence/INDEX.md            # 数据与历史证据索引
-├── README.md
-└── AGENTS.md
-```
-
-磁盘按职责分目录；安装后统一使用 `pheroos_interaction` 命名空间：
-`runner/` 对应 `pheroos_interaction.runner`，`experiments/current/` 对应
-`pheroos_interaction.experiments.current`。使用显式打包映射，不需要手工设置
-`PYTHONPATH`，也没有旧导入名的兼容副本。源码身份检查覆盖三个目录，支持 wheel
-安装与 editable 开发安装。
+一个本地二元补证工具：按显式模型假设和损失配置决定是否检查，执行前固定结果对应的动作。
+只保留纯策略、来源权限、持久化预留、调用上限、取消、未知不重试，以及计划与回执回放。
 
 ## 安装与运行
 
-需要 Python 3.12 或更新版本。本地验收使用 Python 3.14。
+需要 Python 3.12+，运行依赖仅 Python 标准库。
 
 ```sh
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install -e '.[dev]'
-pheroos-interaction mock --output output/mock
-pheroos-interaction api-dry-run --output output/dry
+pheroos-interaction inspect \
+  --config experiments/current/inspection-example/request.json \
+  --source experiments/current/inspection-example/source \
+  --output output/inspection
+pheroos-interaction inspect-replay --run output/inspection
 python -m pytest -q
 ```
 
-普通安装用 `python -m pip install .`。所有输出目录必须新建。
-也可选择一个当前实验单元：
+输出目录必须新建。`source.json` 声明 scope、版本、读者、工具与内容摘要；只有决定购买、
+持久化预留并通过权限检查后才读取 `value.json`。示例只读取本地文件，不访问模型或费用账本。
 
-```sh
-pheroos-interaction mock --world fresh_b/missing --condition eligibility_current --output output/missing
-```
+## 核心文件
 
-mock 根据可见输入完成合成运算，字节计数不是提供商 token，也不是模型效果证据。
-API dry-run 只验证 mock 路径的请求 payload，不读取凭据、不打开费用账本、不发请求。
-`live --help` 提供显式入口；实际付费运行需要单独授权和既有共享账本，不重置历史额度。
+- `src/pheroos_interaction/inspection.py`：成本提前退出、保守角点、六项分支损失。
+- `src/pheroos_interaction/records.py`：租约与错误类型。
+- `runner/inspection.py`：来源读取、冻结计划、回执验证和只读回放。
+- `runner/session.py`、`evidence.py`、`driver.py`：执行约束与工具派发。
+- `runner/identity.py`、`cli.py`：完整源码身份和两个命令入口。
 
-## 当前实验与数据
+安装仅包含 `pheroos_interaction` 和 `pheroos_interaction.runner`。
+旧实验、旧策略、研究命令和模型调用代码均已删除。历史原始数据保存在本地
+`research-data/results/`，不打包或上传；当前程序不再运行旧实验回放。
+已保存的本地 inspection 记录可使用 `inspect-replay --historical --run ...`，明确允许源码身份变化，
+仍验证冻结计划、原始回执和执行记录。
 
-当前 v2 固定两 agent、两次决策机会，交叉比较证据表达和动作提示，并保留
-证据完整、缺失、过期三种状态。任务数据与评分不进入策略模块；实验记录保留
-检查意图、实际工具执行、缓存、usage 和独立终局评分。
-本次目录整理没有改变提示词、轮次、缓存、动作解析或评分。
+## 适用边界
 
-本地不可变原始数据位于 `research-data/results/`，不进入 wheel 或 Git 提交：
+仅支持固定先验、对称二元测量、固定正面复制参考和矩形参数范围；不支持的输入显式拒绝。
+概率范围、来源说明、版本、适用条件、三种损失和查询成本必须明确提供。
+格式通过不表示真实来源独立或概率已校准。查询成本是与错误、弃权损失同单位的效用值，
+不代表费用授权。当前策略只补证一步，调用上限由配置声明。
 
-| 数据 | 原始文件 | 历史回复 | 工具执行 |
-| --- | ---: | ---: | ---: |
-| `visibility-prototype-v1/run` | 329 | 96 | 36 |
-| `visibility-factorial-v2/run` | 417 | 96 | 100 |
-
-总计 746 文件、15,125,615 字节。公开源码仓库可以直接运行 mock 与离线测试；
-完整历史回放需要另外取得保留的数据目录，详见[证据索引](evidence/INDEX.md)。
-
-```sh
-pheroos-interaction replay --run research-data/results/visibility-prototype-v1/run --output output/replay-v1
-pheroos-interaction replay --run research-data/results/visibility-factorial-v2/run --output output/replay-v2
-```
-
-回放先匹配原始输入，再使用历史回复；不产生新的提供商证据，也不能预测改动提示词
-后的模型表现。未知缓存字段不冒充已知 0，检查意图与物理工具调用分别统计。
-
-## 执行边界
-
-适用范围是受信任的单机串行合成任务研究。保留真实 scope/version/readers、工具参数
-检查、有界状态、持久化预算预留、取消与未知调用不重试。Session 管理调用/token，
-MoneyLedger 管理 CNY；有效 usage 和无效正文可能产生不同单位的已知/未知状态。
-
-旧协议、治理、证书、BFT/finality、Conformance、schema/TCK、旧 E/R 执行器和发布体系
-已经撤下；本项目不提供其生产级保证。下一步仅保留
-[局部需求与拥堵实验草案](experiments/current/NEXT.md)，尚未实现新算法。
+适用范围是受信任单机串行任务；没有通用语义理解、依赖学习、多步补证或恶意宿主保证。

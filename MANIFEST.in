@@ -1,4 +1,3 @@
 include AGENTS.md
-include evidence/INDEX.md
-recursive-include experiments/current *.md
+recursive-include experiments/current/inspection-example *.json
 recursive-include tests/interaction *.py

@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "pheroos-interaction"
 version = "0.1.0.dev2"
-description = "Small trusted-host multi-agent interaction research and exact-input replay"
+description = "Minimal local inspection decisions and durable receipt replay"
 readme = "README.md"
 requires-python = ">=3.12"
 license = "MIT"
@@ -19,12 +19,11 @@ pheroos-interaction = "pheroos_interaction.runner.cli:main"
 
 [tool.setuptools]
 include-package-data = false
-packages = ["pheroos_interaction", "pheroos_interaction.runner", "pheroos_interaction.experiments", "pheroos_interaction.experiments.current"]
+packages = ["pheroos_interaction", "pheroos_interaction.runner"]
 
 [tool.setuptools.package-dir]
 pheroos_interaction = "src/pheroos_interaction"
 "pheroos_interaction.runner" = "runner"
-"pheroos_interaction.experiments" = "experiments"
 
 [tool.pytest.ini_options]
 testpaths = ["tests/interaction"]
