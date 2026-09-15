@@ -1,4 +1,4 @@
-name: Interaction Lab
+name: Local inspection
 on: [push, pull_request]
 jobs:
   offline-tests:
@@ -10,4 +10,8 @@ jobs:
           python-version: '3.14'
       - run: python -m pip install '.[dev]'
       - run: python -m pytest -q
-      - run: cd /tmp && pheroos-interaction mock --output interaction-mock
+      - name: Installed CLI and local receipt replay
+        working-directory: /tmp
+        run: |
+          pheroos-interaction inspect --config "$GITHUB_WORKSPACE/experiments/current/inspection-example/request.json" --source "$GITHUB_WORKSPACE/experiments/current/inspection-example/source" --output "$RUNNER_TEMP/inspection"
+          pheroos-interaction inspect-replay --run "$RUNNER_TEMP/inspection"

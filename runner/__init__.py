@@ -1,1 +1,1 @@
-"""Concrete local execution for interaction experiments."""
+"""Local source execution and frozen receipt replay."""

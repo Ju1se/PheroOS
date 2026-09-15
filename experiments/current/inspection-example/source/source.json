@@ -1,0 +1,11 @@
+{
+  "readers": [
+    "researcher"
+  ],
+  "scope": "local-example",
+  "source_id": "binary-check",
+  "source_version": 1,
+  "state_fingerprint": "0da2396eed120c64af922e55c6042eddb5fe290dc42428185505d082f55109bf",
+  "tool": "read_binary_source",
+  "tool_version": "binary-json-v1"
+}

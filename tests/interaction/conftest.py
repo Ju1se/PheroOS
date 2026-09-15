@@ -1,4 +1,4 @@
-"""Tests are offline, including imported adapters and failure paths."""
+"""All policy, execution and replay tests run without network access."""
 import socket
 import pytest
 

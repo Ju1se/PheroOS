@@ -1,0 +1,30 @@
+{
+  "assumptions": {
+    "applicability": "Illustrative local binary source with fixed-positive copying reference",
+    "family": "fixed-prior-symmetric-positive-copy-v1",
+    "prior": 0.9,
+    "q_high": 0.95,
+    "q_low": 0.9,
+    "reference": true,
+    "rho_high": 0,
+    "rho_low": 0,
+    "source": "Hand-declared synthetic channel, not independently calibrated",
+    "version": "example-v1"
+  },
+  "limits": {
+    "max_calls": 2,
+    "token_cap": 0
+  },
+  "losses": {
+    "abstain": 1,
+    "false_accept": 8,
+    "false_reject": 4
+  },
+  "query_cost": 0.2,
+  "reader": "researcher",
+  "scope": "local-example",
+  "source_id": "binary-check",
+  "source_version": 1,
+  "tool": "read_binary_source",
+  "tool_version": "binary-json-v1"
+}

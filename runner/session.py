@@ -1,9 +1,4 @@
-"""Durable local execution extracted from runtime/session_v1.py (MIT).
-
-Current trusted-host interaction consumer only. Core authorization, mailboxes and
-revocation facade are removed; leases, declaration checks, cancellation and
-pre-dispatch reservations remain real. This is a distinct experimental format.
-"""
+"""Durable local tool execution with leases, limits, cancellation and receipts."""
 
 from contextlib import contextmanager
 from dataclasses import asdict
@@ -13,7 +8,6 @@ import math
 from pathlib import Path
 import sqlite3
 import time
-from uuid import uuid4
 
 from pheroos_interaction.records import BudgetExceeded, Lease, LeaseLost, StateError
 
@@ -83,7 +77,7 @@ class Session:
                 if type(values) is not list or len(set(values)) != len(values):
                     raise ValueError("unique declaration lists required")
             if (not item["agents"] or not set(item["agents"]) <= set(agents)
-                    or not item["actions"] or not set(item["actions"]) <= {"model.generate", "tool.evaluate"}):
+                    or not item["actions"] or not set(item["actions"]) <= {"tool.evaluate"}):
                 raise ValueError("undeclared agent or action")
             declarations[key] = item
         def visit(key, ancestors):
@@ -106,7 +100,6 @@ class Session:
                 "CREATE TABLE work (id TEXT PRIMARY KEY, version INTEGER, declaration TEXT, status TEXT, owner TEXT, epoch INTEGER, expires REAL, generation INTEGER)",
                 "CREATE TABLE calls (id TEXT PRIMARY KEY, work_id TEXT REFERENCES work(id), version INTEGER, epoch INTEGER, action TEXT, request TEXT, state TEXT, prompt INTEGER, maximum INTEGER, reserved INTEGER, response TEXT, actual INTEGER, permission TEXT)",
                 "CREATE TABLE artifacts (ref TEXT PRIMARY KEY, work_id TEXT UNIQUE REFERENCES work(id), version INTEGER, publisher TEXT, value TEXT, call_id TEXT, response_digest TEXT, permission TEXT)",
-                "CREATE TABLE checkpoints (agent TEXT PRIMARY KEY, work_id TEXT, version INTEGER, generation INTEGER, value TEXT)",
                 "CREATE TABLE events (seq INTEGER PRIMARY KEY AUTOINCREMENT, value TEXT)",
             ):
                 db.execute(sql)
@@ -178,48 +171,18 @@ class Session:
                 return lease
         return None
 
-    def context(self, lease):
+    def check_current(self, lease):
+        """Fence a local read against cancellation, lease expiry and source changes."""
         with self._transaction() as db:
-            row = self._lease(db, lease)
-            saved = db.execute("SELECT * FROM checkpoints WHERE agent=?", (lease.owner,)).fetchone()
-            valid = saved and (saved["work_id"], saved["version"], saved["generation"]) == (lease.task_id, lease.version, row["generation"])
-            refs = [db.execute("SELECT ref FROM artifacts WHERE work_id=?", (dep,)).fetchone()[0]
-                    for dep in json.loads(row["declaration"])["dependencies"]]
-            view = {"private": json.loads(saved["value"]) if valid else {}, "artifact_refs": refs}
-            if len(_wire(view).encode()) > json.loads(self._run(db)["limits"])["context_bytes"]:
-                raise StateError("dependency references and checkpoint exceed context bound")
-            return view
+            self._lease(db, lease)
 
-    def checkpoint(self, lease, value):
-        wire = _wire(value)
-        with self._transaction() as db:
-            row = self._lease(db, lease)
-            refs = [db.execute("SELECT ref FROM artifacts WHERE work_id=?", (dep,)).fetchone()[0]
-                    for dep in json.loads(row["declaration"])["dependencies"]]
-            if type(value) is not dict or len(_wire({"private": value, "artifact_refs": refs}).encode()) > json.loads(self._run(db)["limits"])["context_bytes"]:
-                raise ValueError("private checkpoint exceeds declared context bound")
-            db.execute("INSERT OR REPLACE INTO checkpoints VALUES (?,?,?,?,?)",
-                       (lease.owner, lease.task_id, lease.version, row["generation"], wire))
-            self._event(db, "checkpointed", lease.task_id, {"agent": lease.owner, "bytes": len(wire.encode()), "generation": row["generation"]})
-
-    def reserve(self, lease, call_id, action, payload, *, prompt_tokens, max_new_tokens,
-                prompt_token_contract="exact_v1"):
+    def reserve(self, lease, call_id, action, payload, *, prompt_tokens, max_new_tokens):
         _id(call_id)
         _integer(prompt_tokens, "prompt_tokens")
         _integer(max_new_tokens, "max_new_tokens")
-        if prompt_token_contract not in ("exact_v1", "upper_bound_v1"):
-            raise ValueError("unknown prompt token contract")
-        if prompt_token_contract == "upper_bound_v1" and action != "model.generate":
-            raise ValueError("prompt token upper bound requires model.generate")
         if type(payload) is not dict:
             raise ValueError("dictionary request required")
         payload = dict(payload)
-        if ("prompt_token_contract" in payload
-                and payload["prompt_token_contract"] != prompt_token_contract):
-            raise StateError("request prompt token contract mismatch")
-        # Absence preserves the original exact contract and historical request bytes.
-        if prompt_token_contract == "upper_bound_v1":
-            payload["prompt_token_contract"] = prompt_token_contract
         for key, value in (("task_id", lease.task_id), ("version", lease.version)):
             if key in payload and (type(payload[key]) is not type(value) or payload[key] != value):
                 raise StateError("request task/version mismatch")
@@ -243,7 +206,7 @@ class Session:
                        (call_id, lease.task_id, lease.version, lease.epoch, action, wire, prompt_tokens, max_new_tokens, prompt_tokens + max_new_tokens))
             self._event(db, "reserved", lease.task_id, {"call_id": call_id,
                 "tokens": prompt_tokens + max_new_tokens, "prompt_tokens": prompt_tokens,
-                "max_new_tokens": max_new_tokens, "prompt_token_contract": prompt_token_contract})
+                "max_new_tokens": max_new_tokens, "prompt_token_contract": "exact_v1"})
         return call_id
 
     def _scope_ref(self, db, task_id):
@@ -254,7 +217,7 @@ class Session:
         row = self._lease(db, lease)
         actions = json.loads(row["declaration"])["actions"]
         required = "tool.evaluate" if action == "artifact.publish" else action
-        if required not in actions or action not in {"tool.evaluate", "model.generate", "artifact.publish"}:
+        if required not in actions or action not in {"tool.evaluate", "artifact.publish"}:
             raise PermissionError("action is outside this work declaration")
         if (payload.get("task_id") != lease.task_id or type(payload.get("version")) is not int
                 or payload["version"] != lease.version):
@@ -294,10 +257,7 @@ class Session:
             if call["state"] == "response_rejected" and json.loads(call["response"])["response_digest"] == digest:
                 rejected = True
             else:
-                contract = json.loads(call["request"]).get("prompt_token_contract", "exact_v1")
-                valid_prompt = (contract == "exact_v1" and prompt == call["prompt"]
-                    or contract == "upper_bound_v1" and call["action"] == "model.generate"
-                    and prompt <= call["prompt"])
+                valid_prompt = prompt == call["prompt"]
                 if call["state"] != "dispatched" or not valid_prompt or completion > call["maximum"]:
                     raise StateError("conflicting or invalid receipt")
                 rejected = len(wire.encode()) > json.loads(self._run(db)["limits"])["artifact_bytes"]
@@ -310,7 +270,7 @@ class Session:
                 db.execute("UPDATE calls SET state=?,response=?,actual=? WHERE id=?", (state, stored, prompt + completion, call_id))
                 self._event(db, state, call["work_id"], {"call_id": call_id, "actual_tokens": prompt + completion,
                                                         "prompt_tokens": prompt, "completion_tokens": completion,
-                                                        "prompt_token_contract": contract,
+                                                        "prompt_token_contract": "exact_v1",
                                                         "released_tokens": call["reserved"] - prompt - completion,
                                                         "response_digest": digest})
                 if self._run(db)["status"] == "running" and not db.execute("SELECT 1 FROM calls WHERE work_id=? AND state='dispatched'", (call["work_id"],)).fetchone():
@@ -353,19 +313,6 @@ class Session:
             if not db.execute("SELECT 1 FROM work WHERE status!='done'").fetchone():
                 db.execute("UPDATE run SET status='completed'")
             return ref
-
-    def artifact(self, ref):
-        with self._transaction() as db:
-            row = db.execute("SELECT * FROM artifacts WHERE ref=?", (ref,)).fetchone()
-            if row is None:
-                raise StateError("unknown verified artifact")
-            permission = json.loads(row["permission"])
-            return {**dict(row), "value": json.loads(row["value"]),
-                    "permission": permission, "scope_ref": permission["scope_ref"]}
-
-
-
-
 
     def _stop(self, status):
         with self._transaction() as db:
