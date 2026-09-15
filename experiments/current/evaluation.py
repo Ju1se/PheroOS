@@ -27,4 +27,3 @@ def score_v2(world_id, parsed):
     return (parsed.get("valid") is True and parsed["action"]["action"] == "submit"
             and type(parsed["action"]["answer"]) is int
             and parsed["action"]["answer"] == (23 if case == "fresh_a" else 19))
-

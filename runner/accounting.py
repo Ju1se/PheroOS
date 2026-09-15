@@ -181,5 +181,3 @@ class MoneyLedger:
                 "unresolved_calls": sum(r["actual"] is None for r in rows)}
 
     snapshot = summary
-
-

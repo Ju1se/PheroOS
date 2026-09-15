@@ -31,4 +31,3 @@ def source_values_v2(world_id, version=2):
               ("fresh_b", 1): (5, 4), ("fresh_b", 2): (3, -2)}[(case, version)]
     return {key: dict(source_id=key, source_version=version, value=value)
             for key, value in zip(("multiplier", "bias"), values)}
-
