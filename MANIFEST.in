@@ -1,0 +1,5 @@
+include AGENTS.md MIGRATION.md
+include evidence/INDEX.md
+recursive-include experiments/current *.md
+recursive-include tests/interaction *.py
+recursive-include tools *.py

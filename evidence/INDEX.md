@@ -21,6 +21,8 @@ The active package is `pheroos-interaction`, not a compatible distribution of
 - Platform boundary: existing CPython3.14/macOS arm64; no system installation or
   model download. A labeled installed-source setuptools84 fallback is preserved
   because its original wheel was absent. Credentials are excluded and unread.
+  Private retired main/.local application state is also excluded and left in place;
+  see the archive's EXCLUSION-ADDENDUM.md.
 
 Full before inventory, import measurements, category definitions and classification:
 [Inventory directory](/Users/scottxie/Desktop/pheroos-interaction-inventory-20260914).
@@ -28,7 +30,7 @@ The report separates required installed source from representative loaded module
 
 ## Retained cohorts for exact-input replay
 
-Archives contain these paths under `payload/research/pheroos-bench/results/`:
+Archives contain these paths under `payload/trees/research/pheroos-bench/results/`:
 
 - `visibility-prototype-v1/run`: 16 cells, 96 historical responses, 36 tool calls.
 - `visibility-factorial-v2/run`: 24 cells, 96 historical responses, 100 tool calls.

@@ -130,6 +130,7 @@ def _replay_episode(directory, episode, *, v2):
         call = calls[receipt["session_call"]["id"]]
         _equal(call, receipt["session_call"], "tool receipt/Session call")
         _equal([call["action"], call["state"], call["actual"]], ["tool.evaluate", "received", 0], "tool settlement")
+        _equal([call["request"]["tool_ref"], call["response"]["tool_ref"]], ["inspect_source", "inspect_source"], "fixed source tool allowlist")
         body = call["response"]["artifact"]
         _equal(_fixture(world, body, v2), body, "fixture tool result")
         _equal(call["request"]["arguments"], {k: body[k] for k in ("source_id", "source_version")}, "tool arguments")
@@ -252,6 +253,7 @@ def _replay_episode(directory, episode, *, v2):
     observed_tools = [(t["publisher"], t["result"]["source_id"]) for t in reconstructed_tools if t["reason"] == "model_requested_inspection"]
     _equal(expected_tools, observed_tools, "accepted tool intents versus physical execution")
     _equal(episode["model_calls"], len(replayed), "actual model count")
+    _equal(sum(c["action"] == "model.generate" for c in calls.values()), len(replayed), "unaccounted Session model calls")
     _equal(episode["actual_tokens"], sum(r["raw_usage"]["total_tokens"] for r in replayed), "actual token totals")
     return dict(world_id=world, policy=policy, mode="offline_replay", calls=replayed,
                 tools=reconstructed_tools, cache_hits=0, records=reconstructed)
@@ -260,6 +262,8 @@ def _replay_episode(directory, episode, *, v2):
 def run_replay(run_dir, output_dir):
     """Recompute a complete retained cohort; fail on any boundary difference."""
     run_dir, output_dir = Path(run_dir).resolve(), Path(output_dir).resolve()
+    if output_dir.is_relative_to(run_dir) or run_dir.is_relative_to(output_dir):
+        raise ReplayMismatch("replay output must be separate from the retained input tree")
     output_dir.mkdir(parents=True, exist_ok=False)
     report = dict(mode="offline_replay", status="FAIL", source_run=str(run_dir), provider_called=False,
                   new_provider_receipts=0, id_mapping="none; historical non-prompt provenance strings retained",
@@ -273,6 +277,9 @@ def run_replay(run_dir, output_dir):
         policy_key = "condition" if v2 else "arm"
         _equal([{k: r[k] for k in ("world_id", policy_key)} for r in rows], module.expected_grid(config), "complete ordered cohort")
         _equal(_json(run_dir / "summary.json")["status"], "COMPLETE", "completed source cohort required")
+        frozen = _json(run_dir / "freeze.json")
+        _equal(frozen["config_sha256"], _hash(config), "retained configuration identity")
+        _equal(frozen["model_identity"]["price_version"], PRICE_VERSION, "retained tariff identity")
         episodes = []
         for number, row in enumerate(rows):
             directory = (run_dir / row["episode_directory"]).resolve()
