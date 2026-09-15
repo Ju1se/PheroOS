@@ -1,1 +1,0 @@
-"""PheroOS command line package."""

@@ -1,0 +1,4 @@
+include AGENTS.md
+include evidence/INDEX.md
+recursive-include experiments/current *.md
+recursive-include tests/interaction *.py
