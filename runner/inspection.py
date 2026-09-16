@@ -14,7 +14,7 @@ import sqlite3
 from pheroos_interaction.inspection import ModelAssumptions, Losses, plan_inspection, apply_plan
 from pheroos_interaction.records import StateError
 from .driver import SessionDriver
-from .evidence import CoordinationSession
+from .evidence import CoordinationSession, _control_operation_count
 from .identity import source_identity
 
 _FORMAT = "inspection-local-v1"
@@ -235,8 +235,8 @@ def run_inspection(config_path, source_dir, output_dir):
             lease, "inspect:1", _TOOL, args)
         _receipt(response, frozen)
         check_current()
-        session.publish(lease, "inspect:1", response["artifact"],
-                        verify=lambda work, artifact: work == "inspect" and artifact == response["artifact"])
+        session.publish_received(config["reader"], "inspect:1",
+                                 verify=lambda work, artifact: work == "inspect" and artifact == response["artifact"])
     except Exception as exc:
         error_type = type(exc).__name__
     snapshot = _snapshot_readonly(output_dir / "session.sqlite")
@@ -350,7 +350,8 @@ def replay_inspection(run_dir, require_source_match=True):
     _source(frozen["source"], config)
     if frozen["plan"] != json.loads(_wire(asdict(plan))):
         raise ValueError("frozen plan differs from recomputed strategy")
-    if require_source_match and source_identity() != frozen["source_identity"]:
+    source_match = source_identity() == frozen["source_identity"]
+    if require_source_match and not source_match:
         raise ValueError("executable source identity differs; explicit historical replay required")
     response, snapshot = None, None
     if plan.purchase:
@@ -371,6 +372,11 @@ def replay_inspection(run_dir, require_source_match=True):
                     raise ValueError("raw receipt differs from durable receipt")
                 _receipt(response, frozen)
         _verify_execution(snapshot, frozen, response)
+        # Historical records may predate enforcement. Check the new bound only
+        # when the saved executable identity matches this implementation.
+        control_limit = json.loads(snapshot["coordination"]["coordination_v1"][0]["limits"])["max_control_operations"]
+        if source_match and _control_operation_count(snapshot["events"]) > control_limit:
+            raise ValueError("durable control operation bound exceeded")
         if snapshot["artifacts"]:
             if len(snapshot["artifacts"]) != 1 or response is None or json.loads(snapshot["artifacts"][0]["value"]) != response["artifact"]:
                 raise ValueError("published artifact differs from bound receipt")
@@ -379,5 +385,5 @@ def replay_inspection(run_dir, require_source_match=True):
     expected_result = _result(frozen, plan, snapshot, response, stored.get("error_type"))
     if stored != expected_result:
         raise ValueError("result differs from frozen strategy and receipt")
-    return {"status": "PASS", "mode": "offline replay", "source_match": source_identity() == frozen["source_identity"],
+    return {"status": "PASS", "mode": "offline replay", "source_match": source_match,
             "result": expected_result, "new_tool_calls": 0}

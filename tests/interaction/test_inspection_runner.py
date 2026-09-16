@@ -158,7 +158,7 @@ def test_dispatched_io_error_remains_unresolved_and_cannot_retry(case, monkeypat
     ("before_reserve", 0, 0), ("after_reserve", 1, 0), ("after_dispatch", 1, 1), ("before_publish", 1, 0)
 ])
 def test_cancellation_fences_actions_at_execution_boundaries(case, monkeypatch, boundary, expected_count, expected_unknown):
-    target = {"before_reserve": "evaluate", "after_reserve": "reserve", "after_dispatch": "dispatch", "before_publish": "publish"}[boundary]
+    target = {"before_reserve": "evaluate", "after_reserve": "reserve", "after_dispatch": "dispatch", "before_publish": "publish_received"}[boundary]
     cls = inspection.SessionDriver if target == "evaluate" else inspection.CoordinationSession
     original = getattr(cls, target)
 
@@ -348,6 +348,27 @@ def test_exception_after_settlement_retains_durable_receipt_without_retry(case, 
     assert_replay(case, "STOPPED")
 
 
+def test_expired_lease_after_settlement_reclaims_and_publishes_without_second_read(case, monkeypatch):
+    original = inspection.CoordinationSession.receive
+    invocations = []
+
+    def expire_after_settlement(self, *args):
+        original(self, *args)
+        invocations.append(args)
+        self.clock = lambda: 10**12
+
+    monkeypatch.setattr(inspection.CoordinationSession, "receive", expire_after_settlement)
+    result = inspection.run_inspection(*case)
+    snapshot = load(case[2] / "session.json")
+    assert result["status"] == "COMPLETE" and result["action"] == "reject"
+    assert result["call_count"] == len(invocations) == 1
+    assert snapshot["work"][0]["epoch"] == 2
+    assert snapshot["calls"][0]["epoch"] == 1
+    assert snapshot["actual_tokens"] == snapshot["unknown_calls"] == 0
+    assert len(snapshot["artifacts"]) == 1
+    assert_replay(case, "COMPLETE")
+
+
 @pytest.mark.parametrize("raw", [b'{"outcome":false}' + b' ' * 257, b'{"outcome":false,"outcome":true}', b'{"outcome":1}'])
 def test_raw_source_bounds_and_exact_binary_shape_are_not_silently_repaired(case, raw):
     (case[1] / "value.json").write_bytes(raw)
@@ -359,3 +380,30 @@ def test_raw_source_bounds_and_exact_binary_shape_are_not_silently_repaired(case
     assert result["error_type"] == "ValueError"
     assert not (case[2] / "receipt.json").exists()
     assert_replay(case, "UNKNOWN")
+
+
+@pytest.mark.parametrize("different_source,historical", [(False, False), (False, True), (True, True)])
+def test_replay_control_limit_depends_on_executed_source_identity(case, monkeypatch, different_source, historical):
+    inspection.run_inspection(*case)
+    source = load(case[2] / "frozen.json")["source"]
+    update = {"id": source["source_id"], "version": source["source_version"],
+              "readers": source["readers"], "state_fingerprint": source["state_fingerprint"]}
+    # This history was possible before enforcement: one claim plus eight
+    # accepted identical updates, despite the frozen limit of eight controls.
+    event = {"event_type": "interaction.evidence.source_updated", "details": update}
+    with sqlite3.connect(case[2] / "session.sqlite") as db:
+        db.executemany("INSERT INTO events(value) VALUES (?)", [(json.dumps(event),)] * 8)
+    snapshot = inspection._snapshot_readonly(case[2] / "session.sqlite")
+    write(case[2] / "session.json", snapshot)
+    result = load(case[2] / "result.json")
+    result["session_sha256"] = inspection._digest(snapshot)
+    write(case[2] / "result.json", result)
+    if different_source:
+        monkeypatch.setattr(inspection, "source_identity", lambda: {"test/source.py": "b" * 64})
+        with pytest.raises(ValueError, match="explicit historical"):
+            inspection.replay_inspection(case[2])
+        replay = inspection.replay_inspection(case[2], require_source_match=not historical)
+        assert replay["source_match"] is False and replay["new_tool_calls"] == 0
+    else:
+        with pytest.raises(ValueError, match="control operation bound"):
+            inspection.replay_inspection(case[2], require_source_match=not historical)
