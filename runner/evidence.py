@@ -8,7 +8,13 @@ from hashlib import sha256
 import json
 
 from .session import Session, _id, _integer, _wire
-from pheroos_interaction.records import LeaseLost, StateError
+from pheroos_interaction.records import BudgetExceeded, LeaseLost, StateError
+
+
+def _control_operation_count(events):
+    return sum(event["event_type"] in (
+        "interaction.session.claimed", "interaction.evidence.source_updated"
+    ) for event in events)
 
 
 class CoordinationSession(Session):
@@ -62,6 +68,23 @@ class CoordinationSession(Session):
                 {"limits": limits, "source_count": len(sources), "index_count": len(inspections)},
             )
         return session
+
+    def _check_control_capacity(self, db):
+        # The existing journal is the durable counter, including after reopen.
+        # Count inside the mutation's transaction so rejection and failed
+        # composite publication roll back both state and control consumption.
+        limits = json.loads(db.execute("SELECT limits FROM coordination_v1 WHERE id=1").fetchone()[0])
+        used = _control_operation_count(
+            json.loads(row[0]) for row in db.execute("SELECT value FROM events"))
+        if used >= limits["max_control_operations"]:
+            raise BudgetExceeded("session control operation budget exhausted")
+
+    def _event(self, db, kind, work, payload):
+        if kind == "claimed":
+            self._check_control_capacity(db)
+        # Settlement, expiry and cancellation drain already bounded state and
+        # must remain available even when no further claims can be admitted.
+        super()._event(db, kind, work, payload)
 
     def _coord_event(self, db, kind, payload):
         event = dict(event_type="interaction.evidence." + kind, details=payload)
@@ -165,13 +188,56 @@ class CoordinationSession(Session):
             source["fingerprint"],
         )
 
+    def _inspection_access(self, db, work_id, agent):
+        item = self._inspection(db, work_id)
+        if item is not None:
+            if not self._current(db, item, agent):
+                raise LeaseLost("inspection source/version/state superseded")
+            if agent not in json.loads(item["readers"]):
+                raise PermissionError("inspection is private to other readers")
+
     def _lease(self, db, lease):
         work = super()._lease(db, lease)
-        # During inherited create() no lease is evaluated before schema creation.
-        item = self._inspection(db, lease.task_id)
-        if item is not None and not self._current(db, item, lease.owner):
-            raise LeaseLost("inspection source/version/state superseded")
+        self._inspection_access(db, lease.task_id, lease.owner)
         return work
+
+    def _publication_access(self, db, work, agent):
+        super()._publication_access(db, work, agent)
+        self._inspection_access(db, work["id"], agent)
+
+    def _visible_artifacts(self, db, agent):
+        run = self._run(db)
+        if agent not in json.loads(run["agents"]):
+            raise PermissionError("undeclared artifact reader")
+        if not run["enabled"] or run["status"] not in ("running", "completed"):
+            raise PermissionError("session cancelled or revoked")
+        rows = db.execute(
+            "SELECT a.ref,a.work_id,a.version,a.value,i.key,"
+            "i.readers AS inspection_readers,s.readers AS source_readers "
+            "FROM artifacts a JOIN work w ON w.id=a.work_id "
+            "JOIN coordination_inspections_v1 i ON i.work_id=a.work_id "
+            "JOIN coordination_sources_v1 s ON s.id=i.source_id "
+            "WHERE a.version=w.version AND i.source_version=s.version "
+            "AND i.fingerprint=s.fingerprint ORDER BY a.rowid"
+        ).fetchall()
+        return [row for row in rows
+                if agent in json.loads(row["source_readers"])
+                and agent in json.loads(row["inspection_readers"])]
+
+    def artifacts(self, agent):
+        """Published, current metadata for a trusted-host supplied agent identity."""
+        with self._transaction() as db:
+            return [{"ref": row["ref"], "work_id": row["work_id"],
+                     "version": row["version"], "observation_key": row["key"]}
+                    for row in self._visible_artifacts(db, agent)]
+
+    def read_artifact(self, agent, artifact_ref):
+        """Return a visible published JSON value, or None; never recover or execute."""
+        with self._transaction() as db:
+            for row in self._visible_artifacts(db, agent):
+                if row["ref"] == artifact_ref:
+                    return json.loads(row["value"])
+        return None
 
     def source_update(self, source_id, version, readers, state_fingerprint):
         """Trusted host control; never routed through attention or model output."""
@@ -187,6 +253,7 @@ class CoordinationSession(Session):
                 raise StateError("missing source or reordered older source update")
             if version == old["version"] and state_fingerprint != old["fingerprint"]:
                 raise StateError("source content change requires a newer version")
+            self._check_control_capacity(db)
             db.execute(
                 "UPDATE coordination_sources_v1 SET version=?,readers=?,fingerprint=? WHERE id=?",
                 (version, _wire(readers), state_fingerprint, source_id),

@@ -158,17 +158,21 @@ class Session:
             self._recover(db)
             if run["status"] != "running" or not run["enabled"]:
                 return None
-            for row in db.execute("SELECT * FROM work WHERE status='ready' ORDER BY rowid").fetchall():
-                item = json.loads(row["declaration"])
-                if (work_id is not None and row["id"] != work_id) or agent not in item["agents"]:
-                    continue
-                if any(db.execute("SELECT 1 FROM artifacts WHERE work_id=?", (dep,)).fetchone() is None for dep in item["dependencies"]):
-                    continue
-                lease = Lease(row["id"], row["version"], agent, row["epoch"] + 1, run["run_id"])
-                db.execute("UPDATE work SET status='leased',owner=?,epoch=?,expires=?,generation=? WHERE id=?",
-                           (agent, lease.epoch, self.clock() + lease_seconds, run["generation"], row["id"]))
-                self._event(db, "claimed", row["id"], asdict(lease))
-                return lease
+            return self._claim_ready(db, agent, work_id, lease_seconds)
+
+    def _claim_ready(self, db, agent, work_id, lease_seconds):
+        run = self._run(db)
+        for row in db.execute("SELECT * FROM work WHERE status='ready' ORDER BY rowid").fetchall():
+            item = json.loads(row["declaration"])
+            if (work_id is not None and row["id"] != work_id) or agent not in item["agents"]:
+                continue
+            if any(db.execute("SELECT 1 FROM artifacts WHERE work_id=?", (dep,)).fetchone() is None for dep in item["dependencies"]):
+                continue
+            lease = Lease(row["id"], row["version"], agent, row["epoch"] + 1, run["run_id"])
+            db.execute("UPDATE work SET status='leased',owner=?,epoch=?,expires=?,generation=? WHERE id=?",
+                       (agent, lease.epoch, self.clock() + lease_seconds, run["generation"], row["id"]))
+            self._event(db, "claimed", row["id"], asdict(lease))
+            return lease
         return None
 
     def check_current(self, lease):
@@ -289,30 +293,83 @@ class Session:
                     "response": json.loads(row["response"]) if row["response"] else None}
 
     def publish(self, lease, call_id, artifact, *, verify):
-        wire = _wire(artifact)
         with self._transaction() as db:
-            self._lease(db, lease)
+            return self._publish(db, lease, call_id, artifact, verify)
+
+    def _publish(self, db, lease, call_id, artifact, verify):
+        wire = _wire(artifact)
+        self._lease(db, lease)
+        call = db.execute("SELECT * FROM calls WHERE id=?", (call_id,)).fetchone()
+        if (call is None or (call["work_id"], call["version"], call["state"], call["action"]) != (lease.task_id, lease.version, "received", "tool.evaluate")
+                or "artifact" not in json.loads(call["response"]) or _wire(json.loads(call["response"])["artifact"]) != wire
+                or len(wire.encode()) > json.loads(self._run(db)["limits"])["artifact_bytes"]
+                or verify(lease.task_id, json.loads(wire)) is not True):
+            raise StateError("artifact lacks matching settled response or independent verification")
+        digest = sha256(call["response"].encode()).hexdigest()
+        payload = {"task_id": lease.task_id, "version": lease.version, "artifact": json.loads(wire),
+                   "call_id": call_id, "response_digest": digest,
+                   "scope_ref": self._scope_ref(db, lease.task_id)}
+        permission = self._permit(db, lease, "artifact.publish", payload)
+        ref = "sha256:" + sha256(_wire(payload).encode()).hexdigest()
+        db.execute("INSERT INTO artifacts VALUES (?,?,?,?,?,?,?,?)",
+                   (ref, lease.task_id, lease.version, lease.owner, wire, call_id, digest, _wire(permission)))
+        self._abandon(db, lease.task_id)
+        db.execute("UPDATE work SET status='done',owner=NULL,expires=NULL WHERE id=?", (lease.task_id,))
+        self._event(db, "published", lease.task_id, {"artifact_ref": ref, "call_id": call_id,
+                    "version": lease.version, "response_digest": digest, "permission": permission})
+        if not db.execute("SELECT 1 FROM work WHERE status!='done'").fetchone():
+            db.execute("UPDATE run SET status='completed'")
+        return ref
+
+    def _publication_access(self, db, work, agent):
+        run = self._run(db)
+        if not run["enabled"] or run["status"] not in ("running", "completed"):
+            raise PermissionError("session cancelled or revoked")
+        if agent not in json.loads(run["agents"]):
+            raise StateError("undeclared agent")
+        if agent not in json.loads(work["declaration"])["agents"]:
+            raise PermissionError("agent cannot publish this work")
+
+    def publish_received(self, agent, call_id, *, verify, lease_seconds=60):
+        """Publish an existing receipt, reclaiming expired work without another call.
+
+        The trusted host supplies the agent identity and a pure local verifier.
+        Recovery, claim and publication commit together or all roll back. Repeating
+        a successful call returns its ref after current access checks, without
+        rerunning verification. Unknown dispatches are never retried or released.
+        """
+        _id(agent)
+        _id(call_id)
+        _duration(lease_seconds)
+        with self._transaction() as db:
             call = db.execute("SELECT * FROM calls WHERE id=?", (call_id,)).fetchone()
-            if (call is None or (call["work_id"], call["version"], call["state"], call["action"]) != (lease.task_id, lease.version, "received", "tool.evaluate")
-                    or "artifact" not in json.loads(call["response"]) or _wire(json.loads(call["response"])["artifact"]) != wire
-                    or len(wire.encode()) > json.loads(self._run(db)["limits"])["artifact_bytes"]
-                    or verify(lease.task_id, json.loads(wire)) is not True):
-                raise StateError("artifact lacks matching settled response or independent verification")
-            digest = sha256(call["response"].encode()).hexdigest()
-            payload = {"task_id": lease.task_id, "version": lease.version, "artifact": json.loads(wire),
-                       "call_id": call_id, "response_digest": digest,
-                       "scope_ref": self._scope_ref(db, lease.task_id)}
-            permission = self._permit(db, lease, "artifact.publish", payload)
-            ref = "sha256:" + sha256(_wire(payload).encode()).hexdigest()
-            db.execute("INSERT INTO artifacts VALUES (?,?,?,?,?,?,?,?)",
-                       (ref, lease.task_id, lease.version, lease.owner, wire, call_id, digest, _wire(permission)))
-            self._abandon(db, lease.task_id)
-            db.execute("UPDATE work SET status='done',owner=NULL,expires=NULL WHERE id=?", (lease.task_id,))
-            self._event(db, "published", lease.task_id, {"artifact_ref": ref, "call_id": call_id,
-                        "version": lease.version, "response_digest": digest, "permission": permission})
-            if not db.execute("SELECT 1 FROM work WHERE status!='done'").fetchone():
-                db.execute("UPDATE run SET status='completed'")
-            return ref
+            if call is None or (call["state"], call["action"]) != ("received", "tool.evaluate"):
+                raise StateError("publication requires a settled tool receipt")
+            response = json.loads(call["response"])
+            work = db.execute("SELECT * FROM work WHERE id=?", (call["work_id"],)).fetchone()
+            if "artifact" not in response or call["version"] != work["version"]:
+                raise StateError("receipt lacks an artifact for the current work version")
+            self._publication_access(db, work, agent)
+            prior = db.execute("SELECT * FROM artifacts WHERE work_id=?", (work["id"],)).fetchone()
+            if prior is not None:
+                if (work["status"] != "done" or
+                        (prior["call_id"], prior["version"], prior["value"], prior["response_digest"]) !=
+                        (call_id, work["version"], _wire(response["artifact"]), sha256(call["response"].encode()).hexdigest())):
+                    raise StateError("work was published from a different receipt")
+                return prior["ref"]
+            if db.execute("SELECT 1 FROM calls WHERE work_id=? AND state='dispatched'", (work["id"],)).fetchone():
+                raise StateError("work still has an unresolved dispatch")
+            self._recover(db)
+            work = db.execute("SELECT * FROM work WHERE id=?", (work["id"],)).fetchone()
+            if work["status"] == "leased" and work["owner"] == agent:
+                lease = Lease(work["id"], work["version"], agent, work["epoch"], self._run(db)["run_id"])
+            elif work["status"] == "ready":
+                lease = self._claim_ready(db, agent, work["id"], lease_seconds)
+            else:
+                lease = None
+            if lease is None:
+                raise StateError("work cannot be reclaimed for publication")
+            return self._publish(db, lease, call_id, response["artifact"], verify)
 
     def _stop(self, status):
         with self._transaction() as db:
