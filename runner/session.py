@@ -180,6 +180,9 @@ class Session:
         with self._transaction() as db:
             self._lease(db, lease)
 
+    def _reservation_capacity(self, db, lease, prompt_tokens, max_new_tokens):
+        """Optional work-level admission, inside the durable reservation transaction."""
+
     def reserve(self, lease, call_id, action, payload, *, prompt_tokens, max_new_tokens):
         _id(call_id)
         _integer(prompt_tokens, "prompt_tokens")
@@ -206,6 +209,7 @@ class Session:
             spent = sum(call["reserved"] if call["state"] in ("reserved", "dispatched") else call["actual"] for call in calls)
             if len(calls) >= limits["max_calls"] or spent + prompt_tokens + max_new_tokens > limits["token_cap"]:
                 raise BudgetExceeded("session call/token budget exhausted")
+            self._reservation_capacity(db, lease, prompt_tokens, max_new_tokens)
             db.execute("INSERT INTO calls VALUES (?,?,?,?,?,?,'reserved',?,?,?,NULL,NULL,NULL)",
                        (call_id, lease.task_id, lease.version, lease.epoch, action, wire, prompt_tokens, max_new_tokens, prompt_tokens + max_new_tokens))
             self._event(db, "reserved", lease.task_id, {"call_id": call_id,
@@ -330,6 +334,10 @@ class Session:
         if agent not in json.loads(work["declaration"])["agents"]:
             raise PermissionError("agent cannot publish this work")
 
+    def _claim_received_ready(self, db, agent, work_id, lease_seconds):
+        """Claim for settling existing evidence; distinct from scheduling new work."""
+        return self._claim_ready(db, agent, work_id, lease_seconds)
+
     def publish_received(self, agent, call_id, *, verify, lease_seconds=60):
         """Publish an existing receipt, reclaiming expired work without another call.
 
@@ -342,34 +350,38 @@ class Session:
         _id(call_id)
         _duration(lease_seconds)
         with self._transaction() as db:
-            call = db.execute("SELECT * FROM calls WHERE id=?", (call_id,)).fetchone()
-            if call is None or (call["state"], call["action"]) != ("received", "tool.evaluate"):
-                raise StateError("publication requires a settled tool receipt")
-            response = json.loads(call["response"])
-            work = db.execute("SELECT * FROM work WHERE id=?", (call["work_id"],)).fetchone()
-            if "artifact" not in response or call["version"] != work["version"]:
-                raise StateError("receipt lacks an artifact for the current work version")
-            self._publication_access(db, work, agent)
-            prior = db.execute("SELECT * FROM artifacts WHERE work_id=?", (work["id"],)).fetchone()
-            if prior is not None:
-                if (work["status"] != "done" or
-                        (prior["call_id"], prior["version"], prior["value"], prior["response_digest"]) !=
-                        (call_id, work["version"], _wire(response["artifact"]), sha256(call["response"].encode()).hexdigest())):
-                    raise StateError("work was published from a different receipt")
-                return prior["ref"]
-            if db.execute("SELECT 1 FROM calls WHERE work_id=? AND state='dispatched'", (work["id"],)).fetchone():
-                raise StateError("work still has an unresolved dispatch")
-            self._recover(db)
-            work = db.execute("SELECT * FROM work WHERE id=?", (work["id"],)).fetchone()
-            if work["status"] == "leased" and work["owner"] == agent:
-                lease = Lease(work["id"], work["version"], agent, work["epoch"], self._run(db)["run_id"])
-            elif work["status"] == "ready":
-                lease = self._claim_ready(db, agent, work["id"], lease_seconds)
-            else:
-                lease = None
-            if lease is None:
-                raise StateError("work cannot be reclaimed for publication")
-            return self._publish(db, lease, call_id, response["artifact"], verify)
+            return self._publish_received(db, agent, call_id, verify=verify, lease_seconds=lease_seconds)
+
+    def _publish_received(self, db, agent, call_id, *, verify, lease_seconds=60):
+        """Shared transaction body for composite decisions; no separate commit boundary."""
+        call = db.execute("SELECT * FROM calls WHERE id=?", (call_id,)).fetchone()
+        if call is None or (call["state"], call["action"]) != ("received", "tool.evaluate"):
+            raise StateError("publication requires a settled tool receipt")
+        response = json.loads(call["response"])
+        work = db.execute("SELECT * FROM work WHERE id=?", (call["work_id"],)).fetchone()
+        if "artifact" not in response or call["version"] != work["version"]:
+            raise StateError("receipt lacks an artifact for the current work version")
+        self._publication_access(db, work, agent)
+        prior = db.execute("SELECT * FROM artifacts WHERE work_id=?", (work["id"],)).fetchone()
+        if prior is not None:
+            if (work["status"] != "done" or
+                    (prior["call_id"], prior["version"], prior["value"], prior["response_digest"]) !=
+                    (call_id, work["version"], _wire(response["artifact"]), sha256(call["response"].encode()).hexdigest())):
+                raise StateError("work was published from a different receipt")
+            return prior["ref"]
+        if db.execute("SELECT 1 FROM calls WHERE work_id=? AND state='dispatched'", (work["id"],)).fetchone():
+            raise StateError("work still has an unresolved dispatch")
+        self._recover(db)
+        work = db.execute("SELECT * FROM work WHERE id=?", (work["id"],)).fetchone()
+        if work["status"] == "leased" and work["owner"] == agent:
+            lease = Lease(work["id"], work["version"], agent, work["epoch"], self._run(db)["run_id"])
+        elif work["status"] == "ready":
+            lease = self._claim_received_ready(db, agent, work["id"], lease_seconds)
+        else:
+            lease = None
+        if lease is None:
+            raise StateError("work cannot be reclaimed for publication")
+        return self._publish(db, lease, call_id, response["artifact"], verify)
 
     def _stop(self, status):
         with self._transaction() as db:
@@ -385,10 +397,13 @@ class Session:
         self._stop("cancelled")
 
 
+    def _snapshot_extra(self, db):
+        return {}
+
     def snapshot(self):
         with self._transaction() as db:
             calls = [dict(row) for row in db.execute("SELECT * FROM calls ORDER BY rowid")]
-            return {"run": dict(self._run(db)), "work": [dict(row) for row in db.execute("SELECT * FROM work ORDER BY rowid")],
+            snapshot = {"run": dict(self._run(db)), "work": [dict(row) for row in db.execute("SELECT * FROM work ORDER BY rowid")],
                     "calls": calls, "artifacts": [dict(row) for row in db.execute("SELECT * FROM artifacts ORDER BY rowid")],
                     "events": [json.loads(row[0]) for row in db.execute("SELECT value FROM events ORDER BY seq")],
                     "actual_tokens": sum(row["actual"] or 0 for row in calls),
@@ -396,3 +411,5 @@ class Session:
                     "unknown_tokens": sum(row["reserved"] for row in calls if row["state"] == "dispatched"),
                     "unknown_calls": sum(row["state"] == "dispatched" for row in calls),
                     "call_count": len(calls)}
+            snapshot.update(self._snapshot_extra(db))
+            return snapshot

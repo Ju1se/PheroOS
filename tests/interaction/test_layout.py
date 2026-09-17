@@ -34,6 +34,9 @@ def test_source_identity_covers_all_retained_modules():
         'pheroos_interaction/__init__.py',
         'pheroos_interaction/records.py',
         'pheroos_interaction/inspection.py',
+        'pheroos_interaction/sequential.py',
+        'pheroos_interaction/commitment.py',
+        'pheroos_interaction/leases.py',
         'pheroos_interaction/runner/__init__.py',
         'pheroos_interaction/runner/cli.py',
         'pheroos_interaction/runner/driver.py',
@@ -41,6 +44,11 @@ def test_source_identity_covers_all_retained_modules():
         'pheroos_interaction/runner/session.py',
         'pheroos_interaction/runner/inspection.py',
         'pheroos_interaction/runner/identity.py',
+        'pheroos_interaction/runner/platform.py',
+        'pheroos_interaction/runner/policies.py',
+        'pheroos_interaction/runner/provider.py',
+        'pheroos_interaction/runner/worker.py',
+        'pheroos_interaction/runner/colony.py',
     }
     assert set(identity) == expected
     assert all(not Path(key).is_absolute() and '..' not in Path(key).parts for key in identity)

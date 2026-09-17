@@ -1,11 +1,13 @@
 # PheroOS
 
-一个本地二元补证工具：按显式模型假设和损失配置决定是否检查，执行前固定结果对应的动作。
-只保留纯策略、来源权限、持久化预留、调用上限、取消、未知不重试，以及计划与回执回放。
+A local binary inspection tool: it decides whether to inspect from explicitly declared model assumptions and loss configuration, and fixes the action for each outcome before execution.
+It keeps only the pure policy, source permissions, durable reservations, call caps, cancellation, never-retry for unknowns, and plan/receipt replay.
+An optional bounded platform layer can enumerate and decompose work, handle leases, propose candidates, and commit; the default inspection command still performs one-step inspection.
+The colony control layer composes a multi-step inspection tree, commitment rules, allocation thresholds, and lease TTLs into one bounded worker; the default command does not enable it.
 
-## 安装与运行
+## Install and run
 
-需要 Python 3.12+，运行依赖仅 Python 标准库。
+Requires Python 3.12+; the runtime depends only on the Python standard library.
 
 ```sh
 python3 -m venv .venv
@@ -19,57 +21,145 @@ pheroos-interaction inspect-replay --run output/inspection
 python -m pytest -q
 ```
 
-输出目录必须新建。`source.json` 声明 scope、版本、读者、工具与内容摘要；只有决定购买、
-持久化预留并通过权限检查后才读取 `value.json`。示例只读取本地文件，不访问模型或费用账本。
+The output directory must be new. `source.json` declares scope, version, readers, tool, and content digest; `value.json` is read only after the decision to buy,
+a durable reservation, and a passed permission check. The example reads only local files and touches no model or cost ledger.
 
-## 核心文件
+## Core files
 
-- `src/pheroos_interaction/inspection.py`：成本提前退出、保守角点、六项分支损失。
-- `src/pheroos_interaction/records.py`：租约与错误类型。
-- `runner/inspection.py`：来源读取、冻结计划、回执验证和只读回放。
-- `runner/session.py`、`evidence.py`、`driver.py`：执行约束与工具派发。
-- `runner/identity.py`、`cli.py`：完整源码身份和两个命令入口。
+- `src/pheroos_interaction/inspection.py`: cost early exit, conservative corner, six branch losses.
+- `src/pheroos_interaction/records.py`: lease and error types.
+- `runner/inspection.py`: source reading, frozen plan, receipt verification, and read-only replay.
+- `runner/session.py`, `evidence.py`, `driver.py`: execution constraints and tool dispatch.
+- `runner/identity.py`, `cli.py`: complete source identity and the two command entry points.
+- `runner/platform.py`: optional work queue, budget inheritance, and atomic candidate commit.
+- `runner/policies.py`, `worker.py`: deterministic claim rules and a bounded worker with no durable state.
+- `runner/provider.py`: injected transport adapter, disabled by default, verified only with mocks.
+- `src/pheroos_interaction/sequential.py`: finite-horizon inspection tree (K=1 is `plan_inspection`), garbling matrix, and in-box certificate.
+- `src/pheroos_interaction/commitment.py`: cross-inhibition commit rule and optimal stopping with recall.
+- `src/pheroos_interaction/leases.py`: one-dimensional loss minimization for the lease TTL.
+- `runner/colony.py`: the bounded colony worker composing L0–L3.
 
-安装仅包含 `pheroos_interaction` 和 `pheroos_interaction.runner`。
-旧实验、旧策略、研究命令和模型调用代码均已删除。历史原始数据保存在本地
-`research-data/results/`，不打包或上传；当前程序不再运行旧实验回放。
-已保存的本地 inspection 记录可使用 `inspect-replay --historical --run ...`，明确允许源码身份变化，
-仍验证冻结计划、原始回执和执行记录。
+The installation contains only `pheroos_interaction` and `pheroos_interaction.runner`.
+Old experiments, old policies, and research commands have been deleted; no real model service, credentials, or provider CLI is configured. Historical raw data stays local under
+`research-data/results/` and is neither packaged nor uploaded; the current program no longer replays old experiments.
+Saved local inspection records can use `inspect-replay --historical --run ...`, which explicitly allows source identity to differ
+while still verifying the frozen plan, the original receipt, and the execution record.
 
-## 共享执行账本
+## Shared execution ledger
 
-`CoordinationSession` 支持多个声明 agent、带依赖的工作和发布后读取；身份由受信任宿主传入。
-工作角色决定谁能执行，来源和 inspection 的两层 `readers` 交集决定谁能执行检查、发布及读取产物。
-依赖只检查产物已存在，消费者读取时仍须通过当前版本与权限检查。
+`CoordinationSession` supports several declared agents, work with dependencies, and reads after publication; identities are supplied by the trusted host.
+The work's role list decides who may execute; the intersection of the source's and the inspection's two `readers` layers decides who may run the check, publish, and read artifacts.
+Dependencies only check that an artifact exists; a consumer's read must still pass the current version and permission checks.
 
-- `publish_received(agent, call_id, verify=...)` 复用已结算回执；租约过期时原子地重新领取并发布，
-  不重新调用工具、不增加费用或调用名额。取消、来源变化、无权限、其他持有者的有效租约，
-  或同一工作仍有未知派发，都会阻止新发布。相同回执已发布后，权限仍有效时重复调用返回原引用。
-- `artifacts(agent)` 只枚举当前可见的已发布产物引用、工作、版本和观测键；
-  `read_artifact(agent, ref)` 返回 JSON 副本，不可见或过期时返回 `None`。
-  取消会话或未声明读者会报错。两者不恢复租约、不执行工具、不写事件。
+- `publish_received(agent, call_id, verify=...)` reuses a settled receipt; when the lease has expired it atomically re-claims and publishes
+  without calling the tool again or consuming cost or call quota. Cancellation, a source change, missing permission, another holder's valid lease,
+  or an unknown dispatch on the same work all block a new publication. Once the same receipt is published, a repeated call returns the original reference while permission still holds.
+- `artifacts(agent)` enumerates only the currently visible published artifact references, work, versions, and observation keys;
+  `read_artifact(agent, ref)` returns a JSON copy, or `None` when invisible or expired.
+  A cancelled session or an undeclared reader raises. Neither recovers a lease, runs a tool, or writes an event.
 
-`verify` 必须是纯本地校验；拒绝或异常会回滚本次领取与发布，SQLite 无法回滚校验器的外部副作用。
-本地 `inspect` 已使用这一发布入口；结算后返回中断仍保留原回执并停止，不自动补跑。
-`receive` 不受租约约束，迟到回执仍可结算；未知派发没有超时释放出口。
-`call`、`snapshot` 和回放是宿主审计入口，不能作为 agent 的内容读取接口。
+`verify` must be a pure local check; a rejection or exception rolls back this claim and publication, and SQLite cannot roll back a verifier's external side effects.
+The local `inspect` already uses this publication entry; an interruption after settlement keeps the original receipt and stops, with no automatic re-run.
+`receive` is not bound by the lease, so a late receipt can still settle; an unknown dispatch has no timeout release.
+`call`, `snapshot`, and replay are host audit entries, not an agent's content-read interface.
 
-`max_control_operations` 限制成功领取租约与已接受的来源更新总数，包括发布恢复时重新领取、
-以及重复提交相同来源更新。已有持久化事件就是计数依据，重新打开会话不会重置额度。
-耗尽时抛出 `BudgetExceeded`，本次事务的状态和事件全部回滚；校验失败也不消耗额度。
-读取、未领取到工作和已发布回执的幂等返回不消耗额度。调用的预留、派发和结算另受
-`max_calls` 与 token 上限约束；租约过期恢复、取消和迟到回执结算在控制额度耗尽后仍可进行，
-有效租约也仍可发布。过期回执需要新租约才能发布，因此需要剩余控制额度。
-来源更新被拒绝时原声明保持不变，宿主仍可取消会话。
-源码身份匹配的 inspection 回放会验证控制计数；明确允许源码差异的历史回放不把新限制追溯到旧记录。
+`max_control_operations` caps the total of successful lease claims and accepted source updates, including the re-claim during publication recovery
+and repeated submission of the same source update. The existing durable events are the count, so reopening the session does not reset the quota.
+When exhausted it raises `BudgetExceeded` and the transaction's state and events all roll back; a failed verification also consumes no quota.
+Reads, unclaimed work, and idempotent returns of already-published receipts consume no quota. Call reservation, dispatch, and settlement are separately bound by
+`max_calls` and the token caps; expired-lease recovery, cancellation, and settlement of late receipts remain possible after the control quota is exhausted,
+and a valid lease can still publish. An expired receipt needs a new lease to publish, so it needs remaining control quota.
+When a source update is rejected the original declaration stays, and the host can still cancel the session.
+Inspection replay with matching source identity verifies the control count; a historical replay that explicitly allows source differences does not apply the new limit retroactively to old records.
 
-这些是执行与访问约束，不是策略收益证据；尚未加入工作枚举、占用投影或拒绝日志，模型调用保持关闭。
+These are execution and access constraints, not evidence of policy benefit. Platform enumeration is in the next section; model calls stay off by default.
 
-## 适用边界
+## Optional platform layer
 
-仅支持固定先验、对称二元测量、固定正面复制参考和矩形参数范围；不支持的输入显式拒绝。
-概率范围、来源说明、版本、适用条件、三种损失和查询成本必须明确提供。
-格式通过不表示真实来源独立或概率已校准。查询成本是与错误、弃权损失同单位的效用值，
-不代表费用授权。当前策略只补证一步，调用上限由配置声明。
+`PlatformSession` reuses `Session`'s call, receipt, and cancellation ledger; when source permissions are needed, compose
+`class ScopedPlatform(PlatformMixin, CoordinationSession)`. Create a new platform ledger explicitly; an old session
+database cannot be used directly as a platform database. The existing inspection CLI does not enable these transitions.
 
-适用范围是受信任单机串行任务；没有通用语义理解、依赖学习、多步补证或恶意宿主保证。
+| API | Behavior and boundaries |
+| --- | --- |
+| `ready_work(agent)` | Read-only: returns id, version, age, depth, parent, and remaining calls/tokens; filters by role, current source/readers, dependencies, unknown dispatches, and no-entry. Expired leases are only projected as claimable; actual recovery happens in the claim transaction. |
+| `decompose(lease, children)` | Transfers calls/tokens from the parent's remaining budget; atomically creates the children, releases the parent lease, and adds dependencies. Rejects open reservations, unknown dispatches, cycles in the full graph, or exceeded limits; `parent_depends=False` is rejected. |
+| `release` / `renew` | Releases undispatched reservations; with an unknown dispatch the work becomes uncertain. Renewal never shortens the existing expiry and keeps the epoch. |
+| `mark_no_entry(work_id, until, reason)` | The host's time-bounded scheduling hint; blocks enumeration and new claims, while existing receipts can still recover through `publish_received`. It does not modify call state. |
+| `propose(lease, call_id, certified_loss)` | Accepts only a settled receipt for the current work/version; records the current proposer and artifact digest. The same declaration is idempotent, a conflict is rejected. The loss is the caller's declaration; the platform does not prove its calibration or correctness. |
+| `candidates(work_id, agent=...)` | Returns current candidate metadata, checking the caller's current access; omitting agent is the trusted-host audit interface, not an agent read interface. |
+| `commit(..., verify, abstain_loss, rule=None)` | Default: minimum loss, ties by call_id; the best loss must be strictly below the abstention loss. The decision, the recovery claim, and the publication inside the shared `publish_received` transaction all commit or all roll back. The publisher defaults to the winning proposer. |
+| `work_calls(lease)` / `abstain(lease, reason=...)` | The current lease reads the same work's receipts for recovery; abstention terminates the work and releases undispatched reservations, but cannot terminate an unknown dispatch. |
+
+A custom pure local `rule(candidates, abstain_loss)` returns a candidate call_id, `None` (terminal abstention), or
+`{"decision": "wait"}` (non-terminal wait). No candidates returns `no_candidate`. An existing terminal commit returns the recorded decision;
+it neither re-decides with a changed threshold nor runs a new call. External side effects of `verify` and `rule` cannot be rolled back by SQLite, so they must stay pure and local.
+A terminal abstention has no artifact; a parent or later work depending on it stays blocked, success is not fabricated and reads are not retried, and the host can cancel the session.
+
+The `platform={...}` creation argument can declare `budgets={work_id: {"calls": n, "tokens": n}}`,
+`max_children` (cumulative per parent, default 8), `max_depth` (3), `max_candidates` (per work, 8),
+`max_work_items` (1024), and `max_platform_operations` (1024). A work cap cannot exceed the run cap; an unspecified
+root work uses the run cap as its bound while always remaining under the global cap. Caps are not returned after decomposition.
+calls follow Session semantics and count established reservations, including later abandoned ones; tokens count the reserved bound for unsettled calls
+and actual usage for settled calls. The check runs in one SQLite transaction, so two writers cannot overspend first and then try to repair.
+
+The platform operation budget counts claim, renew, decompose, no-entry, propose, commit/abstain, and the WAIT state change;
+a terminal decision or an idempotent re-read of the same proposal is not charged. release only drains claimed state and still runs after the cap is exhausted,
+bounded by the number of admitted claims. The original CoordinationSession claim/source-update control budget continues to apply.
+When composed with scoped inspection, children inherit the same source, tool, arguments, and readers and consume the existing index capacity;
+this interface does not support switching to another undeclared source during decomposition.
+
+### Claim rules and the worker
+
+`pick_fifo` follows enumeration order; `pick_by_depth` prefers deeper, then older within a level. `pick_threshold` compares the added fee with the
+expected waiting loss only under the declared queueing model: with equal cost or no cheaper worker it reduces to FIFO, otherwise
+it requires the waiting loss to be strictly greater than the incremental fee. It is an evaluable heuristic, not a proven-optimal scheduler.
+
+`run_worker` does one bounded sweep, visiting each work id at most once; the default bound is the initial ready count, and an explicit
+`max_items` can cover work unlocked later. The planner may return `{"purchase": False}` to abstain terminally; the purchase branch
+uses the local SessionDriver interface. Existing matching receipts or candidates are recovered from the ledger, so a worker restart does not buy twice.
+WAIT keeps the candidates and releases the lease; transport exceptions are classified by the ledger's true state as unknown, settled rejection, or undispatched failure.
+The worker implements no LLM decomposition, message passing, or statistical optimality claim.
+
+### Provider adapter boundary
+
+`ProviderDriver` is disabled by default; enabling requires an explicit bool from the caller or `PHEROOS_PROVIDER=1`, plus an injected transport and
+`extract(response) -> (artifact_dict, prompt_tokens, completion_tokens)`. There is currently no network transport,
+real provider extractor, credential reading, or provider CLI. The enable flag is not a cost authorization.
+
+The full request (with `max_tokens` matching the reservation) is copied and frozen before reserve, and the transport receives the same request content that dispatch returns.
+This transport contract uses `max_tokens`; if a real API differs it needs an explicit mapping and instrument
+check, and no claim is made that a generic extractor alone fits every provider. Using it with the worker needs an explicit request/token adapter.
+The reported prompt tokens must equal the declaration exactly and completion must not exceed the reservation. Transport, extraction, or token-contract failures after dispatch
+stay dispatched/unknown with no retry; a receipt that only exceeds the byte bound with valid usage is still settled by the existing Session rule as
+`response_rejected`. The ledger check cannot guarantee an external service's actual charge or output bound on its behalf, and it derives no idempotency from JSON fields.
+
+Tests use a local fake transport and cover reopening the ledger, failure recovery, concurrent budget admission, permissions, and cancellation.
+This is not a comparison with LangGraph, ADK, or CrewAI; those systems must run the same fault scenarios separately to serve as a comparison.
+
+## Colony control layer
+
+Each of the four insect mechanisms maps to one layer, and every threshold in each layer is derived from the declared loss vector `(ℓ_A, ℓ_R, ℓ_0, c, c_t)`
+without new tuning constants; apart from declared draws everything is deterministic and replayable from the ledger.
+
+| Layer | Mechanism | API | Behavior and boundaries |
+| --- | --- | --- | --- |
+| L0 | Scout inspection → sequential test | `plan_sequential(assumptions, losses, query_cost, horizon)` | Backward induction in joint coordinates at the corner `(q_low, rho_high)`; `horizon=1` equals `plan_inspection` field for field. `certificate` is a rigorous upper bound on the fixed tree's expected risk within the declared box (exact at the corners for K=1). `apply_sequential` walks the frozen tree; unknown means abstain, with no replanning. Each depth must be a distinct declared source. |
+| L1 | Stop signals → commitment | `cross_inhibition_rule(CommitmentConfig)`, `optimal_stopping_rule(...)` | Pure local rules for `commit(rule=...)`. ODE version: candidate value v_i=ℓ_0/ℓ̂_i, σ=σ*(v̄), reads only candidate metadata, zero bytes, with bounded integration work (`MAX_STEPS`, `MAX_ITERATIONS`) because the rule runs inside commit's SQLite transaction; deadlock is a terminal abstention; a single candidate degenerates to first-publish-wins when v > v̄ (its loss plus latency strictly below the abstention loss). The DP version may return WAIT. Neither proves calibration or optimality. |
+| L2 | Tremble dance → allocation | `pick_threshold`, `pick_response(..., exponent, draw)` | The stimulus is backlog drain time and the threshold is θ_w=Δκ_w/c_t. `exponent=None` is the deterministic step; the Hill form requires a replayable `draw` from the caller. Exactly FIFO with homogeneous costs. A heuristic, not an optimal scheduler. |
+| L3 | Pheromone evaporation → authority | `lease_ttl(stage_durations, p_fail, per_tick_cost, false_expiry_cost)` | Minimizes (1−F(τ))·C_dup + τ·p_fail·c_t over the positive part of the empirical support and candidates (0 is not a feasible TTL; a sample with no positive duration raises). Under today's semantics the input is claim-to-dispatch lead time and the TTL bounds no stall. Renewal never shortens expiry. |
+| — | worker | `run_colony(session, agent, driver=, planner=, verify=, policy=, rule=, lease_seconds=, wait_hold_seconds=)` | One bounded sweep. The planner returns `{'purchase': False}` (optionally with `abstain_loss` and `rule`, used to commit candidates that already exist) or `{'plan', 'reads', 'outcome', 'abstain_loss', 'rule'}`. The call id is `colony:sha256([work, version, tree_sha256, depth])` and the arguments bind the tree digest; after a reservation abandoned before dispatch (a known non-dispatch, not an unknown) the next attempt at that depth appends the attempt count, and every attempt counts against the work's call cap. Existing candidates are committed before the purchase decision; existing receipts are reused, a mismatch refuses another read, a rejected response forbids a fresh read, unknowns are never retried; a tree whose worst-case remaining reads exceed the work's remaining calls is refused before anything is bought; a root stop with no read abstains as `plan_stop:<action>`. |
+
+`certified_loss` is the leaf's conditional expected loss `stop_risk / (mass_h + mass_n)` and is the caller's declaration. With `wait_hold_seconds`
+enabled, WAIT writes a no-entry mark, which is a host scheduling hint. Revision 10 of the reference implementation labels the cross-inhibition ODE as analysis-only
+and uses optimal stopping with recall as the rule for a centralized ledger; here both are explicit configuration choices.
+This layer adds no LLM decomposition, message channels, or automatic paid runs, claims no statistical optimality, and is not a framework-comparison conclusion.
+
+## Applicability
+
+Only a fixed prior, symmetric binary measurement, a fixed positive-copy reference, and rectangular parameter ranges are supported; unsupported input is rejected explicitly.
+Probability ranges, source description, version, applicability, the three losses, and the query cost must be supplied explicitly.
+Passing the format does not mean the real source is independent or the probabilities are calibrated. The query cost is a utility value in the same unit as the error and abstention losses,
+not a cost authorization. The default command inspects one step; multi-step trees are used explicitly only inside the colony control layer on distinct declared sources, with call caps declared by configuration.
+
+The applicable scope is a trusted single-machine serial task; there is no general semantic understanding, dependency learning, or malicious-host guarantee. Multi-step inspection happens only on explicitly declared distinct sources and is not general sequential reasoning.
