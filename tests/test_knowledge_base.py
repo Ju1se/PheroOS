@@ -216,3 +216,109 @@ def test_the_live_repository_currently_has_zero_recorded_relaxations():
     """Rule (g) holds vacuously today, and that is worth asserting: a relaxation must be added
     deliberately, as a recorded decision, not acquired as an implementation detail."""
     assert kb.RELAXATIONS == []
+
+
+# ---------------------------------------------------------------- 3b: one trip case per contract rule
+#
+# A contract rule with no failing case is a comment. Each test below breaks exactly the thing its
+# rule forbids and asserts the gate notices.
+
+def test_rule_a_a_reference_resolving_only_in_the_working_tree_fails(tmp_path):
+    """(a) resolution is evaluated against the clean archive, so a file absent there fails —
+    even though the same reference resolves in a working tree that happens to hold it."""
+    t = tree(tmp_path, **{"ARCHITECTURE.md": "# A\n\nSee `runner/uncommitted.py:1`.\n"})
+    assert any("uncommitted.py" in p for p in kb.check_references_resolve(t))
+    # and it passes once the file is present in the tree being checked
+    (t / "runner/uncommitted.py").write_text("X = 1\n")
+    assert not [p for p in kb.check_references_resolve(t) if "uncommitted.py" in p]
+
+
+def test_rule_b_a_file_differing_from_head_is_reported(tmp_path, monkeypatch):
+    """(b) validating a stale version silently is worse than not checking."""
+    monkeypatch.setattr(kb, "sh", lambda *a, **k: " M docs/findings.md\n")
+    problems = kb.check_head_matches_worktree(tree(tmp_path))
+    assert any("differs between HEAD and the working tree" in p for p in problems), problems
+
+
+def test_rule_b_a_file_absent_from_head_is_reported(tmp_path, monkeypatch):
+    monkeypatch.setattr(kb, "sh", lambda *a, **k: "")
+    t = tree(tmp_path, **{"ARCHITECTURE.md": None})
+    (t / "ARCHITECTURE.md").unlink(missing_ok=True)
+    problems = kb.check_head_matches_worktree(t)
+    assert any("ARCHITECTURE.md is not in HEAD" in p for p in problems), problems
+
+
+def test_rule_c_a_check_that_disagrees_with_itself_is_not_reported_as_a_failure(tmp_path, monkeypatch):
+    """(c) a FAIL is reproduced before it is acted on; a flaky check is flagged, not obeyed."""
+    calls = []
+
+    def flaky(_tree):
+        calls.append(1)
+        return [kb.Problem("only on the first run")] if len(calls) == 1 else []
+
+    monkeypatch.setattr(kb, "CHECKS", [("flaky", flaky)])
+    n, notes = kb.run_all(tree(tmp_path))
+    assert any("FLAKY" in x for x in notes), notes
+    assert any("NONDETERMINISTIC" in x for x in notes), notes
+
+
+def test_rule_c_a_reproducible_failure_is_reported(tmp_path, monkeypatch):
+    monkeypatch.setattr(kb, "CHECKS",
+                        [("steady", lambda _t: [kb.Problem("always")])])
+    n, notes = kb.run_all(tree(tmp_path))
+    assert n == 1 and any("reproduced" in x for x in notes), notes
+
+
+def test_rule_d_archival_trees_are_exempt_from_currency_checks(tmp_path):
+    """(d) audit/FINDINGS.md legitimately names paths that no longer exist; amending it would
+    falsify the record it exists to preserve."""
+    broken = "# Archived\n\nSee `runner/long_gone.py:5` and L-404.\n"
+    t = tree(tmp_path, **{"docs/history/old.md": broken, "audit/report.md": broken})
+    problems = kb.check_references_resolve(t)
+    assert not [p for p in problems if "long_gone" in p or "L-404" in p], problems
+    # the same content outside an archival tree IS reported
+    (t / "ARCHITECTURE.md").write_text(broken)
+    assert [p for p in kb.check_references_resolve(t) if "long_gone" in p]
+
+
+def test_rule_e_a_diff_claim_without_a_baseline_is_reported(tmp_path, monkeypatch):
+    """(e) a diff without a declared baseline is not evidence."""
+    monkeypatch.setattr(kb, "DIFF_CHECKS",
+                        [{"check": "churn", "baseline": "", "touched_means": "modified"}])
+    problems = kb.check_diff_claims_declare_baseline(tree(tmp_path))
+    assert any("missing baseline" in p for p in problems), problems
+
+
+def test_rule_e_holds_vacuously_today_and_that_is_asserted():
+    assert kb.DIFF_CHECKS == []
+
+
+def test_rule_f_a_phrase_wrapped_across_lines_is_still_found(tmp_path):
+    """(f) the failure that earned this rule: a line-based grep found 2 of 4 instances, because
+    two wrapped mid-phrase. Normalised matching finds all of them."""
+    stmt = "A statement long enough to be treated as a restatable one for the purposes of check 8"
+    wrapped = "# A\n\n" + stmt.replace("treated as", "treated\nas") + ", padded out.\n"
+    assert stmt not in wrapped, "the fixture must actually wrap mid-phrase"
+    t = tree(tmp_path, **{"ARCHITECTURE.md": wrapped})
+    problems = kb.check_no_restated_invariants(t)
+    assert any("restates L-1" in p for p in problems), problems
+
+
+def test_rule_f_normalise_collapses_a_wrap_into_one_semantic_unit():
+    assert "one agent" in kb.normalise("gives each task one\nagent and one candidate")
+    assert "one agent" not in "gives each task one\nagent and one candidate"
+
+
+def test_rule_g_a_relaxation_missing_its_boundary_is_reported(tmp_path, monkeypatch):
+    """(g) a relaxation acquired as an implementation detail turns a check into a no-op."""
+    monkeypatch.setattr(kb, "RELAXATIONS",
+                        [{"check": "x", "relaxation": "y", "boundary": None,
+                          "recorded_in": "docs/invariants.md", "still_catches": "z"}])
+    assert any("missing boundary" in p for p in kb.check_relaxations_recorded(tree(tmp_path)))
+
+
+def test_rule_g_a_relaxation_must_say_what_it_still_catches(tmp_path, monkeypatch):
+    monkeypatch.setattr(kb, "RELAXATIONS",
+                        [{"check": "x", "relaxation": "y", "boundary": "b",
+                          "recorded_in": "docs/invariants.md", "still_catches": ""}])
+    assert any("missing still_catches" in p for p in kb.check_relaxations_recorded(tree(tmp_path)))

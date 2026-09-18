@@ -61,6 +61,12 @@ NOT_SCANNED = ("research-data/", ".venv/", "node_modules/")
 # `planned` row naming the topic that will fill it.
 RELAXATIONS: list[dict] = []
 
+# --- rule (e): any check that makes a claim about what CHANGED declares its baseline and its
+# definition of "touched". Empty today: no check diffs anything. The registry exists so that the
+# first one to do so cannot omit them — `git diff 4111b67` vs `e664d2e` gave 20 changed test files
+# against a claim of 3, and the difference was a silent semantic choice.
+DIFF_CHECKS: list[dict] = []
+
 
 class Problem(str):
     pass
@@ -294,6 +300,16 @@ def check_research_contract(tree: pathlib.Path) -> list[Problem]:
     return out
 
 
+def check_diff_claims_declare_baseline(tree: pathlib.Path) -> list[Problem]:
+    """Rule (e) — a diff without a declared baseline and a definition of "touched" is not evidence."""
+    out = []
+    for d in DIFF_CHECKS:
+        for field in ("check", "baseline", "touched_means"):
+            if not d.get(field):
+                out.append(Problem("(e) diff-claim %r is missing %s" % (d.get("check"), field)))
+    return out
+
+
 def check_relaxations_recorded(tree: pathlib.Path) -> list[Problem]:
     """Rule (g) — every relaxation states its boundary, cites a doc, and names what it still catches."""
     out = []
@@ -337,6 +353,7 @@ CHECKS = [
     ("adr_numbering", check_adr_numbering),
     ("no_restated_invariants", check_no_restated_invariants),
     ("research_contract", check_research_contract),
+    ("diff_claims_declare_baseline", check_diff_claims_declare_baseline),
     ("relaxations_recorded", check_relaxations_recorded),
     ("generated_is_current", check_generated_is_current),
 ]
