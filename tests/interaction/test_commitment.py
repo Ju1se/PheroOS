@@ -283,7 +283,9 @@ def test_optimal_stopping_rule_waits_then_publishes_the_cheapest_by_call_id(tmp_
     assert waiting([{'call_id': 'w:z', 'certified_loss': .5}], 1.) == {'decision': 'wait'}
     result = session.commit('w', verify=verify_ok, abstain_loss=1., rule=waiting)
     assert result == {'decision': 'wait', 'candidates': 2}
-    assert [e['details'] for e in events(session, 'waited')] == [{'candidates': 2, 'abstain_loss': 1.}]
+    assert [{k: v for k, v in e['details'].items() if k != 'at'} for e in events(session, 'waited')] \
+        == [{'candidates': 2, 'abstain_loss': 1.}]
+    assert all(type(e['details']['at']) is float for e in events(session, 'waited'))
     assert [row['id'] for row in session.ready_work('a')] == ['w'] and not session.snapshot()['artifacts']
     result = session.commit('w', verify=verify_ok, abstain_loss=1., rule=commitment.optimal_stopping_rule(*model, 3))
     assert result['decision'] == 'publish' and result['call_id'] == 'w:a'
