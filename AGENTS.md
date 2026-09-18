@@ -38,7 +38,7 @@ sentence is about (F-01). The marker falls away when F-01 lands.
 
 | Question | Source | Verified by | verified-at |
 |---|---|---|---|
-| Intended architecture? | `ARCHITECTURE.md` **(PLANNED — not yet created)** | `pytest -q tests/interaction/test_orchestration_workflow.py -k "import_no_runner or import_only_the_standard_library"` | `98894c0` (partial) |
+| Intended architecture? | `ARCHITECTURE.md` | `pytest -q tests/interaction/test_orchestration_workflow.py -k "import_no_runner or import_only_the_standard_library"` | `99f3728` |
 | What must never happen? | `docs/invariants.md` | per-invariant, §4 | `e3862f2` |
 | Why is X this way? | `docs/decisions/` | `NOT YET ENFORCED` — no checker validates ADR front-matter yet | `e3862f2` |
 | Conforming right now? | §6 commands | `python -m pytest -q` | `98894c0` (partial) |
