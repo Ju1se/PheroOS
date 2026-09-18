@@ -1,0 +1,26 @@
+=== DECLARED: ledger MRO must be OrchestrationMixin + PlatformMixin + Session ===
+   pheroos_interaction.runner.orchestration.OrchestrationSession
+   pheroos_interaction.runner.orchestration.OrchestrationMixin
+   pheroos_interaction.runner.platform.PlatformMixin
+   pheroos_interaction.runner.session.Session
+   builtins.object
+  MATCHES DECLARATION: True
+
+=== runtime_policies: does each class DELEGATE or REIMPLEMENT? ===
+  FIFOAllocation                 lines=  7  delegates_to=['policies.']
+  ThresholdAllocation            lines= 49  delegates_to=['policies.', 'pick_threshold']
+  ResponseThresholdAllocation    lines= 25  delegates_to=['policies.', 'pick_response']
+  FixedLease                     lines= 10  delegates_to=NONE (self-contained)
+  EvaporationLease               lines= 18  delegates_to=['leases.', 'lease_ttl']
+  MinLossCommitment              lines=  7  delegates_to=NONE (self-contained)
+  OptimalStoppingCommitment      lines= 16  delegates_to=['commitment.', 'optimal_stopping_rule']
+  CrossInhibitionCommitment      lines= 17  delegates_to=['commitment.', 'cross_inhibition']
+
+=== L1 reachability from Runtime at call level ===
+  'select_candidate'     occurrences in runner/runtime.py: 0
+  'commit('              occurrences in runner/runtime.py: 0
+  'Commitment'           occurrences in runner/runtime.py: 0
+  '.commit'              occurrences in runner/runtime.py: 1
+  'select_work'          occurrences in runner/runtime.py: 3
+  'select_host_work'     occurrences in runner/runtime.py: 1
+  'lease_duration'       occurrences in runner/runtime.py: 1

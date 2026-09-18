@@ -1,0 +1,221 @@
+ARG005 Unused lambda argument: `value`
+  --> runner/anthropic.py:65:45
+   |
+63 | def _parse(raw):
+64 |     return json.loads(raw, object_pairs_hook=_unique,
+65 |                       parse_constant=lambda value: (_ for _ in ()).throw(ValueError("nonfinite JSON")))
+   |                                             ^^^^^
+
+ARG002 Unused method argument: `agent`
+   --> runner/audit.py:155:43
+    |
+153 |         return None
+154 |
+155 |     def readable_artifacts(self, work_id, agent, before_step=None):
+    |                                           ^^^^^
+156 |         out = []
+157 |         for producer in self._effective_reads(work_id, before_step):
+    |
+
+ARG005 Unused lambda argument: `value`
+  --> runner/inspection.py:44:45
+   |
+42 | def _parse(raw):
+43 |     return json.loads(raw, object_pairs_hook=_unique,
+44 |                       parse_constant=lambda value: (_ for _ in ()).throw(ValueError("nonfinite JSON")))
+   |                                             ^^^^^
+
+ARG002 Unused method argument: `db`
+   --> runner/orchestration.py:277:28
+    |
+275 |                 raise StateError("a bound input is no longer authorized or has changed")
+276 |
+277 |     def _admit_model(self, db, declaration, payload, binding, history, step):
+    |                            ^^
+278 |         if payload.get("tool_ref") != contracts.MODEL_TOOL_REF:
+279 |             raise StateError("a model call must declare the model tool reference")
+    |
+
+ARG002 Unused method argument: `lease_seconds`
+   --> runner/orchestration.py:572:85
+    |
+570 |     # ------------------------------------------------------------ decomposition
+571 |
+572 |     def admit_children(self, lease, source_call_id, children, *, join_reserve=None, lease_seconds=60):
+    |                                                                                     ^^^^^^^^^^^^^
+573 |         """Admit a validated propose_children proposal: narrowing checks, then decompose.
+    |
+
+ARG002 Unused method argument: `db`
+   --> runner/orchestration.py:638:34
+    |
+636 |         return parent + "." + name
+637 |
+638 |     def _child_declaration(self, db, parent, lease, child, names, siblings):
+    |                                  ^^
+639 |         key = self._child_id(lease.task_id, child["name"])
+640 |         if key in names:
+    |
+
+ERA001 Found commented-out code
+   --> runner/runtime.py:117:5
+    |
+115 |                              % (self.spec["format"], contracts.SPEC_FORMAT))
+116 |
+117 |     # ------------------------------------------------------------ allocation (L2)
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+118 |
+119 |     def _select_work(self, stalled=()):
+    |
+help: Remove commented-out code
+
+ARG002 Unused method argument: `declaration`
+   --> runner/runtime.py:522:36
+    |
+520 |         return {"work": lease.task_id, "status": "rejected", "call_id": call["id"], "reason": reason}
+521 |
+522 |     def _execute_tool(self, lease, declaration, state, history, call, proposal, step):
+    |                                    ^^^^^^^^^^^
+523 |         session, work_id = self.session, lease.task_id
+524 |         if state["remaining"]["tool_calls"] <= 0:
+    |
+
+ARG005 Unused lambda argument: `value`
+   --> runner/runtime.py:775:45
+    |
+773 | def _load(path, limit=1 << 20):
+774 |     return json.loads(_read(path, limit), object_pairs_hook=_unique,
+775 |                       parse_constant=lambda value: (_ for _ in ()).throw(ValueError("nonfinite JSON")))
+    |                                             ^^^^^
+
+ARG002 Unused method argument: `context`
+  --> runner/runtime_policies.py:42:29
+   |
+40 |     name = "fifo"
+41 |
+42 |     def select(self, ready, context):
+   |                             ^^^^^^^
+43 |         return policies.pick_fifo(ready)
+   |
+
+ARG005 Unused lambda argument: `row`
+  --> runner/runtime_policies.py:94:52
+   |
+92 |     def select(self, ready, context):
+93 |         return self._scan(ready, context,
+94 |                           lambda queue, arguments, row: policies.pick_threshold(queue, **arguments))
+   |                                                    ^^^
+
+ARG002 Unused method argument: `task_kind`
+   --> runner/runtime_policies.py:134:24
+    |
+132 |         self.seconds = seconds
+133 |
+134 |     def duration(self, task_kind=None, agent=None):
+    |                        ^^^^^^^^^
+135 |         return self.seconds
+    |
+
+ARG002 Unused method argument: `agent`
+   --> runner/runtime_policies.py:134:40
+    |
+132 |         self.seconds = seconds
+133 |
+134 |     def duration(self, task_kind=None, agent=None):
+    |                                        ^^^^^
+135 |         return self.seconds
+    |
+
+ARG002 Unused method argument: `task_kind`
+   --> runner/runtime_policies.py:154:24
+    |
+152 |                                        candidates=(DEFAULT_LEASE_SECONDS,))
+153 |
+154 |     def duration(self, task_kind=None, agent=None):
+    |                        ^^^^^^^^^
+155 |         return self.chosen["ttl"]
+    |
+
+ARG002 Unused method argument: `agent`
+   --> runner/runtime_policies.py:154:40
+    |
+152 |                                        candidates=(DEFAULT_LEASE_SECONDS,))
+153 |
+154 |     def duration(self, task_kind=None, agent=None):
+    |                                        ^^^^^
+155 |         return self.chosen["ttl"]
+    |
+
+ARG002 Unused method argument: `abstain_loss`
+   --> runner/runtime_policies.py:165:20
+    |
+163 |     name = "min_loss"
+164 |
+165 |     def rule(self, abstain_loss):
+    |                    ^^^^^^^^^^^^
+166 |         return None
+    |
+
+ARG002 Unused method argument: `db`
+   --> runner/session.py:189:32
+    |
+187 |         """Optional request-level admission (declared capabilities), inside the same transaction."""
+188 |
+189 |     def _prompt_contract(self, db, call):
+    |                                ^^
+190 |         """The prompt-usage contract a call was reserved under; the base ledger records exact_v1."""
+191 |         return "exact_v1"
+    |
+
+ARG002 Unused method argument: `call`
+   --> runner/session.py:189:36
+    |
+187 |         """Optional request-level admission (declared capabilities), inside the same transaction."""
+188 |
+189 |     def _prompt_contract(self, db, call):
+    |                                    ^^^^
+190 |         """The prompt-usage contract a call was reserved under; the base ledger records exact_v1."""
+191 |         return "exact_v1"
+    |
+
+ARG002 Unused method argument: `db`
+   --> runner/session.py:430:31
+    |
+430 |     def _snapshot_extra(self, db):
+    |                               ^^
+431 |         return {}
+    |
+
+ARG005 Unused lambda argument: `value`
+  --> runner/tools.py:64:49
+   |
+62 |     try:
+63 |         return json.loads(raw, object_pairs_hook=_unique,
+64 |                           parse_constant=lambda value: (_ for _ in ()).throw(ToolError("nonfinite JSON constant")))
+   |                                                 ^^^^^
+65 |     except ToolError:
+66 |         raise
+   |
+
+ARG001 Unused function argument: `resolver`
+   --> runner/tools.py:335:28
+    |
+334 | def _fixture_read(store, allowed):
+335 |     def execute(arguments, resolver):
+    |                            ^^^^^^^^
+336 |         if arguments["name"] not in allowed:
+337 |             raise ToolError(f"fixture {arguments['name']!r} is outside this tool's scope")
+    |
+
+ARG005 Unused lambda argument: `source`
+   --> src/pheroos_interaction/sequential.py:459:56
+    |
+457 |     def recurse(sub, level):
+458 |         _, upper = bernstein_bounds(poly, sub)
+459 |         attained = max(_exact_risk(node, prior, lambda source: (q, r), losses, query_cost)
+    |                                                        ^^^^^^
+460 |                        for q, r in product((sub[0], sub[1]), (sub[2], sub[3])))
+461 |         if level == 0 or upper <= attained:
+    |
+
+Found 22 errors.

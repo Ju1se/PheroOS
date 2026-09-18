@@ -1,0 +1,80 @@
+===== BROAD CATCHES (Exception / BaseException / bare) =====
+runner/colony.py:267-285  except Exception  shape=MULTI[Assign,If,Expr,Expr]  reraises=False  obs=['append', 'error']
+   |except Exception as exc:
+   |    state = _call_status(session, call_id) if call_id is not None else None
+   |    if state == 'dispatched':
+   |        status = 'unknown'
+   |    elif state == 'response_rejected':
+   |        status = 'response_rejected'
+   |        try:
+   |            session.abstain(lease, reason='response_r
+
+runner/inspection.py:240-241  except Exception  shape=MULTI[Assign]  reraises=False  obs=['error']
+   |except Exception as exc:
+   |    error_type = type(exc).__name__
+
+runner/runtime.py:388-389  except Exception  shape=RETURN_CALL:self._classify(lease, work_id, exc)  reraises=False  obs=[]
+   |except Exception as exc:
+   |    return self._classify(lease, work_id, exc)
+
+runner/runtime.py:370-371  except Exception  shape=RETURN_CALL:self._classify(None, work_id, exc)  reraises=False  obs=[]
+   |except Exception as exc:
+   |    return self._classify(None, work_id, exc)
+
+runner/session.py:51-53  except BaseException  shape=MULTI[Expr,Raise]+RAISE  reraises=True  obs=[]
+   |except BaseException:
+   |    db.rollback()
+   |    raise
+
+runner/worker.py:199-217  except Exception  shape=MULTI[Assign,If,Expr,Expr]  reraises=False  obs=['append', 'error']
+   |except Exception as exc:
+   |    state = _call_status(session, call_id) if call_id is not None else None
+   |    if state == 'dispatched':
+   |        status = 'unknown'
+   |    elif state == 'response_rejected':
+   |        status = 'response_rejected'
+   |        try:
+   |            session.abstain(lease, reason='response_r
+
+
+===== SWALLOWING SHAPES (PASS / RETURN_NONE / RETURN_CONST / CONTINUE / RETURN_EMPTY*) =====
+runner/anthropic.py:348-349  except (OSError, ValueError, AttributeError)  shape=RETURN_CONST:''
+   |except (OSError, ValueError, AttributeError):
+   |    return ''
+
+runner/audit.py:67-68  except sqlite3.OperationalError  shape=CONTINUE
+   |except sqlite3.OperationalError:
+   |    continue
+
+runner/colony.py:275-276  except (StateError, BudgetExceeded)  shape=PASS
+   |except (StateError, BudgetExceeded):
+   |    pass
+
+runner/platform.py:161-162  except (PermissionError, LeaseLost)  shape=RETURN_CONST:False
+   |except (PermissionError, LeaseLost):
+   |    return False
+
+runner/runtime.py:400-401  except (StateError, LeaseLost)  shape=PASS
+   |except (StateError, LeaseLost):
+   |    pass
+
+runner/worker.py:49-51  except (StateError, BudgetExceeded)  shape=RETURN_NONE
+   |except (StateError, BudgetExceeded):
+   |    return None
+
+runner/worker.py:57-58  except StateError  shape=RETURN_NONE
+   |except StateError:
+   |    return None
+
+runner/worker.py:207-208  except (StateError, BudgetExceeded)  shape=PASS
+   |except (StateError, BudgetExceeded):
+   |    pass
+
+tests/interaction/test_platform_atomicity.py:134-135  except BudgetExceeded  shape=RETURN_CONST:'refused'
+   |except BudgetExceeded:
+   |    return 'refused'
+
+tests/interaction/test_platform_conformance.py:260-261  except BudgetExceeded  shape=RETURN_CONST:'exhausted'
+   |except BudgetExceeded:
+   |    return 'exhausted'
+

@@ -1,0 +1,13 @@
+=== POLICY_SLOTS definition ===
+315:POLICY_SLOTS = {
+330:    kinds = POLICY_SLOTS[slot]
+364:    _fields(value, "policies", (), tuple(POLICY_SLOTS))
+365:    return {slot: _policy(slot, value[slot]) for slot in POLICY_SLOTS if slot in value}
+
+POLICY_SLOTS = {
+    "allocation": {"fifo": ((), ()),
+                   "threshold": ((), ()),
+                   "response": (("exponent",), ("seed",))},
+    "lease": {"fixed": ((), ("seconds",)),
+              "evaporation": (("stage_durations", "p_fail", "per_tick_cost", "false_expiry_cost"), ())},
+}

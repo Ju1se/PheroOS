@@ -1,0 +1,4 @@
+complete forgery replay: PASS
+failures: (none)
+
+VERDICT: a fully-consistent forged allocation replays PASS

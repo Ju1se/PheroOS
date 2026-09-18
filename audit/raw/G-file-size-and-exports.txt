@@ -1,0 +1,30 @@
+=== row_factory context (sqlite3 API, expected false positive) ===
+    """Open a recorded ledger read-only; a write attempt fails rather than mutating it."""
+    database = sqlite3.connect(Path(path).resolve().as_uri() + "?mode=ro", uri=True)
+    database.row_factory = sqlite3.Row
+    database.execute("PRAGMA query_only=ON")
+    return database
+---
+    def _transaction(self):
+        db = sqlite3.connect(self.path, timeout=10, isolation_level=None)
+        db.row_factory = sqlite3.Row
+        db.execute("PRAGMA synchronous=FULL")
+        db.execute("PRAGMA foreign_keys=ON")
+
+=== __all__ declarations ===
+(no __all__ anywhere)
+
+=== files over 800 lines ===
+     889 runner/runtime.py
+(end)
+
+=== files over 400 lines ===
+     889 runner/runtime.py
+     726 runner/orchestration.py
+     674 runner/contracts.py
+     577 src/pheroos_interaction/sequential.py
+     485 runner/anthropic.py
+     468 runner/platform.py
+     445 runner/session.py
+     440 runner/tools.py
+     431 runner/audit.py

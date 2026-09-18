@@ -1,0 +1,18 @@
+runner/cli.py:37:9: T201 `print` found
+runner/cli.py:42:9: T201 `print` found
+runner/cli.py:48:5: T201 `print` found
+runner/colony.py:187:21: TRY301 Abstract `raise` to an inner function
+runner/colony.py:209:29: TRY301 Abstract `raise` to an inner function
+runner/colony.py:218:29: TRY301 Abstract `raise` to an inner function
+runner/colony.py:226:29: TRY301 Abstract `raise` to an inner function
+runner/colony.py:233:25: TRY301 Abstract `raise` to an inner function
+runner/colony.py:267:16: BLE001 Do not catch blind exception: `Exception`
+runner/inspection.py:232:13: TRY301 Abstract `raise` to an inner function
+runner/inspection.py:240:12: BLE001 Do not catch blind exception: `Exception`
+runner/runtime.py:370:20: BLE001 Do not catch blind exception: `Exception`
+runner/runtime.py:388:16: BLE001 Do not catch blind exception: `Exception`
+runner/worker.py:170:25: TRY301 Abstract `raise` to an inner function
+runner/worker.py:186:21: TRY301 Abstract `raise` to an inner function
+runner/worker.py:199:16: BLE001 Do not catch blind exception: `Exception`
+Found 16 errors.
+No fixes available (3 hidden fixes can be enabled with the `--unsafe-fixes` option).

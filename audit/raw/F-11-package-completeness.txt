@@ -1,0 +1,17 @@
+=== declared packages vs actual package dirs (__init__.py) ===
+-- declared in pyproject: pheroos_interaction, pheroos_interaction.runner
+-- __init__.py found under src/pheroos_interaction and runner:
+runner/__init__.py
+src/pheroos_interaction/__init__.py
+
+-- subdirectories (would be subpackages) under each:
+  (none listed above = flat, no missing subpackages)
+
+=== entry point target exists? pheroos_interaction.runner.cli:main ===
+8:def main(argv=None):
+
+=== top_level.txt from egg-info (what actually installs) ===
+pheroos_interaction
+=== entry_points.txt ===
+[console_scripts]
+pheroos-interaction = pheroos_interaction.runner.cli:main

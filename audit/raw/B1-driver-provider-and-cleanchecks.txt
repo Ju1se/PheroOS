@@ -1,0 +1,87 @@
+########## driver.py vs provider.py replay() — parallel driver (EXCLUDED) or fork?
+=== runner/driver.py (full, 47 lines) ===
+     1	"""Declared local tool dispatch with durable reservations and no retries."""
+     2	
+     3	from __future__ import annotations
+     4	
+     5	import json
+     6	from time import monotonic_ns
+     7	
+     8	
+     9	def _copy(value):
+    10	    return json.loads(json.dumps(value, sort_keys=True, allow_nan=False))
+    11	
+    12	
+    13	class SessionDriver:
+    14	    """Concrete local tool dispatch for a declared session work item.
+    15	
+    16	    Registry keys identify available tools, not permissions. Session checks
+    17	    the work/lease/action and current local permissions again at actual dispatch.
+    18	    An exception after dispatch retains the reservation as unknown; this driver
+    19	    never retries it. Committed receipt replay is explicit and has no authority.
+    20	    """
+    21	
+    22	    def __init__(self, session, *, tools=None):
+    23	        self.session = session
+    24	        self.tools = dict(tools or {})
+    25	
+    26	    def evaluate(self, lease, call_id, tool_ref, arguments):
+    27	        tool = self.tools[tool_ref]
+    28	        arguments = _copy(arguments)
+    29	        payload = {"task_id": lease.task_id, "version": lease.version,
+    30	                   "tool_ref": tool_ref, "arguments": arguments}
+    31	        self.session.reserve(lease, call_id, "tool.evaluate", payload,
+    32	                             prompt_tokens=0, max_new_tokens=0)
+    33	        self.session.dispatch(lease, call_id)
+    34	        started = monotonic_ns()
+    35	        artifact = _copy(tool(arguments))
+    36	        response = {"artifact": artifact, "tool_ref": tool_ref,
+    37	                    "prompt_tokens": 0, "completion_tokens": 0,
+    38	                    "adapter_elapsed_ns": monotonic_ns() - started}
+    39	        self.session.receive(call_id, response)
+    40	        return response
+    41	
+    42	    def replay(self, call_id):
+    43	        """Retrieve a settled receipt without executing, charging, or authorizing."""
+    44	        record = self.session.call(call_id)
+    45	        if record["state"] != "received":
+    46	            raise ValueError("unresolved call cannot be replayed or redispatched")
+    47	        return _copy(record["response"])
+
+=== runner/provider.py:80,100 ===
+        if type(extracted) not in (tuple, list) or len(extracted) != 3:
+            raise ValueError("extract must return artifact, prompt_tokens, completion_tokens")
+        artifact, used_prompt, used_completion = extracted
+        if type(artifact) is not dict:
+            raise ValueError("extracted artifact must be a dictionary")
+        _integer(used_prompt, "provider prompt_tokens")
+        _integer(used_completion, "provider completion_tokens")
+        if used_prompt != prompt_tokens or used_completion > max_new_tokens:
+            raise StateError("provider usage violates the exact reserved token contract")
+        response = {"artifact": _freeze(artifact), "tool_ref": self.tool_ref,
+                    "prompt_tokens": used_prompt, "completion_tokens": used_completion,
+                    "adapter_elapsed_ns": monotonic_ns() - started}
+        self.session.receive(call_id, response)
+        return response
+
+    def replay(self, call_id):
+        """Return a settled receipt without transport, charging or authority."""
+        record = self.session.call(call_id)
+        if record["state"] != "received":
+            raise StateError("replay requires a settled, accepted receipt")
+        return _freeze(record["response"])
+
+### classes:
+runner/provider.py:37:class ProviderDriver:
+runner/provider.py:49:    def __init__(self, session, *, transport, extract, tool_ref="provider.chat", enabled=None):
+runner/provider.py:58:    def evaluate(self, lease, call_id, request, *, prompt_tokens, max_new_tokens):
+runner/provider.py:95:    def replay(self, call_id):
+runner/driver.py:13:class SessionDriver:
+runner/driver.py:22:    def __init__(self, session, *, tools=None):
+runner/driver.py:26:    def evaluate(self, lease, call_id, tool_ref, arguments):
+runner/driver.py:42:    def replay(self, call_id):
+
+### CLEAN CHECK: cross-file duplicate blocks among the 4 largest untracked files
+### COMMAND: symilar -d 5 on orchestration.py runtime.py contracts.py audit.py only
+TOTAL lines=2720 duplicates=0 percent=0.00
+

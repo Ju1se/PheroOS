@@ -1,0 +1,242 @@
+SET_DICT_CTOR	runner/anthropic.py:36	<module>	frozenset	UNSUPPORTED = frozenset({"stream", "thinking", "metadata", "output_config", "service_tier",
+SETLIT	runner/anthropic.py:36	<module>	set literal	UNSUPPORTED = frozenset({"stream", "thinking", "metadata", "output_config", "service_tier",
+SET_DICT_CTOR	runner/anthropic.py:99	_exact	set	keys = set(value)
+SET_DICT_CTOR	runner/anthropic.py:100	_exact	set	if not set(required) <= keys or keys - set(required) - set(optional):
+SET_DICT_CTOR	runner/anthropic.py:100	_exact	set	if not set(required) <= keys or keys - set(required) - set(optional):
+SET_DICT_CTOR	runner/anthropic.py:100	_exact	set	if not set(required) <= keys or keys - set(required) - set(optional):
+SET_DICT_CTOR	runner/anthropic.py:108	_envelope	set	refused = sorted(set(value) & UNSUPPORTED)
+SET_DICT_CTOR	runner/anthropic.py:190	_tools	set	if len(set(names)) != len(names):
+SETCOMP	runner/anthropic.py:228	freeze_request	set comprehension	"tool_choice": _tool_choice(tool_choice, {tool["name"] for tool in frozen})}
+SET_DICT_CTOR	runner/audit.py:60	ReplayLedger::__init__	dict	self.rows[table] = [dict(row) for row in
+SET_DICT_CTOR	runner/audit.py:65	ReplayLedger::__init__	dict	rows = [dict(row) for row in database.execute(
+SET_DICT_CTOR	runner/audit.py:114	ReplayLedger::decisions	dict	return [dict(row) for row in self.rows["orchestration_decisions_v1"]
+SETCOMP	runner/audit.py:388	replay_run	set comprehension	published = {row["work_id"] for row in ledger.rows["artifacts"]}
+SETCOMP	runner/audit.py:399	replay_run	set comprehension	consumed = {row["call_id"] for row in ledger.rows["orchestration_decisions_v1"]}
+SETCOMP	runner/audit.py:400	replay_run	set comprehension	terminal = published | {row["work_id"] for row in ledger.rows["platform_decisions_v1"]}
+FOR_OVER_DICTVIEW	runner/audit.py:407	replay_run	unconsumed.items	for work_id, ids in unconsumed.items():
+FOR_OVER_DICTVIEW	runner/audit.py:413	replay_run	counts.items	for call_id, count in counts.items():
+SETLIT	runner/colony.py:66	_plan	set literal	required = {"plan", "reads", "outcome", "abstain_loss"}
+SET_DICT_CTOR	runner/colony.py:67	_plan	set	if type(value) is not dict or set(value) - required - {"rule", "purchase"}:
+SETLIT	runner/colony.py:67	_plan	set literal	if type(value) is not dict or set(value) - required - {"rule", "purchase"}:
+SET_DICT_CTOR	runner/colony.py:87	_plan	set	if type(reads) is not list or any(type(read) is not dict or set(read) != {"tool_ref", "arguments"}
+SETLIT	runner/colony.py:87	_plan	set literal	if type(reads) is not list or any(type(read) is not dict or set(read) != {"tool_ref", "arguments"}
+SET_DICT_CTOR	runner/colony.py:94	_plan	set	if type(read["arguments"]) is not dict or set(read["arguments"]) & set(BOUND_KEYS):
+SET_DICT_CTOR	runner/colony.py:94	_plan	set	if type(read["arguments"]) is not dict or set(read["arguments"]) & set(BOUND_KEYS):
+SETCOMP	runner/colony.py:97	_plan	set comprehension	if len({(read["tool_ref"], _wire(read["arguments"])) for read in frozen}) != len(frozen):
+SETCOMP	runner/colony.py:154	run_colony	set comprehension	if type(work_id) is not str or work_id not in {row["id"] for row in ready}:
+SET_DICT_CTOR	runner/contracts.py:95	_names	set	if type(values) is not list or len(values) > maximum or len(set(values)) != len(values):
+SET_DICT_CTOR	runner/contracts.py:103	_fields	set	keys = set(value)
+SET_DICT_CTOR	runner/contracts.py:104	_fields	set	if not set(required) <= keys or keys - set(required) - set(optional):
+SET_DICT_CTOR	runner/contracts.py:104	_fields	set	if not set(required) <= keys or keys - set(required) - set(optional):
+SET_DICT_CTOR	runner/contracts.py:104	_fields	set	if not set(required) <= keys or keys - set(required) - set(optional):
+SETLIT	runner/contracts.py:118	validate_schema	set literal	allowed = {"type", "description"}
+SETLIT	runner/contracts.py:123	validate_schema	set literal	allowed |= {"properties", "required", "additionalProperties"}
+FOR_OVER_DICTVIEW	runner/contracts.py:128	validate_schema	properties.items	for key, item in properties.items():
+SET_DICT_CTOR	runner/contracts.py:133	validate_schema	set	if (type(required) is not list or len(set(required)) != len(required)
+SET_DICT_CTOR	runner/contracts.py:134	validate_schema	set	or not set(required) <= set(out["properties"])):
+SET_DICT_CTOR	runner/contracts.py:134	validate_schema	set	or not set(required) <= set(out["properties"])):
+SETLIT	runner/contracts.py:141	validate_schema	set literal	allowed |= {"items", "maxItems", "minItems"}
+SETLIT	runner/contracts.py:148	validate_schema	set literal	allowed |= {"maxLength", "minLength", "enum"}
+SET_DICT_CTOR	runner/contracts.py:151	validate_schema	set	if (type(enum) is not list or not enum or len(enum) > 64 or len(set(enum)) != len(enum)
+SETLIT	runner/contracts.py:163	validate_schema	set literal	allowed |= {"minimum", "maximum"}
+SET_DICT_CTOR	runner/contracts.py:169	validate_schema	set	if set(schema) - allowed:
+SET_DICT_CTOR	runner/contracts.py:170	validate_schema	set	raise ContractError("unsupported schema keyword: " + ", ".join(sorted(set(schema) - allowed)))
+SET_DICT_CTOR	runner/contracts.py:182	conforms	set	extra = set(value) - set(schema["properties"])
+SET_DICT_CTOR	runner/contracts.py:182	conforms	set	extra = set(value) - set(schema["properties"])
+FOR_OVER_DICTVIEW	runner/contracts.py:188	conforms	value.items	for key, item in value.items():
+FOR_OVER_DICTVIEW	runner/contracts.py:272	capacity_spec	workers.items	for name, worker in workers.items():
+FOR_OVER_DICTVIEW	runner/contracts.py:336	_policy	value.items	for name, item in value.items():
+SET_DICT_CTOR	runner/contracts.py:448	task_spec	set	if set(out["tools"]) & set(RESERVED_TOOLS):
+SET_DICT_CTOR	runner/contracts.py:448	task_spec	set	if set(out["tools"]) & set(RESERVED_TOOLS):
+SET_DICT_CTOR	runner/contracts.py:450	task_spec	set	if not set(out["reads"]) <= set(out["dependencies"]):
+SET_DICT_CTOR	runner/contracts.py:450	task_spec	set	if not set(out["reads"]) <= set(out["dependencies"]):
+SET_DICT_CTOR	runner/contracts.py:497	_acyclic	set	pending = {key: set(deps) for key, deps in graph.items()}
+SET_DICT_CTOR	runner/contracts.py:498	_acyclic	set	if any(deps - set(graph) for deps in pending.values()):
+SETCOMP	runner/contracts.py:501	_acyclic	set comprehension	leaves = {key for key, deps in pending.items() if not deps}
+SETCOMP	runner/contracts.py:523	workflow_spec	set comprehension	if len({a["id"] for a in agents}) != len(agents) or len({t["name"] for t in tools}) != len(tools):
+SETCOMP	runner/contracts.py:523	workflow_spec	set comprehension	if len({a["id"] for a in agents}) != len(agents) or len({t["name"] for t in tools}) != len(tools):
+SET_DICT_CTOR	runner/contracts.py:526	workflow_spec	set	if not tasks or len(set(ids)) != len(ids) or len(tasks) > limits["max_work_items"]:
+SET_DICT_CTOR	runner/contracts.py:530	workflow_spec	set	agent_tools = {agent["id"]: set(agent["capabilities"]["tools"]) for agent in agents}
+SETCOMP	runner/contracts.py:531	workflow_spec	set comprehension	declared = {tool["name"] for tool in tools}
+SET_DICT_CTOR	runner/contracts.py:541	workflow_spec	set	if not set(names) <= set(agent_tools):
+SET_DICT_CTOR	runner/contracts.py:541	workflow_spec	set	if not set(names) <= set(agent_tools):
+SET_DICT_CTOR	runner/contracts.py:544	workflow_spec	set	if not set(task["tools"]) <= shared:
+SETLIT	runner/contracts.py:552	workflow_spec	set literal	if rule["candidate"] == rule["review"] or not {rule["candidate"], rule["review"]} <= set(task["reads"]):
+SET_DICT_CTOR	runner/contracts.py:552	workflow_spec	set	if rule["candidate"] == rule["review"] or not {rule["candidate"], rule["review"]} <= set(task["reads"]):
+SETCOMP	runner/contracts.py:562	workflow_spec	set comprehension	missing = {agent["id"] for agent in agents} - set(capacity["workers"])
+SET_DICT_CTOR	runner/contracts.py:562	workflow_spec	set	missing = {agent["id"] for agent in agents} - set(capacity["workers"])
+SETCOMP	runner/contracts.py:570	workflow_spec	set comprehension	if not any(len({costs[name] for name in eligible_agents(task)}) > 1
+SET_DICT_CTOR	runner/driver.py:24	SessionDriver::__init__	dict	self.tools = dict(tools or {})
+FOR_OVER_DICTVIEW	runner/evidence.py:39	CoordinationSession::create	limits.items	for name, value in limits.items():
+SET_DICT_CTOR	runner/evidence.py:94	CoordinationSession::_source_declaration	set	if set(source) != {"id", "version", "readers", "state_fingerprint"}:
+SETLIT	runner/evidence.py:94	CoordinationSession::_source_declaration	set literal	if set(source) != {"id", "version", "readers", "state_fingerprint"}:
+SET_DICT_CTOR	runner/evidence.py:102	CoordinationSession::_source_declaration	set	or len(set(readers)) != len(readers)
+SET_DICT_CTOR	runner/evidence.py:103	CoordinationSession::_source_declaration	set	or not set(readers) <= set(json.loads(self._run(db)["agents"]))
+SET_DICT_CTOR	runner/evidence.py:103	CoordinationSession::_source_declaration	set	or not set(readers) <= set(json.loads(self._run(db)["agents"]))
+SETLIT	runner/evidence.py:108	CoordinationSession::_inspection_declaration	set literal	required = {
+SET_DICT_CTOR	runner/evidence.py:117	CoordinationSession::_inspection_declaration	set	if set(item) - {"readers"} != required or type(item["arguments"]) is not dict:
+SETLIT	runner/evidence.py:117	CoordinationSession::_inspection_declaration	set literal	if set(item) - {"readers"} != required or type(item["arguments"]) is not dict:
+SET_DICT_CTOR	runner/evidence.py:140	CoordinationSession::_inspection_declaration	set	or len(set(readers)) != len(readers)
+SET_DICT_CTOR	runner/evidence.py:141	CoordinationSession::_inspection_declaration	set	or not set(readers) <= set(json.loads(self._run(db)["agents"]))
+SET_DICT_CTOR	runner/evidence.py:141	CoordinationSession::_inspection_declaration	set	or not set(readers) <= set(json.loads(self._run(db)["agents"]))
+SETLIT	runner/evidence.py:149	CoordinationSession::_inspection_declaration	set literal	**{name: item[name] for name in required - {"work_id"}},
+SET_DICT_CTOR	runner/identity.py:21	source_identity	dict	return dict(sorted(identity.items()))
+SETLIT	runner/inspection.py:77	_config	set literal	fields = {"scope", "reader", "source_id", "source_version", "tool", "tool_version",
+SET_DICT_CTOR	runner/inspection.py:79	_config	set	if type(value) is not dict or set(value) != fields:
+SET_DICT_CTOR	runner/inspection.py:88	_config	set	if type(limits) is not dict or set(limits) != {"max_calls", "token_cap"}:
+SETLIT	runner/inspection.py:88	_config	set literal	if type(limits) is not dict or set(limits) != {"max_calls", "token_cap"}:
+SET_DICT_CTOR	runner/inspection.py:100	_source	set	if type(value) is not dict or set(value) != {
+SETLIT	runner/inspection.py:100	_source	set literal	if type(value) is not dict or set(value) != {
+SET_DICT_CTOR	runner/inspection.py:112	_source	set	if len(set(readers)) != len(readers) or config["reader"] not in readers:
+SET_DICT_CTOR	runner/inspection.py:127	_outcome	set	if type(value) is not dict or set(value) != {"outcome"} or value["outcome"] is not None and type(value["outcome"]) is not bool:
+SETLIT	runner/inspection.py:127	_outcome	set literal	if type(value) is not dict or set(value) != {"outcome"} or value["outcome"] is not None and type(value["outcome"]) is not bool:
+SET_DICT_CTOR	runner/inspection.py:133	_receipt	set	if type(response) is not dict or set(response) != {
+SETLIT	runner/inspection.py:133	_receipt	set literal	if type(response) is not dict or set(response) != {
+SET_DICT_CTOR	runner/inspection.py:144	_receipt	set	if type(artifact) is not dict or set(artifact) != set(expected) | {"raw_value", "outcome"}:
+SET_DICT_CTOR	runner/inspection.py:144	_receipt	set	if type(artifact) is not dict or set(artifact) != set(expected) | {"raw_value", "outcome"}:
+SETLIT	runner/inspection.py:144	_receipt	set literal	if type(artifact) is not dict or set(artifact) != set(expected) | {"raw_value", "outcome"}:
+SET_DICT_CTOR	runner/inspection.py:260	_snapshot_readonly	dict	rows = {table: [dict(row) for row in db.execute(f"SELECT * FROM {table} ORDER BY rowid")]
+SET_DICT_CTOR	runner/inspection.py:263	_snapshot_readonly	dict	coordination = {table: [dict(row) for row in db.execute(f"SELECT * FROM {table} ORDER BY rowid")]
+SET_DICT_CTOR	runner/inspection.py:293	_verify_execution	set	if (set(update) != set(current) or update["id"] != current["id"]
+SET_DICT_CTOR	runner/inspection.py:293	_verify_execution	set	if (set(update) != set(current) or update["id"] != current["id"]
+SET_DICT_CTOR	runner/inspection.py:295	_verify_execution	set	or type(update["readers"]) is not list or not set(update["readers"]) <= set(source["readers"])
+SET_DICT_CTOR	runner/inspection.py:295	_verify_execution	set	or type(update["readers"]) is not list or not set(update["readers"]) <= set(source["readers"])
+SET_DICT_CTOR	runner/inspection.py:296	_verify_execution	set	or len(set(update["readers"])) != len(update["readers"])
+SET_DICT_CTOR	runner/inspection.py:345	replay_inspection	set	if set(frozen) != {"format", "config", "source", "plan", "source_identity", "plan_sha256"} or frozen["format"] != _FORMAT:
+SETLIT	runner/inspection.py:345	replay_inspection	set literal	if set(frozen) != {"format", "config", "source", "plan", "source_identity", "plan_sha256"} or frozen["format"] != _FORMAT:
+SET_DICT_CTOR	runner/orchestration.py:177	OrchestrationMixin::work_calls_of	dict	return [{**dict(row), "request": json.loads(row["request"]),
+SET_DICT_CTOR	runner/orchestration.py:268	OrchestrationMixin::_reservation_request	set	if type(item) is not dict or set(item) != {"producer", "ref", "digest", "version"}:
+SETLIT	runner/orchestration.py:268	OrchestrationMixin::_reservation_request	set literal	if type(item) is not dict or set(item) != {"producer", "ref", "digest", "version"}:
+SET_DICT_CTOR	runner/orchestration.py:284	OrchestrationMixin::_admit_model	set	allowed = set(declaration["tools"]) | {"submit_output", "abstain"}
+SETLIT	runner/orchestration.py:284	OrchestrationMixin::_admit_model	set literal	allowed = set(declaration["tools"]) | {"submit_output", "abstain"}
+SET_DICT_CTOR	runner/orchestration.py:287	OrchestrationMixin::_admit_model	set	if len(set(names)) != len(names) or not set(names) <= allowed:
+SET_DICT_CTOR	runner/orchestration.py:287	OrchestrationMixin::_admit_model	set	if len(set(names)) != len(names) or not set(names) <= allowed:
+SETCOMP	runner/orchestration.py:292	OrchestrationMixin::_admit_model	set comprehension	if {tool.get("name") for tool in request.get("tools", []) if type(tool) is dict} != set(names):
+SET_DICT_CTOR	runner/orchestration.py:292	OrchestrationMixin::_admit_model	set	if {tool.get("name") for tool in request.get("tools", []) if type(tool) is dict} != set(names):
+SET_DICT_CTOR	runner/orchestration.py:442	OrchestrationMixin::decisions	dict	return [dict(row) for row in rows]
+SET_DICT_CTOR	runner/orchestration.py:524	OrchestrationMixin::_verify_derivation	set	dependencies = set(declaration["dependencies"])
+SET_DICT_CTOR	runner/orchestration.py:527	OrchestrationMixin::_verify_derivation	set	if type(item) is not dict or set(item) != {"call_id", "digest", "role"}:
+SETLIT	runner/orchestration.py:527	OrchestrationMixin::_verify_derivation	set literal	if type(item) is not dict or set(item) != {"call_id", "digest", "role"}:
+SETCOMP	runner/orchestration.py:613	OrchestrationMixin::admit_children	set comprehension	siblings = {self._child_id(lease.task_id, child.get("name")) for child in children}
+SET_DICT_CTOR	runner/orchestration.py:648	OrchestrationMixin::_child_declaration	set	if not set(child["tools"]) <= set(parent["tools"]):
+SET_DICT_CTOR	runner/orchestration.py:648	OrchestrationMixin::_child_declaration	set	if not set(child["tools"]) <= set(parent["tools"]):
+SET_DICT_CTOR	runner/orchestration.py:651	OrchestrationMixin::_child_declaration	set	if not set(dependencies) <= siblings - {key}:
+SETLIT	runner/orchestration.py:651	OrchestrationMixin::_child_declaration	set literal	if not set(dependencies) <= siblings - {key}:
+SETLIT	runner/orchestration.py:663	OrchestrationMixin::_child_declaration	set literal	if derived is not None and derived in siblings - {key}:
+SET_DICT_CTOR	runner/orchestration.py:667	OrchestrationMixin::_child_declaration	set	if not set(reads) <= set(dependencies) | set(parent["reads"]):
+SET_DICT_CTOR	runner/orchestration.py:667	OrchestrationMixin::_child_declaration	set	if not set(reads) <= set(dependencies) | set(parent["reads"]):
+SET_DICT_CTOR	runner/orchestration.py:667	OrchestrationMixin::_child_declaration	set	if not set(reads) <= set(dependencies) | set(parent["reads"]):
+SET_DICT_CTOR	runner/orchestration.py:673	OrchestrationMixin::_child_declaration	set	"dependencies": sorted(set(dependencies) | (set(reads) & set(parent["reads"]))),
+SET_DICT_CTOR	runner/orchestration.py:673	OrchestrationMixin::_child_declaration	set	"dependencies": sorted(set(dependencies) | (set(reads) & set(parent["reads"]))),
+SET_DICT_CTOR	runner/orchestration.py:673	OrchestrationMixin::_child_declaration	set	"dependencies": sorted(set(dependencies) | (set(reads) & set(parent["reads"]))),
+SET_DICT_CTOR	runner/orchestration.py:713	OrchestrationMixin::_snapshot_extra	dict	"tasks": [dict(r) for r in db.execute("SELECT * FROM orchestration_tasks_v2 ORDER BY rowid")],
+SET_DICT_CTOR	runner/orchestration.py:714	OrchestrationMixin::_snapshot_extra	dict	"artifacts": [dict(r) for r in db.execute("SELECT * FROM orchestration_artifacts_v1 ORDER BY rowid")],
+SET_DICT_CTOR	runner/orchestration.py:715	OrchestrationMixin::_snapshot_extra	dict	"accounting": [dict(r) for r in db.execute("SELECT * FROM orchestration_accounting_v1 ORDER BY rowid")],
+SET_DICT_CTOR	runner/orchestration.py:716	OrchestrationMixin::_snapshot_extra	dict	"decisions": [dict(r) for r in db.execute("SELECT * FROM orchestration_decisions_v1 ORDER BY seq")],
+SET_DICT_CTOR	runner/platform.py:42	_unique	set	if len(set(values)) != len(values):
+SET_DICT_CTOR	runner/platform.py:53	PlatformMixin::create	dict	platform = dict(platform or {})
+FOR_OVER_DICTVIEW	runner/platform.py:60	PlatformMixin::create	limits.items	for name, value in limits.items():
+SETCOMP	runner/platform.py:65	PlatformMixin::create	set comprehension	ids = {item["id"] for item in work}
+SET_DICT_CTOR	runner/platform.py:66	PlatformMixin::create	set	if set(budgets) - ids:
+FOR_OVER_DICTVIEW	runner/platform.py:68	PlatformMixin::create	budgets.values	for budget in budgets.values():
+SET_DICT_CTOR	runner/platform.py:69	PlatformMixin::create	set	if type(budget) is not dict or set(budget) - {"calls", "tokens"}:
+SETLIT	runner/platform.py:69	PlatformMixin::create	set literal	if type(budget) is not dict or set(budget) - {"calls", "tokens"}:
+FOR_OVER_DICTVIEW	runner/platform.py:71	PlatformMixin::create	budget.items	for name, value in budget.items():
+SET_DICT_CTOR	runner/platform.py:209	PlatformMixin::work_calls	dict	return [{**dict(r), "request": json.loads(r["request"]),
+SET_DICT_CTOR	runner/platform.py:242	PlatformMixin::_decompose	set	if type(child) is not dict or set(child) != {"id", "version", "dependencies", "agents", "actions", "budget"}:
+SETLIT	runner/platform.py:242	PlatformMixin::_decompose	set literal	if type(child) is not dict or set(child) != {"id", "version", "dependencies", "agents", "actions", "budget"}:
+SET_DICT_CTOR	runner/platform.py:250	PlatformMixin::_decompose	set	if (not child["agents"] or not set(child["agents"]) <= set(declaration["agents"])
+SET_DICT_CTOR	runner/platform.py:250	PlatformMixin::_decompose	set	if (not child["agents"] or not set(child["agents"]) <= set(declaration["agents"])
+SET_DICT_CTOR	runner/platform.py:251	PlatformMixin::_decompose	set	or not child["actions"] or not set(child["actions"]) <= set(declaration["actions"])):
+SET_DICT_CTOR	runner/platform.py:251	PlatformMixin::_decompose	set	or not child["actions"] or not set(child["actions"]) <= set(declaration["actions"])):
+SET_DICT_CTOR	runner/platform.py:256	PlatformMixin::_decompose	set	if type(budget) is not dict or set(budget) != {"calls", "tokens"}:
+SETLIT	runner/platform.py:256	PlatformMixin::_decompose	set literal	if type(budget) is not dict or set(budget) != {"calls", "tokens"}:
+SET_DICT_CTOR	runner/platform.py:266	PlatformMixin::_decompose	set	pending = {key: set(deps) for key, deps in graph.items()}
+SET_DICT_CTOR	runner/platform.py:267	PlatformMixin::_decompose	set	if any(deps-set(graph) for deps in pending.values()):
+SETCOMP	runner/platform.py:270	PlatformMixin::_decompose	set comprehension	leaves = {key for key, deps in pending.items() if not deps}
+SET_DICT_CTOR	runner/platform.py:352	PlatformMixin::propose	dict	return dict(prior)
+SET_DICT_CTOR	runner/platform.py:359	PlatformMixin::propose	dict	return dict(db.execute("SELECT * FROM platform_candidates_v1 WHERE call_id=?", (call_id,)).fetchone())
+SET_DICT_CTOR	runner/platform.py:368	PlatformMixin::_candidates	dict	return [dict(r) for r in db.execute("SELECT * FROM platform_candidates_v1 WHERE work_id=? AND version=? ORDER BY certified_loss,call_id", (w
+SET_DICT_CTOR	runner/platform.py:459	PlatformMixin::_snapshot_extra	dict	"work": [dict(r) for r in db.execute("SELECT * FROM platform_work_v1 ORDER BY rowid")],
+SET_DICT_CTOR	runner/platform.py:460	PlatformMixin::_snapshot_extra	dict	"candidates": [dict(r) for r in db.execute("SELECT * FROM platform_candidates_v1 ORDER BY rowid")],
+SET_DICT_CTOR	runner/platform.py:461	PlatformMixin::_snapshot_extra	dict	"no_entry": [dict(r) for r in db.execute("SELECT * FROM platform_no_entry_v1 ORDER BY rowid")],
+SET_DICT_CTOR	runner/platform.py:462	PlatformMixin::_snapshot_extra	dict	"decisions": [dict(r) for r in db.execute("SELECT * FROM platform_decisions_v1 ORDER BY rowid")],
+FOR_OVER_DICTVIEW	runner/provider.py:24	_freeze	value.values	for item in value.values():
+FOR_OVER_DICTVIEW	runner/runtime.py:87	Runtime::__init__	transports.items	for name, transport in transports.items():
+SETCOMP	runner/runtime.py:315	Runtime::_state	set comprehension	by_call = {row["call_id"] for row in decisions}
+SETCOMP	runner/runtime.py:695	Runtime::_outcome	set comprehension	decided = {row["work_id"] for row in snapshot["platform"]["decisions"]}
+SETCOMP	runner/runtime.py:696	Runtime::_outcome	set comprehension	unresolved = {row["work_id"] for row in snapshot["calls"] if row["state"] == "dispatched"}
+SET_DICT_CTOR	runner/runtime.py:721	Runtime::_outcome	dict	metrics = dict(self.metrics(), sweeps=sweeps, max_sweeps=max_sweeps)
+SETCOMP	runner/runtime.py:808	build_transports	set comprehension	providers = {agent["model"]["provider"] for agent in spec["agents"]}
+SETCOMP	runner/runtime_policies.py:264	RuntimePolicies::select_work	set comprehension	if chosen is not None and chosen not in {row["id"] for row in ready}:
+SET_DICT_CTOR	runner/session.py:62	Session::create	set	if (type(agents) is not list or not agents or len(set(agents)) != len(agents)
+SET_DICT_CTOR	runner/session.py:69	Session::create	set	if set(item) != {"id", "version", "dependencies", "agents", "actions"}:
+SETLIT	runner/session.py:69	Session::create	set literal	if set(item) != {"id", "version", "dependencies", "agents", "actions"}:
+SET_DICT_CTOR	runner/session.py:77	Session::create	set	if type(values) is not list or len(set(values)) != len(values):
+SET_DICT_CTOR	runner/session.py:79	Session::create	set	if (not item["agents"] or not set(item["agents"]) <= set(agents)
+SET_DICT_CTOR	runner/session.py:79	Session::create	set	if (not item["agents"] or not set(item["agents"]) <= set(agents)
+SET_DICT_CTOR	runner/session.py:80	Session::create	set	or not item["actions"] or not set(item["actions"]) <= {"tool.evaluate"}):
+SETLIT	runner/session.py:80	Session::create	set literal	or not item["actions"] or not set(item["actions"]) <= {"tool.evaluate"}):
+SETLIT	runner/session.py:87	Session::create::visit	set literal	visit(parent, ancestors | {key})
+FOR_OVER_DICTVIEW	runner/session.py:92	Session::create	limits.items	for name, value in limits.items():
+SET_DICT_CTOR	runner/session.py:212	Session::_reserve	dict	payload = dict(payload)
+SETLIT	runner/session.py:250	Session::_permit	set literal	if required not in actions or action not in {"tool.evaluate", "artifact.publish"}:
+SET_DICT_CTOR	runner/session.py:321	Session::call	dict	return {**dict(row), "request": json.loads(row["request"]),
+SET_DICT_CTOR	runner/session.py:435	Session::snapshot	dict	calls = [dict(row) for row in db.execute("SELECT * FROM calls ORDER BY rowid")]
+SET_DICT_CTOR	runner/session.py:436	Session::snapshot	dict	snapshot = {"run": dict(self._run(db)), "work": [dict(row) for row in db.execute("SELECT * FROM work ORDER BY rowid")],
+SET_DICT_CTOR	runner/session.py:436	Session::snapshot	dict	snapshot = {"run": dict(self._run(db)), "work": [dict(row) for row in db.execute("SELECT * FROM work ORDER BY rowid")],
+SET_DICT_CTOR	runner/session.py:437	Session::snapshot	dict	"calls": calls, "artifacts": [dict(row) for row in db.execute("SELECT * FROM artifacts ORDER BY rowid")],
+FOR_OVER_DICTVIEW	runner/tools.py:114	FixtureStore::__init__	fixtures.items	for name, entry in fixtures.items():
+SET_DICT_CTOR	runner/tools.py:129	FixtureStore::declaration	dict	return dict(self._fixtures[name])
+SET_DICT_CTOR	runner/tools.py:273	_expected_totals	set	if type(content) is not dict or set(content) != {"orders"} or type(content["orders"]) is not list:
+SETLIT	runner/tools.py:273	_expected_totals	set literal	if type(content) is not dict or set(content) != {"orders"} or type(content["orders"]) is not list:
+SET_DICT_CTOR	runner/tools.py:277	_expected_totals	set	if (type(order) is not dict or set(order) != {"id", "category", "amount_cents"}
+SETLIT	runner/tools.py:277	_expected_totals	set literal	if (type(order) is not dict or set(order) != {"id", "category", "amount_cents"}
+SETLIT	runner/tools.py:290	_totals_problems	set literal	missing = sorted({"totals", "total_cents"} - set(value))
+SET_DICT_CTOR	runner/tools.py:290	_totals_problems	set	missing = sorted({"totals", "total_cents"} - set(value))
+SET_DICT_CTOR	runner/tools.py:293	_totals_problems	set	extra = sorted(set(value) - {"totals", "total_cents"})
+SETLIT	runner/tools.py:293	_totals_problems	set literal	extra = sorted(set(value) - {"totals", "total_cents"})
+SET_DICT_CTOR	runner/tools.py:296	_totals_problems	dict	expected_totals = dict(expected)
+SET_DICT_CTOR	runner/tools.py:311	_row_problems	set	if (type(row) is not dict or set(row) != {"category", "cents"}
+SETLIT	runner/tools.py:311	_row_problems	set literal	if (type(row) is not dict or set(row) != {"category", "cents"}
+SETCOMP	runner/tools.py:319	_row_problems	set comprehension	duplicates = sorted({name for name in categories if categories.count(name) > 1})
+SET_DICT_CTOR	runner/tools.py:322	_row_problems	dict	actual = dict(pairs)
+SET_DICT_CTOR	runner/tools.py:323	_row_problems	set	for category in sorted(set(expected_totals) - set(actual)):
+SET_DICT_CTOR	runner/tools.py:323	_row_problems	set	for category in sorted(set(expected_totals) - set(actual)):
+SET_DICT_CTOR	runner/tools.py:325	_row_problems	set	for category in sorted(set(actual) - set(expected_totals)):
+SET_DICT_CTOR	runner/tools.py:325	_row_problems	set	for category in sorted(set(actual) - set(expected_totals)):
+SET_DICT_CTOR	runner/tools.py:327	_row_problems	set	for category in sorted(set(actual) & set(expected_totals)):
+SET_DICT_CTOR	runner/tools.py:327	_row_problems	set	for category in sorted(set(actual) & set(expected_totals)):
+SET_DICT_CTOR	runner/tools.py:368	_fixture_name	set	if type(config) is not dict or set(config) != {"fixture"}:
+SETLIT	runner/tools.py:368	_fixture_name	set literal	if type(config) is not dict or set(config) != {"fixture"}:
+SET_DICT_CTOR	runner/tools.py:381	_fixture_names	set	if type(config) is not dict or set(config) != {"fixtures"}:
+SETLIT	runner/tools.py:381	_fixture_names	set literal	if type(config) is not dict or set(config) != {"fixtures"}:
+SET_DICT_CTOR	runner/tools.py:384	_fixture_names	set	if type(names) is not list or not names or len(set(names)) != len(names):
+SET_DICT_CTOR	runner/tools.py:386	_fixture_names	set	if not set(names) <= set(store.names()):
+SET_DICT_CTOR	runner/tools.py:386	_fixture_names	set	if not set(names) <= set(store.names()):
+SET_DICT_CTOR	runner/tools.py:396	_build_fixture_read	set	execute=_fixture_read(store, set(allowed)))
+SETLIT	runner/worker.py:19	_plan	set literal	required = {"tool_ref", "arguments", "decide", "certified_loss", "abstain_loss"}
+SET_DICT_CTOR	runner/worker.py:20	_plan	set	if type(value) is not dict or set(value) - required - {"rule", "purchase"}:
+SETLIT	runner/worker.py:20	_plan	set literal	if type(value) is not dict or set(value) - required - {"rule", "purchase"}:
+SET_DICT_CTOR	runner/worker.py:86	waiting_rule	set	or len(set(candidate_sources)) != len(candidate_sources)):
+SET_DICT_CTOR	runner/worker.py:94	waiting_rule	set	if not set(candidate_sources) <= set(json.loads(work["declaration"])["agents"]):
+SET_DICT_CTOR	runner/worker.py:94	waiting_rule	set	if not set(candidate_sources) <= set(json.loads(work["declaration"])["agents"]):
+SETCOMP	runner/worker.py:96	waiting_rule	set comprehension	proposed = {row["proposer"] for row in snapshot["platform"]["candidates"]
+SET_DICT_CTOR	runner/worker.py:98	waiting_rule	set	if set(candidate_sources) <= proposed:
+SETCOMP	runner/worker.py:134	run_worker	set comprehension	if type(work_id) is not str or work_id not in {row["id"] for row in ready}:
+SETLIT	runner/worker.py:185	run_worker	set literal	if type(action) is not str or action not in {"publish", "abstain"}:
+SET_DICT_CTOR	src/pheroos_interaction/commitment.py:196	cross_inhibition	set	if any(type(key) is not str or '\0' in key for key in keys) or len(set(keys)) != len(keys):
+SETLIT	src/pheroos_interaction/commitment.py:288	commit_value::fill	set literal	closure = {r} | ({s for s in support} if r is None else {min(r, s) for s in support})
+SETCOMP	src/pheroos_interaction/commitment.py:288	commit_value::fill	set comprehension	closure = {r} | ({s for s in support} if r is None else {min(r, s) for s in support})
+SETCOMP	src/pheroos_interaction/commitment.py:288	commit_value::fill	set comprehension	closure = {r} | ({s for s in support} if r is None else {min(r, s) for s in support})
+SET_DICT_CTOR	src/pheroos_interaction/inspection.py:179	apply_plan	dict	return dict(plan.query_delta)[outcome]
+SET_DICT_CTOR	src/pheroos_interaction/leases.py:60	lease_ttl	set	searched = sorted(T for T in set(ordered) | set(extra) if T > 0)
+SET_DICT_CTOR	src/pheroos_interaction/leases.py:60	lease_ttl	set	searched = sorted(T for T in set(ordered) | set(extra) if T > 0)
+SET_DICT_CTOR	src/pheroos_interaction/sequential.py:280	policy_risk::walk	dict	return dict(zip(ACTIONS, stop_terms(mass_h, mass_n, losses, False)))[node.stop_action]
+FOR_OVER_DICTVIEW	src/pheroos_interaction/sequential.py:350	_pmul	a.items	for (i, j), x in a.items():
+FOR_OVER_DICTVIEW	src/pheroos_interaction/sequential.py:351	_pmul	b.items	for (k, l), y in b.items():
+FOR_OVER_DICTVIEW	src/pheroos_interaction/sequential.py:359	_padd	poly.items	for key, value in poly.items():
+FOR_OVER_DICTVIEW	src/pheroos_interaction/sequential.py:395	_to_unit_square	poly.items	for (i, j), coefficient in poly.items():
+FOR_OVER_DICTVIEW	src/pheroos_interaction/sequential.py:416	bernstein_bounds	unit.items	for (i, j), a in unit.items():
+SETLIT	src/pheroos_interaction/sequential.py:490	_repeats	set literal	yield from _repeats(child, seen | {_source(node)})
+SETCOMP	src/pheroos_interaction/sequential.py:504	certify_joint_corners	set comprehension	sources = {_source(inner) for inner in _nodes(node) if inner.query}

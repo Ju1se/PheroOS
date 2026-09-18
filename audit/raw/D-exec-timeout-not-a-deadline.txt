@@ -1,0 +1,10 @@
+### EXECUTED: AnthropicTransport timeout semantics (loopback server only, no external network)
+### /tmp/audit-venv/bin/python scratchpad/d_exec_timeout.py
+### anthropic.py:390 default timeout=60.0 ; anthropic.py:414 self.opener(message, timeout=self.timeout)
+### anthropic.py:45  MAX_BODY_BYTES = 1 << 20
+
+configured timeout : 1.0s
+per-read gap       : 0.6s (each individual read stays under the timeout)
+total elapsed      : 5.44s
+outcome            : returned normally
+TOTAL EXCEEDED THE CONFIGURED TIMEOUT: True (by 4.44s)

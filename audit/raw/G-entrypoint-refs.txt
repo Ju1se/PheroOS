@@ -1,0 +1,145 @@
+=== run_colony ===
+runner/worker.py:79:    ``run_worker`` or ``run_colony`` it selects the default minimum-loss rule with
+runner/colony.py:106:def run_colony(session, agent, *, driver, planner, verify, policy, rule=None, lease_seconds=60,
+tests/interaction/test_colony.py:14:from pheroos_interaction.runner.colony import run_colony
+tests/interaction/test_colony.py:133:    return run_colony(session, agent, driver=driver, planner=planner or planner_for(), verify=verify, **kwargs)
+tests/interaction/test_colony.py:356:    outcomes = run_colony(session, "a", driver=driver, planner=planner_for(), verify=verify, policy=eager)
+tests/interaction/test_colony.py:655:        run_colony(session, "a", **arguments)
+tests/interaction/test_colony.py:681:def test_run_colony_rejects_policy_that_returns_non_string(tmp_path):
+
+=== run_worker ===
+runner/worker.py:79:    ``run_worker`` or ``run_colony`` it selects the default minimum-loss rule with
+runner/worker.py:108:def run_worker(session, agent, *, driver, planner, verify, policy, renew_seconds=60, max_items=None):
+runner/colony.py:211:                            # A rejected response for this work forbids buying again (run_worker parity).
+tests/interaction/test_provider_worker.py:11:from pheroos_interaction.runner.worker import run_worker
+tests/interaction/test_provider_worker.py:63:    return run_worker(session, "a", driver=driver, planner=planner,
+tests/interaction/test_colony.py:20:from pheroos_interaction.runner.worker import run_worker
+tests/interaction/test_colony.py:481:def test_exception_classification_matches_run_worker(tmp_path, kind):
+tests/interaction/test_colony.py:502:    from_worker = run_worker(worker_session, "a", driver=SessionDriver(worker_session, tools={"src0": tool}),
+
+=== run_workflow ===
+runner/runtime.py:754:def run_workflow(session, *, registry, transports, policies=None, max_sweeps=None):
+tests/interaction/test_orchestration_hardening.py:34:    outcome = runtime.run_workflow(session, registry=tools.build_registry(spec, EXAMPLES),
+tests/interaction/test_orchestration_hardening.py:73:    again = runtime.run_workflow(reopened, registry=tools.build_registry(spec, EXAMPLES),
+tests/interaction/test_orchestration_audit.py:55:    outcome = runtime.run_workflow(session, registry=tools.build_registry(spec, EXAMPLES),
+tests/interaction/test_orchestration_audit.py:593:        runtime.run_workflow(
+tests/interaction/test_orchestration_audit.py:693:    v1 declaration cannot reach a step through ``run_workflow`` either.
+tests/interaction/test_orchestration_recovery.py:115:        return runtime.run_workflow(
+
+=== PlatformSession ===
+runner/runtime_policies.py:282:        """The rule for ``PlatformSession.commit``: candidate arbitration only.
+runner/colony.py:3:PlatformSession-compatible session.
+runner/platform.py:467:class PlatformSession(PlatformMixin, Session):
+runner/runtime.py:22:arbitrates competing candidate proposals through ``PlatformSession.commit``; the
+tests/interaction/test_provider_worker.py:30:        from pheroos_interaction.runner.platform import PlatformSession
+tests/interaction/test_provider_worker.py:31:        kind = PlatformSession
+tests/interaction/test_platform_conformance.py:13:from pheroos_interaction.runner.platform import PlatformSession
+tests/interaction/test_platform_conformance.py:34:    return PlatformSession.create(tmp_path / "s.sqlite", "run-1", agents=["a", "b", "host"],
+tests/interaction/test_platform_conformance.py:256:        connection = PlatformSession(session.path, clock=clock)
+tests/interaction/test_platform_conformance.py:442:    recovered = PlatformSession(tmp_path / "s.sqlite", clock=clock)
+tests/interaction/test_platform_conformance.py:451:    again = PlatformSession(tmp_path / "s.sqlite", clock=clock)
+tests/interaction/test_platform_atomicity.py:10:from pheroos_interaction.runner.platform import PlatformMixin, PlatformSession
+
+=== ProviderDriver ===
+runner/worker.py:114:    signature; ProviderDriver can be wrapped by an explicit request/token adapter.
+runner/provider.py:37:class ProviderDriver:
+tests/interaction/test_provider_worker.py:9:from pheroos_interaction.runner.provider import ProviderDriver
+tests/interaction/test_provider_worker.py:49:    return ProviderDriver(session, transport=transport or (lambda request: receipt()),
+
+=== pick_by_depth ===
+runner/policies.py:27:def pick_by_depth(ready):
+tests/interaction/test_platform_policies.py:35:    assert policies.pick_by_depth(ready) == "deep-old"
+tests/interaction/test_platform_policies.py:36:    assert policies.pick_by_depth(queue()) == "second"
+tests/interaction/test_platform_policies.py:37:    assert policies.pick_by_depth([]) is None
+tests/interaction/test_platform_policies.py:90:        policies.pick_by_depth(ready)
+
+=== artifact_records ===
+runner/orchestration.py:539:    def artifact_records(self):
+tests/interaction/test_orchestration_workflow.py:175:    kinds = {row["work_id"]: row["kind"] for row in completed.session.artifact_records()}
+tests/interaction/test_orchestration_workflow.py:302:    records = completed.session.artifact_records()
+tests/interaction/test_orchestration_workflow.py:314:    records = {row["work_id"]: row for row in completed.session.artifact_records()}
+tests/interaction/test_orchestration_authority.py:249:    assert [row["work_id"] for row in session.artifact_records()] == ["produce"]
+tests/interaction/test_orchestration_authority.py:297:    assert [row["kind"] for row in session.artifact_records()] == ["output"]
+tests/interaction/test_orchestration_authority.py:600:    assert session.artifact_records() == []
+tests/interaction/test_orchestration_authority.py:637:    assert [row["kind"] for row in session.artifact_records()] == ["output"]
+tests/interaction/test_orchestration_colony.py:438:    assert [row["kind"] for row in session.artifact_records()] == ["output", "output", "result"]
+tests/interaction/test_orchestration_recovery.py:254:    assert {row["work_id"]: row["kind"] for row in reopened.artifact_records()} == {
+tests/interaction/test_orchestration_recovery.py:607:    assert reopened.artifact_records() == []
+
+=== source_update ===
+runner/evidence.py:16:        "interaction.session.claimed", "interaction.evidence.source_updated"
+runner/evidence.py:242:    def source_update(self, source_id, version, readers, state_fingerprint):
+runner/evidence.py:282:            self._coord_event(db, "source_updated", source)
+runner/inspection.py:291:        if event["event_type"] == "interaction.evidence.source_updated":
+tests/interaction/test_received_publication.py:279:        session.source_update('x', 1, ['b'], FINGERPRINT)
+tests/interaction/test_received_publication.py:281:        session.source_update('x', 2, ['a', 'b'], 'new-state')
+tests/interaction/test_platform_atomicity.py:174:def test_scoped_child_inherits_tool_arguments_readers_and_source_update_fences(tmp_path):
+tests/interaction/test_platform_atomicity.py:192:    session.source_update("source", 2, ["a"], "fingerprint-2")
+tests/interaction/test_platform_atomicity.py:210:    session.source_update("source", 1, [], "fingerprint-1")
+tests/interaction/test_execution.py:131:def test_current_source_update_fences_old_work_and_releases_unused_reservation(tmp_path):
+tests/interaction/test_execution.py:136:    session.source_update('x', 2, ['a', 'b'], 'new-version-fingerprint')
+tests/interaction/test_execution.py:142:        session.source_update('x', 1, ['a', 'b'], FINGERPRINT)
+
+=== deadlock_fraction ===
+src/pheroos_interaction/commitment.py:80:def deadlock_fraction(v, sigma):
+tests/interaction/test_commitment.py:66:    assert round(commitment.deadlock_fraction(2, 2.5), 3) == .395
+tests/interaction/test_commitment.py:70:    assert round(commitment.deadlock_fraction(1.2, 6), 3) == .276
+tests/interaction/test_commitment.py:74:    assert early == pytest.approx([commitment.deadlock_fraction(2, 4)] * 2, abs=1e-3)
+tests/interaction/test_commitment.py:75:    assert round(commitment.deadlock_fraction(2, 4), 3) == .368
+tests/interaction/test_commitment.py:81:    y = commitment.deadlock_fraction(2, 2.5)
+tests/interaction/test_commitment.py:150:    assert [round(y, 3) for y in result['y']] == [round(commitment.deadlock_fraction(1 / .7, 10.), 3)] * 2
+tests/interaction/test_commitment.py:324:            commitment.deadlock_fraction(bad, 1)
+tests/interaction/test_commitment.py:326:        commitment.deadlock_fraction(2, -1)
+tests/interaction/test_commitment.py:328:        commitment.deadlock_fraction(0, 1)
+
+=== garbling_matrix ===
+src/pheroos_interaction/sequential.py:79:def garbling_matrix(better, worse):
+tests/interaction/test_sequential.py:84:def test_garbling_matrix_reproduces_the_degraded_channel_and_rejects_improvements():
+tests/interaction/test_sequential.py:86:    matrix=seq.garbling_matrix(better,worse)
+tests/interaction/test_sequential.py:93:        seq.garbling_matrix(worse,better)
+tests/interaction/test_sequential.py:95:        seq.garbling_matrix(seq.Channel(.5,0.),seq.Channel(.9,0.))
+tests/interaction/test_sequential.py:96:    flat=seq.garbling_matrix(seq.Channel(.5,0.),seq.Channel(.7,1.))
+tests/interaction/test_sequential.py:99:        seq.garbling_matrix(better,(0.8,.3))
+
+=== choose_horizon ===
+runner/colony.py:130:    buying anything (``choose_horizon`` picks a K within the cap). The certified
+src/pheroos_interaction/sequential.py:244:def choose_horizon(prior, channels, losses, query_cost, max_calls, epsilon=1e-12):
+tests/interaction/test_sequential.py:108:    horizon,found=seq.choose_horizon(.5,channel,losses(),.2,4)
+tests/interaction/test_sequential.py:110:    horizon,_=seq.choose_horizon(.5,channel,losses(),.2,1)
+tests/interaction/test_sequential.py:112:    assert seq.choose_horizon(.5,channel,losses(),2.,3)==(0,[1.,1.,1.,1.])
+tests/interaction/test_sequential.py:114:        seq.choose_horizon(.5,channel,losses(),.2,True)
+tests/interaction/test_sequential.py:117:def test_choose_horizon_uses_the_plateau_at_the_cap_not_the_first_flat_step():
+tests/interaction/test_sequential.py:121:    horizon,values=seq.choose_horizon(.52683,channel,preferences,.0720,3)
+tests/interaction/test_sequential.py:124:    assert seq.choose_horizon(.52683,channel,preferences,.0720,2)[0]==2
+tests/interaction/test_sequential.py:125:    assert seq.choose_horizon(.52683,channel,preferences,.0720,1)==(0,values[:2])
+
+=== policy_risk_exact ===
+src/pheroos_interaction/sequential.py:327:def policy_risk_exact(node, prior, channels, losses, query_cost):
+tests/interaction/test_sequential.py:160:            exact=seq.policy_risk_exact(tree,prior,seq.Channel(q,rho),preferences,cost)
+tests/interaction/test_sequential.py:182:    corners=max(seq.policy_risk_exact(tree,prior,seq.Channel(q,rho),preferences,cost)
+tests/interaction/test_sequential.py:210:    assert seq.policy_risk_exact(plan.tree,.5,seq.Channel(.9,.05),losses(),.2)==plan.certificate['exact_attained']
+tests/interaction/test_sequential.py:284:    assert certificate['exact']==seq.policy_risk_exact(tree,.5,list(channels),losses(),.05)
+tests/interaction/test_sequential.py:290:            assert seq.policy_risk_exact(tree,.5,world,losses(),.05)<=certificate['exact']
+
+=== plan_sequential ===
+src/pheroos_interaction/sequential.py:536:def plan_sequential(assumptions, losses, query_cost, horizon, epsilon=1e-12, certify=True):
+tests/interaction/test_sequential.py:35:    sequential=seq.plan_sequential(model,preferences,cost,1,epsilon=epsilon,certify=False)
+tests/interaction/test_sequential.py:201:    plan=seq.plan_sequential(model,losses(),.2,1)
+tests/interaction/test_sequential.py:214:    assert seq.plan_sequential(model,losses(),.2,1,certify=False).certificate is None
+tests/interaction/test_sequential.py:218:        seq.plan_sequential(model,losses(),.2,1,certify=1)
+tests/interaction/test_sequential.py:221:def test_plan_sequential_reasons_mirror_the_cost_screen_and_horizon():
+tests/interaction/test_sequential.py:222:    assert seq.plan_sequential(assumptions(),losses(),.2,0).reason=='no_horizon'
+tests/interaction/test_sequential.py:223:    assert seq.plan_sequential(assumptions(),losses(),1.,2).reason=='cost_screen_skip'
+tests/interaction/test_sequential.py:224:    assert seq.plan_sequential(assumptions(rho_low=.1,rho_high=1.),losses(),.2,1).reason=='no_gain_above_margin'
+tests/interaction/test_sequential.py:228:    plan=seq.plan_sequential(assumptions(),losses(),.05,3,certify=False)
+tests/interaction/test_sequential.py:232:    monkeypatch.setattr(seq,'plan_sequential',forbidden)
+tests/interaction/test_sequential.py:260:    plan=seq.plan_sequential(assumptions(prior=.99),losses(),.2,2,certify=False)
+
+=== certify_joint_corners ===
+src/pheroos_interaction/sequential.py:372:    use certify_joint_corners.
+src/pheroos_interaction/sequential.py:493:def certify_joint_corners(node, prior, boxes, losses, query_cost):
+tests/interaction/test_sequential.py:283:    certificate=seq.certify_joint_corners(tree,.5,boxes,losses(),.05)
+tests/interaction/test_sequential.py:295:        seq.certify_joint_corners(repeated,.5,boxes,losses(),.05)
+tests/interaction/test_sequential.py:297:        seq.certify_joint_corners(tree,.5,boxes[:1],losses(),.05)
+tests/interaction/test_sequential.py:299:        seq.certify_joint_corners(tree,.5,((.9,.95,0.),),losses(),.05)
+

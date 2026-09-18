@@ -1,0 +1,21 @@
+=== §F: UNDECLARED TOOLING DEPENDENCIES IN CI (.github/workflows/interaction.yml) ===
+
+--- every external thing the workflow depends on, with line numbers ---
+5:    runs-on: ubuntu-latest
+7:      - uses: actions/checkout@v4
+8:      - uses: actions/setup-python@v5
+10:          python-version: '3.14'
+11:      - run: python -m pip install '.[dev]'
+
+--- pinning status of each GitHub Action (mutable tag vs immutable SHA) ---
+  actions/checkout@v4  HTTP 200  -> currently resolves to 11d5960a326750d5838078e36cf38b85af677262 commit
+     pinned by: MUTABLE TAG (maintainer can re-point 'v4' at any commit); repo pins no SHA
+  actions/setup-python@v5  HTTP 200  -> currently resolves to a26af69be951a213d495a4c3e4e4022e16d87065 commit
+     pinned by: MUTABLE TAG (maintainer can re-point 'v5' at any commit); repo pins no SHA
+
+--- is there a dependabot/renovate config to watch these? ---
+  NONE: no dependabot.yml, no renovate.json anywhere in the repo
+
+--- does the workflow constrain the pip install at all? ---
+  11:      - run: python -m pip install '.[dev]'
+  no --require-hashes, no -c constraints file, no lockfile => unpinned resolve on every run

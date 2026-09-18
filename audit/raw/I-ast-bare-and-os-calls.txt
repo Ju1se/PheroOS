@@ -1,0 +1,38 @@
+BARE_CALL	runner/driver.py:34	monotonic_ns	started = monotonic_ns()
+BARE_CALL	runner/driver.py:38	monotonic_ns	"adapter_elapsed_ns": monotonic_ns() - started}
+FS_ORDER	runner/identity.py:15	base.rglob	for path in sorted(base.rglob('*.py')):
+OS_CALL	runner/inspection.py:64	os.open	directory = os.open(Path(path).parent, os.O_RDONLY)
+OS_CALL	runner/inspection.py:63	os.fsync	os.fsync(stream.fileno())
+OS_CALL	runner/inspection.py:66	os.fsync	os.fsync(directory)
+OS_CALL	runner/inspection.py:68	os.close	os.close(directory)
+OS_CALL	runner/platform.py:97	os.link	os.link(session.path, target)
+OS_CALL	runner/platform.py:99	os.open	parent_fd = os.open(target.parent, os.O_RDONLY)
+OS_CALL	runner/platform.py:101	os.fsync	os.fsync(parent_fd)
+OS_CALL	runner/platform.py:103	os.close	os.close(parent_fd)
+BARE_CALL	runner/provider.py:77	monotonic_ns	started = monotonic_ns()
+OS_CALL	runner/provider.py:56	os.environ.get	self.enabled = os.environ.get("PHEROOS_PROVIDER") == "1" if enabled is None else enabled
+BARE_CALL	runner/provider.py:91	monotonic_ns	"adapter_elapsed_ns": monotonic_ns() - started}
+OS_CALL	runner/runtime.py:792	os.open	handle = os.open(Path(path).parent, os.O_RDONLY)
+OS_CALL	runner/runtime.py:791	os.fsync	os.fsync(stream.fileno())
+OS_CALL	runner/runtime.py:794	os.fsync	os.fsync(handle)
+OS_CALL	runner/runtime.py:796	os.close	os.close(handle)
+OS_CALL	runner/runtime.py:815	os.environ.get	if os.environ.get("PHEROOS_PROVIDER") != "1":
+OS_CALL	runner/runtime.py:817	os.environ.get	key = api_key or os.environ.get("ANTHROPIC_API_KEY")
+OS_CALL	runner/runtime.py:820	os.environ.get	url = base_url or os.environ.get("ANTHROPIC_BASE_URL") or "https://api.anthropic.com"
+OS_CALL	runner/tools.py:74	os.open	directory = os.open(root, os.O_RDONLY | os.O_DIRECTORY)
+OS_CALL	runner/tools.py:80	os.open	return os.open(parts[-1], os.O_RDONLY | os.O_NOFOLLOW, dir_fd=directory)
+OS_CALL	runner/tools.py:82	os.close	os.close(directory)
+OS_CALL	runner/tools.py:88	os.read	chunk = os.read(descriptor, limit - total)
+OS_CALL	runner/tools.py:77	os.open	nested = os.open(part, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW, dir_fd=directory)
+OS_CALL	runner/tools.py:78	os.close	os.close(directory)
+OS_CALL	runner/tools.py:145	os.close	os.close(descriptor)
+OS_CALL	runner/tools.py:139	os.fstat	if not stat.S_ISREG(os.fstat(descriptor).st_mode):
+FS_ORDER	src/pheroos_interaction/sequential.py:287	walk	return walk(node, prior, 1-prior)
+FS_ORDER	src/pheroos_interaction/sequential.py:324	walk	return walk(node, _F(prior), 1-_F(prior))
+FS_ORDER	src/pheroos_interaction/sequential.py:388	walk	return walk(node, {(0, 0): _F(prior)}, {(0, 0): 1-_F(prior)})
+BARE_CALL	src/pheroos_interaction/sequential.py:510	product	for joint in product(*[list(product((box[0], box[1]), (box[2], box[3]))) for box in boxes]):
+FS_ORDER	src/pheroos_interaction/sequential.py:285	walk	total += walk(child, h, n)
+FS_ORDER	src/pheroos_interaction/sequential.py:321	walk	total += walk(child, weight_h*_exact_likelihood(q, rho, outcome, True),
+FS_ORDER	src/pheroos_interaction/sequential.py:385	walk	total = _padd(total, walk(child, _pmul(poly_h, _LIKELIHOOD_POLY[(outcome, True)]),
+BARE_CALL	src/pheroos_interaction/sequential.py:460	product	for q, r in product((sub[0], sub[1]), (sub[2], sub[3])))
+BARE_CALL	src/pheroos_interaction/sequential.py:510	product	for joint in product(*[list(product((box[0], box[1]), (box[2], box[3]))) for box in boxes]):

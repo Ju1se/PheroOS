@@ -1,0 +1,680 @@
+====================================================================================================
+SECTION: §H Churn
+====================================================================================================
+- [CRITICAL] Churn is NOT RUN for 54.2% of the audited codebase: 16 untracked files carry 52.3% of its cyclomatic complexity
+    tag      : [measured]
+    locator  : runner/orchestration.py, runner/runtime.py, runner/contracts.py, runner/anthropic.py, runner/audit.py, runner/tools.py, runner/runtime_policies.py + tests/interaction/test_{anthropic,e4_shared_capacity,orchestration_audit,orchestration_authority,orchestration_colony,orchestration_hardening,orchestration_recovery,orchestration_workflow,tools}.py
+    command  : git ls-files --others --exclude-standard runner src/pheroos_interaction tests/interaction; /tmp/audit-venv/bin/radon cc -s --json runner/{anthropic,audit,contracts,orchestration,runtime,runtime_polici
+    true     : [measured] These 16 files are untracked, so no commit, blame, or numstat record exists for any of them. Churn is NOT RUN, per file: runner/anthropic.py NOT RUN (untracked, no git history); runner/audit.py NOT RUN; runner/contracts.py NOT RUN; runner/orchestration.py NOT RUN; runner/runtime.py NOT RUN; runner/runtime_policies.py NOT RUN; runner/tools.py NOT RUN; tests/interaction/test_anthropic.py NOT RUN; test_e4_sha
+    matters  : Churn analysis is a sampling instrument, and here it samples a minority of the code and the smaller half of its complexity. Any statement of the form 'the hot spots are X' is a statement about the tracked 46% only. The orchestration layer is simultaneously the newest, the most complex, and the compl
+    fix      : Commit the orchestration layer (or add it to .gitignore deliberately, with a written reason). Re-run §H afterwards; until then treat every churn number in this audit as covering 46 | cost=S | risk=None to the code. The risk is in the decision the commit forces: whoever commits
+
+- [HIGH] The audited scope has 2 days of history inside a 99-day repo, so churn has no discriminating power for any file
+    tag      : [measured]
+    locator  : runner/, src/pheroos_interaction/, tests/interaction/ (whole scope); birth commit eedddc0, HEAD e664d2e
+    command  : git log --format='%h %ad %s' --date=short -- runner src/pheroos_interaction tests/interaction; git ls-tree -r --name-only eedddc0^ -- runner src/pheroos_interaction tests/interaction
+    true     : [measured] The repo is 99 days old (2026-06-09 to 2026-09-16) with 116 commits on main and 138 across all refs. [measured] Exactly 5 of those 116 commits touch the audited paths: eedddc0 (09-14 21:32), c17b376 (09-14 21:34), 4111b67 (09-15 10:44), eb21ca8 (09-15 17:21), e664d2e (09-16 21:15). The span from first to last is 2d 0h. [measured] git ls-tree at eedddc0^ returns 0 files for all three scope paths -- nothing 
+    matters  : A reader who sees '§H Churn' in an audit will assume it answers 'which code keeps getting reworked'. Here it cannot: there has not been enough elapsed time for rework to occur or to be distinguished from initial authoring. Reporting a churn ranking without this caveat would manufacture confidence th
+    fix      : Not a code defect -- a measurement limit to state, not fix. Re-run §H after the codebase has accumulated maintenance history (a reasonable threshold is >=3 months of post-authorshi | cost=S | risk=None. The risk is in not stating it: a churn table presented without the 2-day c
+
+- [HIGH] [measured revert] 1485 lines added and removed within 13 hours: 10 files born on day 1 were deleted byte-identically on day 2
+    tag      : [measured]
+    locator  : runner/accounting.py, runner/adapters.py, runner/host.py, src/pheroos_interaction/policy.py, src/pheroos_interaction/ports.py, src/pheroos_interaction/visibility.py, tests/interaction/test_{accounting,host,replay,visibility}.py -- added eedddc0, deleted 4111b67
+    command  : git show --diff-filter=D --name-only --format='' 4111b67 -- runner src/pheroos_interaction tests/interaction; for f in <those>; do git rev-parse eedddc0:$f; git rev-parse 4111b67^:$f; done; git diff -
+    true     : [measured] eedddc0 added 20 files into scope at 2026-09-14 21:32. 4111b67 deleted 10 of them at 2026-09-15 10:44 -- 50% of the scope, lifespan 13h12m. [measured] 9 of the 10 have identical blob hashes at eedddc0 and at 4111b67^ (unchanged between birth and deletion). The 10th, runner/accounting.py, differs only by the 2 whitespace lines c17b376 removed. [measured] numstat shows exact add/delete symmetry: visibility 2
+    matters  : Half the audited scope was designed, written, committed, and discarded inside one working day, and the replacement was written from scratch rather than salvaged. Whatever the deleted accounting, adapters, host, policy, ports and visibility modules were meant to do, that requirement either evaporated
+    fix      : No code change. Record in the repo why the day-1 design was abandoned -- 4111b67's one-line message does not say. If any behaviour of the deleted modules was meant to survive into  | cost=S | risk=None. Documentation only. The underlying risk, already realised, is that the rat
+
+- [MEDIUM] The scope's birth commit is a flattened squash of an unmerged branch, so git blame attributes 20 files to one commit that never authored them
+    tag      : [measured]
+    locator  : eedddc0 (main) vs cf93cb5, a2e1af3, a51deef, 4dadd2c (branches codex/core-data-cleanup, codex/interaction-only -- not reachable from HEAD)
+    command  : git log --all --not HEAD --format='%h %ad %s' --date=short -- runner src/pheroos_interaction tests/interaction; git rev-parse cf93cb5:runner vs eedddc0:runner; git log -1 --format='%h parents:%p' eedd
+    true     : [measured] 22 of the 138 commits across all refs are not reachable from main; 4 of those touch the audited paths: 4dadd2c (09-14 20:34), a51deef (09-14 20:53), a2e1af3 (09-14 21:31), cf93cb5 (09-14 21:32). [measured] eedddc0 has exactly one parent (053a0d3), so it is not a merge commit. [measured] Yet its tree hash for runner/, src/pheroos_interaction/ and tests/interaction/ is byte-identical to unmerged commit cf93c
+    matters  : This is why §J cannot lean on git evidence for these files even though they are tracked. git blame on main dates every line of runner/session.py's original 394 lines to eedddc0 and attributes them to a commit message about replacing a protocol tree; the commits that actually explain each line sit on
+    fix      : Preserve the four off-main commits (tag them, or note their hashes in the repo) before the branches are deleted. Going forward, merge rather than squash when the branch history car | cost=S | risk=None to the code. If the branches are already garbage-collectable, the record ma
+
+- [MEDIUM] The churn x complexity intersection reaches only 3 files and 17.3% of scope complexity; the two most complex functions are outside it
+    tag      : [inferred]
+    locator  : runner/session.py:58 (Session.create), runner/inspection.py:275 (_verify_execution), runner/evidence.py:242 (CoordinationSession.source_update); outside: runner/audit.py:205 (replay_run), runner/colony.py:106 (run_colony)
+    command  : git log --numstat --format='C|%h|%ad' -- runner src/pheroos_interaction tests/interaction | python (aggregate); /tmp/audit-venv/bin/radon cc -s --json $(git ls-files runner src/pheroos_interaction)
+    true     : [measured] Tracked scope files with >=2 commits AND sumCC >= 80, ranked: (1) runner/session.py -- 4 commits, 665 lines churned, sumCC 177, maxCC 22 at Session.create:58; (2) runner/inspection.py -- 2 commits, 399 lines churned, sumCC 176, maxCC 46 at _verify_execution:275; (3) runner/evidence.py -- 3 commits, 850 lines churned, sumCC 83, maxCC 14 at source_update:242. No other tracked file qualifies: cli.py and drive
+    matters  : The churn x complexity intersection is normally the most actionable output of a churn section, because it points at code that is both hard and unsettled. Presented here without its coverage figure it would direct review effort at session.py and evidence.py while leaving replay_run (CC=68) and run_co
+    fix      : Do not use this intersection to prioritise review in this audit. Prioritise from §G complexity alone, which covers all 2521 CC. Revisit the intersection once the orchestration laye | cost=S | risk=None -- this is guidance on how to read the section. The risk is acting on a 17.
+
+  NOT RUN:
+    - Churn, blame and numstat for runner/anthropic.py, runner/audit.py, runner/contracts.py, runner/orchestration.py, runner/runtime.py, runner/runtime_policies.py, runner/tools.py : NOT RUN -- untracked, no git history exists. 3934 source LOC and sumCC 1318 are invisible to every git-based measurement. No estimate substituted.
+    - Churn, blame and numstat for tests/interaction/test_anthropic.py, test_e4_shared_capacity.py, test_orchestration_audit.py, test_orchestration_authority.py, test_orchestration_colony.py, test_orchestration_hardening.py, test_orchestration_recovery.py, test_orchestration_workflow.py, test_tools.py : NOT RUN -- untracked, no git history exists. 5913 test LOC invisible to git-based measurement. No estimate substituted.
+    - Churn over a 12-month horizon, and identification of load-bearing code untouched for >12 months : NOT RUN as a measurement -- the repository is 99 days old, so the 12-month window does not exist. Reported as a structural 0%, not as an estimate.
+    - Line-level and function-level re-fix attribution via git blame -C -C -M across successive revisions of the audited files : NOT RUN meaningfully -- 24 of 35 tracked scope files have a single commit, and main's birth commit eedddc0 is a flattened squash, so blame attributes whole files to a commit that did not incrementally author them. Running it would produce output whose per-line attribution is known to be wrong.
+    - Uncommitted working-tree modifications to the 11 modified tracked files as churn events : NOT RUN as churn -- uncommitted changes have no commit, timestamp or message, so they cannot be classified as [measured revert] or [probable re-fix]. git diff --stat for them belongs to the lead auditor's §2 state record, not to §H.
+    - Author-diversity and ownership-dispersion churn metrics (how many distinct authors touched each file) : NOT RUN -- outside §H as briefed (semantic ownership is §B.2, reserved to the lead auditor and explicitly not delegable).
+  CLEAN:
+    - Explicit reverts, whole repo lifetime: git log --all --grep='^Revert' -i returned 0 results across all 138 commits on all refs. No git revert has ever been run in this re
+    - Revert trailers: git log --all --grep='This reverts commit' returned 0 results. No commit body carries a revert marker.
+    - [probable re-fix] events in scope: ZERO. The classifier requires same lines/function changed again within N days AND a commit message indicating fix/correct/regression. N
+    - Rename blindness: for all 35 tracked scope files, git log --follow returned exactly the same commit count as plain git log. No file's history is truncated by an undetecte
+    - Stale code untouched for >12 months: 0 files, 0% of the repo. This is structurally impossible to violate -- the repo's first commit is 2026-06-09, making it 99 days old a
+    - Long-gap re-touches: of the 11 tracked scope files with >=2 commits, the largest inter-commit gap anywhere is 1d10h31m (tests/interaction/test_layout.py). No file was cha
+    - Working tree read-only verification: git status --porcelain after all §H work is identical to the lead auditor's baseline (11 modified tracked files, the same 16 untracke
+    - Isolation hygiene: §H required no destructive check -- reading git history mutates nothing -- so no /tmp copy of the source tree was created and none was shared with anot
+
+====================================================================================================
+SECTION: §G Complexity and dead code
+====================================================================================================
+- [HIGH] replay_run is one 227-line function at CC 68, and its branch density hides a path where a decision's receipt is never digest-verified
+    tag      : [read]
+    locator  : /Users/scottxie/Desktop/multi-agent/runner/audit.py:205-431 (the skip: runner/audit.py:314-316)
+    command  : cd /Users/scottxie/Desktop/multi-agent && /tmp/audit-venv/bin/radon cc -s -n C runner src  [raw: audit/raw/G-radon-cc.txt]  then  sed -n '307,322p' runner/audit.py  [raw: audit/raw/G-skip-paths.txt]
+    true     : [measured] radon reports runner/audit.py:205-431 replay_run at cyclomatic complexity 68, rank F -- the highest in the repository and 3.4x the next-worst non-agent-loop block. [measured] The AST pass measures its span at 227 lines, 216 non-blank; it is the longest function in scope by 46 lines. [read] The function is a single body running seven sequential validation phases over seven different ledger tables, sharing e
+    matters  : This is the function that produces the offline verdict on a recorded run -- the artifact the whole four-layer design exists to make checkable. A verifier that reports PASS is asserting that its checks ran, and here a whole class of receipt (response_rejected) traverses the decision loop registering 
+    fix      : Split replay_run into one function per ledger table (calls, decisions, artifacts, accounting, terminality, consumption), each taking the ledger and returning its own (checks, failu | cost=L | risk=High if done as one change. replay_run is the verification oracle, so a refactor
+
+- [HIGH] runner/contracts.py scores maintainability index 0.00 with seven blocks over CC 20, and it is the trust boundary for untrusted spec JSON
+    tag      : [measured]
+    locator  : /Users/scottxie/Desktop/multi-agent/runner/contracts.py:507-576 (workflow_spec, CC 56), :111-173 (validate_schema, CC 40), :176-225 (conforms, CC 30), :328-359 (_policy, CC 25), :406-452 (task_spec, CC 23), :614-661 (parse_proposal, CC 21), :50-66 (finite_json, CC 12)
+    command  : cd /Users/scottxie/Desktop/multi-agent && /tmp/audit-venv/bin/radon mi -s runner src  [raw: audit/raw/G-radon-mi.txt]  and  /tmp/audit-venv/bin/radon cc -s -n C runner src  [raw: audit/raw/G-radon-cc.
+    true     : [measured] radon mi reports `runner/contracts.py - C (0.00)`. Zero is the floor of the maintainability index; no other file in the repository reaches it (next worst is session.py at 3.92). [measured] The file is 674 lines and contains 7 of the repository's 18 blocks above CC 20 -- more than any other module -- including workflow_spec at CC 56 (3rd highest overall) and validate_schema at CC 40. [read] These are not in
+    matters  : Every one of these functions sits on the boundary between untrusted input (a spec file, a model's response) and the frozen, replayable state the rest of the system trusts absolutely. A missed branch here does not crash -- it admits something malformed as valid, and every downstream layer then treats
+    fix      : Extract workflow_spec's cross-entity consistency rules -- each currently an inline `if ...: raise ContractError(...)` over the already-parsed agents/tools/tasks/limits -- into a ta | cost=L | risk=Moderate. The refactor is mechanical and each extracted rule keeps its exact Con
+
+- [MEDIUM] admit_children accepts lease_seconds, validates it nowhere and uses it nowhere, unlike every other lease_seconds parameter in the codebase
+    tag      : [measured]
+    locator  : /Users/scottxie/Desktop/multi-agent/runner/orchestration.py:572-631 (signature at :572, column 85)
+    command  : cd /Users/scottxie/Desktop/multi-agent && /tmp/audit-venv/bin/ruff check runner src --select F,ARG,ERA --no-cache  [raw: audit/raw/G-ruff-F-ARG-ERA.txt]  then  grep -rn 'lease_seconds' runner src test
+    true     : [measured] ruff ARG002 at runner/orchestration.py:572:85 reports `Unused method argument: lease_seconds`; pylint W0613 independently reports the same at 572:84. [measured] A grep restricted to the function body (lines 572-631) returns no occurrence of lease_seconds outside the signature line itself. [measured] Every other lease_seconds parameter in the repository is both validated and threaded: session.py:152-153 and
+    matters  : The parameter is advertised in a public orchestration method's signature, so a caller has every reason to believe it does something. Two failure modes follow. A caller passing lease_seconds=300 silently gets whatever lease the decomposition path actually applies, with no error -- a lease shorter tha
+    fix      : Decide which the method means. If child leases are meant to be configurable, add `_duration(lease_seconds)` at the top of the body to match the siblings and thread the value into t | cost=S | risk=Low either way. Deleting the parameter is the safer branch and breaks only calle
+
+- [MEDIUM] The two agent loops, run_colony and run_worker, are the second and fifth most complex blocks in the repository and their agreement is held only by a comment
+    tag      : [measured]
+    locator  : /Users/scottxie/Desktop/multi-agent/runner/colony.py:106-286 (run_colony, CC 64, 181 lines) and /Users/scottxie/Desktop/multi-agent/runner/worker.py:108-218 (run_worker, CC 43, 111 lines); the parity comment at /Users/scottxie/Desktop/multi-agent/runner/colony.py:211
+    command  : cd /Users/scottxie/Desktop/multi-agent && /tmp/audit-venv/bin/radon cc -s -n C runner src  [raw: audit/raw/G-radon-cc.txt]  and the AST span pass  [raw: audit/raw/G-function-lengths.txt]  and  grep -r
+    true     : [measured] run_colony is CC 64 rank F over a 181-line span (179 non-blank); run_worker is CC 43 rank F over 111 lines. They are two of the three functions in the repository exceeding an 80-line span (the third is replay_run). [measured] Their two planning helpers are also above threshold: colony.py:65-103 _plan at CC 24 and worker.py:18-38 _plan at CC 13, plus worker.py:61-105 waiting_rule at CC 20. [read] runner/col
+    matters  : Two large single-body loops that are required to agree, with a hand-written comment as the statement of that requirement and one test covering one aspect of it, is a configuration where the loops drift and the drift is found in production rather than in CI. At CC 64 the colony loop has more independ
+    fix      : Extract the shared step -- claim, plan, drive, classify the outcome, publish or reject, renew -- into one function that both loops call, leaving run_colony with only what is genuin | cost=L | risk=Moderate to high. These loops own lease lifetime, reservation release and reject
+
+- [MEDIUM] runner/runtime.py is the only file over 800 lines, at maintainability index 5.88 with eight blocks over CC 10 including _outcome at CC 31
+    tag      : [measured]
+    locator  : /Users/scottxie/Desktop/multi-agent/runner/runtime.py:1-889; hot blocks at :690-751 (_outcome, CC 31), :412-468 (_infer, CC 17), :195-234 (_conversation, CC 17), :353-391 (step, CC 14), :313-341 (_state, CC 13), :555-598 (evaluate_rule, CC 13), :119-158 (_select_work, CC 11)
+    command  : cd /Users/scottxie/Desktop/multi-agent && wc -l runner/*.py  and  /tmp/audit-venv/bin/radon mi -s runner src  and  /tmp/audit-venv/bin/radon cc -s -n C runner src  [raw: audit/raw/G-loc.txt, G-radon-m
+    true     : [measured] runner/runtime.py is 889 lines, the only file in scope above 800 (next is orchestration.py at 726, then contracts.py at 674). [measured] radon mi ranks it C at 5.88. [measured] It contains 8 blocks above CC 10, headed by _outcome at CC 31 rank E over a 62-line span. [measured] Across the two audited trees, 56 of 452 analysed blocks (12.4%) exceed CC 10 and 18 exceed CC 20, so the concentration in this file
+    matters  : This is the module that drives the whole run: work selection, conversation assembly, the frozen model request, step execution, rule evaluation and the terminal outcome. _outcome at CC 31 decides how a run ends, which is the value everything downstream -- including the replay verifier -- is checked a
+    fix      : The file has clear internal seams already marked by its own section banners (allocation at :117, and the conversation, execution and rule groups below). Split along them into runti | cost=M | risk=Low to moderate for the file split, which is import-level movement with no behav
+
+- [LOW] Runtime._offered is dead: defined, never called from anywhere in the repository including tests and docs
+    tag      : [measured]
+    locator  : /Users/scottxie/Desktop/multi-agent/runner/runtime.py:248-252
+    command  : cd /Users/scottxie/Desktop/multi-agent && /tmp/audit-venv/bin/vulture runner src tests/interaction --min-confidence 60  [raw: audit/raw/G-vulture-with-tests.txt]  then  grep -rn '_offered' runner/ src
+    true     : [measured] vulture reports `runner/runtime.py:248: unused method '_offered' (60% confidence)` and the hit survives adding tests/interaction to the analysis scope, unlike 24 of the 32 hits from the runner+src-only run. [measured] A grep across runner/, src/, tests/, docs/ and examples/ returns exactly one line: the definition itself at runner/runtime.py:248. There is no call site, no string reference and no mention in
+    matters  : A private helper that duplicates a rule already implemented twice next to it, and is called by neither, is a trap for the next change. Someone widening the offered-tool set will find three places that encode it and no way to tell from the code which are live -- and updating only the dead one produce
+    fix      : Delete runner/runtime.py:248-252. If the intent was that _tool_schemas and _declarations should both derive their name set from one place, do that instead: have both call _offered  | cost=S | risk=Very low. There is no caller and no dynamic-dispatch surface: the module declare
+
+- [LOW] The COMMITMENTS registry is a lookup table with no lookup, and no spec can reach the commitment policies it names
+    tag      : [read]
+    locator  : /Users/scottxie/Desktop/multi-agent/runner/runtime_policies.py:211-212 (registry), :234 (the loop that omits it), /Users/scottxie/Desktop/multi-agent/runner/contracts.py:315-321 (POLICY_SLOTS)
+    command  : cd /Users/scottxie/Desktop/multi-agent && /tmp/audit-venv/bin/vulture runner src tests/interaction --min-confidence 60  [raw: audit/raw/G-vulture-with-tests.txt]  then  grep -rn 'COMMITMENTS\|ALLOCATI
+    true     : [measured] vulture reports `runner/runtime_policies.py:211: unused variable 'COMMITMENTS'` and the hit survives adding tests to scope. [measured] A repository-wide grep for COMMITMENTS returns exactly one line, its own definition. [read] Its two sibling registries are live: runtime_policies.py:234 reads `for slot, registry in (("allocation", ALLOCATIONS), ("lease", LEASES))` and COMMITMENTS is deliberately not in tha
+    matters  : Low cost, because the contract layer fails closed -- a spec naming a commitment policy is refused, not silently ignored, so there is no configuration that appears to take effect and does not. What remains is a correctness hazard of the documentation kind: a dict that looks exactly like the two adjac
+    fix      : Either delete COMMITMENTS and let the three classes be constructed directly as the tests already do, or add a one-line comment at runtime_policies.py:211 stating that this registry | cost=S | risk=Very low. Nothing reads the dict, and the classes it names are imported by tests
+
+- [LOW] Fifteen further unused arguments, the majority legitimate interface hooks, recorded so they are accounted for rather than left to resurface
+    tag      : [measured]
+    locator  : /Users/scottxie/Desktop/multi-agent/runner/session.py:189 (db, call), :430 (db); /Users/scottxie/Desktop/multi-agent/runner/orchestration.py:277 (db), :638 (db); /Users/scottxie/Desktop/multi-agent/runner/runtime.py:522 (declaration); /Users/scottxie/Desktop/multi-agent/runner/runtime_policies.py:42 (context), :134 (task_kind, agent), :154 (task_kind, agent), :165 (abstain_loss); /Users/scottxie/Desktop/multi-agent/runner/audit.py:155 (agent); /Users/scottxie/Desktop/multi-agent/runner/tools.py:335 (resolver); plus 5 unused lambda parameters at runner/anthropic.py:65, runner/inspection.py:44, runner/runtime.py:775, runner/tools.py:64, src/pheroos_interaction/sequential.py:459
+    command  : cd /Users/scottxie/Desktop/multi-agent && /tmp/audit-venv/bin/ruff check runner src --select F,ARG,ERA --no-cache  [raw: audit/raw/G-ruff-F-ARG-ERA.txt]  and  /tmp/audit-venv/bin/pylint --disable=all 
+    true     : [measured] ruff reports 21 ARG hits in runner+src and pylint independently reports 16 W0613; together they cover the 16 named parameters plus 5 lambda parameters. [read] Most are structural rather than defects: session.py:189 _prompt_contract and :430 _snapshot_extra are base-class extension hooks whose subclass overrides use the arguments (orchestration.py:558 and platform.py override this family), runtime_policies.
+    matters  : Recorded for completeness so a later run does not re-derive them. The interface hooks carry no cost and should not be changed. The three unexplained ones are worth a glance rather than a fix: audit.py:155 is the one with any weight, because a function named readable_artifacts that takes an agent and
+    fix      : Leave the interface hooks alone; if the noise is unwanted, silence them per-file with a ruff per-file-ignore rather than renaming parameters, since the names are part of the docume | cost=S | risk=Very low for the hooks, since no change is proposed. For audit.py:155 the risk i
+
+  NOT RUN:
+    - git blame on the 10 oldest TODO/FIXME/HACK/XXX markers : The check has no input: grep -rnE 'TODO|FIXME|HACK|XXX' over runner/, src/pheroos_interaction/ and tests/interaction/ returned zero matches, so there are no markers to date. Independently, had any existed in the orchestration layer, blame would still have been NOT RUN there: runner/anthropic.py, audit.py, contracts.py, orchestration.py, runtime.py, runtime_policies.py and tools.py are untracked and have no git history. No estimate substituted. Raw: audit/raw/G-todo.txt
+    - Churn-weighted complexity (complexity crossed with change frequency) : Would require git log history per file. Five of the seven highest-complexity modules (audit.py, contracts.py, orchestration.py, runtime.py, runtime_policies.py) are untracked, so no history exists for them and any ranking would be computed over an arbitrary subset. Out of this section's remit in any case (§H owns churn), and flagged here only because complexity findings are normally prioritised by it.
+    - Copy-paste detection across run_colony and run_worker : jscpd is ABSENT and unavailable in the audit venv, per the repository facts. The parity relationship between runner/colony.py:106-286 and runner/worker.py:108-218 is reported from the codebase's own comment at colony.py:211 and from measured complexity, NOT from a duplication measurement. No token-overlap figure is estimated. Quantifying the actual overlap belongs to §F.
+    - Mutation testing of the high-complexity verifier paths : Out of this section's remit (mutation testing belongs to the test-quality section) and would require an isolated mutable copy. Section G ran only parsing tools, so no /tmp copy was created and the source tree was never exposed to a mutating check.
+  CLEAN:
+    - ruff F rules on runner/ and src/: ZERO findings. No unused imports (F401), no undefined names (F821), no unused local variables (F841), no redefinitions (F811), no f-stri
+    - Unreachable code: ZERO. pylint W0101 unreachable-code produced no hits across runner/ and src/pheroos_interaction/. Command: /tmp/audit-venv/bin/pylint --disable=all --en
+    - Commented-out code blocks: NONE EXIST. ruff ERA001 produced exactly one hit, runner/runtime.py:117, and it is a false positive -- the flagged line is the section banner '
+    - TODO / FIXME / HACK / XXX markers: ZERO, across runner/, src/pheroos_interaction/ AND tests/interaction/. Command: grep -rnE 'TODO|FIXME|HACK|XXX' runner/*.py src/pheroos
+    - Second-opinion dead-code sweep found nothing beyond what ruff found: pylint W0611 (unused-import), W0612 (unused-variable), W0105 (pointless-string-statement), W0107 (unn
+    - Unused exports via __all__: NOT APPLICABLE, verified rather than assumed. No module in runner/, src/pheroos_interaction/ or tests/interaction/ declares __all__. Command: 
+    - Files over 800 lines: exactly ONE, runner/runtime.py at 889 lines (reported as a finding). Every other module in scope is under 800; the next largest are orchestration.py
+    - Functions over ~80 lines: exactly THREE out of 436 functions/methods -- audit.py:205-431 replay_run (227), colony.py:106-286 run_colony (181), worker.py:108-218 run_worke
+    - Vulture false positives ruled out by direct verification rather than assumption, so the lead does not need to re-check them: the 3 'unused attribute row_factory' hits (au
+    - The 24 vulture hits that dropped out once tests/interaction entered scope were each confirmed by grep to have real call sites, so none is a hidden candidate: run_colony, 
+    - Read-only discipline held: git status --porcelain at the end of this section is byte-identical to the state the lead auditor recorded at session start. Section G modified
+
+====================================================================================================
+SECTION: §A Architecture drift
+====================================================================================================
+- [MEDIUM] The base ledger's cross-layer interface is four undeclared private helpers in session.py, one of which is the canonical digest serializer
+    tag      : [measured]
+    locator  : runner/session.py:15 (_wire), :19 (_integer), :25 (_id), :31 (_duration), :37 (class Session); consumers runner/platform.py:17, runner/orchestration.py:25, runner/runtime.py:40, runner/runtime_policies.py:30, runner/evidence.py:10, runner/colony.py:39, runner/worker.py:15, runner/audit.py:26, runner/provider.py:16
+    command  : /tmp/audit-venv/bin/python - <<'EOF'  (ast.walk collecting ImportFrom nodes whose names start with '_', tabulated by source module and consumer; plus module-level public/private name extraction for ru
+    true     : [measured] 40 private symbols cross module boundaries in 21 import statements across the audited tree; 23 of those 40 come from runner/session.py. [measured] runner/session.py declares exactly one module-level PUBLIC name (`Session`) and four module-level private names (`_wire`, `_integer`, `_id`, `_duration`), and those four are imported by 9 other modules. [read] `_wire` (runner/session.py:15-16) is `json.dumps(val
+    matters  : Every recorded digest in every ledger is a function of `_wire`'s exact byte output, and every declared-artifact identity and replay comparison depends on it. It carries an underscore, which tells a reader and every linter that it is module-private and safe to change, while nine modules and the entir
+    fix      : Promote the four helpers to a named internal surface (a `runner/_ledger.py` primitives module, or public names) and list that surface in docs/orchestration-architecture.md §1 along | cost=M | risk=`_wire`'s output bytes must not change or every recorded digest in every existin
+
+- [MEDIUM] AGENTS.md and the architecture doc name orchestration_tasks_v1 as the live capability table; the code writes and reads only v2, and the architecture doc contradicts itself
+    tag      : [measured]
+    locator  : AGENTS.md:88; docs/orchestration-architecture.md:50 and :100 (say v1) vs docs/orchestration-architecture.md:323 (says v2); runner/orchestration.py:75, :84, :103, :122, :141, :598, :623, :713
+    command  : grep -rn "orchestration_tasks_v1" runner src/pheroos_interaction tests/interaction docs AGENTS.md README.md examples ; grep -rn "orchestration_tasks_v2" (same paths)  -> audit/raw/A-versioned-names.tx
+    true     : [measured] `runner/orchestration.py` creates, inserts into and selects from `orchestration_tasks_v2` at seven sites and contains zero references to `orchestration_tasks_v1`. [measured] the only module that reads the v1 table is `runner/audit.py:36`. [measured] AGENTS.md:88 states capability declarations are 'recorded in `orchestration_tasks_v1`'; docs/orchestration-architecture.md:50 says `create(...)` 'writes one ro
+    matters  : AGENTS.md is the contract document and step 1 of the layering evidence order - it is what a reviewer, an auditor or a future agent reads to learn where authority lives. It names the wrong table as the seat of every capability declaration. The architecture document disagrees with itself 273 lines apa
+    fix      : Change `orchestration_tasks_v1` to `orchestration_tasks_v2` at AGENTS.md:88 and docs/orchestration-architecture.md:50 and :100, leaving the 'Schema versions' section (docs:320-329) | cost=S | risk=None to behaviour - documentation only. AGENTS.md edits are owner-authorized per
+
+- [MEDIUM] runner/provider.py's only public export has no production consumer; three layers depend on the provider adapter module solely for a generic JSON helper
+    tag      : [measured]
+    locator  : runner/provider.py:19-36 (_freeze), runner/provider.py:37 (class ProviderDriver); importers runner/runtime.py:37, runner/worker.py:14, runner/colony.py:38
+    command  : grep -rn "ProviderDriver" . --include='*.py' --include='*.md' --include='*.json' (excluding .venv/__pycache__/egg-info) ; and the grimp edge list in audit/raw/A-grimp-graph.txt
+    true     : [measured] `runner/provider.py` defines exactly two module-level names. `ProviderDriver` is referenced by NO module in runner/ or src/pheroos_interaction/; its only references in the repository are README.md:128, a docstring mention at runner/worker.py:114, and tests/interaction/test_provider_worker.py. [measured] all 14 cross-module references into provider.py are to the private `_freeze`. [read] `_freeze`'s own doc
+    matters  : README.md:37 and AGENTS.md declare the generic provider adapter disabled by default and verified only with mocks - it is the module a reviewer would grep for when asking what touches the provider/transport boundary. The import graph answers that the agent runtime, the platform worker and the colony 
+    fix      : Move `_freeze` to where the other finite-JSON machinery lives - runner/contracts.py already owns the bounded finite-JSON schema subset - or beside `_wire`, and leave runner/provide | cost=S | risk=`_freeze` output feeds values that are later digested (runner/worker.py:37, :183
+
+- [LOW] The v1 compatibility read path has no v1 artifact in the repository and is exercised only against a schema the test fabricates from v2
+    tag      : [measured]
+    locator  : runner/audit.py:33-36 (TASK_TABLES) and :62-75 (the detection loop); runner/contracts.py:17-18, :406-409, :511, :514; tests/interaction/test_orchestration_audit.py:663-673
+    command  : grep -rln "orchestration-workflow-v1|orchestration_tasks_v1" examples research-data experiments ; grep -rho '"format": *"[^"]*"' examples | sort | uniq -c ; grep -rn "orchestration_tasks_v1" tests/int
+    true     : [measured] zero matches for either v1 identifier anywhere under examples/, research-data/ or experiments/. [measured] the only spec formats present in examples/ are `orchestration-workflow-v2` (7 occurrences) and `fake-model-script-v1` (4). [measured] the sole exercise of the v1 read path is tests/interaction/test_orchestration_audit.py:663-667, which constructs the v1 shape by `ALTER TABLE orchestration_tasks_v2 REN
+    matters  : What the documentation justifies is the split; what it does not establish is that the v1 reader works on a real v1 ledger. The regression evidence is a v1 schema derived from v2 by two renames, so any other way a genuine v1 ledger differs - an extra or missing column, a different index, a row shape 
+    fix      : Either commit a frozen, real `orchestration-workflow-v1` ledger fixture that the replay test opens directly, or record in docs §9 that v1 replay support is validated only against a | cost=M | risk=Adding a binary ledger fixture interacts with MANIFEST.in and the `include-packa
+
+- [LOW] A second import path from runner/runtime.py to a colony mechanism exists via runner/worker.py, so the 'only door to L1-L3' property cannot be checked by import graph
+    tag      : [measured]
+    locator  : runner/runtime.py:42 (from .worker import _release); runner/worker.py:12 (from pheroos_interaction.commitment import optimal_stopping_rule); runner/worker.py:41-51 (_release); declared rule at docs/orchestration-architecture.md:238
+    command  : PYTHONPATH=/tmp/audit-A-arch /tmp/audit-venv/bin/python -c "import grimp; g=grimp.build_graph('pheroos_interaction'); <DFS enumerating every simple path runtime->commitment>"  -> audit/raw/A-grimp-con
+    true     : [measured] grimp reports exactly two distinct simple paths from `runner.runtime` to `pheroos_interaction.commitment`: runtime -> runtime_policies -> commitment, and runtime -> worker -> commitment. [measured] `runner/runtime.py:42` is `from .worker import _release` and is runtime.py's only import from worker.py. [measured] `runner/worker.py:12` imports `optimal_stopping_rule` from the colony commitment module at modu
+    matters  : The 'only door' property is the stated reason a baseline arm and a colony arm are claimed to differ in the policy object alone (docs §7), which is what makes any measured A/B difference attributable to the algorithm. Verifying that property mechanically - by import graph, the cheapest and most durab
+    fix      : Relocate `_release` to the module that owns lease lifecycle (runner/session.py, beside the other shared helpers) so runtime.py no longer imports worker.py; or state explicitly in d | cost=S | risk=`_release` is also imported by runner/colony.py:40, and tests/interaction/test_c
+
+- [LOW] runner/colony.py has zero inbound package edges and is unreachable from the packaged console script
+    tag      : [measured]
+    locator  : runner/colony.py (212 SLOC, 0 inbound edges); pyproject.toml [project.scripts] pheroos-interaction = pheroos_interaction.runner.cli:main; runner/cli.py:34, :40, :44
+    command  : PYTHONPATH=/tmp/audit-A-arch /tmp/audit-venv/bin/python -c "import grimp; ...inbound degree ranking..." -> audit/raw/A-grimp-graph.txt ; grep -rn "run_colony|from .colony|runner.colony" tests/interact
+    true     : [measured] inbound degree of `pheroos_interaction.runner.colony` is 0 - no module in runner/ or src/pheroos_interaction/ imports it. [measured] the only console script is `pheroos-interaction = pheroos_interaction.runner.cli:main`, and runner/cli.py's three function-local imports are `.inspection` (:34), `.audit` (:40) and `.runtime` (:44) - colony is not among them. [measured] the only importer of runner.colony in t
+    matters  : The consequence is a coverage boundary, not a defect: 212 SLOC of the authorized colony control layer are never reached through the shipped binary, so the installed-CLI verification that AGENTS.md requires after changes ('verify the installed CLI, the credential-free local example, and replay of the
+    fix      : If programmatic-only use is intended, record in README that `run_colony` is a library entry point with no command, so the coverage boundary is stated rather than implied. Adding a  | cost=S | risk=The documentation option carries no behavioural risk. Adding a CLI command would
+
+  NOT RUN:
+    - import-linter contract enforcement (a durable, CI-checkable encoding of the two declared layering rules) : ABSENT from the environment per the lead auditor's tool list; not installed and not substituted. grimp's find_illegal_dependencies_for_layers was used instead as a one-off and its result is reported; it is not a persisted contract.
+    - pydeps dependency-graph rendering : ABSENT from the environment per the lead auditor's tool list. The graph was built with grimp as a library and reported as text; no estimate was substituted.
+    - Churn / git-blame dating of architectural decisions in the orchestration layer : NOT RUN for untracked files - no git history exists for runner/contracts.py, tools.py, anthropic.py, orchestration.py, runtime.py, runtime_policies.py and audit.py (established by the lead auditor). I therefore cannot date the orchestration_tasks_v1 -> v2 table change, attribute it to a commit, or show whether the AGENTS.md/docs references to v1 were correct at some earlier point. All drift findings above rest on the current file contents only.
+    - jscpd duplication measurement : ABSENT from the environment, and duplication is §B.1, outside my section. Noted only because the near-duplicate `_plan()` functions in runner/worker.py:18-39 and runner/colony.py:65-85 surfaced during the deferred-import scan; I report the structural fact (both reach into runner/platform.py's private `_loss` through a function-local import) and leave the duplication measurement to §B.1.
+  CLEAN:
+    - Declared rule: `src/pheroos_interaction/*` is a pure policy layer and must never import `runner.*` (AGENTS.md line 2; docs/orchestration-architecture.md:40). CLEAN - grim
+    - Import cycles. CLEAN - Tarjan SCC over all 58 direct edges found no non-trivial strongly connected component and no self-edge; a separate mutual-direct-import scan found 
+    - grimp find_illegal_dependencies_for_layers over the declared plane (runtime > runtime_policies > orchestration > platform > session). CLEAN - 0 illegal dependencies. Raw:
+    - Declared rule: `runner/runtime.py` must reach colony mechanisms only through the `runner/runtime_policies.py` adapter, at the DIRECT-import level. CLEAN - runtime.py's di
+    - Declared ledger MRO `OrchestrationMixin + PlatformMixin + Session` (AGENTS.md). CLEAN - executed import gives exactly OrchestrationSession -> OrchestrationMixin -> Platfo
+    - Declared: L1 is DEFINED BUT NOT ACTIVE; no runtime entry point for it (AGENTS.md; docs §7 table). CLEAN - runner/runtime.py contains 0 occurrences of `Commitment`, `commi
+    - Declared: L0 is NOT wired into agent reasoning (AGENTS.md). CLEAN - grimp reports 0 paths of any length from runner.runtime to pheroos_interaction.sequential. The only im
+    - Declared: runtime_policies.py is 'an adapter over the existing mechanisms, not a reimplementation' (docs:190, :238). CLEAN - 6 of the 8 policy classes delegate to runner.
+    - Source identity coverage of every module in scope (AGENTS.md; docs:43). CLEAN - grimp found 25 modules; tests/interaction/test_layout.py:33-58 asserts exactly those 25 pa
+    - Duplicate or competing table definitions. CLEAN - 19 CREATE TABLE statements across 4 modules, and every table name is created in exactly one place: session.py:99-103 (ba
+    - Dead version constants in the compatibility surface. CLEAN - `LEGACY_SPEC_FORMAT` (contracts.py:17) is live on both sides: contracts.py:18, :409 and :514 use it in spec v
+    - Named-legacy modules. CLEAN - no `*_v1.py`, `*_v2.py`, `*_legacy.py`, `*_new.py`, `*_old.py` or `*_shim.py` module exists in runner/ or src/pheroos_interaction/. The only
+    - The `runner/audit.py -> runner/runtime.py` dependency is an EXPLICITLY JUSTIFIED boundary special-case, noted and NOT filed as a finding per the section rules. audit.py:2
+    - The v1/v2 schema split ITSELF is an explicitly justified domain distinction, noted and NOT filed. docs/orchestration-architecture.md:320-329 documents it with an enforcem
+
+====================================================================================================
+SECTION: §D Error masking and observability
+====================================================================================================
+- [HIGH] Three of the four designed error boundaries discard the exception message, collapsing 93 distinct StateError failures into the single token "StateError"
+    tag      : [executed]
+    locator  : runner/worker.py:216, runner/colony.py:284, runner/inspection.py:239-240 (lossy); contrast runner/runtime.py:408 (lossless)
+    command  : /tmp/audit-venv/bin/python scratchpad/d_exec_reason.py  (raw: audit/raw/D-exec-message-loss.txt); counts from audit/raw/D-raise-site-collapse.txt
+    true     : [executed] run_colony, given a planner raising ValueError("DISTINCTIVE-MESSAGE-abcdef123456"), returned {'work':'w','status':'plan_error','call_id':None,'call_state':None,'reason':'ValueError'} - the message string is absent from the record. [executed] runtime.Runtime._classify, given the identical exception, returned reason 'ValueError: DISTINCTIVE-MESSAGE-abcdef123456'. [read] runner/worker.py:216 and runner/colony
+    matters  : [inferred, from the executed asymmetry and the measured raise-site counts above] The three lossy boundaries sit at the top of deep call stacks. Inside runner/inspection.py's try block alone, StateError("tool arguments differ from frozen declaration"), StateError("source payload differs from declared
+    fix      : Carry the message the way runner/runtime.py:408 already does - make the three sites emit type(exc).__name__ + ": " + str(exc). The duplication means worker.py and colony.py should  | cost=M | risk=The lossy shape is test-locked, so changing it is a deliberate contract change, 
+
+- [MEDIUM] The provider timeout bounds each socket read, not the request, and no operator can change it
+    tag      : [executed]
+    locator  : runner/anthropic.py:390 (default timeout=60.0), runner/anthropic.py:414 (self.opener(message, timeout=self.timeout)), runner/runtime.py:821 (sole production construction, passes no timeout)
+    command  : /tmp/audit-venv/bin/python scratchpad/d_exec_timeout.py  (raw: audit/raw/D-exec-timeout-not-a-deadline.txt); grep -rn "AnthropicTransport(" runner src/pheroos_interaction tests/interaction  (raw: audi
+    true     : [executed] An AnthropicTransport built with timeout=1.0, pointed at a loopback server that dripped the response body in 8 chunks 0.6s apart, took 5.44 seconds and returned normally rather than raising. Each individual read stayed under the configured bound, so the bound never tripped. [read] runner/anthropic.py:414 passes the value to urllib's opener, which applies it as a socket timeout per operation. [read] runner/
+    matters  : [inferred, from the executed timing result and the measured single construction site above] A reader of runner/anthropic.py:390 reasonably concludes a provider call is bounded at 60 seconds. It is not. A slow or half-dead provider connection can hold a sweep well past that, and because the system de
+    fix      : Two separable changes. First, add a total deadline alongside the per-read timeout so the wall-clock cost of one call is genuinely bounded - the existing MAX_BODY_BYTES cap gives a  | cost=M | risk=Adding a deadline changes when TransportError is raised, and the module's stated
+
+- [MEDIUM] No logging exists anywhere in production code, so the three silent `pass` handlers leave no trace in any channel
+    tag      : [measured]
+    locator  : runner/colony.py:275-276, runner/worker.py:207-208, runner/runtime.py:400-401; absence measured across all of runner/ and src/pheroos_interaction/
+    command  : grep -rn "import logging\|logging\.\|getLogger" runner src/pheroos_interaction --include='*.py'  and  /tmp/audit-venv/bin/ruff check --no-cache --isolated --select LOG,G runner src/pheroos_interaction
+    true     : [measured] Zero matches for `import logging`, `logging.` or `getLogger` in runner/ and src/pheroos_interaction/. Ruff's LOG and G rule families report zero findings, consistent with there being no logging calls to lint. [measured] The only stdout writes are 3 print() calls, all in runner/cli.py:37,42,48, each emitting the final JSON report - the CLI's designed output contract, not a logging substitute. [read] Three h
+    matters  : [inferred, from the measured absence of logging and the read handler bodies above] Observability here is entirely the SQLite ledger plus the returned report, which is a coherent and defensible design for a system built around replayable frozen records. It has one sharp edge: a handler whose body is 
+    fix      : Rather than introducing a logging framework and duplicating the observability channel, record these three swallowed events where the system already looks - as a ledger event or as  | cost=S | risk=Writing a ledger event from inside an error handler risks a second failure in th
+
+- [LOW] A busy or locked ledger is misreported as a schema problem by the audit replay's table probe
+    tag      : [executed]
+    locator  : runner/audit.py:62-74 (the probe loop; the swallow is at runner/audit.py:67-68, the misleading raise at runner/audit.py:74)
+    command  : /tmp/audit-venv/bin/python - (probe missing-table, corrupted-image and exclusive-lock against the runner/audit.py:67 loop)  (raw: audit/raw/D-exec-sqlite-operationalerror.txt)
+    true     : [executed] A SELECT against a genuinely absent table raises sqlite3.OperationalError('no such table: ...') - the case the `continue` is written for. [executed] A SELECT against a corrupted database image raises sqlite3.DatabaseError('database disk image is malformed'), and isinstance(e, sqlite3.OperationalError) is False, so corruption is NOT swallowed by this handler. [executed] A SELECT against a database held unde
+    matters  : [inferred, from the three executed probes above] The control flow is correct and I could not make it silently pick the wrong schema: a lock fails both candidates symmetrically, so the v2-fails-while-v1-succeeds downgrade I tested for cannot occur, and corruption escapes as DatabaseError rather than 
+    fix      : Narrow the caught condition to the intended one by inspecting the error text for 'no such table' and re-raising otherwise, or probe the table's existence via sqlite_master rather t | cost=S | risk=Matching on sqlite3 error text is version-sensitive; the sqlite_master probe is 
+
+- [LOW] An empty ANTHROPIC_BASE_URL silently resolves to the production API endpoint
+    tag      : [read]
+    locator  : runner/runtime.py:820
+    command  : grep -rnE "\.get\([^)]*\)[[:space:]]+or[[:space:]]+" runner src/pheroos_interaction --include='*.py'; sed -n '818,822p' runner/runtime.py  (raw: audit/raw/D-grep-observability.txt, audit/raw/D-timeout
+    true     : [read] runner/runtime.py:820 reads `url = base_url or os.environ.get("ANTHROPIC_BASE_URL") or "https://api.anthropic.com"`. Because the chain tests truthiness rather than presence, ANTHROPIC_BASE_URL="" is indistinguishable from the variable being unset, and both fall through to the production endpoint. [read] The immediately preceding key check at runner/runtime.py:818-819 uses the same truthiness test but fails clo
+    matters  : [inferred, from the two read facts above] An operator who clears ANTHROPIC_BASE_URL intending to disable or unset the override gets the real, billable endpoint instead, and nothing reports the substitution. The blast radius is limited because reaching this line already requires PHEROOS_PROVIDER=1 an
+    fix      : Test for presence rather than truthiness, and reject an explicitly-empty ANTHROPIC_BASE_URL with the same StateError shape the adjacent key check already uses, so both env vars fai | cost=S | risk=Turns a currently-working (if surprising) configuration into an error; anyone re
+
+- [LOW] The provider's structured error body is discarded whenever it fails to parse, leaving only the HTTP status
+    tag      : [read]
+    locator  : runner/anthropic.py:344-354 (the handler is at runner/anthropic.py:348-349)
+    command  : /tmp/audit-venv/bin/python scratchpad/d_handlers.py filelist.txt  (raw: audit/raw/D-broad-and-swallow.txt, audit/raw/D-handlers-ast.json)
+    true     : [measured] The AST census records runner/anthropic.py:348-349 as `except (OSError, ValueError, AttributeError): return ''` - one of only two return-constant swallows in production code. [read] _detail() reads the error body and returns a formatted ': type: message' suffix, or '' on any read failure, oversize body, or shape mismatch. [read] The caller at runner/anthropic.py:416 composes `TransportError(f"http {error.c
+    matters  : [inferred, from the read control flow above] This is a bounded, designed truncation at a trust boundary - refusing to interpolate an unparseable or oversized remote body into a local error string is correct, and the status code preserves the coarse cause. The residual cost is that the two cases 'pro
+    fix      : Distinguish the branches in the returned suffix - for example a fixed marker when a body was present but unusable, versus '' when there was nothing to read - so a persistent parse  | cost=S | risk=Very low; the change is confined to a locally-composed error string and must onl
+
+  NOT RUN:
+    - Mutation testing of the exception handlers (mutmut) to establish whether the error paths are actually covered rather than merely executed : Out of section D's scope - test-suite strength belongs to §C. I created no isolated /tmp copy and ran no mutating check, so no cleanup was required; the source tree was only read and imported in-process.
+    - gitleaks / trufflehog scan for secrets leaking into exception messages, which would bear on whether widening `reason` to include str(exc) is safe (finding 1's risk) : Both tools are ABSENT from /tmp/audit-venv and unavailable per the brief. I substituted no estimate. I established by reading that runner/anthropic.py:384 documents the API key as reaching request headers and no exception message, but I could not verify the absence of secrets in message text mechanically.
+    - Churn and blame analysis of the error boundaries, which would show whether the three lossy sites drifted apart over time or were written that way : The brief establishes that runner/anthropic.py, audit.py, contracts.py, orchestration.py, runtime.py, runtime_policies.py and tools.py are UNTRACKED by git, so no history exists for them. runner/worker.py and runner/colony.py are tracked but worker.py is modified in the working tree. Per the brief, churn and blame checks are NOT RUN for untracked files.
+    - Whether a real (non-loopback) provider connection exhibits the unbounded-total-time behaviour of finding 2 against api.anthropic.com : Deliberately not attempted. The timeout semantics were established against a loopback server I controlled, which is sufficient and avoids contacting an external paid endpoint. The conclusion rests on the executed loopback result plus the read of runner/anthropic.py:414, not on any live provider call.
+  CLEAN:
+    - Zero bare `except:` handlers in runner/, src/pheroos_interaction/ or tests/interaction/. [measured] grep -rnE "except[[:space:]]*:" returned no matches across all 51 file
+    - Zero uses of contextlib.suppress anywhere in scope. [measured] grep -rn "suppress(" returned no matches.
+    - Zero `except Exception: pass`. [measured] bandit reports 0 B110 (try_except_pass) and 0 B112 (try_except_continue) over 6501 LOC; ruff reports 0 S110 and 0 S112. The 3 `p
+    - The count of broad catches is low and every one sits at a genuine designed boundary - this is not a codebase where failure has been converted into silence by volume. [mea
+    - Outbound calls all carry timeouts. [measured] The network surface is confined to runner/anthropic.py (urllib only; no requests, httpx, http.client or raw socket use anywh
+    - Retries are absent by design, budget-bounded where re-queueing does occur, and idempotent. [measured] 10 separate docstrings across runner/ state the no-retry rule explic
+    - `print` is not being used as a substitute for structured logging. [measured] All 3 T201 findings are in runner/cli.py:37,42,48, each emitting the final JSON report on std
+    - The 7 `.get(...) or <default>` sites do not mask a required value. [measured] grep found exactly 7: runner/runtime.py:55, runner/audit.py:240 and :403, runner/contracts.p
+    - runner/tools.py, the file with the most handlers (11), masks nothing. [measured] All 11 handlers either re-raise unchanged (runner/tools.py:65-66) or raise ToolError with
+    - runner/audit.py records rather than swallows. [measured] All 5 KeyError handlers (runner/audit.py:246,299,311,345,374) and both (ContractError, KeyError, TypeError) handl
+    - runner/audit.py:67's `continue` cannot silently select the wrong schema. [executed] I specifically tested for a silent v2-to-v1 downgrade and could not produce one: SQLit
+    - The numeric OverflowError guards are correct, not masking. [read] runner/policies.py:14-15 sets valid = False and src/pheroos_interaction/inspection.py:99-100 returns flo
+    - The swallow inside runner/runtime.py:400-401 does not corrupt the run-level verdict. [read] If the ledger read inside _classify fails, `state` stays None and the per-step
+
+====================================================================================================
+SECTION: §E Security
+====================================================================================================
+- [HIGH] Replay's readable_artifacts ignores the `agent` argument, so offline audit applies none of the authorization checks the live session applies
+    tag      : [measured]
+    locator  : /Users/scottxie/Desktop/multi-agent/runner/audit.py:155-161  (sibling: /Users/scottxie/Desktop/multi-agent/runner/orchestration.py:219-223 -> /Users/scottxie/Desktop/multi-agent/runner/platform.py:141-154)
+    command  : /tmp/audit-venv/bin/pylint --disable=all --enable=W0613 --score=n runner/audit.py  ->  runner/audit.py:155:42: W0613: Unused argument 'agent' (unused-argument)
+    true     : [measured] pylint reports runner/audit.py:155:42 W0613 Unused argument 'agent'. [read] ReplayLedger.readable_artifacts(self, work_id, agent, before_step=None) at audit.py:155-161 iterates self._effective_reads(work_id, before_step) and never references `agent` in its body. [read] Its live counterpart OrchestrationSession.readable_artifacts (orchestration.py:219-223) begins `work = self._work(db, work_id, agent)`; Pla
+    matters  : runner/audit.py is the trust anchor of this system: its module docstring says 'any mismatch is a FAIL' and the CLI maps its verdict to exit codes (cli.py:43). The audit is the mechanism by which a run is certified after the fact. A verifier whose visibility rule is more permissive than the executor'
+    fix      : Either give ReplayLedger the eligibility/status predicate the live path uses (the ledger already holds orchestration_tasks agents, work.status and run.status/enabled, so it is reco | cost=M | risk=Adding the check may turn currently-PASSing recorded ledgers into FAIL. That is 
+
+- [MEDIUM] _open_within does not reject '..'; path confinement lives entirely in a different module than the function whose docstring promises it
+    tag      : [executed]
+    locator  : /Users/scottxie/Desktop/multi-agent/runner/tools.py:71-82 (and the confinement claim at tools.py:99-103)  (gate: /Users/scottxie/Desktop/multi-agent/runner/contracts.py:466-481, specifically the predicate at contracts.py:475)
+    command  : cp -RL runner /tmp/audit-E-secsym-31848/runner && ISO=/tmp/audit-E-secsym-31848 /tmp/audit-venv/bin/python probe.py  (raw: audit/raw/E-open-within-probe.txt)
+    true     : [executed] Against a root containing a symlink pointing outside it: tools._open_within(root,'link.txt') REFUSED with OSError errno 62 ELOOP - O_NOFOLLOW is effective. tools._open_within(root,'../outside/secret.txt') OPENED the file and returned its contents from outside the root. tools._open_within(root,'sub/../../outside/secret.txt') did the same. [executed] contracts.fixture_spec REFUSED every traversal form tested
+    matters  : This is a correct system held together by a cross-module invariant that is documented in neither module. tools.py's docstring (lines 1-12, 99-103) reads as a self-contained security contract - 'no symlink is followed at any path component, so nothing outside the declared set is reachable' - which is
+    fix      : Reject '..', '.', '' and absolute paths inside _open_within itself (4 lines, mirroring contracts.py:475), keeping the contracts.py gate as the outer layer; or, if the helper must s | cost=S | risk=Very low. Every path that reaches _open_within today already satisfies the stric
+
+- [MEDIUM] Provider-controlled error.type is interpolated unbounded into an exception that becomes an unbounded per-task reason in the persisted outcome record
+    tag      : [executed]
+    locator  : /Users/scottxie/Desktop/multi-agent/runner/anthropic.py:344-353 (specifically line 353)  ->  /Users/scottxie/Desktop/multi-agent/runner/runtime.py:408  ->  /Users/scottxie/Desktop/multi-agent/runner/contracts.py:673-674
+    command  : ISO=/tmp/audit-E-secsym-31848 /tmp/audit-venv/bin/python probe2.py  (raw: audit/raw/E-bounds-probe.txt); locators corroborated by: grep -nE '\[:[0-9]+\]' runner/runtime.py runner/orchestration.py runn
+    true     : [executed] anthropic._detail() given an error body whose error.type is 200,000 chars returns a 200,516-char string: the 'message' contribution is exactly 512 chars (= MAX_DETAIL) but the 'type' contribution is the full 200,000 chars, untruncated. The responsible expression is anthropic.py:353 `return f": {reported['type']}: {reported['message'][:MAX_DETAIL]}"` - within one f-string, one provider-controlled field is s
+    matters  : This codebase bounds text obsessively and correctly almost everywhere - MAX_SYSTEM_BYTES, MAX_IDENTIFIER_BYTES, MAX_DESCRIPTION_BYTES, MAX_DETAIL, MAX_REASON, per-tool output_bytes, schema maxLength required on every string. The single hole is on the one path whose input is chosen by a remote party,
+    fix      : Slice reported['type'] at anthropic.py:353 the same way its sibling is sliced; and bound the per-task reason - either at runtime.py:408 with the [:1024] its two siblings already us | cost=S | risk=Very low; truncating a diagnostic string cannot change control flow. Worth choos
+
+- [MEDIUM] runner/audit.py reads an externally-supplied ledger with 22 plain json.loads calls and zero strict-parse sites, while all four sibling modules define a strict parser
+    tag      : [measured]
+    locator  : /Users/scottxie/Desktop/multi-agent/runner/audit.py:44-53 (read_only) and its 22 json.loads sites  (siblings: /Users/scottxie/Desktop/multi-agent/runner/tools.py:60-68, /Users/scottxie/Desktop/multi-agent/runner/anthropic.py:63-65, /Users/scottxie/Desktop/multi-agent/runner/runtime.py:775-781, /Users/scottxie/Desktop/multi-agent/runner/inspection.py:42-44)
+    command  : for f in runner/*.py src/pheroos_interaction/*.py; do n=$(grep -c 'json\.loads(' "$f"); s=$(grep -c 'object_pairs_hook' "$f"); [ "$n" -gt 0 ] && echo "$f json.loads=$n strict-hook-sites=$s"; done  (ra
+    true     : [measured] runner/audit.py: 22 json.loads( sites, 0 object_pairs_hook sites. [measured] Four sibling modules each define a strict _parse that rejects duplicate object keys via object_pairs_hook=_unique and rejects NaN/Infinity via a raising parse_constant: tools.py, anthropic.py, runtime.py, inspection.py. [read] Those strict parsers are applied to exactly the inputs the design treats as untrusted - fixture file byte
+    matters  : Replay exists to be pointed at a ledger whose provenance you want to establish rather than assume - that is the entire premise of 'Replay verifies the RECORD'. Applying the codebase's own strictest parsing discipline to fixture files and HTTP bodies but not to the artifact under audit inverts the tr
+    fix      : audit.py already imports from four modules that have a suitable _parse; route ReplayLedger's cell parsing through one of them (or lift a single strict _parse into contracts.py and  | cost=M | risk=Low mechanically, but it will start rejecting ledgers that currently replay clea
+
+- [LOW] FakeTransport applies no response byte bound; its sibling _decode does
+    tag      : [executed]
+    locator  : /Users/scottxie/Desktop/multi-agent/runner/anthropic.py:471-485 (FakeTransport.__call__)  (sibling: /Users/scottxie/Desktop/multi-agent/runner/anthropic.py:356-376, specifically :361 and :368)
+    command  : ISO=/tmp/audit-E-secsym-31848 /tmp/audit-venv/bin/python probe2.py  (raw: audit/raw/E-bounds-probe.txt)
+    true     : [executed] FakeTransport constructed from an in-memory script and called with a matching header returned a response carrying 3,000,000 chars of text - roughly 2.9x MAX_BODY_BYTES (1,048,576) - with no error. [read] The two classes implement the same callable-transport interface and are selected interchangeably by provider name at runtime.py:809-821, but _decode (used only by AnthropicTransport) enforces the bound twi
+    matters  : Low cost today - the gap is reachable only from in-process construction, and a later layer catches it. It matters as a correctness-of-comparison issue: the fake transport exists so that offline runs exercise the same path as real ones, and a bound that one transport enforces and the other does not m
+    fix      : Apply the same len(contracts.wire(response).encode()) > MAX_BODY_BYTES check in FakeTransport.__call__ (or in validate_script per response entry, which also bounds the programmatic | cost=S | risk=Low, but it can invalidate any existing test fixture that deliberately scripts a
+
+- [LOW] tool_use name is regex-validated on the request path and only length-checked on the structurally identical response path
+    tag      : [read]
+    locator  : /Users/scottxie/Desktop/multi-agent/runner/anthropic.py:261  (sibling: /Users/scottxie/Desktop/multi-agent/runner/anthropic.py:141)
+    command  : sed -n '122,157p;242,265p' runner/anthropic.py  (both tool_use branches read side by side; corroborated by the semgrep/bandit scans which flag neither)
+    true     : [read] Request side, _blocks at anthropic.py:141: `'name': _tool_name(block['name'], f'{name}.name')`, where _tool_name (anthropic.py:84-87) requires a match against contracts.NAME = ^[a-z][a-z0-9_.-]{0,63}$. [read] Response side, _response_blocks at anthropic.py:261: `'name': _string(block['name'], f'{name}.name', MAX_IDENTIFIER_BYTES)`, where _string (anthropic.py:76-81) requires only a non-empty str of at most 256
+    matters  : Not exploitable as written - two independent authorization checks stand behind it. It is worth recording because the extractor's module docstring (anthropic.py:1-17) positions it as the strict boundary ('Only the documented subset of the Messages API is expressible: every other mode is refused'), an
+    fix      : Use _tool_name at anthropic.py:261 as the request branch does. One-token change. | cost=S | risk=Low, but it converts a currently-rejected-later condition into a rejected-earlie
+
+- [LOW] The regular-file guard exists on exactly one of four structurally identical bounded file readers
+    tag      : [measured]
+    locator  : /Users/scottxie/Desktop/multi-agent/runner/tools.py:139 (has it)  vs  /Users/scottxie/Desktop/multi-agent/runner/anthropic.py:68-73, /Users/scottxie/Desktop/multi-agent/runner/runtime.py:765-770, /Users/scottxie/Desktop/multi-agent/runner/inspection.py:47-52 (do not)
+    command  : grep -rn 'S_ISREG|O_NOFOLLOW|import stat' runner/ src/ --include='*.py'  and  grep -n -A5 '^def _read(path' runner/anthropic.py runner/runtime.py runner/inspection.py  (raw: audit/raw/E-fs-sites.txt)
+    true     : [measured] `stat.S_ISREG` occurs exactly once in the entire audited scope: runner/tools.py:139. `O_NOFOLLOW` occurs exactly twice, both in runner/tools.py (:77, :80). [measured] Three byte-identical _read helpers exist - anthropic.py:68-73, runtime.py:765-770, inspection.py:47-52 - differing only in runtime.py's default limit argument; each is `with Path(path).open('rb') as stream: raw = stream.read(limit + 1)` follo
+    matters  : Low cost - these paths come from the operator's own command line. Recorded because the S_ISREG guard is the cheap half of the hardening and its absence is what makes a hostile-or-accidental FIFO or device node a hang rather than an error, and because the triplicated _read is the kind of copy that gu
+    fix      : Lift one bounded reader into a shared module and give it the S_ISREG check; the three call sites are identical so the merge is mechanical. | cost=S | risk=Low. Touches inspection.py and runtime.py, which are on the executed run path, s
+
+- [LOW] PRAGMA query_only=ON is applied to one of two otherwise identical read-only sqlite openers
+    tag      : [read]
+    locator  : /Users/scottxie/Desktop/multi-agent/runner/inspection.py:256-259 (lacks it)  vs  /Users/scottxie/Desktop/multi-agent/runner/audit.py:44-48 (has it)
+    command  : sed -n '255,262p' runner/inspection.py ; sed -n '43,54p' runner/audit.py
+    true     : [read] audit.read_only (audit.py:44-48): `sqlite3.connect(Path(path).resolve().as_uri() + '?mode=ro', uri=True)`, then `row_factory = sqlite3.Row`, then `database.execute('PRAGMA query_only=ON')`. [read] inspection._snapshot_readonly (inspection.py:256-259): the same connect line and the same row_factory assignment, and no PRAGMA. [read] Both then run only SELECTs. [read] Both docstrings assert the read-only property
+    matters  : Lowest-cost item in this section. Listed because it is exactly the shape the section is looking for - identical siblings, one hardened - and because the two openers are the system's two read-only entry points onto a recorded ledger, which is where a reviewer is most likely to assume symmetry.
+    fix      : Have inspection._snapshot_readonly call audit.read_only, or add the one PRAGMA line. | cost=S | risk=Negligible - the connection issues only SELECTs, which query_only permits.
+
+- [LOW] _open_within applies O_NOFOLLOW to every path component except the root handle it starts from
+    tag      : [read]
+    locator  : /Users/scottxie/Desktop/multi-agent/runner/tools.py:74  vs  /Users/scottxie/Desktop/multi-agent/runner/tools.py:77 and :80
+    command  : sed -n '71,82p' runner/tools.py
+    true     : [read] tools.py:74 `directory = os.open(root, os.O_RDONLY | os.O_DIRECTORY)` - no O_NOFOLLOW. [read] tools.py:77 `nested = os.open(part, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW, dir_fd=directory)` and tools.py:80 `return os.open(parts[-1], os.O_RDONLY | os.O_NOFOLLOW, dir_fd=directory)` - both carry it. [read] `root` is FixtureStore.root, set from the spec_dir the host passes (tools.py:108, reached from build_re
+    matters  : Defensible as written, since a host that points spec_dir at a symlink has chosen to. Recorded so the lead has the complete O_NOFOLLOW picture alongside F-E-02: the docstring 'without following a symlink at any component' is literally true only of the components below root.
+    fix      : Either add O_NOFOLLOW at tools.py:74 if the root is meant to be non-symlink too, or narrow the docstring to say the guarantee starts below root. | cost=S | risk=Adding the flag would break any legitimate deployment that places spec_dir behin
+
+- [LOW] The bounded-schema rule requires an explicit bound on strings and arrays but not on integers or numbers
+    tag      : [read]
+    locator  : /Users/scottxie/Desktop/multi-agent/runner/contracts.py:163-168  (siblings: contracts.py:141-146 array, contracts.py:147-161 string)
+    command  : sed -n '111,175p' runner/contracts.py
+    true     : [read] validate_schema's array branch requires an explicit bound: `out['maxItems'] = _count(schema.get('maxItems'), 'maxItems', 0, 4096)` at contracts.py:145 passes None when the key is absent, so _count raises. [read] Its string branch requires one too, with an in-source rationale comment at contracts.py:155-158: 'An unbounded string would be silently narrowed to length zero ... Require the bound, as the array branc
+    matters  : Small. The containing bound (response byte size) makes the practical magnitude modest, and Python's arbitrary-precision ints make a large literal a memory question rather than an overflow one. It is listed because contracts.py:155-158 states the module's bounding principle explicitly and in the impe
+    fix      : Either require minimum/maximum on integer and number schemas as the sibling branches require their bounds, or add a comment at contracts.py:163 recording why numerics are exempt. | cost=S | risk=Requiring the bounds is a breaking change to every existing workflow spec and to
+
+- [LOW] pip 26.1 in the project virtualenv has 4 known vulnerabilities (reported for disposal: .venv is outside the declared audit scope)
+    tag      : [measured]
+    locator  : /Users/scottxie/Desktop/multi-agent/.venv/lib/python3.14/site-packages  (pip 26.1)
+    command  : /tmp/audit-venv/bin/pip-audit --path /Users/scottxie/Desktop/multi-agent/.venv/lib/python3.14/site-packages --progress-spinner off  (raw: audit/raw/E-pip-audit.txt)
+    true     : [measured] pip-audit 2.10.1 reports 'Found 4 known vulnerabilities in 1 package': pip 26.1, PYSEC-2026-196 (fix 26.1.2) and PYSEC-2026-3721 (fix 26.2), each listed twice. pheroos-interaction itself was skipped ('Dependency not found on PyPI'). No other installed package is flagged. [measured] pyproject.toml declares `dependencies = []` and `dev = ['pytest>=8']`; the flagged package is the virtualenv's own bootstrap p
+    matters  : SCOPE NOTE FOR THE LEAD: .venv/ is on the excluded list, so by the letter of the scope this is out of section. I am reporting rather than suppressing it because it is the only vulnerable-dependency signal available (osv-scanner is absent) and suppressing a real CVE hit on a scoping technicality seem
+    fix      : python -m pip install --upgrade pip inside .venv (>= 26.2 clears both advisories). Not a source change; do not let it appear in the code findings list. | cost=S | risk=None to the codebase. Requires modifying the project environment, which this aud
+
+  NOT RUN:
+    - gitleaks (git-history secret scan) : ABSENT - `command -v gitleaks` returns nothing and it is not in /tmp/audit-venv/bin. Per the brief I report NOT RUN rather than substitute an estimate. Consequence: no secret ever committed and later removed would be visible to me; my regex sweep and semgrep p/secrets see only the working tree. This gap is wider than usual here because the entire orchestration layer is untracked, so even a history scan would not cover those files.
+    - trufflehog (entropy-based + verified secret detection) : ABSENT - not installed and not in the audit venv. Consequence: high-entropy strings that match no known credential prefix were not detected. My regex sweep is prefix- and format-based only and detects no novel or custom credential format.
+    - osv-scanner (dependency vulnerability scan) : ABSENT - not installed and not in the audit venv. I ran pip-audit against the project virtualenv instead (finding F-E-11), which is a different tool against a different target and is NOT a substitute; note also that the project declares zero runtime dependencies, so the supply-chain surface of the shipped package is empty by construction.
+    - semgrep extended / pro secret rules : The p/secrets run reported 'need more rules? `semgrep login` for additional free Semgrep Registry rules'. I did not authenticate - doing so would require account credentials and is outside what a read-only audit should do. 37 of the available secret rules ran; an unknown number did not.
+    - Dynamic / runtime security testing of the network adapter (DAST, TLS negotiation, malformed-response fuzzing against a live endpoint) : Out of section scope and would require either a real ANTHROPIC_API_KEY or standing up a local endpoint plus setting PHEROOS_PROVIDER=1. I probed the parsing and bounding logic in-process instead (E-bounds-probe.txt), which covers _detail and FakeTransport but not the socket/TLS layer.
+    - Constructed-ledger test of the audit.py replay path (feeding replay_run a ledger with duplicate JSON keys or a NaN literal) : Not run - building a valid-enough orchestration ledger to reach the parse sites would have taken substantially longer than the remaining budget allowed. This is why the downstream consequence in finding F-E-04 is explicitly tagged [inferred] and not [executed]; the 22/0 parse-strictness count that IS the finding is [measured]. Recommend the lead have someone execute it if F-E-04's severity needs to be settled.
+    - Git-history review of the untracked orchestration modules : IMPOSSIBLE, not merely skipped: runner/anthropic.py, audit.py, contracts.py, orchestration.py, runtime.py, runtime_policies.py and tools.py are untracked, so no blame, churn or commit-message evidence exists for them. Seven of my eleven findings sit in those files. Where I would normally cite a commit message for the rationale behind an asymmetry (e.g. whether the numeric-bound exemption at contracts.py:163 was deliberate), no such evidence is available and I relied on in-file docstrings and comments alone.
+    - Mutation testing of the security-relevant validators (contracts.validate_schema, contracts.conforms, contracts.fixture_spec, tools._open_within) : Belongs to another section's remit and would require a destructive isolated run; I did not want two agents' mutmut runs contending. Flagging it because the strength of F-E-02's containment argument rests entirely on contracts.py:475 being the sole gate, and a mutation run over that predicate would be the natural way to confirm the test suite actually pins it.
+  CLEAN:
+    - bandit -r runner src: ZERO HIGH-severity findings and ZERO findings in every category other than B608. Specifically clean: B102 exec_used, B307 eval, B301/B403 pickle, B5
+    - SQL INJECTION - all 14 scanner findings (4 bandit B608 + 10 semgrep CWE-89) are FALSE POSITIVES, verified individually, and I say this on the strength of an exhaustive AS
+    - SECRETS - no credential material found by any of three independent methods. (1) semgrep p/secrets, 37 rules, 0 findings over runner/ and src/. (2) semgrep p/secrets + aut
+    - CREDENTIAL HANDLING - reviewed and found sound. The API key is never a stored value: AnthropicTransport requires a zero-argument callable (anthropic.py:391-392), calls it
+    - NETWORK POSTURE - egress exists in exactly one module (runner/anthropic.py); grep found no socket, requests, http.client or ssl import anywhere in scope. The custom Opene
+    - RESPONSE SIZE BOUNDS on the real transport are correct and doubly applied: _decode reads MAX_BODY_BYTES + 1 (anthropic.py:361) and separately rejects len(raw) > MAX_BODY_
+    - STRICT JSON on the transport and fixture paths: anthropic._parse, tools._parse, runtime._load and inspection._parse all pass object_pairs_hook=_unique (duplicate object k
+    - DANGEROUS CONSTRUCTS - zero eval, exec, compile, pickle, marshal, subprocess, os.system, os.popen, shell=True, yaml.load, __import__ or input() in runner/ or src/. The th
+    - MODEL-PROPOSED TOOL AUTHORIZATION is enforced twice, independently, and I checked both. contracts.parse_proposal (contracts.py:653-659) admits a tool name only via `elif 
+    - FIXTURE INTEGRITY - FixtureStore.read is hardened correctly against the threats it does address: O_NOFOLLOW on every component below root defeats symlink substitution (co
+    - SCHEMA BOUNDING is otherwise strict and closed: objects must set additionalProperties false (contracts.py:136-138) and are capped at 64 properties; arrays must declare ma
+    - SEMGREP COVERAGE over runner/ and src/ was verified from the JSON paths.scanned list rather than assumed: all 25 in-scope .py files were scanned, including every one of t
+    - READ-ONLY DISCIPLINE: `git status --porcelain` is byte-identical before and after all §E work. The only path written was audit/raw/. Both isolated copies (/tmp/audit-E-se
+
+====================================================================================================
+SECTION: §F Dependencies
+====================================================================================================
+- [CRITICAL] The tracked file set does not close: the installed console script raises ModuleNotFoundError on its orchestration subcommands
+    tag      : [executed]
+    locator  : runner/cli.py:40 (from .audit import replay_run), runner/cli.py:44 (from .runtime import resume_run, start_run); declared entry point pyproject.toml:18
+    command  : git archive HEAD | tar -x -C <iso>; for f in $(git diff --name-only); do cp "$f" "<iso>/$f"; done; PYTHONDONTWRITEBYTECODE=1 /tmp/audit-venv/bin/python -S -E -c "from pheroos_interaction.runner.cli im
+    true     : runner/cli.py is a TRACKED, MODIFIED file that imports .audit and .runtime, both of which are UNTRACKED (git ls-files --others: runner/audit.py, runner/runtime.py). I reconstructed the state that results from committing every tracked modification without git add-ing the untracked modules, and executed the declared console-script entry point against it: `orchestrate-replay` raised ModuleNotFoundError: No module named 
+    matters  : This is not a hypothetical about a future commit: it is the state the repository is one `git commit -am` away from, and nothing in the build or import path detects it. A wheel or sdist produced from the tracked set installs cleanly, exposes the pheroos-interaction console script, answers --help corr
+    fix      : git add the 7 untracked runner modules (anthropic.py, audit.py, contracts.py, orchestration.py, runtime.py, runtime_policies.py, tools.py) and the 9 untracked test files before com | cost=S | risk=Adding the files is mechanical and carries no runtime risk. The subcommand smoke
+
+- [HIGH] CI depends on six input files that exist in no checkout of the repository
+    tag      : [executed]
+    locator  : .github/workflows/interaction.yml:20-26 (EXAMPLES: ${{ github.workspace }}/examples/orchestration, and the loop that reads $EXAMPLES/$name.json and $EXAMPLES/script*.json)
+    command  : git archive HEAD | tar -x -C <iso>; for p in examples/orchestration/{workflow,script,workflow-expected,workflow-decomposition}.json; do [ -e "<iso>/$p" ] && echo PRESENT || echo ABSENT; done; git ls-f
+    true     : All six files the workflow reads (examples/orchestration/{workflow,workflow-expected,workflow-decomposition,script,script-expected,script-decomposition}.json) exist on disk, are untracked, and are not gitignored (git check-ignore reports no match). `git ls-files examples/` returns 0 tracked files. I materialised exactly what actions/checkout@v4 produces (git archive HEAD) and the examples/ directory is absent from it
+    matters  : Today's HEAD is self-consistent only by accident — the step and its inputs are both uncommitted. The moment the workflow change is committed (a tracked file, so it goes in with any `git commit -a`) while examples/ is not added, the orchestration job fails on its first command for every push and pull
+    fix      : git add examples/ together with the workflow change, and add examples/ to MANIFEST.in if sdist consumers are meant to follow docs/orchestration-verification.md. Committing the work | cost=S | risk=None; the files already exist and the workflow already expects them at those pat
+
+- [HIGH] No lockfile exists anywhere; CI resolves five unpinned packages from PyPI on every run
+    tag      : [executed]
+    locator  : pyproject.toml:15 (dev = ["pytest>=8"]); .github/workflows/interaction.yml:11 (python -m pip install '.[dev]')
+    command  : find . -prune-excluded -type f \( -iname '*.lock' -o -iname 'requirements*.txt' -o -iname 'constraints*.txt' -o -iname 'Pipfile*' -o -iname 'setup.py' -o -iname 'setup.cfg' -o -iname 'tox.ini' -o -ina
+    true     : An exhaustive search of the repository (excluding .venv, .git, research-data, experiments, egg-info) found ZERO lockfiles and zero alternate manifests — no uv.lock, poetry.lock, Pipfile.lock, requirements.txt, constraints.txt, tox.ini or .python-version. The one declared dev dependency expands, when actually installed, to five packages: pytest 9.1.1, pluggy 1.6.0, iniconfig 2.3.0, Pygments 2.21.0, packaging 26.3. The
+    matters  : Question 4 of this section — is the resolved dependency set known? — cannot be answered from version control at all. Every CI run resolves fresh against a mutable index, so a green build and a red build can differ only in packages nobody chose and nobody recorded, and a failure cannot be reproduced 
+    fix      : Commit a hash-pinned constraints file (pip freeze or uv pip compile) for the dev extra, and install CI with `pip install -c constraints.txt --require-hashes '.[dev]'`. Add dependab | cost=S | risk=Pinning can surface an existing latent incompatibility at the moment the pin is 
+
+- [HIGH] pip-audit reports the build dependency clean while auditing zero packages — the only vulnerability check covering setuptools is a false negative
+    tag      : [executed]
+    locator  : pyproject.toml:2 (requires = ["setuptools>=84"])
+    command  : /tmp/audit-venv/bin/pip-audit --progress-spinner off --format json -r 'setuptools==84.0.0'  ->  {"dependencies": [], "fixes": []} while the human-readable form prints 'No known vulnerabilities found' 
+    true     : pip-audit 2.10.1 prints 'No known vulnerabilities found' and exits 0 for the build requirement, but the JSON output shows it resolved and audited an empty dependency list — even when the input is pinned as setuptools==84.0.0, and even under --strict. A positive control (jinja2==3.1.2) returned 10 vulnerabilities from the same invocation, so the tool and its data source are working; setuptools is being skipped. The pr
+    matters  : A CI gate or an auditor reading 'No known vulnerabilities found' will conclude the build dependency was checked. It was not. Build-time dependencies execute arbitrary code during `pip install`, which is exactly where an unaudited package matters most. The danger is specifically that the check looks 
+    fix      : Do not rely on pip-audit for build-system requirements. Audit setuptools explicitly via osv-scanner or the OSV API against the exact resolved version, and if a pip-audit invocation | cost=M | risk=Introducing a real scanner may surface advisories that must then be triaged; ass
+
+- [MEDIUM] setuptools>=84 is satisfied by exactly one release on PyPI, and has no upper bound
+    tag      : [measured]
+    locator  : pyproject.toml:2
+    command  : curl -sS https://pypi.org/pypi/setuptools/json | <resolver counting releases satisfying >=84>  -> 'releases satisfying >=84: 1; lowest: 84.0.0; highest: 84.0.0'   [raw: audit/raw/F-06-version-spec-res
+    true     : Of setuptools' 625 releases on PyPI, exactly one (84.0.0, which is also the current latest) satisfies the declared floor. The spec has no upper bound, so every future major release is admitted automatically. setuptools 84.0.0 itself declares requires_python >=3.10, which is compatible with the project's >=3.12 floor.
+    matters  : The constraint is simultaneously too tight below and unbounded above. Below: there is no fallback version, so any environment whose build isolation cannot reach the very newest setuptools fails to build at all — and since setuptools is fetched from PyPI at build time, `pip install .` requires networ
+    fix      : Decide which setuptools feature the floor of 84 is buying. If none, lower the floor to the oldest version that works and add an upper bound (e.g. >=61,<85), so the build has both a | cost=S | risk=Lowering the floor needs a build test on the older version to confirm the packag
+
+- [MEDIUM] pytest>=8 already resolves across a major-version boundary to 9.1.1, with no upper bound
+    tag      : [measured]
+    locator  : pyproject.toml:15
+    command  : curl -sS https://pypi.org/pypi/pytest/json | <resolver>  -> 'releases satisfying >=8: 26; lowest 8.0.0; highest 9.1.1; yanked in range: 8.1.0; upper bound: NONE'; confirmed by executing pip install 'p
+    true     : The declared floor is major 8; a fresh resolve today installs 9.1.1, one major version above the floor. 8.1.0 is yanked within the satisfying range. There is no upper bound, and no lockfile constrains the resolve. The suite does pass on 9.1.1 (1016 passed, measured on both 3.12 and 3.14), so this is an unguarded exposure rather than a present break.
+    matters  : The project has already silently crossed one pytest major boundary without a deliberate upgrade. The next one arrives the same way — through a CI run that resolves whatever PyPI serves that day — and the first symptom will be a CI failure unrelated to the commit that triggered it.
+    fix      : Express the tested range, e.g. pytest>=8,<10, and let the pinned constraints file from the lockfile finding carry the exact version. | cost=S | risk=None; a ceiling at the currently-passing major changes no installed version toda
+
+- [MEDIUM] Both GitHub Actions are referenced by mutable tag with no SHA pin and no update automation
+    tag      : [measured]
+    locator  : .github/workflows/interaction.yml:7 (uses: actions/checkout@v4), .github/workflows/interaction.yml:8 (uses: actions/setup-python@v5)
+    command  : grep -nE 'uses:|python-version|pip install' .github/workflows/interaction.yml; curl -sS https://api.github.com/repos/actions/checkout/git/ref/tags/v4 ; curl -sS https://api.github.com/repos/actions/se
+    true     : actions/checkout@v4 currently resolves to commit 11d5960a326750d5838078e36cf38b85af677262 and actions/setup-python@v5 to a26af69be951a213d495a4c3e4e4022e16d87065. Both are floating major tags that the action maintainer can re-point at any commit at any time; the repository pins no SHA. No dependabot.yml and no renovate.json exist anywhere in the repository. python-version is '3.14', which also floats across patch rel
+    matters  : These two actions run with the workflow's GITHUB_TOKEN before any project code executes. A mutable tag means the code that runs in CI is chosen by a third party after the repository was last reviewed, and there is no configured mechanism that would ever surface a change. This is the standard tag-rep
+    fix      : Pin both actions to full commit SHAs with the version as a trailing comment (uses: actions/checkout@11d5960... # v4) and add dependabot with the github-actions ecosystem enabled so | cost=S | risk=None functionally; it shifts action updates from implicit to explicit, which add
+
+- [MEDIUM] An external HTTP service dependency on api.anthropic.com is declared in no manifest
+    tag      : [measured]
+    locator  : runner/anthropic.py:390 (base_url="https://api.anthropic.com"), runner/anthropic.py:31-32 (API_VERSION = "2023-06-01", ENDPOINT = "/v1/messages"), runner/anthropic.py:411 (headers x-api-key / anthropic-version), runner/runtime.py:820 (os.environ ANTHROPIC_BASE_URL override); manifest states pyproject.toml:12 dependencies = []
+    command  : grep -rnE 'https?://[A-Za-z0-9.-]+' runner/ src/pheroos_interaction/ --include='*.py' | grep -vE '://(localhost|127\.0\.0\.1)' ; grep -rn 'API_VERSION|anthropic-version' runner/*.py   [raw: audit/raw/
+    true     : The shipped code contains exactly two non-loopback outbound endpoints, both the Anthropic Messages API, reached through raw urllib.request rather than a declared SDK. The wire contract IS pinned: anthropic-version is the constant "2023-06-01" and the endpoint is fixed at /v1/messages. The base URL is overridable via the ANTHROPIC_BASE_URL environment variable. None of this appears in pyproject.toml, which declares de
+    matters  : The manifest is literally accurate — there is no Python package dependency, and I verified that by execution. But a reader or deployer who takes `dependencies = []` to mean the package is self-contained will not expect outbound network egress to a third-party API or the need for a credential, which 
+    fix      : State the external service dependency, its pinned anthropic-version, the credential requirement and the ANTHROPIC_BASE_URL override in the README or a project.urls/keywords note, s | cost=S | risk=Documentation only; no behaviour change.
+
+- [MEDIUM] CI exercises one interpreter; the declared requires-python floor and the intermediate version are never tested
+    tag      : [executed]
+    locator  : pyproject.toml:9 (requires-python = ">=3.12") vs .github/workflows/interaction.yml:10 (python-version: '3.14')
+    command  : python3.12 -m venv <iso>/venv; <iso>/venv/bin/pip install 'pytest>=8'; PYTHONPATH=<iso>/pkgroot <iso>/venv/bin/pytest -q -p no:cacheprovider tests/interaction   -> 1016 passed in 18.67s on Python 3.12
+    true     : The manifest promises 3.12, 3.13 and 3.14; CI has a single job with no matrix and builds only 3.14. I verified the floor independently: all 51 audited files parse under the 3.12 grammar, every one of the 31 imported stdlib top-level modules exists on 3.12, 3.13 and 3.14, and the full suite passes on 3.12.13 (1016 passed). So the declared floor is honest today — there is no present defect.
+    matters  : The promise is currently true by luck rather than by construction. Nothing in CI would notice the first use of a 3.13-or-later syntax or stdlib API, and the break would surface as a bug report from a 3.12 user rather than as a red build. The cost of not fixing is a future silent break, not a current
+    fix      : Add a matrix over python-version ['3.12','3.13','3.14'] in the existing job, or lower requires-python's promise to match what CI actually tests. | cost=S | risk=Triples the job count for a ~19-second suite; negligible. If 3.13 turns out to f
+
+- [LOW] The distribution name pheroos-interaction is unregistered on PyPI
+    tag      : [measured]
+    locator  : pyproject.toml:6 (name = "pheroos-interaction")
+    command  : curl -sS -w '%{http_code}' https://pypi.org/pypi/pheroos-interaction/json -> HTTP 404 ; same for pheroos -> HTTP 404 ; grep -rn 'pip install' README.md AGENTS.md docs/ .github/   [raw: audit/raw/F-05-
+    true     : Neither pheroos-interaction nor pheroos exists on PyPI. The name is therefore claimable by anyone. Mitigating, and measured: every install instruction in the repository is a local-path install — README.md:16 and docs/orchestration-verification.md:37 use `python -m pip install -e '.[dev]'`, AGENTS.md:20 the same, and .github/workflows/interaction.yml:11 uses `python -m pip install '.[dev]'`. No document anywhere instr
+    matters  : Because no instruction resolves the name against PyPI, there is no path today by which a third party's package is fetched instead of this one. The exposure is prospective: if the project is ever published, or if anyone types the name from memory, an unrelated package registered in the interim would 
+    fix      : If publication is ever intended, register the name (a placeholder release is enough to reserve it). If it is not, this needs no code change and only the decision recorded. | cost=S | risk=Publishing a placeholder is an irreversible public action and should be a delibe
+
+- [LOW] MANIFEST.in omits examples/ and docs/, which the documentation tells sdist consumers to use
+    tag      : [read]
+    locator  : MANIFEST.in:1-3 (include AGENTS.md; recursive-include experiments/current/inspection-example *.json; recursive-include tests/interaction *.py) vs docs/orchestration-verification.md:37
+    command  : cat MANIFEST.in; grep -rn 'pip install' docs/   [raw: audit/raw/F-10-ci-input-paths.txt, audit/raw/F-21-undeclared-tooling-and-unused.txt]
+    true     : MANIFEST.in ships AGENTS.md, the inspection example JSON and the test sources into the sdist, but names neither examples/ nor docs/. [tool.setuptools] include-package-data is false (pyproject.toml:21), so neither directory reaches a wheel either. docs/orchestration-verification.md walks a reader through commands whose inputs live under examples/orchestration/.
+    matters  : A consumer who obtains the sdist and follows the verification document has the instructions but not the fixtures they reference. This is small and self-evident on contact, which is why it ranks last; it is listed because it shares a root cause with the CI-inputs finding and will be fixed by the same
+    fix      : Add `recursive-include examples *.json` to MANIFEST.in alongside git add-ing examples/, so the verification walkthrough is reproducible from an sdist. | cost=S | risk=None; it only enlarges the sdist.
+
+  NOT RUN:
+    - Vulnerability audit of the build dependency setuptools>=84 (question 5 for that dependency) : pip-audit 2.10.1 silently skips setuptools: it returns {"dependencies": []} even for the pinned input setuptools==84.0.0, and still prints 'No known vulnerabilities found' with exit 0 under --strict. A positive control (jinja2==3.1.2 -> 10 vulnerabilities) proves the tool works, so this is a skip and not an empty advisory database. osv-scanner is ABSENT from this environment and no substitute scanner is available, so the check genuinely did not run. Reported as a finding rather than a clean check; no estimate substituted. Raw: audit/raw/F-09-pip-audit-setuptools-probe.txt
+    - Answering question 4 (is the resolved dependency set known?) from a lockfile : No lockfile of any kind exists in the repository — the exhaustive search returned zero hits. The nearest pinned record is the developer's local .venv, which .gitignore excludes at line 9. I substituted an executed fresh resolve in an isolated venv to measure what pip ACTUALLY installs, and labelled it as such; it is evidence about today's index, not a record of the project's intended versions. Raw: audit/raw/F-18-transitive-closure.txt
+    - Secret scanning of dependency manifests and CI configuration : gitleaks and trufflehog are ABSENT from this environment per the section brief. Not attempted and not estimated. (Also outside §F's boundary; noted only because manifest/CI files were in my hands.)
+    - Test run on Python 3.13 : Not executed. I verified the declared floor (3.12.13) and the CI target (3.14.5rc1) directly, and confirmed by measurement that every imported stdlib module exists on 3.13.14, but I did not run the suite on 3.13. The gap is recorded in the CI-matrix finding rather than papered over with an assumption that 3.13 passes because its neighbours do.
+    - Churn and blame evidence for the dependency-carrying modules : runner/anthropic.py, audit.py, contracts.py, orchestration.py, runtime.py, runtime_policies.py and tools.py are untracked, so no git history exists for them. Per the lead auditor's standing instruction, churn and blame checks are NOT RUN for untracked files.
+    - Build-and-install verification of a wheel or sdist produced from this tree : Building would require running the setuptools backend, which downloads setuptools>=84 through pip build isolation and writes build/ and dist/ artifacts. I reconstructed the equivalent question by executing the console-script entry point against an isolated dereferenced copy of the tracked file set, which answered it without building. Raw: audit/raw/F-22-tracked-set-does-not-close.txt
+  CLEAN:
+    - The stdlib-only claim is VERIFIED BY EXECUTION, not merely repeated. All 25 shipped modules (pheroos_interaction and pheroos_interaction.runner) imported successfully und
+    - AST extraction over all 51 audited files (359 import statements, 34 distinct absolute top-level modules) found ZERO third-party imports in runner/ and src/pheroos_interac
+    - No used-but-undeclared dependency and no declared-but-unused dependency. pytest is declared (dev extra) and used; setuptools is declared (build-system) and used as build-
+    - No hidden dynamic dependency. Only three importlib.import_module sites exist, all in tests/interaction/test_layout.py and all on first-party package names; there is no __
+    - No undeclared external binary dependency. The single subprocess.run in scope (tests/interaction/test_inspection_cli.py:67) invokes sys.executable; there is no os.system, 
+    - No deprecated or removed stdlib API in use. A precise scan for datetime.utcnow/utcfromtimestamp, ast.Str/Num/Bytes/NameConstant/Ellipsis, tempfile.mktemp, threading.curre
+    - Executed confirmation of the same: the full suite run under Python 3.14.5rc1 with -W always for DeprecationWarning, PendingDeprecationWarning and FutureWarning produced 1
+    - sqlite3 is used in a way unaffected by the 3.12 default-adapter deprecation: runner/audit.py:45 opens a read-only URI connection and sets row_factory; there is no detect_
+    - Question 5 for the dev dependency tree is genuinely clean: pip-audit resolved and audited pytest 9.1.1, pluggy 1.6.0, iniconfig 2.3.0 and pygments 2.21.0, all with vulns:
+    - Question 2 is clean: both declared names are exact string matches to the canonical, long-established upstream projects — pytest to github.com/pytest-dev/pytest (192 relea
+    - Question 1 is clean for everything declared: both pytest and setuptools returned HTTP 200 from the PyPI JSON API. Registry existence was established by querying the regis
+    - Every imported stdlib top-level module exists on all three interpreters the manifest promises: checking all 31 against sys.stdlib_module_names on 3.12.13, 3.13.14 and 3.1
+    - The declared requires-python floor is honest: all 51 audited files parse under the 3.12 grammar, and the full suite passes on Python 3.12.13 with 1016 passed. (CI never t
+    - Package declaration is complete: both declared packages are flat with no subdirectories, so packages = ["pheroos_interaction", "pheroos_interaction.runner"] omits no subp
+
+====================================================================================================
+SECTION: §B.1 Literal duplication (runner/, src/pheroos_interaction/)
+====================================================================================================
+- [HIGH] CoordinationSession.dispatch copies Session.dispatch verbatim instead of overriding the hook built for it, and drops the parent's _reservation_request call
+    tag      : [measured]
+    locator  : runner/evidence.py:284-316 (duplicate of runner/session.py:261-273); omitted call at runner/session.py:268; hook at runner/session.py:186
+    command  : grep -n '^class |^    def ' runner/evidence.py runner/session.py; grep -n 'super()' runner/evidence.py; grep -n '_reservation_request' runner/session.py runner/evidence.py; diff <(sed -n '261,273p' ru
+    true     : [measured] runner/evidence.py:20 declares `class CoordinationSession(Session)`, subclassing runner/session.py:37. [measured] CoordinationSession.dispatch (evidence.py:284-316) shares 11 of 13 statements with Session.dispatch (session.py:261-273): the transaction, the _lease call, the identical SELECT, the identical 4-tuple state guard and StateError message, the json.loads, the _permit call, the identical UPDATE stat
+    matters  : This is the durable dispatch path: it decides permission and flips a call to 'dispatched'. Two copies of that guard now exist and only one is reachable per session class. Any future correction to Session.dispatch - an added cancellation check, a tightened state guard, a fix to the permission write -
+    fix      : Delete the copied body. Have CoordinationSession override _reservation_request with the inspection-declaration check (it already receives db, lease, call_id, action and payload - e | cost=S | risk=Low-to-moderate. Mechanically small, but it changes whether _reservation_request
+
+- [HIGH] run_colony is a fork of run_worker: 53 lines identical or rename-only, with a hand-maintained 'parity' comment and the parity already broken
+    tag      : [measured]
+    locator  : runner/colony.py:106-286 vs runner/worker.py:108-218; identical blocks at colony.py:267-286 == worker.py:199-218 and colony.py:159-176 == worker.py:139-156; drift at colony.py:210-212 + colony.py:245-248 vs worker.py:173-175; parity comment at colony.py:211
+    command  : diff <(sed -n '267,286p' runner/colony.py) <(sed -n '199,218p' runner/worker.py); diff <(sed -n '159,176p' runner/colony.py) <(sed -n '139,156p' runner/worker.py); diff <(sed -n '143,158p' runner/colo
+    true     : [measured] Three tools agree this is the largest duplication in the tree: symilar -d 5 reports 20-, 18- and 15-line sets between these two files, pylint R0801 reports the same, and AST window hashing reports an 11-statement window (colony.py:148-163 == worker.py:128-143). [measured] diff exit 0 on colony.py:267-286 vs worker.py:199-218 - the entire 20-line exception handler that classifies every failure into 'unknown
+    matters  : The duplicated region is the failure-classification and lease-recovery logic - exactly the code whose bugs surface only during crashes, expiries and rejected responses, and which is therefore least likely to be caught by a caller. Keeping it correct now means editing two files in lockstep, and the i
+    fix      : Extract the shared scaffolding - argument validation, the bounded sweep loop, claim, the records/unresolved/reservation preamble, and the whole exception-to-status classifier - int | cost=M | risk=Moderate. Touching the shared exception handler changes failure classification f
+
+- [HIGH] sequential.shared_map is a 17-line byte-identical copy of inspection._shared_map, although the module already imports that file's shared vocabulary
+    tag      : [measured]
+    locator  : src/pheroos_interaction/sequential.py:122-146 (copy of src/pheroos_interaction/inspection.py:115-142); shared imports at src/pheroos_interaction/sequential.py:25
+    command  : diff <(sed -n '124,140p' src/pheroos_interaction/inspection.py) <(sed -n '128,144p' src/pheroos_interaction/sequential.py); grep -n '^from|^import' src/pheroos_interaction/sequential.py; grep -rn '_sh
+    true     : [measured] symilar reports 17 similar lines between src/pheroos_interaction/inspection.py:[123:140] and sequential.py:[127:144]; the targeted diff exits 0 - the 17 lines are BYTE-IDENTICAL. [measured] The copied region is the whole risk-minimisation body: the by_count pair construction, the `minimum` baseline, the three-element count_minima tuple, the `next(k for k in (0,1,2) if _feasible(...))` count selection, the 
+    matters  : This is the decision-theoretic core of the package: the tie-tolerant, count-preferring selection of an action per outcome. It now exists twice. A correction to the feasibility test, the tie budget, or the preference ordering lands in one copy and silently leaves the other computing a different actio
+    fix      : Keep one implementation in inspection.py returning the richer form, and have sequential.shared_map call it and reshape the result - roughly `risk, delta = _shared_map((negative, po | cost=S | risk=Low. The bodies are byte-identical, so the reshaping adapter is the entire chang
+
+- [MEDIUM] _nonnegative has a different return contract in two copies inside the same package: one returns the value, one returns None
+    tag      : [executed]
+    locator  : src/pheroos_interaction/inspection.py:22-24 vs src/pheroos_interaction/commitment.py:32-35; value-position callers at src/pheroos_interaction/commitment.py:246, 271, 272, 339
+    command  : /tmp/audit-venv/bin/python -c "import sys; sys.path.insert(0,'/Users/scottxie/Desktop/multi-agent/src'); from pheroos_interaction import inspection as i, commitment as c; print(repr(c._nonnegative(5.0
+    true     : [executed] commitment._nonnegative(5.0, 'x') returns 5.0; inspection._nonnegative(5.0, 'x') returns None. [measured] AST hashing classifies the _nonnegative family (3 copies: runner/policies.py:11, commitment.py:32, src inspection.py:22) as DRIFTED with 3 distinct implementations. [read] The two src copies are otherwise line-for-line the same - same signature, same guard `if _number(value, label) < 0`, same message '
+    matters  : Two same-named, same-signature validators in one package disagree on whether they return anything. The failure is silent: moving or copying a call site between these two modules - which the identical _number helper actively invites - turns a validated float into None, and None then flows into arithm
+    fix      : Pick one contract - returning the validated value is the more useful and matches commitment.py and runner/policies.py - and make all three copies agree. Better, define _number/_non | cost=S | risk=Very low. Adding `return value` to inspection.py:24 cannot break its current sta
+
+- [MEDIUM] _text bounds text in bytes in three runner copies and in characters in the fourth, so the same string is accepted by one and rejected by another
+    tag      : [executed]
+    locator  : src/pheroos_interaction/inspection.py:27-29 vs runner/contracts.py:69-72, runner/platform.py:31-34, runner/tools.py:37-40
+    command  : /tmp/audit-venv/bin/python -c "import sys; sys.path[:0]=['/Users/scottxie/Desktop/multi-agent/src','/Users/scottxie/Desktop/multi-agent']; from pheroos_interaction import inspection as i; from runner 
+    true     : [executed] A 2048-character, 4096-byte UTF-8 string is ACCEPTED by src/pheroos_interaction/inspection.py:27 _text and REJECTED by runner/platform.py:31 _text with 'bounded nonempty text required'. [measured] AST hashing reports _text with 4 definitions and 3 distinct implementations; runner/contracts.py:69 and runner/tools.py:37 share alpha hash 9742108133a653fe. [read] The three runner copies all test `len(value.enc
+    matters  : A bound named the same thing in four places means two different things, and the unit is invisible at every call site - `_text(value, label)` looks identical whichever copy is in scope. Whichever limit is the intended one, one set of call sites is enforcing something other than what it reads as. For 
+    fix      : Decide whether the limit is bytes or characters, state the unit in the parameter name (max_bytes / max_chars), and make all four copies agree. Consolidating to one definition is th | cost=S | risk=Moderate, and higher than the change looks. Tightening the src copy from charact
+
+- [MEDIUM] The strict-JSON file-reading helpers are triplicated with a 16x drift in the byte bound and an inlined copy of the parser
+    tag      : [read]
+    locator  : runner/runtime.py:765-785 vs runner/inspection.py:47-56 vs runner/anthropic.py:54-73; bound drift at runner/inspection.py:55 (65536) vs runner/runtime.py:773 (1<<20); name collision at runner/platform.py:37
+    command  : grep -rn '^def _(unique|parse|read|load)\b' runner src/pheroos_interaction; sed -n '47,70p' runner/inspection.py; sed -n '765,800p' runner/runtime.py; sed -n '51,70p' runner/tools.py; sed -n '37,44p' 
+    true     : [measured] AST hashing reports _read with 3 definitions whose bodies are IDENTICAL (exact hash 490b5a12a1ca0c0f across anthropic.py:68, inspection.py:47, runtime.py:765), and _unique with 5 definitions of which 4 share alpha hash a3952668c8e26541 (anthropic.py:54, inspection.py:33, runtime.py:778, tools.py:51). [measured] symilar -d 4 independently reports anthropic.py:[68:76] vs runtime.py:[765:773] and anthropic.py
+    matters  : These helpers exist to make untrusted JSON parsing strict and bounded: refuse duplicate object keys, refuse NaN/Infinity, refuse oversized input. That policy is now stated in three-to-five places, so tightening it is a search-and-replace across files rather than one edit, and a copy that is missed k
+    fix      : Put _read, _parse/_load and the JSON _unique in one module and import them, passing the byte bound explicitly at every call site rather than relying on a default - the call sites a | cost=M | risk=Low to moderate. Consolidating _read and _unique is mechanical. Unifying the _lo
+
+- [MEDIUM] _wire returns bytes in one module and str in another, and the duplicated _save and _digest copies each compensate differently
+    tag      : [read]
+    locator  : runner/inspection.py:25-26 (bytes) vs runner/session.py:15-16 (str); dependent copies at runner/inspection.py:59-68 vs runner/runtime.py:787-796, and runner/inspection.py:29-30 vs runner/audit.py:39-40 vs runner/orchestration.py:44-45
+    command  : sed -n '25,31p' runner/inspection.py; sed -n '15,18p' runner/session.py; sed -n '39,41p' runner/audit.py; sed -n '44,46p' runner/orchestration.py; grep -n 'from .session import' runner/runtime.py
+    true     : [measured] AST hashing reports _wire with 2 definitions classified DRIFTED, _save with 2 DRIFTED, and _digest with 3 definitions of which audit.py:39 and orchestration.py:44 are byte-identical (exact hash 966e62c51e594e49). [read] runner/inspection.py:26 returns `json.dumps(...).encode()` - bytes. runner/session.py:16 returns the same json.dumps call without .encode() - str. The dumps arguments are otherwise identica
+    matters  : Two same-named canonicalisation helpers return different types, and three or four downstream helpers are duplicated in matched pairs that each compensate for their local _wire. That arrangement works only as long as nobody moves code between these modules - and the near-identical _save and _digest b
+    fix      : Settle on one _wire - str is the more common convention here and is what session.py, audit.py, orchestration.py and runtime.py already assume - and have inspection.py use it, adjus | cost=S | risk=Low for the type unification, but _digest is load-bearing: if any stored digest 
+
+- [LOW] _exact and _fields are the same seven-line field validator under two names, in a module that already imports the other
+    tag      : [measured]
+    locator  : runner/anthropic.py:96-102 and runner/contracts.py:100-106; existing import at runner/anthropic.py:29
+    command  : /tmp/audit-venv/bin/python <scratchpad>/astclone.py <isolated copy>   (Part 2, cross-name structural clones); sed -n '96,102p' runner/anthropic.py; sed -n '100,106p' runner/contracts.py
+    true     : [measured] AST hashing Part 2 reports anthropic.py:96-102 `_exact` and contracts.py:100-106 `_fields` sharing alpha hash bb8b6cd62cc20ca1 - structurally identical after alpha-renaming and string blanking - and this is the only cross-name structural clone of 3+ statements in the tree. [read] Both take (value, name, required, optional=()), both guard `type(value) is not dict`, both compute `keys = set(value)`, both app
+    matters  : Small and currently harmless, which is why it ranks last. It matters only as maintenance surface: the schema-shape rule for 'exactly these keys plus these optional ones' is written twice, so tightening it - say, to reject non-string keys - is two edits, and the two names make the pair hard to find. 
+    fix      : Keep contracts._fields as the single implementation, give it an exception-class parameter (defaulting to ContractError), and have anthropic._exact become a one-line call passing Va | cost=S | risk=Very low. The bodies are structurally identical and the only observable differen
+
+  NOT RUN:
+    - jscpd (the requested literal-duplication tool) : Could not be installed. npm is configured with proxy=http://127.0.0.1:1089/ and https-proxy=http://127.0.0.1:1089/, and that proxy refuses connections (ECONNREFUSED 127.0.0.1:1089). Three attempts in an isolated /tmp dir failed: plain install; install with npm_config_proxy/npm_config_https_proxy/HTTP_PROXY/HTTPS_PROXY cleared (the ~/.npmrc setting still won); and install with --userconfig /dev/null (aborted with 'double-loading config'). The lead's note that pypi.org returns HTTP 200 does not extend to registry.npmjs.org, which is reached through this proxy. Per the hard rules I substituted no estimate: every duplication figure reported here comes from symilar, pylint duplicate-code, or my own normalized-AST block hashing, and each finding states which method produced it. Raw output in audit/raw/B1-jscpd-NOTRUN.txt; the isolated install dir was deleted.
+    - Churn / git-blame evidence for any duplicate set in runner/anthropic.py, audit.py, contracts.py, orchestration.py, runtime.py, runtime_policies.py or tools.py : Those files are untracked (confirmed by git status --porcelain on the audited paths), so no history exists. I therefore cannot say which copy in a duplicate set came first, or whether a drifted pair drifted recently - only what the current bytes are. This affects F-B1-6 (the _read/_load/_unique family spans untracked runtime.py and tracked inspection.py) and F-B1-7 (_digest spans untracked audit.py and orchestration.py). Directionality claims are absent from my findings for this reason.
+    - Whether the duplicated regions are covered by tests, and whether any test would catch a divergence between two copies : Out of my section. §C selection and reading of test results belongs to the lead auditor. I have named the relevant test files in the risk_of_fixing fields (test_colony.py, test_provider_worker.py, test_orchestration_colony.py, test_artifact_access.py, test_control_limits.py, test_sequential.py, test_inspection.py) so the lead can check coverage against §C, but I ran no test suite and make no coverage claim.
+    - Semantic ownership analysis of the state mutated by the duplicated colony.py / worker.py and evidence.py / session.py code : §B.2 is held by the lead auditor. I report the literal duplication and its measured behavioural drift only, and have deliberately not drawn ownership conclusions from it.
+  CLEAN:
+    - Cross-file duplication among the four largest untracked orchestration-layer files (runner/orchestration.py 726 LOC, runner/runtime.py 889, runner/contracts.py 674, runner
+    - runner/driver.py SessionDriver vs runner/provider.py ProviderDriver: symilar flagged driver.py:[37:45] / provider.py:[90:98] (6 lines, the replay method), and I examined 
+    - src/pheroos_interaction/inspection.py InspectionPlan (lines 73-87) vs sequential.py SequentialPlan (lines 518-532): my AST window detector flagged a 5-statement overlap i
+    - Sliding-window self-overlap artifacts were checked and discarded rather than reported: src/pheroos_interaction/records.py:23-26 vs 24-27, src/pheroos_interaction/inspecti
+    - runner/anthropic.py:31-34 vs runner/contracts.py:19-22 and runner/inspection.py:8-11 vs runner/runtime.py:28-31 were flagged by the AST window detector and dismissed: the
+    - No duplication of 5+ lines was found involving runner/cli.py (53 LOC), runner/identity.py (21), runner/policies.py (112), runner/runtime_policies.py (289) or src/pheroos_
+    - No near-identical function bodies were found between runner/ and tests/interaction/, and none within a single file large enough to report - every block-level duplicate se
+    - Name-family sweep completed across all 203 module-level defs in scope. 15 names carry 2+ definitions (40 defs, 19.7%): _unique x5, _text x4, _read/_parse/_number/_nonnega
+
+====================================================================================================
+SECTION: §I Configuration and determinism
+====================================================================================================
+- [HIGH] waiting_rule clocks a commitment decision on the live wall clock while documenting itself as ledger-clocked
+    tag      : [executed]
+    locator  : runner/worker.py:100-105 (the read is line 103); stamp written at runner/platform.py:415-418
+    command  : python -c '<hold a PlatformSession ledger fixed with one proposed candidate; move ONLY the injected clock to 1000/1060/1180/10000; call waiting_rule(...) + commit(...) at each point>' -> audit/raw/I-e
+    true     : [read] runner/worker.py:63 says the rule is 'clocked by recorded ledger time' and :68 says it 'reads the elapsed time the ledger recorded'. [read] the implementation is `elapsed = 0 if not stamps else int(max(0., session.clock() - min(stamps)) // tick_seconds)`: only `min(stamps)` comes from the ledger (the platform.waited events stamped at platform.py:418), while `now` is a LIVE clock reading. [executed] `Session(pa
+    matters  : README.md:145 states 'apart from declared draws everything is deterministic and replayable from the ledger.' This is the one production decision path that breaks that claim, and it breaks it in the direction that matters: the same recorded run resumed on a slower machine, after an operator lunch bre
+    fix      : Decide which clock the rule is contractually on, then make code and docs agree. Either (a) pass the decision-time reading in explicitly -- have commit() stamp a 'now' into the plat | cost=M | risk=Option (a) changes commitment outcomes for any existing caller relying on real-t
+
+- [MEDIUM] adapter_elapsed_ns sits inside the digested receipt bytes, so receipt digests are not reproducible and idempotent re-receive is defeated
+    tag      : [executed]
+    locator  : runner/driver.py:34,38 and runner/provider.py:77,91 (field produced); runner/session.py:275,287 and runner/runtime.py:58-59 (digest computed over it); runner/inspection.py:132-141 (field is contractually required in the receipt)
+    command  : python -c '<two fresh Sessions, BOTH with clock=lambda: 1000.0, each running the same pure tool through SessionDriver.evaluate; compare _receipt_digest>' and python -c '<settle a receipt, then re-deli
+    true     : [read] runner/driver.py:38 and runner/provider.py:91 put `adapter_elapsed_ns: monotonic_ns() - started` into the response dict. [read] runner/session.py:275,287 digest the whole response (`wire = _wire(response)`; `digest = sha256(wire.encode())`) and store it as artifacts.response_digest; runner/runtime.py:58-59 `_receipt_digest` does the same. [executed] two runs of the same pure tool, with the Session clock FROZEN
+    matters  : A field named response_digest advertises that it identifies the receipt's content. It does not: it identifies the content plus how fast the machine happened to be. Nothing today compares a digest across two executions, so this is latent rather than live -- but it silently forecloses the obvious futu
+    fix      : Move the timing out of the digested payload: keep adapter_elapsed_ns as telemetry stored beside the receipt (its own column or an event) rather than inside the response dict that s | cost=M | risk=inspection.py:132-141 currently REQUIRES the exact key set {artifact, tool_ref, 
+
+- [MEDIUM] Work creation timestamps are taken one-per-row inside a loop whose order is index order, not declared order
+    tag      : [executed]
+    locator  : runner/platform.py:89-96 (loop and per-row clock call); consumed at runner/platform.py:180,188 and runner/policies.py:32-33
+    command  : python -c '<PlatformSession.create with 5 work items declared as zeta,mid,alpha,beta,yankee using the DEFAULT clock; read back platform_work_v1.created>' plus EXPLAIN QUERY PLAN on the driving SELECT 
+    true     : [read] platform.py:89 iterates `SELECT id FROM work` with no ORDER BY and platform.py:96 calls `session.clock()` inside that loop, once per row. [executed] five work items created in ONE atomic transaction received five DISTINCT created stamps, spread 1.5e-5 s apart. [executed] the insertion order was sorted(id) -- alpha,beta,mid,yankee,zeta -- not the declared order zeta,mid,alpha,beta,yankee. [measured] EXPLAIN QUE
+    matters  : The codebase argues explicitly (contracts.py:288-297, AGENTS.md on L2) that declaration order is load-bearing for experimental identity. This path quietly substitutes lexicographic id order and then bakes the result into durable timestamps that a policy can tie-break on. Blast radius is limited toda
+    fix      : Hoist one `now = self.clock()` above the loop at platform.py:89 so every row created in one transaction shares one creation instant, and add `ORDER BY rowid` to that SELECT so inse | cost=S | risk=Low. Both changes are local and make this path match the ORDER BY rowid conventi
+
+- [MEDIUM] Transport configuration is resolved from the environment but never recorded in the frozen run record
+    tag      : [read]
+    locator  : runner/runtime.py:815-821 (env resolved) vs runner/runtime.py:847-851 (what frozen.json records)
+    command  : python -c '<AST scan for os.environ.get / os.getenv / os.environ[...]>' then read runtime.py:800-880 -> audit/raw/I-ast-env-access.txt
+    true     : First, the part the brief asked me to judge -- is build_transports 'the edge'? [read] YES, and it is done correctly: build_transports is called exactly once per process, at the composition root (runtime.py:855 inside start_run, and the matching call in resume_run), before Runtime.run(); the values are captured, not re-read (runtime.py:821 passes `api_key=lambda: key` closing over the already-resolved string, and `bas
+    matters  : The frozen record is careful about everything else that determines an outcome -- spec digest, script digest, source file hashes -- and the audit downgrades to LIMITED when the source moves. The endpoint that actually produced every receipt is the one input of that class that leaves no trace. For a h
+    fix      : Record the resolved transport configuration in frozen.json next to source_identity -- the base URL and the provider-enablement flag, never the key itself -- and have replay report  | cost=S | risk=Low, but frozen.json has a strict key-set check at inspection.py:345 and runtime
+
+- [MEDIUM] temperature is optional in the model contract and omitted by every shipped workflow, so the sampling parameter is outside the spec digest
+    tag      : [measured]
+    locator  : runner/contracts.py:231-232,239-242 (optional field); runner/anthropic.py:229-231 (omitted from the wire body when absent); examples/e4/cell-{a,b,c,d}-*.json and examples/orchestration/workflow.json
+    command  : grep -n 'def model_config' -A 25 runner/contracts.py ; python -c '<load each example workflow JSON and print每 agent model.temperature>'
+    true     : [read] contracts.model_config lists temperature in the OPTIONAL field tuple (contracts.py:232) and only copies it through when present (contracts.py:239-242). [read] anthropic.freeze_request copies temperature into the request body only `if field in model` (anthropic.py:229-231), so an absent temperature means the field is simply not sent. [measured] all six shipped workflow declarations -- the four e4 arm cells and 
+    matters  : This is distinct from the honest disclaimer in audit.py. That disclaimer covers the provider being non-deterministic at a FIXED temperature. The issue here is that the declared experimental condition -- the thing the spec digest is supposed to freeze so that two arms differ only in the policy object
+    fix      : Require temperature in model_config for provider 'anthropic' (keep it optional for 'fake', which ignores it), or give it an explicit declared default that is written into the canon | cost=S | risk=Making a field required rejects previously valid v2 workflow declarations, so it
+
+- [LOW] Eight multi-row SELECTs have no ORDER BY and their scan order determines the durable event sequence
+    tag      : [measured]
+    locator  : runner/session.py:133,141,421; runner/platform.py:89,129; runner/orchestration.py:606; runner/evidence.py:261; (session.py:230 is the eighth)
+    command  : python -c '<AST scan narrowing SELECT literals to execute(...).fetchall() and for-over-execute, i.e. multi-row reads only>' then sqlite3 EXPLAIN QUERY PLAN on each against a real ledger -> audit/raw/I
+    true     : [measured] of 114 SELECT literals, 82 lack ORDER BY, and narrowing to genuinely multi-row reads leaves 8. [read] five of the eight are safe by construction because their consumer is order-independent: session.py:230 and platform.py:129 feed len()/sum() aggregates, orchestration.py:605-609 feeds a sum(), platform.py:89 does per-row independent inserts, and evidence.py:261 does per-row independent status updates. [read
+    matters  : The code relies on an ordering SQLite does not promise. That reliance is currently invisible because six of the seven plain scans happen to return insertion order -- but platform.py:89 already shows what changes the answer: one covering index, added for performance by someone with no reason to think
+    fix      : Add `ORDER BY rowid` to the three event-emitting reads at session.py:133,141,421, matching the convention the same file already uses at session.py:435-438 and platform.py:182,194.  | cost=S | risk=Very low -- it pins the order these queries already return today, so no behaviou
+
+- [LOW] The allocation draw is reproducible, but nothing durable records the inputs needed to re-derive it, and replay never checks allocation
+    tag      : [read]
+    locator  : runner/runtime.py:146,153-155 (ledger_index built and passed); runner/runtime_policies.py:114-117 (draw derived); runner/audit.py:96-106,182-188 (what replay recovers)
+    command  : python -c '<call ResponseThresholdAllocation.draw repeatedly and under 3 PYTHONHASHSEED values>' ; grep -n -i 'alloc|claimed|draw|ledger_index|policy' runner/audit.py -> audit/raw/I-exec-draw-derivati
+    true     : First, correcting the lead auditor's fact 3. [read] the locator is wrong: runtime.py:117 is a section comment. The index is built at runtime.py:146 (`index = len(self.session.snapshot()['calls'])`) and passed as context['ledger_index'] at runtime.py:153-155; the draw itself is derived at runtime_policies.py:114-117. [executed] 'never persisted' is literally true but its implication is REFUTED -- the draw is not a ran
+    matters  : This system's whole value proposition is that a recorded run can be verified offline without re-executing it, and replay does that impressively well for model steps, tool bindings, host rules and accounting (71 checks, 0 failures on the example run). Allocation is the one declared mechanism outside 
+    fix      : Record the allocation decision as a durable row the way orchestration decisions already are: the acting agent, the candidate work id, the ledger_index used, the resulting draw and  | cost=M | risk=Additive: a new table plus a new check. The main care needed is that the new row
+
+  NOT RUN:
+    - Churn / git blame evidence for the clock and draw code : NOT RUN. runner/runtime.py, runtime_policies.py, contracts.py, orchestration.py, audit.py, anthropic.py and tools.py are UNTRACKED (confirmed in git status --porcelain at the end of my run), so no history exists for them. Per the lead auditor's standing instruction, churn is not run for untracked files and no estimate is substituted.
+    - Live provider run against the real Anthropic transport to observe sampling nondeterminism in practice : NOT RUN. It would require setting PHEROOS_PROVIDER=1 with a real ANTHROPIC_API_KEY and would spend money; handling credentials and incurring spend are outside what I may do. The temperature finding is therefore reported from [read] contract code plus a [measured] survey of the shipped declarations, not from an executed provider call.
+    - Randomized test-ordering sweep (pytest-randomly / -p no:randomly) to surface order-coupled state : NOT RUN. pytest-randomly is not installed in /tmp/audit-venv and the brief forbids installing anything into the project environment. Note this would have been a §C concern, not §I; the iteration-order question in my own section was answered by AST scan plus EXPLAIN QUERY PLAN instead.
+    - Mutation testing of the clock and ordering branches : NOT RUN. mutmut is available, but mutating these paths is a §F/§C concern and was not delegated to §I; running it would also have required its own isolated copy, and no §I conclusion depended on it.
+    - Multi-process / concurrent-writer determinism (two workers racing on one ledger) : NOT RUN. Out of §I scope -- concurrency and the BEGIN IMMEDIATE transaction discipline belong to whoever holds the atomicity section. My lease and clock findings were all demonstrated single-process with an injected clock, which isolates the determinism variable cleanly.
+  CLEAN:
+    - [measured] NO unseeded nondeterminism in production code. An AST scan (not string search) of runner/ and src/pheroos_interaction/ for random.*, secrets.*, uuid1/3/4/5, os
+    - [measured] The scan above is not evadable by aliasing. A separate AST pass over every ast.Import/ast.ImportFrom (including asname) found exactly two clock aliases -- `fro
+    - [executed] The response-threshold draw is fully reproducible. runtime_policies.py:114-117 derives it by sha256 over [seed, spec_digest, agent, work_id, ledger_index]; it 
+    - [measured] The draw's ledger_index input is stable across resume. There are ZERO `DELETE FROM` statements in the whole audited scope and snapshot() reads `SELECT * FROM c
+    - [executed] Offline replay takes no clock reading and no random. With time.time, time.monotonic, time.monotonic_ns, time.perf_counter, time.time_ns, uuid.uuid4, random.ran
+    - [executed] The orchestration layer is reproducible end to end. Running examples/orchestration/workflow.json twice into two fresh output directories produced byte-identica
+    - [measured] Dict key ordering can never reach a digest. Every canonical-JSON helper in the codebase passes sort_keys=True -- session.py:16, contracts.py:43, inspection.py:
+    - [read] The two topological sorts do NOT leak set ordering. contracts._acyclic (contracts.py:496-504) and platform._decompose (platform.py:266-273) both build `leaves = {k
+    - [read] The lease-TTL determinism claim in AGENTS.md:137 HOLDS. leases.lease_ttl searches `sorted(T for T in set(ordered) | set(extra) if T > 0)` (leases.py:60) so the set
+    - [read] Declared ordering is preserved where the contracts say it must be. contracts.worker_order (contracts.py:288-299) and contracts.eligible_agents (contracts.py:401-40
+    - [measured] No filesystem iteration-order dependence. The AST scan found exactly one iterdir/glob/rglob/scandir/listdir/walk call site in the whole scope, identity.py:15, 
+    - [measured] No sleep, backoff, jitter or retry loop anywhere in runner/ or src/. The only textual matches are docstring prose describing the deliberate never-retry rule (w
+    - [measured] No test-mode, debug or experiment-name branch in any production path. A scan for DEBUG, TESTING, TEST_MODE, pytest, dry_run and experiment-name switches over r
+    - [read] Environment reads are genuinely at the edge -- the question the brief asked me to judge. All four reads happen once, in a composition root or a constructor, and th
+

@@ -1,0 +1,20 @@
+### SIDE-EFFECT CHECK: did the executed import write bytecode into the source tree?
+### COMMAND: find runner src -name '__pycache__' -newermt '2026-09-17 21:45' -o -name '*.pyc' -newermt '2026-09-17 21:45'
+--- (entries above, if any, are .pyc files touched during this session)
+
+### .py MANIFEST RE-VERIFY (authoritative: audited scope is .py only; __pycache__ is excluded scope)
+wrote audit/raw/B1-manifest-after.txt
+
+### git status of audited paths (tracked files only - untracked orchestration layer has no baseline)
+ M runner/cli.py
+ M runner/platform.py
+ M runner/session.py
+ M runner/worker.py
+ M src/pheroos_interaction/commitment.py
+?? runner/anthropic.py
+?? runner/audit.py
+?? runner/contracts.py
+?? runner/orchestration.py
+?? runner/runtime.py
+?? runner/runtime_policies.py
+?? runner/tools.py

@@ -1,0 +1,112 @@
+=== audit.py:307-322 (decision loop: the rejected-receipt skip) ===
+        name = "decision:%d" % row["seq"]
+        check(name + ":validator", row["validator"] == VALIDATOR_VERSION, row["validator"])
+        try:
+            source = ledger.call(row["call_id"])
+        except KeyError:
+            check(name + ":receipt", False, "decision names an unknown call")
+            continue
+        check(name + ":settled", source["state"] in ("received", "response_rejected"), source["state"])
+        if source["state"] != "received":
+            continue
+        check(name + ":digest", sha256(_wire(source["response"]).encode()).hexdigest() == row["receipt_digest"])
+        declaration = ledger.task(row["work_id"])
+        try:
+            proposal = contracts.parse_proposal(
+                source["response"][MODEL_KEY], tools=runtime._tool_schemas(declaration),
+                output_schema=declaration["output_schema"],
+
+=== admit_children signature + body use of lease_seconds ===
+1:    def admit_children(self, lease, source_call_id, children, *, join_reserve=None, lease_seconds=60):
+2:        """Admit a validated propose_children proposal: narrowing checks, then decompose.
+25:            if any(row["decision"] == "decompose" for row in recorded):
+50:            ids = self._decompose(db, lease, [item["work"] for item in prepared])
+59:                                  "decompose", "children admitted: " + ", ".join(ids))
+--- full grep for lease_seconds in orchestration/platform ---
+runner/worker.py:138:        lease = session.claim(agent, work_id, lease_seconds=renew_seconds)
+runner/worker.py:194:                                    rule=plan.get("rule"), lease_seconds=renew_seconds)
+runner/session.py:152:    def claim(self, agent, work_id=None, *, lease_seconds=60):
+runner/session.py:153:        _duration(lease_seconds)
+runner/session.py:161:            return self._claim_ready(db, agent, work_id, lease_seconds)
+runner/session.py:163:    def _claim_ready(self, db, agent, work_id, lease_seconds):
+runner/session.py:173:                       (agent, lease.epoch, self.clock() + lease_seconds, run["generation"], row["id"]))
+runner/session.py:367:    def _claim_received_ready(self, db, agent, work_id, lease_seconds):
+runner/session.py:369:        return self._claim_ready(db, agent, work_id, lease_seconds)
+runner/session.py:371:    def publish_received(self, agent, call_id, *, verify, lease_seconds=60):
+runner/session.py:381:        _duration(lease_seconds)
+runner/session.py:383:            return self._publish_received(db, agent, call_id, verify=verify, lease_seconds=lease_seconds)
+runner/session.py:385:    def _publish_received(self, db, agent, call_id, *, verify, lease_seconds=60):
+runner/session.py:409:            lease = self._claim_received_ready(db, agent, work["id"], lease_seconds)
+runner/colony.py:106:def run_colony(session, agent, *, driver, planner, verify, policy, rule=None, lease_seconds=60,
+runner/colony.py:119:    ``lease_seconds`` (L3, e.g. ``lease_ttl(...)['ttl']``) is used at claim and
+runner/colony.py:135:    _duration(lease_seconds)
+runner/colony.py:158:        lease = session.claim(agent, work_id, lease_seconds=lease_seconds)
+runner/colony.py:227:                        session.renew(lease, lease_seconds)
+runner/colony.py:254:                                    lease_seconds=lease_seconds)
+runner/platform.py:193:    def _claim_ready(self, db, agent, work_id, lease_seconds):
+runner/platform.py:196:                return super()._claim_ready(db, agent, row["id"], lease_seconds)
+runner/platform.py:199:    def _claim_received_ready(self, db, agent, work_id, lease_seconds):
+runner/platform.py:202:            return super()._claim_ready(db, agent, work_id, lease_seconds)
+runner/platform.py:309:    def renew(self, lease, lease_seconds=60):
+runner/platform.py:310:        _duration(lease_seconds)
+runner/platform.py:313:            expires = max(row["expires"], self.clock()+lease_seconds)
+runner/platform.py:392:    def commit(self, work_id, agent=None, *, verify, abstain_loss, rule=None, lease_seconds=60):
+runner/platform.py:399:        _duration(lease_seconds)
+runner/platform.py:429:                ref = self._publish_received(db, publisher, chosen, verify=verify, lease_seconds=lease_seconds)
+runner/platform.py:441:                lease = self._claim_received_ready(db, publisher, work_id, lease_seconds)
+runner/orchestration.py:446:    def _derived_lease(self, db, work, agent, lease_seconds):
+runner/orchestration.py:452:            return self._claim_received_ready(db, agent, work["id"], lease_seconds)
+runner/orchestration.py:456:                        binding=None, lease_seconds=60):
+runner/orchestration.py:469:        _duration(lease_seconds)
+runner/orchestration.py:490:            lease = self._derived_lease(db, work, agent, lease_seconds)
+runner/orchestration.py:558:    def _publish_received(self, db, agent, call_id, *, verify, lease_seconds=60):
+runner/orchestration.py:568:        return super()._publish_received(db, agent, call_id, verify=verify, lease_seconds=lease_seconds)
+runner/orchestration.py:572:    def admit_children(self, lease, source_call_id, children, *, join_reserve=None, lease_seconds=60):
+runner/runtime.py:100:        self.lease_seconds = self.policies.lease_duration()
+runner/runtime.py:372:        lease = session.claim(agent_id, work_id, lease_seconds=self.lease_seconds)
+runner/runtime.py:495:                lease_seconds=self.lease_seconds)
+runner/runtime.py:503:                                             lease_seconds=self.lease_seconds)
+runner/runtime.py:613:            lease = session.claim(contracts.HOST_AGENT, work_id, lease_seconds=self.lease_seconds)
+runner/runtime.py:625:                                      lease_seconds=self.lease_seconds)
+tests/interaction/test_provider_worker.py:164:        adapter.evaluate(session.claim("a", lease_seconds=1), "c", {}, prompt_tokens=3, max_new_tokens=5)
+tests/interaction/test_provider_worker.py:204:    lease = session.claim("a", lease_seconds=1)
+tests/interaction/test_provider_worker.py:352:    lease = session.claim("a", lease_seconds=1)
+tests/interaction/test_platform_conformance.py:278:    lease = session.claim("a", "w", lease_seconds=10)
+tests/interaction/test_platform_conformance.py:437:    lease = session.claim("a", "w", lease_seconds=10)
+tests/interaction/test_platform_conformance.py:473:    old = session.claim("a", "w", lease_seconds=10)
+tests/interaction/test_execution.py:106:    lease = session.claim('a', 'tool-a', lease_seconds=1)
+tests/interaction/test_colony.py:253:    lease = session.claim("a", "w", lease_seconds=1)
+tests/interaction/test_colony.py:375:    result = run(session, driver, lease_seconds=ttl)[0]
+tests/interaction/test_colony.py:519:    result = run(session, sources(session, (True, True), hooks={0: expire}), lease_seconds=10)[0]
+tests/interaction/test_colony.py:611:    lost = run(session, ExpiringDriver(session, clock, {}), lease_seconds=10)[0]
+tests/interaction/test_colony.py:616:    result = run(session, sources(session, (True, True), reads), lease_seconds=10)[0]
+tests/interaction/test_colony.py:624:    assert run(reopened, sources(reopened, (True, True), reads), lease_seconds=10) == [] and len(reads) == 2
+tests/interaction/test_colony.py:632:        lost = run(session, ExpiringDriver(session, clock, {}), lease_seconds=10)[0]
+tests/interaction/test_colony.py:636:    result = run(session, sources(session, (True, True), reads), lease_seconds=10)[0]
+tests/interaction/test_colony.py:648:@pytest.mark.parametrize("kwargs", [{"lease_seconds": 0}, {"wait_hold_seconds": True}, {"max_items": -1},
+tests/interaction/test_colony.py:670:    first_lease = session.claim("a", "w", lease_seconds=1)
+tests/interaction/test_platform_atomicity.py:87:    lease = session.claim("a", "w", lease_seconds=1)
+tests/interaction/test_platform_atomicity.py:222:    lease = session.claim("a", "w", lease_seconds=100)
+tests/interaction/test_platform_atomicity.py:323:    lease = session.claim("a", "w", lease_seconds=1)
+tests/interaction/test_control_limits.py:115:    session.claim("a", "read", lease_seconds=1)
+tests/interaction/test_control_limits.py:118:    second = session.claim("b", "read", lease_seconds=1)
+tests/interaction/test_control_limits.py:139:    lease = session.claim("a", "read", lease_seconds=1)
+tests/interaction/test_control_limits.py:214:    lease = session.claim("a", "read", lease_seconds=1)
+tests/interaction/test_control_limits.py:236:    lease = session.claim("a", "read", lease_seconds=1)
+tests/interaction/test_received_publication.py:57:    lease = session.claim('a', 'work', lease_seconds=1)
+tests/interaction/test_received_publication.py:96:    lease = session.claim('a', 'work', lease_seconds=1)
+tests/interaction/test_received_publication.py:129:    lease = session.claim('a', 'work', lease_seconds=1)
+tests/interaction/test_received_publication.py:155:    lease = session.claim('a', 'work', lease_seconds=1)
+tests/interaction/test_received_publication.py:188:    lease = session.claim('a', 'work', lease_seconds=1)
+tests/interaction/test_received_publication.py:229:    lease = session.claim('a', 'work', lease_seconds=1)
+tests/interaction/test_received_publication.py:242:        session.publish_received('b', 'received', verify=slow_verification, lease_seconds=1)
+tests/interaction/test_orchestration_authority.py:920:    lease = session.claim("producer", "produce", lease_seconds=30)
+tests/interaction/test_e4_shared_capacity.py:566:    assert not {"lease_grants", "lease_expiries", "leases", "lease_seconds",
+tests/interaction/test_orchestration_colony.py:276:    assert engine.lease_seconds == 120.0 != runtime_policies.DEFAULT_LEASE_SECONDS
+tests/interaction/test_orchestration_colony.py:279:    assert again.lease_duration() == engine.lease_seconds
+tests/interaction/test_orchestration_colony.py:285:    assert engine.lease_seconds == runtime_policies.DEFAULT_LEASE_SECONDS
+tests/interaction/test_orchestration_recovery.py:632:def candidate(session, agent, call_id, loss, lease_seconds=10_000):
+tests/interaction/test_orchestration_recovery.py:633:    lease = session.claim(agent, "w", lease_seconds=lease_seconds)
+tests/interaction/test_orchestration_recovery.py:685:    result = session.commit("w", "a", verify=verify, abstain_loss=1.0, rule=rule, lease_seconds=10_000)
+tests/interaction/test_orchestration_recovery.py:694:                          lease_seconds=10_000)["decision"]
+tests/interaction/test_orchestration_recovery.py:735:                                        lease_seconds=10_000)["decision"])

@@ -1,0 +1,41 @@
+=== asdict / astuple / __dataclass_fields__ usage ===
+runner/session.py:4:from dataclasses import asdict
+runner/session.py:174:            self._event(db, "claimed", row["id"], asdict(lease))
+runner/inspection.py:7:from dataclasses import asdict
+runner/inspection.py:96:    return {**value, "assumptions": asdict(assumptions), "losses": asdict(losses)}, plan
+runner/inspection.py:190:              "plan": json.loads(_wire(asdict(plan))), "source_identity": source_identity()}
+runner/inspection.py:351:    if frozen["plan"] != json.loads(_wire(asdict(plan))):
+runner/contracts.py:100:def _fields(value, name, required, optional=()):
+runner/contracts.py:231:    _fields(value, "model", ("provider", "model", "max_new_tokens", "prompt_token_bound",
+runner/contracts.py:267:    _fields(value, "capacity", ("workers", "latency_cost", "service_time"))
+runner/contracts.py:274:        _fields(worker, "worker capacity", ("cost",))
+runner/contracts.py:303:    _fields(value, "agent", ("id", "model", "capabilities"))
+runner/contracts.py:306:    capabilities = _fields(value["capabilities"], "capabilities", ("tools",))
+runner/contracts.py:334:    _fields(value, slot, ("kind",) + required, optional)
+runner/contracts.py:364:    _fields(value, "policies", (), tuple(POLICY_SLOTS))
+runner/contracts.py:369:    _fields(value, "limits", ("model_steps", "tool_calls", "rejections", "calls", "tokens"))
+runner/contracts.py:378:    _fields(value, "decomposition", ("max_children", "child_output_schema", "join_reserve"))
+runner/contracts.py:379:    join = _fields(value["join_reserve"], "join_reserve", ("model_steps", "calls", "tokens"))
+runner/contracts.py:394:    _fields(value, "rule", ("type", "candidate", "review", "checker"))
+runner/contracts.py:413:        _fields(value, "host task", ("id", "kind", "dependencies", "reads", "rule"),
+runner/contracts.py:427:        _fields(value, "model task", ("id", "kind", "instructions", "dependencies", "reads", "tools",
+runner/contracts.py:456:    _fields(value, "tool", ("name", "version"), ("config",))
+runner/contracts.py:472:    _fields(value, "fixture", ("path", "sha256", "bytes"))
+runner/contracts.py:485:    _fields(value, "limits", ("max_calls", "token_cap", "context_bytes", "artifact_bytes", "max_work_items",
+runner/contracts.py:509:    _fields(value, "workflow", ("format", "run_id", "agents", "tools", "fixtures", "tasks", "limits"),
+tests/interaction/test_inspection.py:3:from dataclasses import FrozenInstanceError, asdict
+tests/interaction/test_inspection.py:28:    assert asdict(plan)['assumptions']==asdict(model)
+tests/interaction/test_commitment.py:314:def test_config_rejects_inexact_or_out_of_range_fields(field, value):
+
+=== risk_basis refs ===
+src/pheroos_interaction/inspection.py:87:    risk_basis: str = 'expected loss within the declared family; neither posterior probability nor verification of actual dependencies'
+src/pheroos_interaction/sequential.py:533:    risk_basis: str = RISK_BASIS
+tests/interaction/test_sequential.py:213:    assert 'verification of actual dependencies' in plan.risk_basis
+tests/interaction/test_inspection.py:29:    assert 'verification of actual dependencies' in plan.risk_basis
+tests/interaction/test_inspection_runner.py:97:    assert load(case[2] / "frozen.json")["plan"]["risk_basis"].endswith("verification of actual dependencies")
+
+=== risk_term_count refs ===
+src/pheroos_interaction/inspection.py:85:    risk_term_count: int
+tests/interaction/test_inspection.py:47:        assert plan.risk_term_count==3
+tests/interaction/test_inspection.py:64:        assert plan.query_risk is plan.query_delta is None and plan.risk_term_count==3
+tests/interaction/test_inspection.py:68:        assert plan.risk_term_count==9

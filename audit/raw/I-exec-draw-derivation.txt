@@ -1,0 +1,12 @@
+--- draw source (runtime_policies.py:114-117) ---
+    def draw(self, context, work_id):
+        key = _wire([self.seed, context["spec_digest"], context["agent"], work_id,
+                     context["ledger_index"]])
+        return int(sha256(key.encode()).hexdigest(), 16) / 2 ** 256
+
+draw(ledger_index=0, task-A) = 0.9284152466924176
+repeat identical           = True
+draw(ledger_index=1)       = 0.12303251622111618
+draw(task-B, index 0)      = 0.2647662963629423
+default seed               = allocation
+in [0,1)?                  = True

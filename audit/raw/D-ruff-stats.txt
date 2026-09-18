@@ -1,0 +1,7 @@
+498	TRY003	raise-vanilla-args
+ 22	TRY004	type-check-without-type-error
+  8	TRY301	raise-within-try
+  5	BLE001	blind-except
+  3	T201  	print
+Found 536 errors.
+No fixes available (3 hidden fixes can be enabled with the `--unsafe-fixes` option).

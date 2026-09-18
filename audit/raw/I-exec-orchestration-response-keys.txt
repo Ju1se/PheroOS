@@ -1,0 +1,6 @@
+orch:f00477624d06aadfdb5d9f59d083fb4f81a36519c03bac864efba8d3a80028f7 received keys= ['completion_tokens', 'message', 'prompt_tokens', 'tool_ref']
+orch:97cfe16760793c666e6a10b4a285971a460fb00e2061a0375637937bda579718 received keys= ['completion_tokens', 'prompt_tokens', 'result', 'tool_ref']
+orch:b19e07cbdc37729e7443877718724da6c49835568ae8e03b34a4d03da93e7808 received keys= ['completion_tokens', 'message', 'prompt_tokens', 'tool_ref']
+orch:c17dd2cbb960aec1df8e2422362a7541f9a68e84e5834382a9a3f9ff42ebda15 received keys= ['completion_tokens', 'message', 'prompt_tokens', 'tool_ref']
+orch:8c140e8c4181f5920b504af81b2b14ff9f8b39f38089ec57c50dd87768f4640c received keys= ['completion_tokens', 'prompt_tokens', 'result', 'tool_ref']
+orch:71a50716a526f38a5cd971c25780f3c5bea565f43261bc558675b1af44cf46f8 received keys= ['completion_tokens', 'message', 'prompt_tokens', 'tool_ref']

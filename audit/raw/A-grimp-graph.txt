@@ -1,0 +1,144 @@
+GRIMP VERSION 3.17
+MODULE COUNT 25
+=== MODULES ===
+  pheroos_interaction
+  pheroos_interaction.commitment
+  pheroos_interaction.inspection
+  pheroos_interaction.leases
+  pheroos_interaction.records
+  pheroos_interaction.runner
+  pheroos_interaction.runner.anthropic
+  pheroos_interaction.runner.audit
+  pheroos_interaction.runner.cli
+  pheroos_interaction.runner.colony
+  pheroos_interaction.runner.contracts
+  pheroos_interaction.runner.driver
+  pheroos_interaction.runner.evidence
+  pheroos_interaction.runner.identity
+  pheroos_interaction.runner.inspection
+  pheroos_interaction.runner.orchestration
+  pheroos_interaction.runner.platform
+  pheroos_interaction.runner.policies
+  pheroos_interaction.runner.provider
+  pheroos_interaction.runner.runtime
+  pheroos_interaction.runner.runtime_policies
+  pheroos_interaction.runner.session
+  pheroos_interaction.runner.tools
+  pheroos_interaction.runner.worker
+  pheroos_interaction.sequential
+=== DIRECT EDGES (importer -> imported) ===
+  pheroos_interaction.leases -> pheroos_interaction.inspection
+  pheroos_interaction.runner.anthropic -> pheroos_interaction.runner.contracts
+  pheroos_interaction.runner.audit -> pheroos_interaction.runner.contracts
+  pheroos_interaction.runner.audit -> pheroos_interaction.runner.identity
+  pheroos_interaction.runner.audit -> pheroos_interaction.runner.orchestration
+  pheroos_interaction.runner.audit -> pheroos_interaction.runner.runtime
+  pheroos_interaction.runner.audit -> pheroos_interaction.runner.session
+  pheroos_interaction.runner.audit -> pheroos_interaction.runner.tools
+  pheroos_interaction.runner.cli -> pheroos_interaction.runner.audit
+  pheroos_interaction.runner.cli -> pheroos_interaction.runner.inspection
+  pheroos_interaction.runner.cli -> pheroos_interaction.runner.runtime
+  pheroos_interaction.runner.colony -> pheroos_interaction.records
+  pheroos_interaction.runner.colony -> pheroos_interaction.runner.platform
+  pheroos_interaction.runner.colony -> pheroos_interaction.runner.provider
+  pheroos_interaction.runner.colony -> pheroos_interaction.runner.session
+  pheroos_interaction.runner.colony -> pheroos_interaction.runner.worker
+  pheroos_interaction.runner.colony -> pheroos_interaction.sequential
+  pheroos_interaction.runner.evidence -> pheroos_interaction.records
+  pheroos_interaction.runner.evidence -> pheroos_interaction.runner.session
+  pheroos_interaction.runner.identity -> pheroos_interaction
+  pheroos_interaction.runner.identity -> pheroos_interaction.runner
+  pheroos_interaction.runner.inspection -> pheroos_interaction.inspection
+  pheroos_interaction.runner.inspection -> pheroos_interaction.records
+  pheroos_interaction.runner.inspection -> pheroos_interaction.runner.driver
+  pheroos_interaction.runner.inspection -> pheroos_interaction.runner.evidence
+  pheroos_interaction.runner.inspection -> pheroos_interaction.runner.identity
+  pheroos_interaction.runner.orchestration -> pheroos_interaction.records
+  pheroos_interaction.runner.orchestration -> pheroos_interaction.runner.contracts
+  pheroos_interaction.runner.orchestration -> pheroos_interaction.runner.identity
+  pheroos_interaction.runner.orchestration -> pheroos_interaction.runner.platform
+  pheroos_interaction.runner.orchestration -> pheroos_interaction.runner.session
+  pheroos_interaction.runner.platform -> pheroos_interaction.records
+  pheroos_interaction.runner.platform -> pheroos_interaction.runner.session
+  pheroos_interaction.runner.provider -> pheroos_interaction.records
+  pheroos_interaction.runner.provider -> pheroos_interaction.runner.session
+  pheroos_interaction.runner.runtime -> pheroos_interaction.records
+  pheroos_interaction.runner.runtime -> pheroos_interaction.runner.anthropic
+  pheroos_interaction.runner.runtime -> pheroos_interaction.runner.contracts
+  pheroos_interaction.runner.runtime -> pheroos_interaction.runner.identity
+  pheroos_interaction.runner.runtime -> pheroos_interaction.runner.orchestration
+  pheroos_interaction.runner.runtime -> pheroos_interaction.runner.provider
+  pheroos_interaction.runner.runtime -> pheroos_interaction.runner.runtime_policies
+  pheroos_interaction.runner.runtime -> pheroos_interaction.runner.session
+  pheroos_interaction.runner.runtime -> pheroos_interaction.runner.tools
+  pheroos_interaction.runner.runtime -> pheroos_interaction.runner.worker
+  pheroos_interaction.runner.runtime_policies -> pheroos_interaction.commitment
+  pheroos_interaction.runner.runtime_policies -> pheroos_interaction.leases
+  pheroos_interaction.runner.runtime_policies -> pheroos_interaction.runner.contracts
+  pheroos_interaction.runner.runtime_policies -> pheroos_interaction.runner.policies
+  pheroos_interaction.runner.runtime_policies -> pheroos_interaction.runner.session
+  pheroos_interaction.runner.session -> pheroos_interaction.records
+  pheroos_interaction.runner.tools -> pheroos_interaction.runner.contracts
+  pheroos_interaction.runner.worker -> pheroos_interaction.commitment
+  pheroos_interaction.runner.worker -> pheroos_interaction.records
+  pheroos_interaction.runner.worker -> pheroos_interaction.runner.platform
+  pheroos_interaction.runner.worker -> pheroos_interaction.runner.provider
+  pheroos_interaction.runner.worker -> pheroos_interaction.runner.session
+  pheroos_interaction.sequential -> pheroos_interaction.inspection
+EDGE COUNT 58
+=== INBOUND DEGREE (de facto core) ===
+    9  pheroos_interaction.records
+    9  pheroos_interaction.runner.session
+    6  pheroos_interaction.runner.contracts
+    4  pheroos_interaction.runner.identity
+    3  pheroos_interaction.inspection
+    3  pheroos_interaction.runner.platform
+    3  pheroos_interaction.runner.provider
+    2  pheroos_interaction.commitment
+    2  pheroos_interaction.runner.orchestration
+    2  pheroos_interaction.runner.runtime
+    2  pheroos_interaction.runner.tools
+    2  pheroos_interaction.runner.worker
+    1  pheroos_interaction
+    1  pheroos_interaction.leases
+    1  pheroos_interaction.runner
+    1  pheroos_interaction.runner.anthropic
+    1  pheroos_interaction.runner.audit
+    1  pheroos_interaction.runner.driver
+    1  pheroos_interaction.runner.evidence
+    1  pheroos_interaction.runner.inspection
+    1  pheroos_interaction.runner.policies
+    1  pheroos_interaction.runner.runtime_policies
+    1  pheroos_interaction.sequential
+    0  pheroos_interaction.runner.cli
+    0  pheroos_interaction.runner.colony
+=== OUTBOUND DEGREE (de facto god-modules) ===
+   10  pheroos_interaction.runner.runtime
+    6  pheroos_interaction.runner.audit
+    6  pheroos_interaction.runner.colony
+    5  pheroos_interaction.runner.inspection
+    5  pheroos_interaction.runner.orchestration
+    5  pheroos_interaction.runner.runtime_policies
+    5  pheroos_interaction.runner.worker
+    3  pheroos_interaction.runner.cli
+    2  pheroos_interaction.runner.evidence
+    2  pheroos_interaction.runner.identity
+    2  pheroos_interaction.runner.platform
+    2  pheroos_interaction.runner.provider
+    1  pheroos_interaction.leases
+    1  pheroos_interaction.runner.anthropic
+    1  pheroos_interaction.runner.session
+    1  pheroos_interaction.runner.tools
+    1  pheroos_interaction.sequential
+    0  pheroos_interaction
+    0  pheroos_interaction.commitment
+    0  pheroos_interaction.inspection
+    0  pheroos_interaction.records
+    0  pheroos_interaction.runner
+    0  pheroos_interaction.runner.contracts
+    0  pheroos_interaction.runner.driver
+    0  pheroos_interaction.runner.policies
+=== CYCLES: mutual direct imports ===
+  none
+=== CYCLES: strongly connected components (Tarjan over direct edges) ===
+  none (graph is a DAG over direct import edges)

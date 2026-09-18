@@ -1,0 +1,27 @@
+=== TEMPLATE_VERSION / workflow-v1/v2 in contracts.py ===
+runner/audit.py:225:    check("template_version", ledger.template_version == contracts.TEMPLATE_VERSION,
+runner/orchestration.py:82:                       (_wire(spec), _digest(spec), contracts.TEMPLATE_VERSION, VALIDATOR_VERSION))
+runner/orchestration.py:89:                            "template_version": contracts.TEMPLATE_VERSION, "validator": VALIDATOR_VERSION,
+runner/runtime.py:297:                   "template_version": contracts.TEMPLATE_VERSION, "task_version": version,
+runner/contracts.py:16:SPEC_FORMAT = "orchestration-workflow-v2"
+runner/contracts.py:17:LEGACY_SPEC_FORMAT = "orchestration-workflow-v1"
+runner/contracts.py:20:TEMPLATE_VERSION = "orchestration-context-v1"
+
+=== exact_v1 / bounded_v2 prompt contracts ===
+runner/orchestration.py:5:``bounded_v2`` prompt-usage contract for providers that cannot accept a predeclared
+runner/orchestration.py:27:CONTRACT = "bounded_v2"
+runner/orchestration.py:199:            self._reserve(db, lease, call_id, "tool.evaluate", payload, 0, 0, "exact_v1")
+runner/orchestration.py:330:    def _prompt_contract(self, db, call):
+runner/orchestration.py:332:        return row["contract"] if row else super()._prompt_contract(db, call)
+runner/orchestration.py:334:    def _prompt_settles(self, contract, call, prompt):
+runner/orchestration.py:336:            return super()._prompt_settles(contract, call, prompt)
+runner/orchestration.py:340:        """Reserve under ``bounded_v2``: the reservation is the declared bound, not a promise.
+runner/session.py:189:    def _prompt_contract(self, db, call):
+runner/session.py:190:        """The prompt-usage contract a call was reserved under; the base ledger records exact_v1."""
+runner/session.py:191:        return "exact_v1"
+runner/session.py:193:    def _prompt_settles(self, contract, call, prompt):
+runner/session.py:194:        if contract != "exact_v1":
+runner/session.py:203:            return self._reserve(db, lease, call_id, action, payload, prompt_tokens, max_new_tokens, "exact_v1")
+runner/session.py:227:                    or self._prompt_contract(db, prior) != contract):
+runner/session.py:291:                contract = self._prompt_contract(db, call)
+runner/session.py:292:                valid_prompt = self._prompt_settles(contract, call, prompt)

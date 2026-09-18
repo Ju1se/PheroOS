@@ -1,0 +1,4 @@
+LOC   src: untracked=3934 total=7593 (51.8%) | tests: untracked=5913 total=10587 (55.9%) | all: 9847/18180 (54.2%)
+SLOC  src: untracked=2851 total=5617 (50.8%) | tests: untracked=4337 total=8110 (53.5%) | all: 7188/13727 (52.4%)
+LLOC  src: untracked=2692 total=5375 (50.1%) | tests: untracked=4029 total=7828 (51.5%) | all: 6721/13203 (50.9%)
+WC-L  src: untracked=3934 total=7593 (51.8%) | tests: untracked=5913 total=10587 (55.9%) | all: 9847/18180 (54.2%)

@@ -1,0 +1,11 @@
+### EXECUTED: full suite, Python 3.14, ALL DeprecationWarning/PendingDeprecationWarning/FutureWarning surfaced
+### CMD: PYTHONPATH=<iso>/pkgroot /tmp/audit-venv/bin/pytest -q -p no:cacheprovider -W always::DeprecationWarning -W always::PendingDeprecationWarning -W always::FutureWarning tests/interaction
+### (isolated dereferenced copy; source tree untouched)
+
+exit=0
+--- last line ---
+1016 passed in 18.30s
+
+--- warnings summary section (if any) ---
+--- grep for DeprecationWarning anywhere in output ---
+occurrences of 'deprecat': 0

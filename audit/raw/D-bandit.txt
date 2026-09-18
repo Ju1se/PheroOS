@@ -1,0 +1,60 @@
+
+Test results:
+>> Issue: [B608:hardcoded_sql_expressions] Possible SQL injection vector through string-based query construction.
+   Severity: Medium   Confidence: Medium
+   CWE: CWE-89 (https://cwe.mitre.org/data/definitions/89.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/plugins/b608_hardcoded_sql_expressions.html
+   Location: runner/audit.py:61:55
+60	                self.rows[table] = [dict(row) for row in
+61	                                    database.execute(f"SELECT rowid AS row_index, * FROM {table} ORDER BY {order}")]
+62	            self.task_table = None
+
+--------------------------------------------------
+>> Issue: [B608:hardcoded_sql_expressions] Possible SQL injection vector through string-based query construction.
+   Severity: Medium   Confidence: Medium
+   CWE: CWE-89 (https://cwe.mitre.org/data/definitions/89.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/plugins/b608_hardcoded_sql_expressions.html
+   Location: runner/audit.py:66:26
+65	                    rows = [dict(row) for row in database.execute(
+66	                        f"SELECT rowid AS row_index, * FROM {table} ORDER BY rowid")]
+67	                except sqlite3.OperationalError:
+
+--------------------------------------------------
+>> Issue: [B608:hardcoded_sql_expressions] Possible SQL injection vector through string-based query construction.
+   Severity: Medium   Confidence: Medium
+   CWE: CWE-89 (https://cwe.mitre.org/data/definitions/89.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/plugins/b608_hardcoded_sql_expressions.html
+   Location: runner/inspection.py:260:58
+259	    try:
+260	        rows = {table: [dict(row) for row in db.execute(f"SELECT * FROM {table} ORDER BY rowid")]
+261	                for table in ("run", "work", "calls", "artifacts", "events")}
+
+--------------------------------------------------
+>> Issue: [B608:hardcoded_sql_expressions] Possible SQL injection vector through string-based query construction.
+   Severity: Medium   Confidence: Medium
+   CWE: CWE-89 (https://cwe.mitre.org/data/definitions/89.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/plugins/b608_hardcoded_sql_expressions.html
+   Location: runner/inspection.py:263:66
+262	        calls = rows["calls"]
+263	        coordination = {table: [dict(row) for row in db.execute(f"SELECT * FROM {table} ORDER BY rowid")]
+264	                        for table in ("coordination_v1", "coordination_sources_v1", "coordination_inspections_v1")}
+
+--------------------------------------------------
+
+Code scanned:
+	Total lines of code: 6501
+	Total lines skipped (#nosec): 0
+	Total potential issues skipped due to specifically being disabled (e.g., #nosec BXXX): 0
+
+Run metrics:
+	Total issues (by severity):
+		Undefined: 0
+		Low: 0
+		Medium: 4
+		High: 0
+	Total issues (by confidence):
+		Undefined: 0
+		Low: 0
+		Medium: 4
+		High: 0
+Files skipped (0):

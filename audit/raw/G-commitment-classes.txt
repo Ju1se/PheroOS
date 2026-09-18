@@ -1,0 +1,32 @@
+=== MinLossCommitment ===
+runner/runtime_policies.py:11:    commitment (L1)   MinLossCommitment  OptimalStoppingCommitment / CrossInhibitionCommitment
+runner/runtime_policies.py:160:class MinLossCommitment:
+runner/runtime_policies.py:211:COMMITMENTS = {"min_loss": MinLossCommitment, "optimal_stopping": OptimalStoppingCommitment,
+runner/runtime_policies.py:227:        self.commitment = commitment or MinLossCommitment()
+docs/orchestration-architecture.md:248:| Commitment (L1) | `MinLossCommitment` | `OptimalStoppingCommitment`, `CrossInhibitionCommitment` | defined, not active |
+
+=== OptimalStoppingCommitment ===
+runner/runtime_policies.py:11:    commitment (L1)   MinLossCommitment  OptimalStoppingCommitment / CrossInhibitionCommitment
+runner/runtime_policies.py:169:class OptimalStoppingCommitment:
+runner/runtime_policies.py:211:COMMITMENTS = {"min_loss": MinLossCommitment, "optimal_stopping": OptimalStoppingCommitment,
+tests/interaction/test_orchestration_colony.py:375:    plane = runtime_policies.RuntimePolicies(commitment=runtime_policies.OptimalStoppingCommitment(
+tests/interaction/test_orchestration_colony.py:388:    plane = runtime_policies.RuntimePolicies(commitment=runtime_policies.OptimalStoppingCommitment(
+tests/interaction/test_orchestration_colony.py:417:    runtime_policies.OptimalStoppingCommitment(latency_cost=0.01, deadline=1, arrival_prob=0.0,
+docs/orchestration-architecture.md:248:| Commitment (L1) | `MinLossCommitment` | `OptimalStoppingCommitment`, `CrossInhibitionCommitment` | defined, not active |
+
+=== CrossInhibitionCommitment ===
+runner/runtime_policies.py:11:    commitment (L1)   MinLossCommitment  OptimalStoppingCommitment / CrossInhibitionCommitment
+runner/runtime_policies.py:187:class CrossInhibitionCommitment:
+runner/runtime_policies.py:212:               "cross_inhibition": CrossInhibitionCommitment}
+tests/interaction/test_orchestration_colony.py:397:    plane = runtime_policies.RuntimePolicies(commitment=runtime_policies.CrossInhibitionCommitment(
+tests/interaction/test_orchestration_colony.py:416:    runtime_policies.CrossInhibitionCommitment(latency_cost=0.01, decision_time=1.0),
+docs/orchestration-architecture.md:248:| Commitment (L1) | `MinLossCommitment` | `OptimalStoppingCommitment`, `CrossInhibitionCommitment` | defined, not active |
+
+=== ALLOCATIONS ===
+runner/runtime_policies.py:208:ALLOCATIONS = {"fifo": FIFOAllocation, "threshold": ThresholdAllocation,
+runner/runtime_policies.py:234:        for slot, registry in (("allocation", ALLOCATIONS), ("lease", LEASES)):
+
+=== LEASES ===
+runner/runtime_policies.py:210:LEASES = {"fixed": FixedLease, "evaporation": EvaporationLease}
+runner/runtime_policies.py:234:        for slot, registry in (("allocation", ALLOCATIONS), ("lease", LEASES)):
+

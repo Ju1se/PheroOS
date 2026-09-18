@@ -1,0 +1,14 @@
+CLI entry points: inspect, inspect-replay, orchestrate, orchestrate-resume, orchestrate-replay
+reachable from cli (import closure): 17 of 18 modules
+  anthropic, audit, cli, contracts, driver, evidence, identity, inspection, orchestration, platform, policies, provider, runtime, runtime_policies, session, tools, worker
+
+UNREACHABLE from every CLI entry point: 1 modules, 286 LOC
+   runner/colony.py  286 LOC
+
+NOTE: import-reachability is necessary, not sufficient. colony.run_colony is IMPORTED
+nowhere by cli's closure except via worker's docstring reference; call-graph check:
+runner/worker.py:79:    ``run_worker`` or ``run_colony`` it selects the default minimum-loss rule with
+runner/colony.py:106:def run_colony(session, agent, *, driver, planner, verify, policy, rule=None, lease_seconds=60,
+Binary file runner/__pycache__/colony.cpython-314.pyc matches
+Binary file runner/__pycache__/worker.cpython-314.pyc matches
+

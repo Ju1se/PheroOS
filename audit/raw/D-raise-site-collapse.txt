@@ -1,0 +1,15 @@
+### raise-site counts: how many distinct failures collapse to one class token
+### for E in ...; do grep -rn "raise $E(" runner src/pheroos_interaction --include='*.py' | wc -l; done
+
+  StateError:       106 raise sites,   93 distinct messages
+  ValueError:       253 raise sites,  226 distinct messages
+  LeaseLost:          4 raise sites,    4 distinct messages
+  ContractError:     90 raise sites,   89 distinct messages
+  BudgetExceeded:    17 raise sites,   17 distinct messages
+  PermissionError:   12 raise sites,   10 distinct messages
+  ToolError:         43 raise sites,   42 distinct messages
+  TransportError:    10 raise sites,    9 distinct messages
+
+### diff of the two duplicated error boundaries
+### diff <(sed -n '199,217p' runner/worker.py) <(sed -n '267,285p' runner/colony.py)
+  -> IDENTICAL: 19 lines duplicated verbatim

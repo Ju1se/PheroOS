@@ -1,0 +1,83 @@
+########## VALIDATOR FAMILY DRIFT: _nonnegative / _number / _text / _count
+=== _nonnegative x3 ===
+--- runner/policies.py:11-19
+def _nonnegative(value, name, *, positive=False):
+    try:
+        valid = type(value) in (int, float) and math.isfinite(value)
+    except OverflowError:
+        valid = False
+    if not valid or value < 0 or (positive and value == 0):
+        requirement = "positive" if positive else "nonnegative"
+        raise ValueError(f"{name} must be a finite {requirement} number")
+    return value
+--- src/pheroos_interaction/commitment.py:26-35
+def _number(value, label):
+    if type(value) not in (int, float) or not isfinite(value):
+        raise ValueError('finite ' + label + ' required')
+    return value
+
+
+def _nonnegative(value, label):
+    if _number(value, label) < 0:
+        raise ValueError('nonnegative ' + label + ' required')
+    return value
+--- src/pheroos_interaction/inspection.py:16-30
+def _number(value, label):
+    if type(value) not in (int, float) or not isfinite(value):
+        raise ValueError('finite ' + label + ' required')
+    return value
+
+
+def _nonnegative(value, label):
+    if _number(value, label) < 0:
+        raise ValueError('nonnegative ' + label + ' required')
+
+
+def _text(value, label):
+    if type(value) is not str or not value.strip() or len(value) > MAX_TEXT_LENGTH:
+        raise ValueError('bounded nonempty ' + label + ' required')
+
+
+=== _number x3 ===
+--- runner/contracts.py:88-91
+def _number(value, name):
+    if type(value) not in (int, float) or not math.isfinite(value):
+        raise ContractError(f"{name} must be a finite number")
+    return value
+(commitment.py:26 and src inspection.py:16 shown above - exact hash d5f197de09f46ba8 IDENTICAL)
+
+=== _text x4 ===
+--- runner/contracts.py:69-72
+def _text(value, name, maximum):
+    if type(value) is not str or not value.strip() or len(value.encode()) > maximum:
+        raise ContractError(f"{name} must be nonempty text of at most {maximum} bytes")
+    return value
+--- runner/platform.py:31-34
+def _text(value, maximum=4096):
+    if type(value) is not str or not value.strip() or len(value.encode()) > maximum:
+        raise ValueError("bounded nonempty text required")
+    return value
+--- runner/tools.py:37-40
+def _text(value, label, maximum):
+    if type(value) is not str or not value.strip() or len(value.encode()) > maximum:
+        raise ToolError(f"{label} must be nonempty text of at most {maximum} bytes")
+    return value
+--- src/pheroos_interaction/inspection.py:27-29
+def _text(value, label):
+    if type(value) is not str or not value.strip() or len(value) > MAX_TEXT_LENGTH:
+        raise ValueError('bounded nonempty ' + label + ' required')
+
+=== _count x2 ===
+--- runner/contracts.py:81-85
+def _count(value, name, minimum=0, maximum=None):
+    if type(value) is not int or value < minimum or (maximum is not None and value > maximum):
+        bound = f" and <= {maximum}" if maximum is not None else ""
+        raise ContractError(f"{name} must be an exact integer >= {minimum}{bound}")
+    return value
+--- src/pheroos_interaction/commitment.py:50-55
+def _count(value, label, minimum=0, maximum=None):
+    if type(value) is not int or value < minimum:
+        raise ValueError('exact integer ' + label + ' >= ' + str(minimum) + ' required')
+    if maximum is not None and value > maximum:
+        raise ValueError(label + ' must not exceed ' + str(maximum))
+    return value

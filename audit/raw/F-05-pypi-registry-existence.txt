@@ -1,0 +1,22 @@
+=== GET https://pypi.org/pypi/pytest/json ===
+HTTP 200
+  name:         pytest
+  latest ver:   9.1.1
+  summary:      pytest: simple powerful testing with Python
+  home/project: https://github.com/pytest-dev/pytest
+  n_releases:   192
+
+=== GET https://pypi.org/pypi/setuptools/json ===
+HTTP 200
+  name:         setuptools
+  latest ver:   84.0.0
+  summary:      Most extensible Python build backend with support for C/C++ extension modules
+  home/project: https://github.com/pypa/setuptools
+  n_releases:   625
+
+=== GET https://pypi.org/pypi/pheroos-interaction/json ===
+HTTP 404
+
+=== GET https://pypi.org/pypi/pheroos/json ===
+HTTP 404
+

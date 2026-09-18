@@ -1,0 +1,76 @@
+§C.2 CONTROLLED STUB MUTATION — isolated copy /tmp/audit-c2, venv /tmp/audit-c2-venv
+baseline: 1016 passed (command: /tmp/audit-c2-venv/bin/python -m pytest -q)
+
+STUBBED workflow_spec in contracts.py -> return value
+--- S1 workflow_spec = identity (no validation at all)
+    target : workflow_spec   (runner/contracts.py)
+    stub   : return value
+    result : 140 failed, 765 passed, 111 errors in 14.84s
+    first  : FAILED tests/interaction/test_e4_shared_capacity.py::test_two_tasks_and_two_agents_are_ready_at_the_same_moment
+    first  : FAILED tests/interaction/test_e4_shared_capacity.py::test_the_host_identity_is_not_part_of_the_allocation_choice
+    first  : FAILED tests/interaction/test_e4_shared_capacity.py::test_the_plane_defers_the_expensive_worker_and_lets_the_cheapest_claim
+
+STUBBED conforms in contracts.py -> return True
+--- S2 conforms = always true (schema never enforced)
+    target : conforms   (runner/contracts.py)
+    stub   : return True
+    result : 128 failed, 858 passed, 30 errors in 15.05s
+    first  : FAILED tests/interaction/test_anthropic.py::test_the_extracted_tool_input_conforms_to_the_declared_output_schema
+    first  : FAILED tests/interaction/test_e4_shared_capacity.py::test_each_cell_runs_to_success_with_three_artifacts_and_three_model_calls[A]
+    first  : FAILED tests/interaction/test_e4_shared_capacity.py::test_each_cell_runs_to_success_with_three_artifacts_and_three_model_calls[B]
+
+STUBBED RuntimePolicies.select_work in runtime_policies.py -> return ready[0]['id'] if ready else None
+--- S3 select_work = always FIFO head (policy ignored)
+    target : RuntimePolicies.select_work   (runner/runtime_policies.py)
+    stub   : return ready[0]['id'] if ready else None
+    result : 9 failed, 1007 passed in 17.00s
+    first  : FAILED tests/interaction/test_e4_shared_capacity.py::test_the_plane_defers_the_expensive_worker_and_lets_the_cheapest_claim
+    first  : FAILED tests/interaction/test_e4_shared_capacity.py::test_the_colony_allocation_claims_differently_from_fifo
+    first  : FAILED tests/interaction/test_e4_shared_capacity.py::test_every_claim_is_an_eligible_agent_and_fifo_claims_the_first_declared_one
+
+STUBBED validate_schema in contracts.py -> return schema
+--- S4 validate_schema = identity
+    target : validate_schema   (runner/contracts.py)
+    stub   : return schema
+    result : 83 failed, 903 passed, 30 errors in 17.03s
+    first  : FAILED tests/interaction/test_anthropic.py::test_freeze_request_refuses_malformed_tool_declarations[open-object-schema]
+    first  : FAILED tests/interaction/test_anthropic.py::test_freeze_request_refuses_malformed_tool_declarations[unsupported-keyword]
+    first  : FAILED tests/interaction/test_anthropic.py::test_the_extracted_tool_input_conforms_to_the_declared_output_schema
+
+STUBBED eligible_agents in contracts.py -> return list(task.get('agents') or [task.get('agent')])
+--- S5 eligible_agents = every declared agent
+    target : eligible_agents   (runner/contracts.py)
+    stub   : return list(task.get('agents') or [task.get('agent')])
+    result : 1016 passed in 15.72s
+
+copy restored; verifying baseline is green again:
+1016 passed in 16.43s
+
+=== ROUND 2: the AUTHORITY guards (what this codebase claims to enforce) ===
+STUBBED Runtime._require_executable in runtime.py -> return None
+--- S6 _require_executable = no-op (v1/v2 execution gate removed)
+    target : Runtime._require_executable   (runner/runtime.py)
+    stub   : return None
+    result : 1 failed, 1015 passed in 16.53s
+    first  : FAILED tests/interaction/test_orchestration_audit.py::test_a_v1_workflow_validates_and_audits_but_the_runtime_refuses_to_execute_it
+
+STUBBED replay_run.check in audit.py -> checks.append({'check': name, 'ok': True, 'detail': detail}); return True
+--- S7 audit check() always OK (the auditor itself neutered)
+    target : replay_run.check   (runner/audit.py)
+    stub   : checks.append({'check': name, 'ok': True, 'detail': detail}); return True
+    result : 20 failed, 996 passed in 16.36s
+    first  : FAILED tests/interaction/test_orchestration_audit.py::test_replay_detects_an_altered_request_body
+    first  : FAILED tests/interaction/test_orchestration_audit.py::test_replay_detects_an_altered_stored_response
+    first  : FAILED tests/interaction/test_orchestration_audit.py::test_replay_detects_an_altered_artifact_value
+
+STUBBED worker_order in contracts.py -> return sorted(agent['id'] for agent in spec['agents'])
+--- S8 worker_order = sorted (enumeration order silently sorted)
+    target : worker_order   (runner/contracts.py)
+    stub   : return sorted(agent['id'] for agent in spec['agents'])
+    result : 3 failed, 1013 passed in 17.15s
+    first  : FAILED tests/interaction/test_e4_shared_capacity.py::test_the_colony_allocation_claims_differently_from_fifo
+    first  : FAILED tests/interaction/test_e4_shared_capacity.py::test_every_claim_is_an_eligible_agent_and_fifo_claims_the_first_declared_one
+    first  : FAILED tests/interaction/test_e4_shared_capacity.py::test_the_declared_agent_order_decides_who_claims_and_is_frozen_in_the_digest
+
+restoring and confirming green:
+1016 passed in 17.14s

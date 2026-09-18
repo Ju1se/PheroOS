@@ -1,0 +1,16 @@
+### Is the transport timeout reachable by an operator?
+### grep -rn 'AnthropicTransport(' runner src/pheroos_interaction tests/interaction --include='*.py'
+runner/runtime.py:821:        transports["anthropic"] = anthropic.AnthropicTransport(api_key=lambda: key, base_url=url)
+tests/interaction/test_anthropic.py:122:    return anthropic.AnthropicTransport(**options), opener, key
+tests/interaction/test_anthropic.py:154:    return anthropic.AnthropicTransport(api_key=Key(), timeout=5.0,
+tests/interaction/test_anthropic.py:558:    sender = anthropic.AnthropicTransport(api_key=Key())
+
+### Does the workflow spec or CLI expose a timeout field?
+  (no 'timeout' in contracts.py, cli.py or pyproject.toml -> not spec-configurable, not CLI-configurable)
+
+### env-var fallback chain, runtime.py:818-821
+        if not key:
+            raise StateError("the Anthropic adapter needs a key in ANTHROPIC_API_KEY")
+        url = base_url or os.environ.get("ANTHROPIC_BASE_URL") or "https://api.anthropic.com"
+        transports["anthropic"] = anthropic.AnthropicTransport(api_key=lambda: key, base_url=url)
+    return transports

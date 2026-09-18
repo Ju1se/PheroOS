@@ -1,0 +1,579 @@
+[
+ {
+  "file": "runner/anthropic.py",
+  "line": 348,
+  "end": 349,
+  "exc": "(OSError, ValueError, AttributeError)",
+  "shape": "RETURN_CONST:''",
+  "reraises": false,
+  "obs_tokens": [
+   "error"
+  ],
+  "src": "except (OSError, ValueError, AttributeError):\n    return ''"
+ },
+ {
+  "file": "runner/anthropic.py",
+  "line": 362,
+  "end": 363,
+  "exc": "OSError",
+  "shape": "RAISE_NEW",
+  "reraises": true,
+  "obs_tokens": [
+   "error"
+  ],
+  "src": "except OSError as error:\n    raise TransportError('transport failure: ' + type(error).__name__) from None"
+ },
+ {
+  "file": "runner/anthropic.py",
+  "line": 372,
+  "end": 373,
+  "exc": "ValueError",
+  "shape": "RAISE_NEW",
+  "reraises": true,
+  "obs_tokens": [
+   "error"
+  ],
+  "src": "except ValueError:\n    raise TransportError('response body is not strict JSON') from None"
+ },
+ {
+  "file": "runner/anthropic.py",
+  "line": 415,
+  "end": 416,
+  "exc": "urllib.error.HTTPError",
+  "shape": "RAISE_NEW",
+  "reraises": true,
+  "obs_tokens": [
+   "error"
+  ],
+  "src": "except urllib.error.HTTPError as error:\n    raise TransportError(f'http {error.code}{_detail(error)}') from None"
+ },
+ {
+  "file": "runner/anthropic.py",
+  "line": 417,
+  "end": 418,
+  "exc": "OSError",
+  "shape": "RAISE_NEW",
+  "reraises": true,
+  "obs_tokens": [
+   "error"
+  ],
+  "src": "except OSError as error:\n    raise TransportError('transport failure: ' + type(error).__name__) from None"
+ },
+ {
+  "file": "runner/audit.py",
+  "line": 220,
+  "end": 222,
+  "exc": "ContractError",
+  "shape": "MULTI[Expr,Assign]",
+  "reraises": false,
+  "obs_tokens": [
+   "error"
+  ],
+  "src": "except ContractError as exc:\n    check('spec_revalidates', False, str(exc))\n    spec = spec_source"
+ },
+ {
+  "file": "runner/audit.py",
+  "line": 246,
+  "end": 248,
+  "exc": "KeyError",
+  "shape": "MULTI[Expr,Continue]",
+  "reraises": false,
+  "obs_tokens": [
+   "error"
+  ],
+  "src": "except KeyError:\n    check('call_declared:' + call['id'], False, 'call belongs to undeclared work')\n    continue"
+ },
+ {
+  "file": "runner/audit.py",
+  "line": 311,
+  "end": 313,
+  "exc": "KeyError",
+  "shape": "MULTI[Expr,Continue]",
+  "reraises": false,
+  "obs_tokens": [
+   "error"
+  ],
+  "src": "except KeyError:\n    check(name + ':receipt', False, 'decision names an unknown call')\n    continue"
+ },
+ {
+  "file": "runner/audit.py",
+  "line": 325,
+  "end": 326,
+  "exc": "(ContractError, KeyError, TypeError)",
+  "shape": "MULTI[Assign]",
+  "reraises": false,
+  "obs_tokens": [
+   "error"
+  ],
+  "src": "except (ContractError, KeyError, TypeError):\n    parsed = 'rejected'"
+ },
+ {
+  "file": "runner/audit.py",
+  "line": 374,
+  "end": 376,
+  "exc": "KeyError",
+  "shape": "MULTI[Expr,Continue]",
+  "reraises": false,
+  "obs_tokens": [
+   "error"
+  ],
+  "src": "except KeyError:\n    check(name, False, 'accounting names an unknown call')\n    continue"
+ },
+ {
+  "file": "runner/audit.py",
+  "line": 345,
+  "end": 347,
+  "exc": "KeyError",
+  "shape": "MULTI[Assign,Break]",
+  "reraises": false,
+  "obs_tokens": [
+   "error"
+  ],
+  "src": "except KeyError:\n    ok = False\n    break"
+ },
+ {
+  "file": "runner/audit.py",
+  "line": 358,
+  "end": 359,
+  "exc": "(ContractError, KeyError, TypeError)",
+  "shape": "MULTI[Assign]",
+  "reraises": false,
+  "obs_tokens": [
+   "error"
+  ],
+  "src": "except (ContractError, KeyError, TypeError):\n    matches = False"
+ },
+ {
+  "file": "runner/audit.py",
+  "line": 67,
+  "end": 68,
+  "exc": "sqlite3.OperationalError",
+  "shape": "CONTINUE",
+  "reraises": false,
+  "obs_tokens": [
+   "error"
+  ],
+  "src": "except sqlite3.OperationalError:\n    continue"
+ },
+ {
+  "file": "runner/audit.py",
+  "line": 299,
+  "end": 300,
+  "exc": "KeyError",
+  "shape": "MULTI[Assign]",
+  "reraises": false,
+  "obs_tokens": [
+   "error"
+  ],
+  "src": "except KeyError:\n    bound = False"
+ },
+ {
+  "file": "runner/colony.py",
+  "line": 267,
+  "end": 285,
+  "exc": "Exception",
+  "shape": "MULTI[Assign,If,Expr,Expr]",
+  "reraises": false,
+  "obs_tokens": [
+   "append",
+   "error"
+  ],
+  "src": "except Exception as exc:\n    state = _call_status(session, call_id) if call_id is not None else None\n    if state == 'dispatched':\n        status = 'unknown'\n    elif state == 'response_rejected':\n        status = 'response_rejected'\n        try:\n            session.abstain(lease, reason='response_r"
+ },
+ {
+  "file": "runner/colony.py",
+  "line": 263,
+  "end": 265,
+  "exc": "(StateError, BudgetExceeded)",
+  "shape": "MULTI[Assign]",
+  "reraises": false,
+  "obs_tokens": [
+   "record",
+   "error"
+  ],
+  "src": "except (StateError, BudgetExceeded):\n    record['held'] = False"
+ },
+ {
+  "file": "runner/colony.py",
+  "line": 275,
+  "end": 276,
+  "exc": "(StateError, BudgetExceeded)",
+  "shape": "PASS",
+  "reraises": false,
+  "obs_tokens": [
+   "error"
+  ],
+  "src": "except (StateError, BudgetExceeded):\n    pass"
+ },
+ {
+  "file": "runner/inspection.py",
+  "line": 240,
+  "end": 241,
+  "exc": "Exception",
+  "shape": "MULTI[Assign]",
+  "reraises": false,
+  "obs_tokens": [
+   "error"
+  ],
+  "src": "except Exception as exc:\n    error_type = type(exc).__name__"
+ },
+ {
+  "file": "runner/platform.py",
+  "line": 24,
+  "end": 25,
+  "exc": "OverflowError",
+  "shape": "MULTI[Assign]",
+  "reraises": false,
+  "obs_tokens": [
+   "error"
+  ],
+  "src": "except OverflowError:\n    finite = False"
+ },
+ {
+  "file": "runner/platform.py",
+  "line": 161,
+  "end": 162,
+  "exc": "(PermissionError, LeaseLost)",
+  "shape": "RETURN_CONST:False",
+  "reraises": false,
+  "obs_tokens": [
+   "error"
+  ],
+  "src": "except (PermissionError, LeaseLost):\n    return False"
+ },
+ {
+  "file": "runner/policies.py",
+  "line": 14,
+  "end": 15,
+  "exc": "OverflowError",
+  "shape": "MULTI[Assign]",
+  "reraises": false,
+  "obs_tokens": [
+   "error"
+  ],
+  "src": "except OverflowError:\n    valid = False"
+ },
+ {
+  "file": "runner/runtime.py",
+  "line": 388,
+  "end": 389,
+  "exc": "Exception",
+  "shape": "RETURN_CALL:self._classify(lease, work_id, exc)",
+  "reraises": false,
+  "obs_tokens": [],
+  "src": "except Exception as exc:\n    return self._classify(lease, work_id, exc)"
+ },
+ {
+  "file": "runner/runtime.py",
+  "line": 400,
+  "end": 401,
+  "exc": "(StateError, LeaseLost)",
+  "shape": "PASS",
+  "reraises": false,
+  "obs_tokens": [
+   "error"
+  ],
+  "src": "except (StateError, LeaseLost):\n    pass"
+ },
+ {
+  "file": "runner/runtime.py",
+  "line": 461,
+  "end": 467,
+  "exc": "StateError",
+  "shape": "MULTI[If,Return]+RAISE",
+  "reraises": true,
+  "obs_tokens": [
+   "error"
+  ],
+  "src": "except StateError:\n    if session.call(call_id)['state'] != 'response_rejected':\n        raise\n    return {'work': work_id, 'status': 'response_rejected', 'call_id': call_id, 'step': step}"
+ },
+ {
+  "file": "runner/runtime.py",
+  "line": 485,
+  "end": 488,
+  "exc": "(ContractError, KeyError, TypeError)",
+  "shape": "RETURN_CALL:self._reject(lease, call, '%s: %s' % (type(exc).__name__, ex",
+  "reraises": false,
+  "obs_tokens": [
+   "error"
+  ],
+  "src": "except (ContractError, KeyError, TypeError) as exc:\n    return self._reject(lease, call, '%s: %s' % (type(exc).__name__, exc))"
+ },
+ {
+  "file": "runner/runtime.py",
+  "line": 517,
+  "end": 519,
+  "exc": "BudgetExceeded",
+  "shape": "MULTI[Expr,Return]",
+  "reraises": false,
+  "obs_tokens": [],
+  "src": "except BudgetExceeded:\n    self.session.abstain_task(lease, reason='rejection_limit')\n    return {'work': lease.task_id, 'status': 'abstained', 'reason': 'rejection_limit'}"
+ },
+ {
+  "file": "runner/runtime.py",
+  "line": 546,
+  "end": 547,
+  "exc": "ToolError",
+  "shape": "MULTI[Assign]",
+  "reraises": false,
+  "obs_tokens": [
+   "error"
+  ],
+  "src": "except ToolError as exc:\n    result = {'ok': False, 'error': str(exc)[:512]}"
+ },
+ {
+  "file": "runner/runtime.py",
+  "line": 370,
+  "end": 371,
+  "exc": "Exception",
+  "shape": "RETURN_CALL:self._classify(None, work_id, exc)",
+  "reraises": false,
+  "obs_tokens": [],
+  "src": "except Exception as exc:\n    return self._classify(None, work_id, exc)"
+ },
+ {
+  "file": "runner/runtime.py",
+  "line": 504,
+  "end": 510,
+  "exc": "(ValueError, BudgetExceeded, StateError)",
+  "shape": "MULTI[If,Return]+RAISE",
+  "reraises": true,
+  "obs_tokens": [
+   "error"
+  ],
+  "src": "except (ValueError, BudgetExceeded, StateError) as exc:\n    if isinstance(exc, LeaseLost):\n        raise\n    return self._reject(lease, call, 'decomposition refused: ' + str(exc))"
+ },
+ {
+  "file": "runner/session.py",
+  "line": 51,
+  "end": 53,
+  "exc": "BaseException",
+  "shape": "MULTI[Expr,Raise]+RAISE",
+  "reraises": true,
+  "obs_tokens": [],
+  "src": "except BaseException:\n    db.rollback()\n    raise"
+ },
+ {
+  "file": "runner/tools.py",
+  "line": 65,
+  "end": 66,
+  "exc": "ToolError",
+  "shape": "RERAISE",
+  "reraises": true,
+  "obs_tokens": [
+   "error"
+  ],
+  "src": "except ToolError:\n    raise"
+ },
+ {
+  "file": "runner/tools.py",
+  "line": 67,
+  "end": 68,
+  "exc": "ValueError",
+  "shape": "RAISE_NEW",
+  "reraises": true,
+  "obs_tokens": [
+   "error"
+  ],
+  "src": "except ValueError as error:\n    raise ToolError(f'fixture content is not strict JSON: {error}') from error"
+ },
+ {
+  "file": "runner/tools.py",
+  "line": 267,
+  "end": 268,
+  "exc": "(TypeError, ValueError)",
+  "shape": "RAISE_NEW",
+  "reraises": true,
+  "obs_tokens": [
+   "error"
+  ],
+  "src": "except (TypeError, ValueError) as error:\n    raise ToolError('candidate artifact value is not finite JSON') from error"
+ },
+ {
+  "file": "runner/tools.py",
+  "line": 109,
+  "end": 110,
+  "exc": "TypeError",
+  "shape": "RAISE_NEW",
+  "reraises": true,
+  "obs_tokens": [
+   "error"
+  ],
+  "src": "except TypeError as error:\n    raise ToolError('fixture root must be a filesystem path') from error"
+ },
+ {
+  "file": "runner/tools.py",
+  "line": 136,
+  "end": 137,
+  "exc": "OSError",
+  "shape": "RAISE_NEW",
+  "reraises": true,
+  "obs_tokens": [
+   "error"
+  ],
+  "src": "except OSError as error:\n    raise ToolError(f'fixture {name!r} cannot be opened: {error.strerror}') from error"
+ },
+ {
+  "file": "runner/tools.py",
+  "line": 142,
+  "end": 143,
+  "exc": "OSError",
+  "shape": "RAISE_NEW",
+  "reraises": true,
+  "obs_tokens": [
+   "error"
+  ],
+  "src": "except OSError as error:\n    raise ToolError(f'fixture {name!r} cannot be read: {error.strerror}') from error"
+ },
+ {
+  "file": "runner/tools.py",
+  "line": 177,
+  "end": 178,
+  "exc": "contracts.ContractError",
+  "shape": "RAISE_NEW",
+  "reraises": true,
+  "obs_tokens": [
+   "error"
+  ],
+  "src": "except contracts.ContractError as error:\n    raise ToolError(f'tool {name!r} has an invalid input schema: {error}') from error"
+ },
+ {
+  "file": "runner/tools.py",
+  "line": 223,
+  "end": 224,
+  "exc": "contracts.ContractError",
+  "shape": "RAISE_NEW",
+  "reraises": true,
+  "obs_tokens": [
+   "error"
+  ],
+  "src": "except contracts.ContractError as error:\n    raise ToolError(f'arguments for {name} are not finite JSON: {error}') from error"
+ },
+ {
+  "file": "runner/tools.py",
+  "line": 233,
+  "end": 234,
+  "exc": "contracts.ContractError",
+  "shape": "RAISE_NEW",
+  "reraises": true,
+  "obs_tokens": [
+   "error"
+  ],
+  "src": "except contracts.ContractError as failure:\n    raise ToolError(f'tool {name} returned a value that is not finite JSON: {failure}') from failure"
+ },
+ {
+  "file": "runner/tools.py",
+  "line": 434,
+  "end": 435,
+  "exc": "contracts.ContractError",
+  "shape": "RAISE_NEW",
+  "reraises": true,
+  "obs_tokens": [
+   "error"
+  ],
+  "src": "except contracts.ContractError as error:\n    raise ToolError(f'invalid tool declaration: {error}') from error"
+ },
+ {
+  "file": "runner/tools.py",
+  "line": 119,
+  "end": 120,
+  "exc": "contracts.ContractError",
+  "shape": "RAISE_NEW",
+  "reraises": true,
+  "obs_tokens": [
+   "error"
+  ],
+  "src": "except contracts.ContractError as error:\n    raise ToolError(f'fixture {name!r} declaration is invalid: {error}') from error"
+ },
+ {
+  "file": "runner/worker.py",
+  "line": 44,
+  "end": 48,
+  "exc": "LeaseLost",
+  "shape": "MULTI[Expr,Return]",
+  "reraises": false,
+  "obs_tokens": [],
+  "src": "except LeaseLost:\n    session.recover()\n    return None"
+ },
+ {
+  "file": "runner/worker.py",
+  "line": 49,
+  "end": 51,
+  "exc": "(StateError, BudgetExceeded)",
+  "shape": "RETURN_NONE",
+  "reraises": false,
+  "obs_tokens": [
+   "error"
+  ],
+  "src": "except (StateError, BudgetExceeded):\n    return None"
+ },
+ {
+  "file": "runner/worker.py",
+  "line": 57,
+  "end": 58,
+  "exc": "StateError",
+  "shape": "RETURN_NONE",
+  "reraises": false,
+  "obs_tokens": [
+   "error"
+  ],
+  "src": "except StateError:\n    return None"
+ },
+ {
+  "file": "runner/worker.py",
+  "line": 199,
+  "end": 217,
+  "exc": "Exception",
+  "shape": "MULTI[Assign,If,Expr,Expr]",
+  "reraises": false,
+  "obs_tokens": [
+   "append",
+   "error"
+  ],
+  "src": "except Exception as exc:\n    state = _call_status(session, call_id) if call_id is not None else None\n    if state == 'dispatched':\n        status = 'unknown'\n    elif state == 'response_rejected':\n        status = 'response_rejected'\n        try:\n            session.abstain(lease, reason='response_r"
+ },
+ {
+  "file": "runner/worker.py",
+  "line": 207,
+  "end": 208,
+  "exc": "(StateError, BudgetExceeded)",
+  "shape": "PASS",
+  "reraises": false,
+  "obs_tokens": [
+   "error"
+  ],
+  "src": "except (StateError, BudgetExceeded):\n    pass"
+ },
+ {
+  "file": "src/pheroos_interaction/inspection.py",
+  "line": 99,
+  "end": 100,
+  "exc": "OverflowError",
+  "shape": "RETURN_CALL:float('inf')",
+  "reraises": false,
+  "obs_tokens": [
+   "error"
+  ],
+  "src": "except OverflowError:\n    return float('inf')"
+ },
+ {
+  "file": "tests/interaction/test_platform_atomicity.py",
+  "line": 134,
+  "end": 135,
+  "exc": "BudgetExceeded",
+  "shape": "RETURN_CONST:'refused'",
+  "reraises": false,
+  "obs_tokens": [],
+  "src": "except BudgetExceeded:\n    return 'refused'"
+ },
+ {
+  "file": "tests/interaction/test_platform_conformance.py",
+  "line": 260,
+  "end": 261,
+  "exc": "BudgetExceeded",
+  "shape": "RETURN_CONST:'exhausted'",
+  "reraises": false,
+  "obs_tokens": [],
+  "src": "except BudgetExceeded:\n    return 'exhausted'"
+ }
+]

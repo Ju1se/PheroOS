@@ -1,0 +1,12 @@
+runner/orchestration.py:230:            raise StateError("orchestration requests must carry a binding")
+runner/runtime.py:97:        # requests and never calls run/step, so it keeps reading the older schema.
+runner/anthropic.py:25:import urllib.error
+runner/anthropic.py:26:import urllib.parse
+runner/anthropic.py:27:import urllib.request
+runner/anthropic.py:323:    director = urllib.request.OpenerDirector()
+runner/anthropic.py:324:    for handler in (urllib.request.HTTPHandler(), urllib.request.HTTPSHandler(),
+runner/anthropic.py:325:                    urllib.request.HTTPDefaultErrorHandler(), urllib.request.HTTPErrorProcessor(),
+runner/anthropic.py:326:                    urllib.request.UnknownHandler()):
+runner/anthropic.py:334:    parts = urllib.parse.urlsplit(value)
+runner/anthropic.py:409:        message = urllib.request.Request(
+runner/anthropic.py:415:        except urllib.error.HTTPError as error:

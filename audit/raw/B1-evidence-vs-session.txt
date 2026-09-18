@@ -1,0 +1,95 @@
+########## evidence.py vs session.py — are these two backends (excluded) or a fork?
+### classes + module docstrings
+=== runner/evidence.py head ===
+"""Current source/version/readers and tool declarations at durable dispatch.
+
+Session owns calls, receipts, cancellation and caps. These source checks also
+fence publication when a declaration is superseded or access is revoked.
+"""
+
+from hashlib import sha256
+import json
+
+from .session import Session, _id, _integer, _wire
+from pheroos_interaction.records import BudgetExceeded, LeaseLost, StateError
+
+
+def _control_operation_count(events):
+    return sum(event["event_type"] in (
+        "interaction.session.claimed", "interaction.evidence.source_updated"
+    ) for event in events)
+
+
+class CoordinationSession(Session):
+--- classes/methods:
+20:class CoordinationSession(Session):
+24:    def create(
+72:    def _check_control_capacity(self, db):
+82:    def _event(self, db, kind, work, payload):
+89:    def _coord_event(self, db, kind, payload):
+93:    def _source_declaration(self, db, source):
+107:    def _inspection_declaration(self, db, item):
+168:    def _inspection(self, db, work_id):
+173:    def _access(self, db, agent, source_id):
+184:    def _current(self, db, item, agent):
+191:    def _inspection_access(self, db, work_id, agent):
+199:    def _lease(self, db, lease):
+204:    def _publication_access(self, db, work, agent):
+208:    def _visible_artifacts(self, db, agent):
+227:    def artifacts(self, agent):
+234:    def read_artifact(self, agent, artifact_ref):
+242:    def source_update(self, source_id, version, readers, state_fingerprint):
+284:    def dispatch(self, lease, call_id):
+
+=== runner/session.py head ===
+"""Durable local tool execution with leases, limits, cancellation and receipts."""
+
+from contextlib import contextmanager
+from dataclasses import asdict
+from hashlib import sha256
+import json
+import math
+from pathlib import Path
+import sqlite3
+import time
+
+from pheroos_interaction.records import BudgetExceeded, Lease, LeaseLost, StateError
+
+
+--- classes/methods:
+37:class Session:
+38:    def __init__(self, path, *, clock=None):
+42:    def _transaction(self):
+58:    def create(cls, path, run_id, *, agents, work, token_cap, max_calls,
+113:    def _event(self, db, kind, work, payload):
+117:    def _run(self, db):
+120:    def _lease(self, db, lease):
+132:    def _abandon(self, db, work):
+138:    def _recover(self, db):
+148:    def recover(self):
+152:    def claim(self, agent, work_id=None, *, lease_seconds=60):
+163:    def _claim_ready(self, db, agent, work_id, lease_seconds):
+178:    def check_current(self, lease):
+183:    def _reservation_capacity(self, db, lease, prompt_tokens, max_new_tokens):
+186:    def _reservation_request(self, db, lease, call_id, action, payload):
+189:    def _prompt_contract(self, db, call):
+193:    def _prompt_settles(self, contract, call, prompt):
+198:    def _settled(self, db, call_id, call, response, state):
+201:    def reserve(self, lease, call_id, action, payload, *, prompt_tokens, max_new_tokens):
+205:    def _reserve(self, db, lease, call_id, action, payload, prompt_tokens, max_new_tokens, contract):
+242:    def _scope_ref(self, db, task_id):
+245:    def _permit(self, db, lease, action, payload):
+261:    def dispatch(self, lease, call_id):
+274:    def receive(self, call_id, response):
+316:    def call(self, call_id):
+324:    def publish(self, lease, call_id, artifact, *, verify):
+328:    def _publish(self, db, lease, call_id, artifact, verify):
+340:    def _record_artifact(self, db, lease, wire, call_id, digest, binding=None):
+358:    def _publication_access(self, db, work, agent):
+367:    def _claim_received_ready(self, db, agent, work_id, lease_seconds):
+371:    def publish_received(self, agent, call_id, *, verify, lease_seconds=60):
+385:    def _publish_received(self, db, agent, call_id, *, verify, lease_seconds=60):
+416:    def _stop(self, status):
+426:    def cancel(self):
+430:    def _snapshot_extra(self, db):
+433:    def snapshot(self):

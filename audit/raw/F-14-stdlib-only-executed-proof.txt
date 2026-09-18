@@ -1,0 +1,35 @@
+### EXECUTED: import every shipped module with site-packages DISABLED (-S -E)
+### If any third-party package were required at import time, this fails.
+--- CMD: /tmp/audit-venv/bin/python -S -E <script>  (isolated copy, no site-packages) ---
+site-packages entries on sys.path: NONE (confirmed isolated)
+
+modules imported OK : 25/25
+   OK   pheroos_interaction
+   OK   pheroos_interaction.commitment
+   OK   pheroos_interaction.inspection
+   OK   pheroos_interaction.leases
+   OK   pheroos_interaction.records
+   OK   pheroos_interaction.sequential
+   OK   pheroos_interaction.runner
+   OK   pheroos_interaction.runner.anthropic
+   OK   pheroos_interaction.runner.audit
+   OK   pheroos_interaction.runner.cli
+   OK   pheroos_interaction.runner.colony
+   OK   pheroos_interaction.runner.contracts
+   OK   pheroos_interaction.runner.driver
+   OK   pheroos_interaction.runner.evidence
+   OK   pheroos_interaction.runner.identity
+   OK   pheroos_interaction.runner.inspection
+   OK   pheroos_interaction.runner.orchestration
+   OK   pheroos_interaction.runner.platform
+   OK   pheroos_interaction.runner.policies
+   OK   pheroos_interaction.runner.provider
+   OK   pheroos_interaction.runner.runtime
+   OK   pheroos_interaction.runner.runtime_policies
+   OK   pheroos_interaction.runner.session
+   OK   pheroos_interaction.runner.tools
+   OK   pheroos_interaction.runner.worker
+
+RESULT: every shipped module imports with ZERO third-party packages available.
+non-stdlib top-level modules loaded during import: NONE
+exit=0

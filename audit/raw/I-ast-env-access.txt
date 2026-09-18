@@ -1,0 +1,4 @@
+ENV_CALL	runner/provider.py:56	ProviderDriver::__init__	os.environ.get	self.enabled = os.environ.get("PHEROOS_PROVIDER") == "1" if enabled is None else enabled
+ENV_CALL	runner/runtime.py:815	build_transports	os.environ.get	if os.environ.get("PHEROOS_PROVIDER") != "1":
+ENV_CALL	runner/runtime.py:817	build_transports	os.environ.get	key = api_key or os.environ.get("ANTHROPIC_API_KEY")
+ENV_CALL	runner/runtime.py:820	build_transports	os.environ.get	url = base_url or os.environ.get("ANTHROPIC_BASE_URL") or "https://api.anthropic.com"

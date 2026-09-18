@@ -1,0 +1,2 @@
+=== Static scan v2 (precise word-boundary patterns; v1 pattern 'chunk|uu|imp' produced only variable-name false positives) ===
+  NO HITS across 51 files: no PEP-594 removed module, no deprecated datetime/threading/importlib/ssl/sqlite3 API.

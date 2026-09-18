@@ -1,0 +1,56 @@
+=== git status --porcelain (confirming no source modification by section G) ===
+ M .github/workflows/interaction.yml
+ M AGENTS.md
+ M README.md
+ M runner/cli.py
+ M runner/platform.py
+ M runner/session.py
+ M runner/worker.py
+ M src/pheroos_interaction/commitment.py
+ M tests/interaction/conftest.py
+ M tests/interaction/test_commitment.py
+ M tests/interaction/test_layout.py
+?? audit/
+?? docs/
+?? examples/
+?? runner/anthropic.py
+?? runner/audit.py
+?? runner/contracts.py
+?? runner/orchestration.py
+?? runner/runtime.py
+?? runner/runtime_policies.py
+?? runner/tools.py
+?? tests/interaction/test_anthropic.py
+?? tests/interaction/test_e4_shared_capacity.py
+?? tests/interaction/test_orchestration_audit.py
+?? tests/interaction/test_orchestration_authority.py
+?? tests/interaction/test_orchestration_colony.py
+?? tests/interaction/test_orchestration_hardening.py
+?? tests/interaction/test_orchestration_recovery.py
+?? tests/interaction/test_orchestration_workflow.py
+?? tests/interaction/test_tools.py
+
+=== audit/raw files written by section G ===
+-rw-r--r--@  1 scottxie  staff   2308 Sep 17 21:55 G-admit-children-lease.txt
+-rw-r--r--@  1 scottxie  staff   3056 Sep 17 21:54 G-cc-over-10.txt
+-rw-r--r--@  1 scottxie  staff   2769 Sep 17 21:53 G-commitment-classes.txt
+-rw-r--r--@  1 scottxie  staff   4460 Sep 17 21:53 G-contracts-policy.txt
+-rw-r--r--@  1 scottxie  staff   3712 Sep 17 21:53 G-dataclass-consumption.txt
+-rw-r--r--@  1 scottxie  staff   5832 Sep 17 21:53 G-dead-commitments.txt
+-rw-r--r--@  1 scottxie  staff   3383 Sep 17 21:53 G-dead-inspection-fields.txt
+-rw-r--r--@  1 scottxie  staff   2246 Sep 17 21:53 G-dead-offered.txt
+-rw-r--r--@  1 scottxie  staff  13220 Sep 17 21:54 G-entrypoint-refs.txt
+-rw-r--r--@  1 scottxie  staff    996 Sep 17 21:54 G-file-size-and-exports.txt
+-rw-r--r--@  1 scottxie  staff  24804 Sep 17 21:52 G-function-lengths.txt
+-rw-r--r--@  1 scottxie  staff   6564 Sep 17 21:52 G-loc.txt
+-rw-r--r--@  1 scottxie  staff    547 Sep 17 21:53 G-policy-slots.txt
+-rw-r--r--@  1 scottxie  staff   1440 Sep 17 21:52 G-pylint-deadcode.txt
+-rw-r--r--@  1 scottxie  staff   2571 Sep 17 21:52 G-radon-cc.txt
+-rw-r--r--@  1 scottxie  staff    876 Sep 17 21:52 G-radon-mi.txt
+-rw-r--r--@  1 scottxie  staff   1044 Sep 17 21:55 G-readonly-proof.txt
+-rw-r--r--@  1 scottxie  staff   7874 Sep 17 21:52 G-ruff-F-ARG-ERA.txt
+-rw-r--r--@  1 scottxie  staff    198 Sep 17 21:52 G-ruff-tests-stats.txt
+-rw-r--r--@  1 scottxie  staff  10564 Sep 17 21:55 G-skip-paths.txt
+-rw-r--r--@  1 scottxie  staff    139 Sep 17 21:52 G-todo.txt
+-rw-r--r--@  1 scottxie  staff   2543 Sep 17 21:52 G-vulture-runner-src.txt
+-rw-r--r--@  1 scottxie  staff   2351 Sep 17 21:52 G-vulture-with-tests.txt

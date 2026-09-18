@@ -1,0 +1,13 @@
+### EXECUTED: breadth of 'except sqlite3.OperationalError: continue' at runner/audit.py:67
+### (schema probe over TASK_TABLES = ('orchestration_tasks_v2','orchestration_tasks_v1'))
+
+MISSING TABLE  -> OperationalError | no such table: absent  [the INTENDED case]
+CORRUPT IMAGE  -> DatabaseError | database disk image is malformed
+                  isinstance OperationalError? False  [NOT swallowed - good]
+LOCKED DB probe orchestration_tasks_v2 -> OperationalError | database is locked   <-- SWALLOWED by `continue`
+LOCKED DB probe orchestration_tasks_v1 -> OperationalError | database is locked   <-- SWALLOWED by `continue`
+  task table the replay would use: None
+  -> falls through to: ValueError('the ledger declares no orchestration task table')
+  -> LOUD but MISDIAGNOSED: a locked/busy ledger is reported as a schema problem.
+  -> SQLite locks the whole file, so v2-fails/v1-succeeds cannot arise from a lock:
+     no silent schema downgrade. The defect is the diagnostic, not the control flow.

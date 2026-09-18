@@ -1,0 +1,104 @@
+=== radon raw (LOC) for audited modules ===
+runner/worker.py
+    LOC: 218
+    LLOC: 168
+    SLOC: 168
+runner/audit.py
+    LOC: 431
+    LLOC: 291
+    SLOC: 340
+runner/provider.py
+    LOC: 100
+    LLOC: 71
+    SLOC: 70
+runner/runtime_policies.py
+    LOC: 289
+    LLOC: 132
+    SLOC: 121
+runner/tools.py
+    LOC: 440
+    LLOC: 309
+    SLOC: 313
+runner/session.py
+    LOC: 445
+    LLOC: 360
+    SLOC: 380
+runner/colony.py
+    LOC: 286
+    LLOC: 216
+    SLOC: 212
+runner/__init__.py
+    LOC: 1
+    LLOC: 1
+    SLOC: 0
+runner/runtime.py
+    LOC: 889
+    LLOC: 619
+    SLOC: 664
+runner/platform.py
+    LOC: 468
+    LLOC: 392
+    SLOC: 397
+runner/inspection.py
+    LOC: 389
+    LLOC: 295
+    SLOC: 330
+runner/orchestration.py
+    LOC: 726
+    LLOC: 499
+    SLOC: 555
+runner/cli.py
+    LOC: 53
+    LLOC: 45
+    SLOC: 48
+runner/anthropic.py
+    LOC: 485
+    LLOC: 352
+    SLOC: 350
+runner/contracts.py
+    LOC: 674
+    LLOC: 490
+    SLOC: 508
+runner/driver.py
+    LOC: 47
+    LLOC: 30
+    SLOC: 29
+runner/identity.py
+    LOC: 21
+    LLOC: 18
+    SLOC: 16
+runner/evidence.py
+    LOC: 316
+    LLOC: 152
+    SLOC: 277
+runner/policies.py
+    LOC: 112
+    LLOC: 59
+    SLOC: 59
+src/pheroos_interaction/leases.py
+    LOC: 69
+    LLOC: 31
+    SLOC: 29
+src/pheroos_interaction/records.py
+    LOC: 27
+    LLOC: 20
+    SLOC: 14
+src/pheroos_interaction/commitment.py
+    LOC: 349
+    LLOC: 245
+    SLOC: 218
+src/pheroos_interaction/__init__.py
+    LOC: 2
+    LLOC: 2
+    SLOC: 1
+src/pheroos_interaction/inspection.py
+    LOC: 179
+    LLOC: 153
+    SLOC: 130
+src/pheroos_interaction/sequential.py
+    LOC: 577
+    LLOC: 425
+    SLOC: 388
+    LOC: 7593
+    LLOC: 5375
+    SLOC: 5617

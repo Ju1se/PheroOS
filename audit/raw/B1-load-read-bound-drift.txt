@@ -1,0 +1,112 @@
+########## _load / _read / _save / _unique family — BYTE BOUND DRIFT
+### COMMAND: sed -n on each location
+
+=== runner/inspection.py:47-70 ===
+def _read(path, limit):
+    with Path(path).open("rb") as stream:
+        raw = stream.read(limit + 1)
+    if len(raw) > limit:
+        raise ValueError("input exceeds byte bound")
+    return raw
+
+
+def _load(path, limit=65536):
+    return _parse(_read(path, limit))
+
+
+def _save(path, value):
+    with Path(path).open("xb") as stream:
+        stream.write(_wire(value) + b"\n")
+        stream.flush()
+        os.fsync(stream.fileno())
+    directory = os.open(Path(path).parent, os.O_RDONLY)
+    try:
+        os.fsync(directory)
+    finally:
+        os.close(directory)
+
+
+
+=== runner/runtime.py:765,800 ===
+def _read(path, limit=1 << 20):
+    with Path(path).open("rb") as stream:
+        raw = stream.read(limit + 1)
+    if len(raw) > limit:
+        raise ValueError("input exceeds byte bound")
+    return raw
+
+
+def _load(path, limit=1 << 20):
+    return json.loads(_read(path, limit), object_pairs_hook=_unique,
+                      parse_constant=lambda value: (_ for _ in ()).throw(ValueError("nonfinite JSON")))
+
+
+def _unique(pairs):
+    out = {}
+    for key, value in pairs:
+        if key in out:
+            raise ValueError("duplicate JSON field")
+        out[key] = value
+    return out
+
+
+def _save(path, value):
+    with Path(path).open("xb") as stream:
+        stream.write(_wire(value).encode() + b"\n")
+        stream.flush()
+        os.fsync(stream.fileno())
+    handle = os.open(Path(path).parent, os.O_RDONLY)
+    try:
+        os.fsync(handle)
+    finally:
+        os.close(handle)
+
+
+def build_transports(spec, *, script=None, api_key=None, base_url=None):
+    """Build only the transports the spec's agents declare.
+
+=== runner/tools.py:51-70 ===
+def _unique(pairs):
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ToolError("duplicate JSON field")
+        result[key] = value
+    return result
+
+
+def _parse(raw):
+    """Parse strict JSON: duplicate object keys and NaN/Infinity constants are refused."""
+    try:
+        return json.loads(raw, object_pairs_hook=_unique,
+                          parse_constant=lambda value: (_ for _ in ()).throw(ToolError("nonfinite JSON constant")))
+    except ToolError:
+        raise
+    except ValueError as error:
+        raise ToolError(f"fixture content is not strict JSON: {error}") from error
+
+
+
+=== runner/platform.py:37-44 (NAME COLLISION: different _unique) ===
+def _unique(values, name):
+    if type(values) is not list:
+        raise ValueError(f"{name} must be a list")
+    for value in values:
+        _id(value)
+    if len(set(values)) != len(values):
+        raise ValueError(f"{name} must be unique")
+
+
+### callers of _load / _read:
+runner/anthropic.py:454:    return validate_script(_parse(_read(path, MAX_BODY_BYTES)))
+runner/inspection.py:56:    return _parse(_read(path, limit))
+runner/inspection.py:186:    config, plan = _config(_load(config_path, 32768))
+runner/inspection.py:188:    source = _source(_load(source_dir / "source.json", 8192), config)
+runner/inspection.py:216:        if _source(_load(source_dir / "source.json", 8192), config) != source:
+runner/inspection.py:224:        raw = _read(source_dir / "value.json", 256)
+runner/inspection.py:344:    frozen, stored = _load(run_dir / "frozen.json", 1048576), _load(run_dir / "result.json")
+runner/inspection.py:358:        snapshot = _load(run_dir / "session.json", 1048576)
+runner/inspection.py:370:                response = _load(run_dir / "receipt.json")
+runner/runtime.py:774:    return json.loads(_read(path, limit), object_pairs_hook=_unique,
+runner/runtime.py:844:    spec = _executable(contracts.workflow_spec(_load(workflow_path)))
+runner/runtime.py:868:    frozen = _load(output_dir / "frozen.json")

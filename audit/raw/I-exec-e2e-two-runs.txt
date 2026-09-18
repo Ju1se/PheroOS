@@ -1,0 +1,3 @@
+outcome1 status: success
+outcome2 status: success
+outcomes equal : True

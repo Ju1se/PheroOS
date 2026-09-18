@@ -1,0 +1,152 @@
+### COMMAND: /tmp/audit-venv/bin/python /private/tmp/claude-501/-Users-scottxie-Desktop-multi-agent/f160b040-86a8-4874-aa4e-754fd36459d1/scratchpad/astclone.py /private/tmp/claude-501/-Users-scottxie-Desktop-multi-agent/f160b040-86a8-4874-aa4e-754fd36459d1/scratchpad/b1-dup-copy
+### Method: normalized-AST block hashing (own implementation; jscpd NOT RUN)
+### Target: isolated cp -RL copy of runner/ + src/ (25 files, 7593 LOC)
+
+==============================================================================
+PART 1 - MODULE-LEVEL FUNCTIONS SHARING A NAME
+==============================================================================
+
+_copy            2 copies -> DRIFTED (2 distinct implementations)
+    runner/driver.py:9-10  stmts=1 exact=4d5161282fc642b2 alpha=b79d109fdbfb243d
+    runner/tools.py:43-44  stmts=1 exact=4fdad5e6d8d9ae57 alpha=608718d777ebe2cb
+
+_count           2 copies -> DRIFTED (2 distinct implementations)
+    runner/contracts.py:81-85  stmts=2 exact=7f5cdd6361c4e862 alpha=79a344595fdecdbe
+    src/pheroos_interaction/commitment.py:50-55  stmts=3 exact=ee6ccb738682348d alpha=97cdc685a7269d02
+
+_digest          3 copies -> DRIFTED (2 distinct implementations)
+    runner/audit.py:39-40  stmts=1 exact=966e62c51e594e49 alpha=9a508b25ee309b6b
+    runner/inspection.py:29-30  stmts=1 exact=f32cfc39423eb1d0 alpha=ec3592f3edf71bee
+    runner/orchestration.py:44-45  stmts=1 exact=966e62c51e594e49 alpha=9a508b25ee309b6b
+
+_load            2 copies -> DRIFTED (2 distinct implementations)
+    runner/inspection.py:55-56  stmts=1 exact=92e7c2d61fd5073e alpha=166db76fae813058
+    runner/runtime.py:773-775  stmts=1 exact=774f353432c18b64 alpha=21e14432735a1fe7
+
+_nonnegative     3 copies -> DRIFTED (3 distinct implementations)
+    runner/policies.py:11-19  stmts=3 exact=5639a5473b9cc849 alpha=59d51db3585b9d0d
+    src/pheroos_interaction/commitment.py:32-35  stmts=2 exact=7482cf5cbbf8917e alpha=c9f46fc8e175aa64
+    src/pheroos_interaction/inspection.py:22-24  stmts=1 exact=b267c2738fc8e670 alpha=a34055002adfa9df
+
+_number          3 copies -> DRIFTED (2 distinct implementations)
+    runner/contracts.py:88-91  stmts=2 exact=c6efcdde8b1dd657 alpha=90e47237b1122711
+    src/pheroos_interaction/commitment.py:26-29  stmts=2 exact=d5f197de09f46ba8 alpha=02aff404018a1cc8
+    src/pheroos_interaction/inspection.py:16-19  stmts=2 exact=d5f197de09f46ba8 alpha=02aff404018a1cc8
+
+_parse           3 copies -> DRIFTED (2 distinct implementations)
+    runner/anthropic.py:63-65  stmts=1 exact=dd098bf43979eabb alpha=80bf227c0af2d0d1
+    runner/inspection.py:42-44  stmts=1 exact=dd098bf43979eabb alpha=80bf227c0af2d0d1
+    runner/tools.py:60-68  stmts=1 exact=30240a0b0ff7bef3 alpha=fe1e96871fb3280a
+
+_plan            2 copies -> DRIFTED (2 distinct implementations)
+    runner/colony.py:65-103  stmts=17 exact=a4ed38faf3c2b107 alpha=89bb610f6d501356
+    runner/worker.py:18-38  stmts=11 exact=fec3a7c2b4a085b5 alpha=22725dddb17d58f4
+
+_read            3 copies -> IDENTICAL (same AST, docstrings ignored)
+    runner/anthropic.py:68-73  stmts=3 exact=490b5a12a1ca0c0f alpha=6a9ad73ab47c9b75
+    runner/inspection.py:47-52  stmts=3 exact=490b5a12a1ca0c0f alpha=6a9ad73ab47c9b75
+    runner/runtime.py:765-770  stmts=3 exact=490b5a12a1ca0c0f alpha=6a9ad73ab47c9b75
+
+_save            2 copies -> DRIFTED (2 distinct implementations)
+    runner/inspection.py:59-68  stmts=3 exact=a5176dfdfc0cdfab alpha=ee5b21d97a1a3139
+    runner/runtime.py:787-796  stmts=3 exact=686c98b029409d93 alpha=f9360e4a0398c381
+
+_source          2 copies -> DRIFTED (2 distinct implementations)
+    runner/inspection.py:99-117  stmts=9 exact=dae703a67d631744 alpha=1a2d4a6d20e0d85a
+    src/pheroos_interaction/sequential.py:192-193  stmts=1 exact=433bbf5a9783e6a1 alpha=c4fc00d8449d7bf6
+
+_text            4 copies -> DRIFTED (3 distinct implementations)
+    runner/contracts.py:69-72  stmts=2 exact=4c053832bde0fc82 alpha=9742108133a653fe
+    runner/platform.py:31-34  stmts=2 exact=01d3d35d81db615e alpha=9ffa244fcf364d48
+    runner/tools.py:37-40  stmts=2 exact=c8204d47a9dbcde8 alpha=9742108133a653fe
+    src/pheroos_interaction/inspection.py:27-29  stmts=1 exact=ecf8f4d175d56eb6 alpha=5c2fa5e8294ca2bf
+
+_unique          5 copies -> DRIFTED (2 distinct implementations)
+    runner/anthropic.py:54-60  stmts=3 exact=8cb2c3de77b8f7c3 alpha=a3952668c8e26541
+    runner/inspection.py:33-39  stmts=3 exact=8cb2c3de77b8f7c3 alpha=a3952668c8e26541
+    runner/platform.py:37-43  stmts=3 exact=8b764f9db2fdbdd6 alpha=bbe2b97127334222
+    runner/runtime.py:778-784  stmts=3 exact=1b30e844b7256717 alpha=a3952668c8e26541
+    runner/tools.py:51-57  stmts=3 exact=169c5926bb38a196 alpha=a3952668c8e26541
+
+_unit            2 copies -> IDENTICAL (same AST, docstrings ignored)
+    src/pheroos_interaction/commitment.py:44-47  stmts=2 exact=2a75ca6f793606ce alpha=4de261f95d2e3946
+    src/pheroos_interaction/sequential.py:39-42  stmts=2 exact=2a75ca6f793606ce alpha=4de261f95d2e3946
+
+_wire            2 copies -> DRIFTED (2 distinct implementations)
+    runner/inspection.py:25-26  stmts=1 exact=f107886f11e6c6e0 alpha=9be9e820c49f4a92
+    runner/session.py:15-16  stmts=1 exact=0158c0df8d44a0b3 alpha=296d880d268d908b
+
+==============================================================================
+PART 2 - STRUCTURAL CLONES ACROSS DIFFERENT NAMES (alpha-normalized)
+==============================================================================
+
+alpha=bb8b6cd62cc20ca1  stmts=4  2 copies, names=['_exact', '_fields']
+    runner/anthropic.py:96-102  _exact
+    runner/contracts.py:100-106  _fields
+
+==============================================================================
+PART 3 - MAXIMAL DUPLICATED STATEMENT WINDOWS (>=4 stmts, alpha-normalized)
+==============================================================================
+
+11 statements duplicated in 2 places:
+    runner/colony.py:148-163
+    runner/worker.py:128-143
+
+5 statements duplicated in 2 places:
+    runner/colony.py:165-176
+    runner/worker.py:145-156
+
+5 statements duplicated in 2 places:
+    src/pheroos_interaction/inspection.py:75-79
+    src/pheroos_interaction/sequential.py:520-524
+
+5 statements duplicated in 2 places:
+    src/pheroos_interaction/sequential.py:152-156
+    src/pheroos_interaction/sequential.py:521-525
+
+5 statements duplicated in 2 places:
+    src/pheroos_interaction/sequential.py:155-159
+    src/pheroos_interaction/sequential.py:525-529
+
+4 statements duplicated in 2 places:
+    runner/anthropic.py:31-34
+    runner/contracts.py:19-22
+
+4 statements duplicated in 2 places:
+    runner/anthropic.py:97-102
+    runner/contracts.py:101-106
+
+4 statements duplicated in 2 places:
+    runner/evidence.py:288-297
+    runner/session.py:263-267
+
+4 statements duplicated in 2 places:
+    runner/evidence.py:308-316
+    runner/session.py:269-272
+
+4 statements duplicated in 2 places:
+    runner/inspection.py:8-11
+    runner/runtime.py:28-31
+
+4 statements duplicated in 3 places:
+    src/pheroos_interaction/inspection.py:34-37
+    src/pheroos_interaction/inspection.py:38-41
+    src/pheroos_interaction/inspection.py:39-42
+
+4 statements duplicated in 3 places:
+    src/pheroos_interaction/inspection.py:76-79
+    src/pheroos_interaction/sequential.py:152-155
+    src/pheroos_interaction/sequential.py:521-524
+
+4 statements duplicated in 2 places:
+    src/pheroos_interaction/inspection.py:124-130
+    src/pheroos_interaction/sequential.py:128-134
+
+4 statements duplicated in 2 places:
+    src/pheroos_interaction/records.py:23-26
+    src/pheroos_interaction/records.py:24-27
+
+4 statements duplicated in 2 places:
+    src/pheroos_interaction/sequential.py:523-526
+    src/pheroos_interaction/sequential.py:524-527
+### EXIT: 0

@@ -1,0 +1,65 @@
+interpreter for stdlib list: 3.14.5rc1 (v3.14.5rc1:a68a9190498, May  4 2026, 15:15:24) [Clang 21.0.0 (clang-2100.0.123.102)]
+MODULE                CLASS           N     AREAS
+------------------------------------------------------------------------------------------
+__future__            stdlib          7     runner
+argparse              stdlib          1     runner
+ast                   stdlib          6     tests
+bisect                stdlib          1     src/pheroos_interaction
+concurrent            stdlib          2     tests
+contextlib            stdlib          2     runner,tests
+copy                  stdlib          2     tests
+dataclasses           stdlib          9     runner,src/pheroos_interaction,tests
+fractions             stdlib          5     runner,src/pheroos_interaction,tests
+functools             stdlib          1     tests
+hashlib               stdlib          28    runner,src/pheroos_interaction,tests
+http                  stdlib          1     tests
+importlib             stdlib          2     tests
+io                    stdlib          2     tests
+itertools             stdlib          2     src/pheroos_interaction,tests
+json                  stdlib          29    runner,src/pheroos_interaction,tests
+math                  stdlib          12    runner,src/pheroos_interaction,tests
+os                    stdlib          6     runner,tests
+pathlib               stdlib          21    runner,tests
+pheroos_interaction   first-party     110   runner,tests
+pytest                THIRD-PARTY(dev)26    tests
+random                stdlib          3     tests
+re                    stdlib          2     runner
+shutil                stdlib          3     tests
+socket                stdlib          2     tests
+sqlite3               stdlib          11    runner,tests
+stat                  stdlib          1     runner
+statistics            stdlib          1     tests
+subprocess            stdlib          1     tests
+sys                   stdlib          3     runner,tests
+tempfile              stdlib          2     runner,tests
+threading             stdlib          3     tests
+time                  stdlib          3     runner
+urllib                stdlib          5     runner,tests
+
+=== NON-STDLIB, NON-FIRST-PARTY occurrences with locators ===
+  THIRD-PARTY(dev)     tests/interaction/conftest.py:3  import pytest
+  THIRD-PARTY(dev)     tests/interaction/test_anthropic.py:16  import pytest
+  THIRD-PARTY(dev)     tests/interaction/test_artifact_access.py:5  import pytest
+  THIRD-PARTY(dev)     tests/interaction/test_colony.py:7  import pytest
+  THIRD-PARTY(dev)     tests/interaction/test_commitment.py:7  import pytest
+  THIRD-PARTY(dev)     tests/interaction/test_control_limits.py:4  import pytest
+  THIRD-PARTY(dev)     tests/interaction/test_e4_shared_capacity.py:33  import pytest
+  THIRD-PARTY(dev)     tests/interaction/test_execution.py:6  import pytest
+  THIRD-PARTY(dev)     tests/interaction/test_inspection.py:6  import pytest
+  THIRD-PARTY(dev)     tests/interaction/test_inspection_cli.py:8  import pytest
+  THIRD-PARTY(dev)     tests/interaction/test_inspection_runner.py:8  import pytest
+  THIRD-PARTY(dev)     tests/interaction/test_layout.py:7  import pytest
+  THIRD-PARTY(dev)     tests/interaction/test_leases.py:6  import pytest
+  THIRD-PARTY(dev)     tests/interaction/test_orchestration_audit.py:22  import pytest
+  THIRD-PARTY(dev)     tests/interaction/test_orchestration_authority.py:15  import pytest
+  THIRD-PARTY(dev)     tests/interaction/test_orchestration_colony.py:13  import pytest
+  THIRD-PARTY(dev)     tests/interaction/test_orchestration_hardening.py:14  import pytest
+  THIRD-PARTY(dev)     tests/interaction/test_orchestration_recovery.py:14  import pytest
+  THIRD-PARTY(dev)     tests/interaction/test_orchestration_workflow.py:18  import pytest
+  THIRD-PARTY(dev)     tests/interaction/test_platform_atomicity.py:6  import pytest
+  THIRD-PARTY(dev)     tests/interaction/test_platform_conformance.py:9  import pytest
+  THIRD-PARTY(dev)     tests/interaction/test_platform_policies.py:7  import pytest
+  THIRD-PARTY(dev)     tests/interaction/test_provider_worker.py:5  import pytest
+  THIRD-PARTY(dev)     tests/interaction/test_received_publication.py:5  import pytest
+  THIRD-PARTY(dev)     tests/interaction/test_sequential.py:9  import pytest
+  THIRD-PARTY(dev)     tests/interaction/test_tools.py:6  import pytest

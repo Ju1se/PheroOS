@@ -1,0 +1,3 @@
+ALL rows (incl class aggregate rows) = claim's method untracked= 1318 tracked= 1203 total= 2521 untracked_share=52.3%
+functions+methods only (class rows excluded)         untracked= 1247 tracked= 1147 total= 2394 untracked_share=52.1%
+class aggregate rows only                            untracked=   71 tracked=   56 total=  127 untracked_share=55.9%

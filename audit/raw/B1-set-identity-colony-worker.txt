@@ -1,0 +1,15 @@
+########## SET 1: exception handler + return — colony.py:267-286 vs worker.py:199-218 (20 lines)
+### COMMAND: diff <(sed -n '267,286p' runner/colony.py) <(sed -n '199,218p' runner/worker.py)
+>>> RESULT: BYTE-IDENTICAL (diff exit 0) - copies have NOT drifted
+
+########## SET 2: arg-validation + sweep-loop head — colony.py:143-158 vs worker.py:123-138 (15 lines)
+### COMMAND: diff <(sed -n '143,158p' runner/colony.py) <(sed -n '123,138p' runner/worker.py)
+16c16
+<         lease = session.claim(agent, work_id, lease_seconds=lease_seconds)
+---
+>         lease = session.claim(agent, work_id, lease_seconds=renew_seconds)
+>>> RESULT: DIFFERS (see above)
+
+########## SET 3: recovery preamble — colony.py:159-176 vs worker.py:139-156 (18 lines)
+### COMMAND: diff <(sed -n '159,176p' runner/colony.py) <(sed -n '139,156p' runner/worker.py)
+>>> RESULT: BYTE-IDENTICAL (diff exit 0) - copies have NOT drifted

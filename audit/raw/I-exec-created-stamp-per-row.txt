@@ -1,0 +1,14 @@
+declared order            : ['zeta', 'mid', 'alpha', 'beta', 'yankee']
+work table (rowid order)  : ['zeta', 'mid', 'alpha', 'beta', 'yankee']
+
+platform_work_v1 by ascending `created` (platform.py:96 writes session.clock() INSIDE the loop):
+   alpha    created=1789707620.930265
+   beta     created=1789707620.930274
+   mid      created=1789707620.930277
+   yankee   created=1789707620.930278
+   zeta     created=1789707620.930280
+
+distinct `created` values in ONE atomic create : 5 of 5
+spread (max-min) seconds                       : 0.000014782
+insertion order == declared order              : False
+insertion order == sorted(id)                  : True

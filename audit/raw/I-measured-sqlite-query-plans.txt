@@ -1,0 +1,21 @@
+--- indexes present on the ledger ---
+   sqlite_autoindex_artifacts_1       artifacts    (implicit: PRIMARY KEY / UNIQUE)
+   sqlite_autoindex_artifacts_2       artifacts    (implicit: PRIMARY KEY / UNIQUE)
+   sqlite_autoindex_calls_1           calls        (implicit: PRIMARY KEY / UNIQUE)
+   sqlite_autoindex_orchestration_accounting_v1_1 orchestration_accounting_v1 (implicit: PRIMARY KEY / UNIQUE)
+   sqlite_autoindex_orchestration_artifacts_v1_1 orchestration_artifacts_v1 (implicit: PRIMARY KEY / UNIQUE)
+   sqlite_autoindex_orchestration_tasks_v2_1 orchestration_tasks_v2 (implicit: PRIMARY KEY / UNIQUE)
+   sqlite_autoindex_platform_candidates_v1_1 platform_candidates_v1 (implicit: PRIMARY KEY / UNIQUE)
+   sqlite_autoindex_platform_decisions_v1_1 platform_decisions_v1 (implicit: PRIMARY KEY / UNIQUE)
+   sqlite_autoindex_platform_no_entry_v1_1 platform_no_entry_v1 (implicit: PRIMARY KEY / UNIQUE)
+   sqlite_autoindex_platform_work_v1_1 platform_work_v1 (implicit: PRIMARY KEY / UNIQUE)
+   sqlite_autoindex_work_1            work         (implicit: PRIMARY KEY / UNIQUE)
+
+session.py:133 _abandon    SCAN calls
+session.py:141 _recover    SCAN work
+session.py:230 _reserve    SCAN calls
+session.py:421 _stop       SCAN work
+orchestration.py:606       SCAN calls
+platform.py:89 create      SCAN work USING COVERING INDEX sqlite_autoindex_work_1
+platform.py:129 _spent     SCAN calls
+session.py:435 snapshot    SCAN calls

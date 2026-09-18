@@ -1,0 +1,49 @@
+== runner/session.py:433  Session.snapshot
+   docstring: NONE
+
+== runner/tools.py:212  ToolRegistry.execute
+   docstring: 224 chars
+     | Validate arguments against the declared schema, then run the tool and bound its output.
+     | 
+     | A nonconforming argument set is refused before the tool runs. The returned
+     | value is a finite-JSON copy; it is evidence, not a decision.
+
+== runner/runtime.py:655  Runtime.run
+   docstring: 79 chars
+     | Sweep until no task can take another step; at most one step per task per sweep.
+
+== runner/session.py:152  Session.claim
+   docstring: NONE
+
+== runner/contracts.py:42  wire
+   docstring: NONE
+
+== runner/platform.py:392  PlatformMixin.commit
+   docstring: 218 chars
+     | Atomic decision + receipt publication. None abstains; explicit wait waits.
+     | 
+     | rule(candidate_metadata, abstain_loss) returns a candidate call id, None,
+     | or {'decision': 'wait'}. It and verify must be pure local functions.
+
+== runner/session.py:201  Session.reserve
+   docstring: NONE
+
+== runner/platform.py:171  PlatformMixin.ready_work
+   docstring: 74 chars
+     | Read-only metadata; expired leases are projected, recovered only on claim.
+
+== runner/contracts.py:507  workflow_spec
+   docstring: 86 chars
+     | Validate a workflow declaration; the returned record is canonical and self-consistent.
+
+== runner/session.py:274  Session.receive
+   docstring: NONE
+
+== runner/contracts.py:401  eligible_agents
+   docstring: 72 chars
+     | The agents a task declares as legal executors, in either schema version.
+
+== runner/audit.py:205  replay_run
+   docstring: 79 chars
+     | Verify a recorded run offline; returns a report and never touches the original.
+

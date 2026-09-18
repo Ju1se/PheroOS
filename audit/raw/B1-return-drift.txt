@@ -1,0 +1,45 @@
+########## _nonnegative / _text RETURN-VALUE DRIFT — are the None-returning copies used in value position?
+### COMMAND: grep -n '_nonnegative(\|_text(\|_number(' src/pheroos_interaction/inspection.py src/pheroos_interaction/commitment.py
+src/pheroos_interaction/inspection.py:16:def _number(value, label):
+src/pheroos_interaction/inspection.py:22:def _nonnegative(value, label):
+src/pheroos_interaction/inspection.py:23:    if _number(value, label) < 0:
+src/pheroos_interaction/inspection.py:27:def _text(value, label):
+src/pheroos_interaction/inspection.py:47:            _text(getattr(self, field), field)
+src/pheroos_interaction/inspection.py:51:            _number(getattr(self, field), field)
+src/pheroos_interaction/inspection.py:70:            _nonnegative(getattr(self, field), field + ' loss')
+src/pheroos_interaction/inspection.py:153:    _nonnegative(query_cost, 'inspection cost')
+src/pheroos_interaction/inspection.py:154:    _nonnegative(epsilon, 'minimum improvement')
+src/pheroos_interaction/commitment.py:26:def _number(value, label):
+src/pheroos_interaction/commitment.py:32:def _nonnegative(value, label):
+src/pheroos_interaction/commitment.py:33:    if _number(value, label) < 0:
+src/pheroos_interaction/commitment.py:39:    if _number(value, label) <= 0:
+src/pheroos_interaction/commitment.py:45:    if not 0 <= _number(value, label) <= 1:
+src/pheroos_interaction/commitment.py:76:    _number(v, 'value')
+src/pheroos_interaction/commitment.py:83:    _nonnegative(sigma, 'sigma')
+src/pheroos_interaction/commitment.py:94:    _nonnegative(sigma, 'sigma')
+src/pheroos_interaction/commitment.py:109:    _nonnegative(sigma, 'sigma')
+src/pheroos_interaction/commitment.py:153:        _nonnegative(self.latency_cost, 'latency_cost')
+src/pheroos_interaction/commitment.py:154:        _nonnegative(self.decision_time, 'decision_time')
+src/pheroos_interaction/commitment.py:156:        _nonnegative(self.margin, 'margin')
+src/pheroos_interaction/commitment.py:232:        _nonnegative(row.get('certified_loss'), 'certified loss')
+src/pheroos_interaction/commitment.py:246:        if _nonnegative(abstain_loss, 'abstain_loss') != config.abstain_loss:
+src/pheroos_interaction/commitment.py:271:    l0 = _nonnegative(abstain_loss, 'abstain_loss')
+src/pheroos_interaction/commitment.py:272:    c_t = _nonnegative(latency_cost, 'latency_cost')
+src/pheroos_interaction/commitment.py:308:            _nonnegative(r, 'candidate loss')
+src/pheroos_interaction/commitment.py:339:        if _nonnegative(ledger_abstain_loss, 'abstain_loss') != abstain_loss:
+
+### MAX_TEXT_LENGTH definition(s):
+src/pheroos_interaction/inspection.py:13:MAX_TEXT_LENGTH = 2048
+src/pheroos_interaction/inspection.py:28:    if type(value) is not str or not value.strip() or len(value) > MAX_TEXT_LENGTH:
+
+### executed check: does the src inspection._nonnegative return None while commitment._nonnegative returns the value?
+COMMAND: import both modules, call _nonnegative(5.0,'x') on each
+  commitment._nonnegative(5.0,'x') -> 5.0
+  inspection._nonnegative(5.0,'x') -> None
+  commitment._number(5.0,'x')      -> 5.0
+  inspection._number(5.0,'x')      -> 5.0
+
+COMMAND: _text byte-vs-char bound. MAX_TEXT_LENGTH = 2048
+  input: 2048 chars / 4096 utf-8 bytes
+  src inspection._text  -> ACCEPTED (character-bounded)
+  runner platform._text -> REJECTED (byte-bounded): bounded nonempty text required

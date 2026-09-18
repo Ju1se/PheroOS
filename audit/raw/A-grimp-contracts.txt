@@ -1,0 +1,28 @@
+=== DECLARED RULE 1: src/pheroos_interaction/* must NEVER import runner.* ===
+  violations: 0
+
+=== DECLARED RULE 2: runtime.py's only door to colony mechanisms is runtime_policies.py ===
+  direct imports of a colony mechanism by runner.runtime:
+    NONE (direct rule satisfied)
+  ALL shortest chains runner.runtime -> each colony mechanism:
+    pheroos_interaction.commitment: pheroos_interaction.runner.runtime -> pheroos_interaction.runner.runtime_policies -> pheroos_interaction.commitment
+    pheroos_interaction.leases: pheroos_interaction.runner.runtime -> pheroos_interaction.runner.runtime_policies -> pheroos_interaction.leases
+    pheroos_interaction.sequential: unreachable
+    pheroos_interaction.runner.policies: pheroos_interaction.runner.runtime -> pheroos_interaction.runner.runtime_policies -> pheroos_interaction.runner.policies
+  ALL distinct paths runtime -> commitment (downstream squash):
+    -> pheroos_interaction.commitment: 2 path(s)
+        runner.runtime -> runner.runtime_policies -> commitment
+        runner.runtime -> runner.worker -> commitment
+    -> pheroos_interaction.leases: 1 path(s)
+        runner.runtime -> runner.runtime_policies -> leases
+    -> pheroos_interaction.runner.policies: 1 path(s)
+        runner.runtime -> runner.runtime_policies -> runner.policies
+    -> pheroos_interaction.sequential: 0 path(s)
+
+=== Modules that import a colony mechanism directly ===
+  pheroos_interaction.runner.colony: ['pheroos_interaction.sequential']
+  pheroos_interaction.runner.runtime_policies: ['pheroos_interaction.commitment', 'pheroos_interaction.leases', 'pheroos_interaction.runner.policies']
+  pheroos_interaction.runner.worker: ['pheroos_interaction.commitment']
+
+=== grimp find_illegal_dependencies_for_layers (declared plane) ===
+  illegal count: 0

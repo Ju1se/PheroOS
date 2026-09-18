@@ -1,0 +1,17 @@
+### EXECUTED: the tracked-file set does not CLOSE.
+### Scenario: commit every tracked modification, forget 'git add' on the 7 untracked runner modules.
+### (= git archive HEAD + the 8 modified tracked files, nothing else)
+
+--- CMD: python -S -E, import the console-script entry point ---
+  import of entry-point module pheroos_interaction.runner.cli: OK (imports are lazy, inside main())
+  declared console script -> pheroos_interaction.runner.cli:main  (pyproject.toml:18)
+
+--- CMD: invoke the console script's main() for each orchestration subcommand ---
+  $ pheroos-interaction orchestrate-replay --run /tmp/x
+    -> ModuleNotFoundError: No module named 'pheroos_interaction.runner.audit'
+  $ pheroos-interaction orchestrate --workflow /tmp/w.json --output /tmp/o
+    -> ModuleNotFoundError: No module named 'pheroos_interaction.runner.runtime'
+
+--- for contrast: the SAME commands against the full working tree (untracked files present) ---
+  $ pheroos-interaction orchestrate-replay --run /tmp/x
+    -> OperationalError: unable to open database file

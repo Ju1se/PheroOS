@@ -1,0 +1,13 @@
+=== Static scan: stdlib APIs deprecated/removed in 3.12-3.14 ===
+runner/tools.py:86:    chunks, total = [], 0
+runner/tools.py:88:        chunk = os.read(descriptor, limit - total)
+runner/tools.py:89:        if not chunk:
+runner/tools.py:91:        chunks.append(chunk)
+runner/tools.py:92:        total += len(chunk)
+runner/tools.py:93:    return b"".join(chunks)
+(hits above)
+
+=== sqlite3 usage detail (3.12 deprecated the default date/datetime adapters) ===
+runner/audit.py:45:    database = sqlite3.connect(Path(path).resolve().as_uri() + "?mode=ro", uri=True)
+runner/audit.py:46:    database.row_factory = sqlite3.Row
+runner/audit.py:67:                except sqlite3.OperationalError:

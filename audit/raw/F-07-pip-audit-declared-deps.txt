@@ -1,0 +1,11 @@
+### CMD: pip-audit -r dev-requirements.txt (pytest>=8)  [isolated TMPDIR+cache]
+WARNING:cachecontrol.controller:Cache entry deserialization failed, entry ignored
+WARNING:cachecontrol.controller:Cache entry deserialization failed, entry ignored
+WARNING:cachecontrol.controller:Cache entry deserialization failed, entry ignored
+WARNING:cachecontrol.controller:Cache entry deserialization failed, entry ignored
+No known vulnerabilities found
+exit=0
+
+### CMD: pip-audit -r build-requirements.txt (setuptools>=84)
+No known vulnerabilities found
+exit=0

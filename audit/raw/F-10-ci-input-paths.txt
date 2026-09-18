@@ -1,0 +1,26 @@
+=== Do CI-referenced input paths exist ON DISK? ===
+  ON-DISK  experiments/current/inspection-example/request.json
+  ON-DISK  experiments/current/inspection-example/source
+  ON-DISK  examples/orchestration/workflow.json
+  ON-DISK  examples/orchestration/workflow-expected.json
+  ON-DISK  examples/orchestration/workflow-decomposition.json
+  ON-DISK  examples/orchestration/script.json
+  ON-DISK  examples/orchestration/script-expected.json
+  ON-DISK  examples/orchestration/script-decomposition.json
+
+=== Are they TRACKED BY GIT? (git ls-files) ===
+  TRACKED  experiments/current/inspection-example/request.json
+  error: pathspec 'examples/orchestration/workflow.json' did not match any file(s) known to git
+Did you forget to 'git add'?
+UNTRACKED  examples/orchestration/workflow.json
+  error: pathspec 'examples/orchestration/script.json' did not match any file(s) known to git
+Did you forget to 'git add'?
+UNTRACKED  examples/orchestration/script.json
+
+=== git check-ignore (is experiments/ ignored?) ===
+  (not ignored)
+  (not ignored)
+
+=== git ls-files under examples/ and experiments/ ===
+examples:        0 tracked files
+experiments:        3 tracked files

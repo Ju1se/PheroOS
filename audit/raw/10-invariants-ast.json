@@ -1,0 +1,85 @@
+{
+ "L1_L2_agent_reads": [
+  [
+   "subscript_agent",
+   "runner/runtime.py:680",
+   "record = self.step(selected[\"work\"], selected[\"agent\"])"
+  ],
+  [
+   "subscript_agent",
+   "runner/contracts.py:403",
+   "return list(task[\"agents\"]) if \"agents\" in task else [task[\"agent\"]]"
+  ],
+  [
+   "subscript_agent",
+   "runner/contracts.py:419",
+   "named = [value[\"agent\"]] if \"agent\" in value else value[\"agents\"]"
+  ],
+  [
+   "subscript_agent",
+   "runner/contracts.py:437",
+   "eligible = _names([value[\"agent\"]] if \"agent\" in value else value[\"agents\"], \"task agents\")"
+  ],
+  [
+   "subscript_agent",
+   "runner/audit.py:71",
+   "decoded = json.loads(row[\"agent\"])"
+  ],
+  [
+   "subscript_agent",
+   "runner/runtime_policies.py:115",
+   "key = _wire([self.seed, context[\"spec_digest\"], context[\"agent\"], work_id,"
+  ],
+  [
+   "subscript_agent",
+   "runner/runtime_policies.py:87",
+   "chosen = pick(queue, self._arguments(row[\"eligible\"], context[\"agent\"]), row)"
+  ]
+ ],
+ "L6_actor_from_binding": [],
+ "L8_workforce_econ_in_runtime": [
+  [
+   "econ_name",
+   "runner/worker.py:104",
+   "return optimal_stopping_rule(abstain_loss, latency_cost, deadline, arrival_prob, loss_support,"
+  ],
+  [
+   "econ_name",
+   "src/pheroos_interaction/commitment.py:141",
+   "latency_cost: float"
+  ],
+  [
+   "econ_attr",
+   "src/pheroos_interaction/commitment.py:199",
+   "latency = config.latency_cost * config.decision_time"
+  ],
+  [
+   "econ_name",
+   "src/pheroos_interaction/commitment.py:272",
+   "c_t = _nonnegative(latency_cost, 'latency_cost')"
+  ],
+  [
+   "econ_literal",
+   "src/pheroos_interaction/commitment.py:272",
+   "c_t = _nonnegative(latency_cost, 'latency_cost')"
+  ],
+  [
+   "econ_name",
+   "src/pheroos_interaction/commitment.py:335",
+   "decide = commit_value(abstain_loss, latency_cost, deadline, arrival_prob, loss_support, loss_probs)"
+  ],
+  [
+   "econ_attr",
+   "src/pheroos_interaction/commitment.py:153",
+   "_nonnegative(self.latency_cost, 'latency_cost')"
+  ],
+  [
+   "econ_literal",
+   "src/pheroos_interaction/commitment.py:153",
+   "_nonnegative(self.latency_cost, 'latency_cost')"
+  ]
+ ],
+ "L9_mechanism_leakage_runtime_py": [],
+ "L10_experiment_branches": [],
+ "L11_nondeterminism": []
+}

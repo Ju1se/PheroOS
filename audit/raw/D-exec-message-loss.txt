@@ -1,0 +1,17 @@
+### EXECUTED: does the worker/colony error boundary keep the exception MESSAGE?
+### /tmp/audit-venv/bin/python scratchpad/d_exec_reason.py
+### (imports runner/colony.py in place; writes only under the scratchpad)
+
+imported: /Users/scottxie/Desktop/multi-agent/runner/colony.py
+imported: /Users/scottxie/Desktop/multi-agent/runner/worker.py
+
+outcome record from run_colony():
+    {'work': 'w', 'status': 'plan_error', 'call_id': None, 'call_state': None, 'reason': 'ValueError'}
+
+exception message raised: 'DISTINCTIVE-MESSAGE-abcdef123456'
+message present in outcome? False
+reason field: 'ValueError'
+
+### CONTRAST: runtime.Runtime._classify with the same exception
+runtime.Runtime._classify() -> {'work': 'w', 'status': 'error', 'reason': 'ValueError: DISTINCTIVE-MESSAGE-abcdef123456'}
+message present? True

@@ -1,0 +1,58 @@
+=== cross-module imports of PRIVATE (underscore) names ===
+  runner/audit.py:25  from .runtime import _binding
+  runner/audit.py:26  from .session import _wire
+  runner/colony.py:38  from .provider import _freeze
+  runner/colony.py:39  from .session import _duration, _integer, _wire
+  runner/colony.py:40  from .worker import _call_status, _release
+  runner/colony.py:73  from .platform import _loss
+  runner/evidence.py:10  from .session import _id, _integer, _wire
+  runner/inspection.py:17  from .evidence import _control_operation_count
+  runner/orchestration.py:24  from .platform import _text
+  runner/orchestration.py:25  from .session import _duration, _id, _integer, _wire
+  runner/platform.py:17  from .session import _duration, _id, _integer, _wire
+  runner/provider.py:16  from .session import _id, _integer
+  runner/runtime.py:37  from .provider import _freeze
+  runner/runtime.py:40  from .session import _integer, _wire
+  runner/runtime.py:42  from .worker import _release
+  runner/runtime_policies.py:30  from .session import _wire
+  runner/worker.py:14  from .provider import _freeze
+  runner/worker.py:15  from .session import _duration, _integer, _wire
+  runner/worker.py:28  from .platform import _loss
+  src/pheroos_interaction/leases.py:11  from .inspection import _nonnegative, _number
+  src/pheroos_interaction/sequential.py:25  from .inspection import _feasible, _nonnegative, _number, _risk
+TOTAL private-name import statements: 21
+TOTAL private symbols imported across module boundaries: 40
+=== by SOURCE module (whose privates are being consumed) ===
+   23  .session
+    6  .inspection
+    3  .provider
+    3  .worker
+    3  .platform
+    1  .runtime
+    1  .evidence
+=== by CONSUMER file ===
+    7  runner/colony.py
+    5  runner/orchestration.py
+    5  runner/worker.py
+    4  runner/platform.py
+    4  runner/runtime.py
+    4  src/pheroos_interaction/sequential.py
+    3  runner/evidence.py
+    2  runner/audit.py
+    2  runner/provider.py
+    2  src/pheroos_interaction/leases.py
+    1  runner/inspection.py
+    1  runner/runtime_policies.py
+
+=== public vs private exported surface of runner/session.py ===
+  module-level public: ['Session']
+  module-level private: ['_wire', '_integer', '_id', '_duration']
+
+=== function-local (deferred) imports in runner/ and src/ ===
+  runner/cli.py:44  inside main()  -> .runtime
+  runner/cli.py:34  inside main()  -> .inspection
+  runner/cli.py:40  inside main()  -> .audit
+  runner/colony.py:73  inside _plan()  -> .platform
+  runner/identity.py:8  inside source_identity()  -> pheroos_interaction
+  runner/identity.py:9  inside source_identity()  -> pheroos_interaction
+  runner/worker.py:28  inside _plan()  -> .platform

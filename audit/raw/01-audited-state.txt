@@ -1,0 +1,67 @@
+### git rev-parse HEAD
+e664d2e9d1790f40eef0b15b25f23155ea9294a6
+
+### git log -1
+e664d2e9d1790f40eef0b15b25f23155ea9294a6
+2026-09-16 21:15:13 -0700
+Add colony control layer: four-layer multi-agent system for PheroOS
+
+### git status --porcelain (verbatim, full)
+ M .github/workflows/interaction.yml
+ M AGENTS.md
+ M README.md
+ M runner/cli.py
+ M runner/platform.py
+ M runner/session.py
+ M runner/worker.py
+ M src/pheroos_interaction/commitment.py
+ M tests/interaction/conftest.py
+ M tests/interaction/test_commitment.py
+ M tests/interaction/test_layout.py
+?? audit/
+?? docs/
+?? examples/
+?? runner/anthropic.py
+?? runner/audit.py
+?? runner/contracts.py
+?? runner/orchestration.py
+?? runner/runtime.py
+?? runner/runtime_policies.py
+?? runner/tools.py
+?? tests/interaction/test_anthropic.py
+?? tests/interaction/test_e4_shared_capacity.py
+?? tests/interaction/test_orchestration_audit.py
+?? tests/interaction/test_orchestration_authority.py
+?? tests/interaction/test_orchestration_colony.py
+?? tests/interaction/test_orchestration_hardening.py
+?? tests/interaction/test_orchestration_recovery.py
+?? tests/interaction/test_orchestration_workflow.py
+?? tests/interaction/test_tools.py
+
+### git diff --stat (tracked modifications)
+ .github/workflows/interaction.yml     |  11 +++
+ AGENTS.md                             | 127 +++++++++++++++++++++++++++-
+ README.md                             |  73 ++++++++++++++++
+ runner/cli.py                         |  32 ++++++-
+ runner/platform.py                    | 151 ++++++++++++++++++----------------
+ runner/session.py                     |  78 ++++++++++++------
+ runner/worker.py                      |  49 +++++++++++
+ src/pheroos_interaction/commitment.py |  11 ++-
+ tests/interaction/conftest.py         |  22 +++++
+ tests/interaction/test_commitment.py  |   4 +-
+ tests/interaction/test_layout.py      |   7 ++
+ 11 files changed, 460 insertions(+), 105 deletions(-)
+
+### git diff --stat HEAD (tracked, incl staged)
+ .github/workflows/interaction.yml     |  11 +++
+ AGENTS.md                             | 127 +++++++++++++++++++++++++++-
+ README.md                             |  73 ++++++++++++++++
+ runner/cli.py                         |  32 ++++++-
+ runner/platform.py                    | 151 ++++++++++++++++++----------------
+ runner/session.py                     |  78 ++++++++++++------
+ runner/worker.py                      |  49 +++++++++++
+ src/pheroos_interaction/commitment.py |  11 ++-
+ tests/interaction/conftest.py         |  22 +++++
+ tests/interaction/test_commitment.py  |   4 +-
+ tests/interaction/test_layout.py      |   7 ++
+ 11 files changed, 460 insertions(+), 105 deletions(-)

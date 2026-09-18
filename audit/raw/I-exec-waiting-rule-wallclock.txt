@@ -1,0 +1,8 @@
+t=1000 first commit -> wait  (stamps a platform.waited at=1000)
+recorded stamps      : [1000.0]
+
+THE LEDGER IS NOW FIXED. Only the wall clock moves:
+   clock()=1000.0    elapsed_ticks=0  commit decision -> wait
+   clock()=1060.0    elapsed_ticks=1  commit decision -> wait
+   clock()=1180.0    elapsed_ticks=3  commit decision -> publish
+   clock()=10000.0   elapsed_ticks=150  commit decision -> publish

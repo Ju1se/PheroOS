@@ -1,0 +1,18 @@
+### EXECUTED: transitive closure that 'pip install .[dev]' actually pulls from PyPI
+### (fresh isolated 3.12 venv, pip install 'pytest>=8' == the project's only declared dep)
+--- CMD: <iso-venv>/bin/python -m pip freeze ---
+iniconfig==2.3.0
+packaging==26.3
+pluggy==1.6.0
+Pygments==2.21.0
+pytest==9.1.1
+
+--- CMD: pip list --not-required (direct) vs all ---
+iniconfig==2.3.0
+packaging==26.3
+pluggy==1.6.0
+Pygments==2.21.0
+pytest==9.1.1
+
+=> DECLARED: 1 package (pytest>=8). ACTUALLY INSTALLED: the list above.
+=> None of the transitive packages is pinned, hashed or recorded anywhere in the repo.

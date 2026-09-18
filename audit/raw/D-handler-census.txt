@@ -1,0 +1,51 @@
+### command: AST census of every ExceptHandler in runner/ src/pheroos_interaction/ tests/interaction/
+### /tmp/audit-venv/bin/python scratchpad/d_handlers.py filelist.txt   (script preserved in D-handlers-ast.json)
+
+TOTAL ExceptHandler nodes: 49  production(runner+src): 47  tests: 2
+
+-- by exception type (production) --
+   5  KeyError
+   5  Exception
+   5  contracts.ContractError
+   4  OSError
+   4  (StateError, BudgetExceeded)
+   3  (ContractError, KeyError, TypeError)
+   3  OverflowError
+   2  ValueError
+   2  StateError
+   2  ToolError
+   1  (OSError, ValueError, AttributeError)
+   1  urllib.error.HTTPError
+   1  ContractError
+   1  sqlite3.OperationalError
+   1  (PermissionError, LeaseLost)
+   1  (StateError, LeaseLost)
+   1  BudgetExceeded
+   1  (ValueError, BudgetExceeded, StateError)
+   1  BaseException
+   1  (TypeError, ValueError)
+   1  TypeError
+   1  LeaseLost
+
+-- by body shape (production) --
+  20  MULTI
+  14  RAISE_NEW
+   4  RETURN_CALL
+   3  PASS
+   2  RETURN_CONST
+   2  RETURN_NONE
+   1  CONTINUE
+   1  RERAISE
+
+-- by file (production) --
+  11  runner/tools.py
+   9  runner/audit.py
+   8  runner/runtime.py
+   5  runner/anthropic.py
+   5  runner/worker.py
+   3  runner/colony.py
+   2  runner/platform.py
+   1  runner/inspection.py
+   1  runner/policies.py
+   1  runner/session.py
+   1  src/pheroos_interaction/inspection.py

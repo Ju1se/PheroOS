@@ -1,0 +1,55 @@
+=== UNTRACKED_SRC: n=7 top-level-sum=1318 leaf-sum=1869
+    runner/orchestration.py                            top=  249 leaf=  478
+    runner/runtime.py                                  top=  250 leaf=  439
+    runner/contracts.py                                top=  297 leaf=  296
+    runner/audit.py                                    top=  141 leaf=  199
+    runner/tools.py                                    top=  142 leaf=  183
+    runner/anthropic.py                                top=  170 leaf=  180
+    runner/runtime_policies.py                         top=   69 leaf=   94
+=== TRACKED_SRC: n=18 top-level-sum=1203 leaf-sum=1680
+    runner/platform.py                                 top=  189 leaf=  349
+    runner/session.py                                  top=  177 leaf=  340
+    runner/inspection.py                               top=  176 leaf=  182
+    src/pheroos_interaction/sequential.py              top=  149 leaf=  182
+    runner/evidence.py                                 top=   83 leaf=  154
+    src/pheroos_interaction/commitment.py              top=   74 leaf=  110
+    runner/colony.py                                   top=   97 leaf=   97
+    runner/worker.py                                   top=   81 leaf=   81
+    src/pheroos_interaction/inspection.py              top=   62 leaf=   59
+    runner/provider.py                                 top=   37 leaf=   49
+    runner/policies.py                                 top=   37 leaf=   37
+    src/pheroos_interaction/leases.py                  top=   12 leaf=   13
+    runner/driver.py                                   top=    9 leaf=   11
+    runner/cli.py                                      top=   10 leaf=   10
+    runner/identity.py                                 top=    6 leaf=    6
+    runner/__init__.py                                 top=    0 leaf=    0
+    src/pheroos_interaction/__init__.py                top=    0 leaf=    0
+    src/pheroos_interaction/records.py                 top=    4 leaf=    0
+=== UNTRACKED_TESTS: n=9 top-level-sum=1750 leaf-sum=1825
+    tests/interaction/test_orchestration_workflow.py   top=  342 leaf=  362
+    tests/interaction/test_e4_shared_capacity.py       top=  259 leaf=  267
+    tests/interaction/test_orchestration_recovery.py   top=  237 leaf=  261
+    tests/interaction/test_orchestration_authority.py  top=  244 leaf=  244
+    tests/interaction/test_orchestration_audit.py      top=  182 leaf=  200
+    tests/interaction/test_anthropic.py                top=  133 leaf=  135
+    tests/interaction/test_orchestration_colony.py     top=  128 leaf=  128
+    tests/interaction/test_tools.py                    top=  115 leaf=  115
+    tests/interaction/test_orchestration_hardening.py  top=  110 leaf=  113
+=== TRACKED_TESTS: n=17 top-level-sum=1407 leaf-sum=1467
+    tests/interaction/test_colony.py                   top=  232 leaf=  243
+    tests/interaction/test_sequential.py               top=  141 leaf=  142
+    tests/interaction/test_commitment.py               top=  140 leaf=  140
+    tests/interaction/test_platform_conformance.py     top=  133 leaf=  136
+    tests/interaction/test_provider_worker.py          top=  105 leaf=  111
+    tests/interaction/test_inspection_runner.py        top=   84 leaf=  102
+    tests/interaction/test_received_publication.py     top=   90 leaf=   97
+    tests/interaction/test_platform_atomicity.py       top=   88 leaf=   90
+    tests/interaction/test_artifact_access.py          top=   72 leaf=   72
+    tests/interaction/test_control_limits.py           top=   70 leaf=   71
+    tests/interaction/test_inspection.py               top=   66 leaf=   68
+    tests/interaction/test_platform_policies.py        top=   62 leaf=   62
+    tests/interaction/test_leases.py                   top=   51 leaf=   51
+    tests/interaction/test_execution.py                top=   37 leaf=   39
+    tests/interaction/test_inspection_cli.py           top=   19 leaf=   20
+    tests/interaction/test_layout.py                   top=   15 leaf=   15
+    tests/interaction/conftest.py                      top=    2 leaf=    8

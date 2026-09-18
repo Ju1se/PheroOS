@@ -1,0 +1,35 @@
+### ADVERSARIAL VERIFICATION of F-22 'tracked file set does not close'
+### verifier reproduction, independent of the original raw file
+HEAD: e664d2e9d1790f40eef0b15b25f23155ea9294a6
+
+[executed] tracked-only reconstruction: git archive HEAD + cp of every 'git diff --name-only' file
+[executed] installed layout built per pyproject package-dir: pheroos_interaction<-src/pheroos_interaction, .runner<-runner
+[executed] runner/ contents in tracked-only install: no audit.py, no runtime.py, no orchestration.py, no contracts.py, no tools.py, no anthropic.py, no runtime_policies.py
+
+RESULT 1 import entry-point module ........ OK (lazy imports confirmed)
+RESULT 2 --help .......................... exit 0, lists all 5 subcommands including the 3 broken ones
+RESULT 3 orchestrate-replay .............. ModuleNotFoundError: No module named 'pheroos_interaction.runner.audit'   (cli.py line 40)
+RESULT 4 orchestrate ..................... ModuleNotFoundError: No module named 'pheroos_interaction.runner.runtime' (cli.py line 44)
+RESULT 5 orchestrate-resume .............. ModuleNotFoundError: No module named 'pheroos_interaction.runner.runtime' (cli.py line 44)  [NEW: 3rd broken subcommand, not 2]
+RESULT 6 inspect-replay (control) ........ FileNotFoundError /tmp/x/frozen.json -> reaches real logic, isolation is faithful
+RESULT 7 full-tree contrast .............. sqlite3.OperationalError: unable to open database file
+
+[executed] .gitignore does NOT match runner/*.py -> the 7 modules are un-added, not deliberately excluded
+[executed] git grep over TRACKED content: the only references to .audit/.runtime are runner/cli.py:40 and :44.
+           No tracked comment, docstring, doc or test justifies the split.
+
+COUNTER-EVIDENCE FOUND BY THE VERIFIER (weakens the claim's 'why it matters'):
+[executed] .github/workflows/interaction.yml is TRACKED and MODIFIED; its uncommitted delta adds lines 18-28,
+           which run the installed console script: 'pheroos-interaction orchestrate ...' and 'orchestrate-replay ...'
+           on every push and pull_request. git show HEAD:.github/workflows/interaction.yml ends at line 17 - the
+           orchestration steps are part of the same uncommitted delta the claim's scenario commits.
+           => in the exact scenario the claim constructs ('git commit -am'), CI runs those two commands on a fresh
+              checkout and fails loudly with the same ModuleNotFoundError. The defect is NOT silent to the project.
+[executed] the CI step also feeds it examples/orchestration/*.json, which are ALSO untracked -> CI is red either way.
+
+NOT EXECUTED (could not verify offline; no setuptools available to /tmp/audit-venv or .venv):
+  the sub-assertion 'a wheel or sdist produced from the tracked set installs cleanly'. Build was attempted:
+  pip._vendor.pyproject_hooks._impl.BackendUnavailable: Cannot import 'setuptools.build_meta'
+  That sub-assertion is [inferred], not [executed].
+
+isolated copies created and deleted: /tmp/verify-f22-37918 , /tmp/verify-f22-full-38122 , /tmp/verify-f22-wheels

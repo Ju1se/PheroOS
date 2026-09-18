@@ -1,0 +1,37 @@
+SECTION G — Complexity and dead code — measurement summary
+Repo: /Users/scottxie/Desktop/multi-agent  HEAD e664d2e9d1790f40eef0b15b25f23155ea9294a6 + uncommitted
+Scope measured: runner/ and src/pheroos_interaction/ (tests/interaction used only as a
+reachability oracle for vulture, never audited as code).
+Tools (absolute paths, isolated venv): radon 6.0.1, vulture 2.16, ruff 0.16.8, pylint (same venv).
+No /tmp copy was created: every check in this section is read-only (radon, vulture, ruff, pylint
+parse only). Nothing was mutated, so no isolated tree was required and none needs deleting.
+Writes by this section: audit/raw/G-*.txt only. git status --porcelain unchanged (G-readonly-proof.txt).
+
+COMPLEXITY
+  452 analysed blocks; 56 with CC > 10; 18 with CC > 20; 8 with CC > 30; max CC 68.
+  436 functions/methods (AST); 3 with span > 80 lines.
+  Files > 800 lines: 1 (runner/runtime.py, 889).
+  radon mi rank C (worst band produced): contracts.py 0.00, session.py 3.92,
+    orchestration.py 4.28, runtime.py 5.88, platform.py 7.70. inspection.py B 10.57. Rest A.
+  LOC: runner/ 6390 total; src/pheroos_interaction/ 1203 total.
+
+DEAD CODE
+  vulture --min-confidence 60 on runner+src: 32 hits.
+  vulture --min-confidence 60 on runner+src+tests/interaction: 8 hits inside runner/src.
+  Of those 8: 3 are sqlite3 `row_factory` assignments (real sqlite3 API, false positive),
+  1 is `applicability` (read via getattr loop at inspection.py:46, false positive),
+  2 are `tie_tolerance` dataclass fields (consumed structurally by asdict() at
+  runner/inspection.py:190 and re-compared at :351, false positive).
+  2 SURVIVE as genuine dead code: runner/runtime.py:248 _offered, runner/runtime_policies.py:211 COMMITMENTS.
+
+CLEAN
+  ruff F rules (unused import / undefined name / unused local / redefinition): 0 in runner+src.
+  pylint W0101 unreachable-code: 0. W0611/W0612/W0105/W0107/R1711/W0125/W0104/E0601/E1111: all 0.
+  ERA001 commented-out code: 1 hit, runner/runtime.py:117, a `# ---- allocation (L2)` section
+  banner, not commented-out code. No commented-out blocks exist.
+  TODO/FIXME/HACK/XXX across runner/, src/ and tests/interaction/: 0.
+  No `__all__` declared anywhere, so there is no declared-export surface to be unused.
+
+NOT RUN
+  git blame on the 10 oldest TODO/FIXME markers: there are zero such markers, so the check has
+  no input. Independently, the orchestration layer is untracked, so blame has no history there.

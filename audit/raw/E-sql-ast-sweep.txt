@@ -1,0 +1,12 @@
+files: 25
+runner/audit.py:61  FSTRING  f'SELECT rowid AS row_index, * FROM {table} ORDER BY {order}'
+runner/audit.py:65  FSTRING  f'SELECT rowid AS row_index, * FROM {table} ORDER BY rowid'
+runner/evidence.py:48  NAME(sql)  sql
+runner/inspection.py:260  FSTRING  f'SELECT * FROM {table} ORDER BY rowid'
+runner/inspection.py:263  FSTRING  f'SELECT * FROM {table} ORDER BY rowid'
+runner/orchestration.py:80  NAME(sql)  sql
+runner/orchestration.py:440  BINOP(Add)  sql + ' WHERE work_id=? ORDER BY seq'
+runner/orchestration.py:441  BINOP(Add)  sql + ' ORDER BY seq'
+runner/platform.py:86  NAME(sql)  sql
+runner/runtime.py:544  OTHER(Subscript)  proposal['tool']
+runner/session.py:105  NAME(sql)  sql

@@ -1,0 +1,114 @@
+UNORDERED	runner/audit.py:61	limit=False	SELECT rowid AS row_index, * FROM
+UNORDERED	runner/audit.py:66	limit=False	SELECT rowid AS row_index, * FROM
+UNORDERED	runner/evidence.py:122	limit=False	SELECT * FROM work WHERE id=?
+UNORDERED	runner/evidence.py:124	limit=False	SELECT * FROM coordination_sources_v1 WHERE id=?
+UNORDERED	runner/evidence.py:170	limit=False	SELECT * FROM coordination_inspections_v1 WHERE work_id=?
+UNORDERED	runner/evidence.py:178	limit=False	SELECT * FROM coordination_sources_v1 WHERE id=?
+ORDERED	runner/evidence.py:215	limit=False	SELECT a.ref,a.work_id,a.version,a.value,i.key,i.readers AS inspection_readers,s.readers AS source_readers FROM artifacts a JOIN work w ON w.id=a.work_id JOIN coordination_inspections_v1 i O
+UNORDERED	runner/evidence.py:78	limit=False	SELECT value FROM events
+UNORDERED	runner/evidence.py:250	limit=False	SELECT * FROM coordination_sources_v1 WHERE id=?
+UNORDERED	runner/evidence.py:262	limit=False	SELECT i.*,w.status,w.owner FROM coordination_inspections_v1 i JOIN work w ON w.id=i.work_id WHERE i.source_id=?
+UNORDERED	runner/evidence.py:289	limit=False	SELECT * FROM calls WHERE id=?
+UNORDERED	runner/evidence.py:76	limit=False	SELECT limits FROM coordination_v1 WHERE id=1
+UNORDERED	runner/evidence.py:274	limit=False	SELECT 1 FROM calls WHERE work_id=? AND state='dispatched'
+UNORDERED	runner/inspection.py:260	limit=False	SELECT * FROM
+UNORDERED	runner/inspection.py:263	limit=False	SELECT * FROM
+UNORDERED	runner/orchestration.py:439	limit=False	SELECT * FROM orchestration_decisions_v1
+UNORDERED	runner/orchestration.py:96	limit=False	SELECT * FROM orchestration_v1 WHERE id=1
+UNORDERED	runner/orchestration.py:103	limit=False	SELECT * FROM orchestration_tasks_v2 WHERE work_id=?
+ORDERED	runner/orchestration.py:135	limit=True	SELECT step FROM orchestration_decisions_v1 WHERE work_id=? AND decision='decompose' ORDER BY seq LIMIT 1
+ORDERED	runner/orchestration.py:141	limit=False	SELECT work_id FROM orchestration_tasks_v2 WHERE parent=? ORDER BY rowid
+UNORDERED	runner/orchestration.py:307	limit=False	SELECT * FROM calls WHERE id=?
+UNORDERED	runner/orchestration.py:331	limit=False	SELECT contract FROM orchestration_accounting_v1 WHERE call_id=?
+ORDERED	runner/orchestration.py:434	limit=False	SELECT * FROM orchestration_decisions_v1 WHERE work_id=? AND version=? ORDER BY seq
+UNORDERED	runner/orchestration.py:448	limit=False	SELECT * FROM work WHERE id=?
+UNORDERED	runner/orchestration.py:505	limit=False	SELECT * FROM calls WHERE id=?
+UNORDERED	runner/orchestration.py:565	limit=False	SELECT work_id FROM calls WHERE id=?
+ORDERED	runner/orchestration.py:122	limit=False	SELECT * FROM orchestration_tasks_v2 ORDER BY rowid
+UNORDERED	runner/orchestration.py:152	limit=False	SELECT a.*, o.kind AS artifact_kind FROM artifacts a LEFT JOIN orchestration_artifacts_v1 o ON o.ref=a.ref WHERE a.work_id=?
+UNORDERED	runner/orchestration.py:157	limit=False	SELECT version FROM work WHERE id=?
+UNORDERED	runner/orchestration.py:174	limit=False	SELECT version FROM work WHERE id=?
+UNORDERED	runner/orchestration.py:194	limit=False	SELECT * FROM calls WHERE id=?
+UNORDERED	runner/orchestration.py:362	limit=False	SELECT 1 FROM orchestration_accounting_v1 WHERE call_id=?
+UNORDERED	runner/orchestration.py:383	limit=False	SELECT * FROM calls WHERE id=?
+UNORDERED	runner/orchestration.py:386	limit=False	SELECT violation FROM orchestration_accounting_v1 WHERE call_id=?
+ORDERED	runner/orchestration.py:400	limit=False	SELECT * FROM orchestration_accounting_v1 ORDER BY rowid
+UNORDERED	runner/orchestration.py:420	limit=False	SELECT * FROM calls WHERE id=?
+UNORDERED	runner/orchestration.py:479	limit=False	SELECT * FROM artifacts WHERE work_id=?
+UNORDERED	runner/orchestration.py:484	limit=False	SELECT 1 FROM calls WHERE work_id=? AND state IN ('reserved','dispatched')
+UNORDERED	runner/orchestration.py:529	limit=False	SELECT * FROM calls WHERE id=?
+ORDERED	runner/orchestration.py:543	limit=False	SELECT * FROM orchestration_artifacts_v1 ORDER BY rowid
+UNORDERED	runner/orchestration.py:590	limit=False	SELECT * FROM calls WHERE id=?
+ORDERED	runner/orchestration.py:693	limit=False	SELECT * FROM work ORDER BY rowid
+ORDERED	runner/orchestration.py:713	limit=False	SELECT * FROM orchestration_tasks_v2 ORDER BY rowid
+ORDERED	runner/orchestration.py:714	limit=False	SELECT * FROM orchestration_artifacts_v1 ORDER BY rowid
+ORDERED	runner/orchestration.py:715	limit=False	SELECT * FROM orchestration_accounting_v1 ORDER BY rowid
+ORDERED	runner/orchestration.py:716	limit=False	SELECT * FROM orchestration_decisions_v1 ORDER BY seq
+UNORDERED	runner/orchestration.py:210	limit=False	SELECT * FROM calls WHERE id=?
+ORDERED	runner/orchestration.py:261	limit=False	SELECT * FROM calls WHERE work_id=? AND version=? ORDER BY rowid
+AGG	runner/orchestration.py:598	limit=False	SELECT COUNT(*) FROM orchestration_tasks_v2 WHERE parent=?
+ORDERED	runner/orchestration.py:179	limit=False	SELECT * FROM calls WHERE work_id=? AND version=? ORDER BY rowid
+UNORDERED	runner/orchestration.py:697	limit=False	SELECT * FROM work WHERE id=?
+UNORDERED	runner/orchestration.py:700	limit=False	SELECT 1 FROM artifacts WHERE work_id=?
+UNORDERED	runner/orchestration.py:607	limit=False	SELECT request FROM calls WHERE work_id=? AND version=? AND state IN ('received','dispatched','response_rejected')
+UNORDERED	runner/platform.py:123	limit=False	SELECT * FROM platform_work_v1 WHERE work_id=?
+UNORDERED	runner/platform.py:129	limit=False	SELECT state,reserved,actual FROM calls WHERE work_id=?
+UNORDERED	runner/platform.py:134	limit=False	SELECT 1 FROM calls WHERE work_id=? AND state='dispatched'
+UNORDERED	runner/platform.py:144	limit=False	SELECT * FROM work WHERE id=?
+UNORDERED	runner/platform.py:163	limit=False	SELECT 1 FROM calls WHERE work_id=? AND state='dispatched'
+UNORDERED	runner/platform.py:168	limit=False	SELECT until FROM platform_no_entry_v1 WHERE work_id=?
+ORDERED	runner/platform.py:194	limit=False	SELECT * FROM work WHERE status='ready' ORDER BY rowid
+UNORDERED	runner/platform.py:200	limit=False	SELECT * FROM work WHERE id=? AND status='ready'
+UNORDERED	runner/platform.py:230	limit=False	SELECT 1 FROM calls WHERE work_id=? AND state IN ('reserved','dispatched')
+UNORDERED	runner/platform.py:237	limit=False	SELECT id,declaration FROM work
+ORDERED	runner/platform.py:368	limit=False	SELECT * FROM platform_candidates_v1 WHERE work_id=? AND version=? ORDER BY certified_loss,call_id
+UNORDERED	runner/platform.py:371	limit=False	SELECT * FROM platform_decisions_v1 WHERE work_id=?
+UNORDERED	runner/platform.py:376	limit=False	SELECT 1 FROM calls WHERE work_id=? AND state='dispatched'
+UNORDERED	runner/platform.py:451	limit=False	SELECT 1 FROM calls WHERE work_id=? AND state='dispatched'
+ORDERED	runner/platform.py:182	limit=False	SELECT * FROM work ORDER BY rowid
+AGG	runner/platform.py:232	limit=False	SELECT COUNT(*) FROM platform_work_v1 WHERE parent=?
+AGG	runner/platform.py:233	limit=False	SELECT COUNT(*) FROM work
+UNORDERED	runner/platform.py:303	limit=False	SELECT 1 FROM calls WHERE work_id=? AND state='dispatched'
+UNORDERED	runner/platform.py:328	limit=False	SELECT until,reason FROM platform_no_entry_v1 WHERE work_id=?
+UNORDERED	runner/platform.py:340	limit=False	SELECT * FROM calls WHERE id=?
+UNORDERED	runner/platform.py:348	limit=False	SELECT * FROM platform_candidates_v1 WHERE call_id=?
+UNORDERED	runner/platform.py:382	limit=False	SELECT 1 FROM work WHERE status!='done'
+UNORDERED	runner/platform.py:437	limit=False	SELECT * FROM work WHERE id=?
+ORDERED	runner/platform.py:459	limit=False	SELECT * FROM platform_work_v1 ORDER BY rowid
+ORDERED	runner/platform.py:460	limit=False	SELECT * FROM platform_candidates_v1 ORDER BY rowid
+ORDERED	runner/platform.py:461	limit=False	SELECT * FROM platform_no_entry_v1 ORDER BY rowid
+ORDERED	runner/platform.py:462	limit=False	SELECT * FROM platform_decisions_v1 ORDER BY rowid
+UNORDERED	runner/platform.py:89	limit=False	SELECT id FROM work
+UNORDERED	runner/platform.py:108	limit=False	SELECT limits FROM platform_v1 WHERE id=1
+AGG	runner/platform.py:277	limit=False	SELECT COUNT(*) FROM coordination_inspections_v1
+AGG	runner/platform.py:353	limit=False	SELECT COUNT(*) FROM platform_candidates_v1 WHERE work_id=?
+UNORDERED	runner/platform.py:359	limit=False	SELECT * FROM platform_candidates_v1 WHERE call_id=?
+UNORDERED	runner/platform.py:165	limit=False	SELECT 1 FROM artifacts WHERE work_id=?
+ORDERED	runner/platform.py:211	limit=False	SELECT * FROM calls WHERE work_id=? AND version=? ORDER BY rowid
+UNORDERED	runner/platform.py:117	limit=False	SELECT value FROM events
+UNORDERED	runner/platform.py:276	limit=False	SELECT limits FROM coordination_v1 WHERE id=1
+UNORDERED	runner/session.py:118	limit=False	SELECT * FROM run
+UNORDERED	runner/session.py:124	limit=False	SELECT * FROM work WHERE id=?
+UNORDERED	runner/session.py:133	limit=False	SELECT id,reserved FROM calls WHERE work_id=? AND state='reserved'
+UNORDERED	runner/session.py:141	limit=False	SELECT * FROM work WHERE status='leased' AND expires<=?
+ORDERED	runner/session.py:165	limit=False	SELECT * FROM work WHERE status='ready' ORDER BY rowid
+UNORDERED	runner/session.py:223	limit=False	SELECT * FROM calls WHERE id=?
+UNORDERED	runner/session.py:230	limit=False	SELECT state,reserved,actual FROM calls
+UNORDERED	runner/session.py:331	limit=False	SELECT * FROM calls WHERE id=?
+UNORDERED	runner/session.py:387	limit=False	SELECT * FROM calls WHERE id=?
+UNORDERED	runner/session.py:391	limit=False	SELECT * FROM work WHERE id=?
+UNORDERED	runner/session.py:395	limit=False	SELECT * FROM artifacts WHERE work_id=?
+UNORDERED	runner/session.py:402	limit=False	SELECT 1 FROM calls WHERE work_id=? AND state='dispatched'
+UNORDERED	runner/session.py:405	limit=False	SELECT * FROM work WHERE id=?
+UNORDERED	runner/session.py:143	limit=False	SELECT 1 FROM calls WHERE work_id=? AND state='dispatched'
+UNORDERED	runner/session.py:264	limit=False	SELECT * FROM calls WHERE id=?
+UNORDERED	runner/session.py:282	limit=False	SELECT * FROM calls WHERE id=?
+UNORDERED	runner/session.py:318	limit=False	SELECT * FROM calls WHERE id=?
+UNORDERED	runner/session.py:354	limit=False	SELECT 1 FROM work WHERE status!='done'
+UNORDERED	runner/session.py:421	limit=False	SELECT id FROM work WHERE status!='done'
+ORDERED	runner/session.py:435	limit=False	SELECT * FROM calls ORDER BY rowid
+ORDERED	runner/session.py:436	limit=False	SELECT * FROM work ORDER BY rowid
+ORDERED	runner/session.py:437	limit=False	SELECT * FROM artifacts ORDER BY rowid
+ORDERED	runner/session.py:438	limit=False	SELECT value FROM events ORDER BY seq
+UNORDERED	runner/session.py:169	limit=False	SELECT 1 FROM artifacts WHERE work_id=?
+UNORDERED	runner/session.py:309	limit=False	SELECT 1 FROM calls WHERE work_id=? AND state='dispatched'

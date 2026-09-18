@@ -1,0 +1,33 @@
+### EXECUTED: materialise exactly what actions/checkout@v4 would give CI (tracked content at HEAD)
+--- CMD: git archive HEAD | tar -x -C $ISO ---
+checkout root: /private/tmp/claude-501/-Users-scottxie-Desktop-multi-agent/f160b040-86a8-4874-aa4e-754fd36459d1/scratchpad/F-fresh-checkout
+
+--- Do the CI-referenced input paths exist in that checkout? ---
+  PRESENT  experiments/current/inspection-example/request.json
+  ABSENT   examples/orchestration/workflow.json
+  ABSENT   examples/orchestration/script.json
+  ABSENT   examples/orchestration/workflow-expected.json
+  ABSENT   examples/orchestration/workflow-decomposition.json
+
+--- top level of the fresh checkout ---
+AGENTS.md
+LICENSE
+MANIFEST.in
+README.md
+experiments
+pyproject.toml
+runner
+src
+tests
+
+--- runner/ modules present at HEAD vs on disk ---
+HEAD runner/*.py:
+__init__.py cli.py colony.py driver.py evidence.py identity.py inspection.py platform.py policies.py provider.py session.py worker.py 
+disk runner/*.py:
+__init__.py anthropic.py audit.py cli.py colony.py contracts.py driver.py evidence.py identity.py inspection.py orchestration.py platform.py policies.py provider.py runtime.py runtime_policies.py session.py tools.py worker.py 
+
+--- is the workflow that references examples/ itself committed? ---
+ .github/workflows/interaction.yml | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
+--- committed (HEAD) version of the workflow: does it reference examples/? ---
+  HEAD workflow does NOT reference examples/ or orchestrate (the examples step is uncommitted)

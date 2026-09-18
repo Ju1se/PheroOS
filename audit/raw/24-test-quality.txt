@@ -1,0 +1,60 @@
+UNIT/INTEGRATION CRITERION: a test is INTEGRATION if its body references a real ledger or
+entry point (OrchestrationSession/PlatformSession/Session/start_run/resume_run/run_workflow/
+replay_run/sqlite3/cli); otherwise UNIT. Mock density counts Mock/MagicMock/patch/monkeypatch
+and the in-repo fakes (FakeTransport/Crash/Dying).
+
+file                                           tests asserts  raises  mocks  integ noassert  wiring
+test_anthropic.py                                 35      61      25      4      0        0       0
+test_artifact_access.py                           11      45       6      0      4        0       0
+test_colony.py                                    38     151       4      0      6        0       0
+test_commitment.py                                24      86      20      0      0        0       0
+test_control_limits.py                            10      46      21      0      1        0       0
+test_e4_shared_capacity.py                        31     126       2      3      8        0       0
+test_execution.py                                  9      21      22      0      3        0       3
+test_inspection.py                                13      44       7      3      0        0       0
+test_inspection_cli.py                             4      11       2      1      4        0       0
+test_inspection_runner.py                         23      54       9     17     11        0       0
+test_layout.py                                     3       9       1      2      1        0       0
+test_leases.py                                    10      34      11      0      0        0       0
+test_orchestration_audit.py                       42      99       7      5      6        5       0
+test_orchestration_authority.py                   41     149      22      2      5        0       0
+test_orchestration_colony.py                      33      68      10      1      2        0       0
+test_orchestration_hardening.py                   21      56       6      5     12        0       0
+test_orchestration_recovery.py                    43     127      38      3      2        0       0
+test_orchestration_workflow.py                    42     190       5      2     11        0       0
+test_platform_atomicity.py                        15      58      17      0      5        0       0
+test_platform_conformance.py                      23      82      29      0      3        0       0
+test_platform_policies.py                         18      39      10      0      0        0       0
+test_provider_worker.py                           22      60       9      3     14        0       0
+test_received_publication.py                      13      52       9      0      2        0       0
+test_sequential.py                                20      80      28      2      0        0       0
+test_tools.py                                     28      47      31      0      0        0       0
+TOTAL                                            572    1795     351     53    100        5       3
+
+unit:integration = 472:100
+mocks per test file = 2.12
+assert density = 3.75 asserts+raises per test
+
+TESTS WITH NO ASSERTION AND NO pytest.raises (5):
+   test_orchestration_audit.py::test_replay_detects_an_altered_request_body
+   test_orchestration_audit.py::test_replay_detects_an_altered_stored_response
+   test_orchestration_audit.py::test_replay_detects_a_recorded_template_version_it_cannot_rebuild
+   test_orchestration_audit.py::test_replay_detects_an_undispatched_call_claimed_by_an_ineligible_agent
+   test_orchestration_audit.py::test_replay_detects_a_permission_and_a_claim_event_that_disagree
+
+TESTS WHOSE ONLY ASSERTIONS ARE ON MOCK CALL COUNTS/ARGS (3):
+   test_execution.py::test_configured_call_cap_is_not_hardcoded_to_one
+   test_execution.py::test_source_reader_and_cross_session_lease_checks_happen_before_tool
+   test_execution.py::test_explicit_token_cap_rejects_reservation_before_dispatch
+
+TOP 10 FILES BY MOCK-TO-ASSERTION RATIO:
+   test_inspection_runner.py                    mocks=17   asserts+raises=63   ratio=0.27
+   test_layout.py                               mocks=2    asserts+raises=10   ratio=0.20
+   test_orchestration_hardening.py              mocks=5    asserts+raises=62   ratio=0.08
+   test_inspection_cli.py                       mocks=1    asserts+raises=13   ratio=0.08
+   test_inspection.py                           mocks=3    asserts+raises=51   ratio=0.06
+   test_orchestration_audit.py                  mocks=5    asserts+raises=106  ratio=0.05
+   test_anthropic.py                            mocks=4    asserts+raises=86   ratio=0.05
+   test_provider_worker.py                      mocks=3    asserts+raises=69   ratio=0.04
+   test_e4_shared_capacity.py                   mocks=3    asserts+raises=128  ratio=0.02
+   test_sequential.py                           mocks=2    asserts+raises=108  ratio=0.02

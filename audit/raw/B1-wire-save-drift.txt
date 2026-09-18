@@ -1,0 +1,35 @@
+########## _wire DRIFT (return type) and its effect on the _save copies
+=== runner/inspection.py:25-31 ===
+def _wire(value):
+    return json.dumps(value, sort_keys=True, separators=(",", ":"), allow_nan=False).encode()
+
+
+def _digest(value):
+    return sha256(_wire(value)).hexdigest()
+
+=== runner/session.py:15-18 ===
+def _wire(value):
+    return json.dumps(value, sort_keys=True, separators=(",", ":"), allow_nan=False)
+
+
+=== runner/audit.py:39-41 ===
+def _digest(value):
+    return sha256(_wire(value).encode()).hexdigest()
+
+=== runner/orchestration.py:44-46 ===
+def _digest(value):
+    return sha256(_wire(value).encode()).hexdigest()
+
+
+### which _wire does runtime.py use? (import line)
+40:from .session import _integer, _wire
+
+### _save call sites
+runner/inspection.py:193:    _save(output_dir / "frozen.json", frozen)
+runner/inspection.py:196:        _save(output_dir / "result.json", result)
+runner/inspection.py:248:        _save(output_dir / "receipt.json", response)
+runner/inspection.py:249:    _save(output_dir / "session.json", snapshot)
+runner/inspection.py:251:    _save(output_dir / "result.json", result)
+runner/runtime.py:851:    _save(output_dir / "frozen.json", frozen)
+runner/runtime.py:856:    _save(output_dir / "outcome.json", outcome)
+runner/runtime.py:888:    _save(output_dir / ("outcome-resume-%d.json" % index), outcome)

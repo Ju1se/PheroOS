@@ -1,0 +1,11 @@
+Found 4 known vulnerabilities in 1 package
+Name Version ID              Fix Versions
+---- ------- --------------- ------------
+pip  26.1    PYSEC-2026-196  26.1.2
+pip  26.1    PYSEC-2026-196  26.1.2
+pip  26.1    PYSEC-2026-3721 26.2
+pip  26.1    PYSEC-2026-3721 26.2.0
+
+Name                Skip Reason
+------------------- ---------------------------------------------------------------------------------------
+pheroos-interaction Dependency not found on PyPI and could not be audited: pheroos-interaction (0.1.0.dev2)

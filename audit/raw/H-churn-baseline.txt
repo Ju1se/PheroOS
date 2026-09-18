@@ -1,0 +1,54 @@
+### H CHURN — REPO BASELINE
+$ git rev-parse HEAD
+e664d2e9d1790f40eef0b15b25f23155ea9294a6
+
+$ git rev-list --count HEAD
+116
+
+$ git rev-list --all --count
+138
+
+$ git log --reverse --format='%H %ad %s' --date=iso | head -1
+da872261733909fd44a569fc945a415f1425c828 2026-06-09 13:27:12 +0800 Initial commit
+
+$ git log -1 --format='%H %ad %s' --date=iso
+e664d2e9d1790f40eef0b15b25f23155ea9294a6 2026-09-16 21:15:13 -0700 Add colony control layer: four-layer multi-agent system for PheroOS
+
+REPO AGE (first->last author date): 99 days
+
+$ git log --format='%ad' --date=format:'%Y-%m' | sort | uniq -c
+  39 2026-06
+  53 2026-07
+  24 2026-09
+
+$ git status --porcelain
+ M .github/workflows/interaction.yml
+ M AGENTS.md
+ M README.md
+ M runner/cli.py
+ M runner/platform.py
+ M runner/session.py
+ M runner/worker.py
+ M src/pheroos_interaction/commitment.py
+ M tests/interaction/conftest.py
+ M tests/interaction/test_commitment.py
+ M tests/interaction/test_layout.py
+?? audit/
+?? docs/
+?? examples/
+?? runner/anthropic.py
+?? runner/audit.py
+?? runner/contracts.py
+?? runner/orchestration.py
+?? runner/runtime.py
+?? runner/runtime_policies.py
+?? runner/tools.py
+?? tests/interaction/test_anthropic.py
+?? tests/interaction/test_e4_shared_capacity.py
+?? tests/interaction/test_orchestration_audit.py
+?? tests/interaction/test_orchestration_authority.py
+?? tests/interaction/test_orchestration_colony.py
+?? tests/interaction/test_orchestration_hardening.py
+?? tests/interaction/test_orchestration_recovery.py
+?? tests/interaction/test_orchestration_workflow.py
+?? tests/interaction/test_tools.py

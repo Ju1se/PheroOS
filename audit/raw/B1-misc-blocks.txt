@@ -1,0 +1,111 @@
+########## evidence.py vs session.py blocks
+=== runner/evidence.py:285,320 ===
+        # Tool and arguments must match the declaration at the same durable
+        # boundary that checks cancellation and current source access.
+        with self._transaction() as db:
+            self._lease(db, lease)
+            call = db.execute("SELECT * FROM calls WHERE id=?", (call_id,)).fetchone()
+            if call is None or (call["work_id"], call["version"], call["epoch"], call["state"]) != (
+                lease.task_id,
+                lease.version,
+                lease.epoch,
+                "reserved",
+            ):
+                raise StateError("dispatch requires this lease's reserved call")
+            payload = json.loads(call["request"])
+            item = self._inspection(db, lease.task_id)
+            if (
+                item is not None
+                and call["action"] == "tool.evaluate"
+                and (
+                    payload.get("tool_ref") != item["tool_ref"]
+                    or _wire(payload.get("arguments")) != item["arguments"]
+                )
+            ):
+                raise StateError("inspection tool/arguments differ from the declaration")
+            permission = self._permit(db, lease, call["action"], payload)
+            db.execute(
+                "UPDATE calls SET state='dispatched',permission=? WHERE id=?",
+                (_wire(permission), call_id),
+            )
+            self._event(
+                db, "dispatched", lease.task_id, {"call_id": call_id, "permission": permission}
+            )
+            return payload
+=== runner/session.py:260,275 ===
+
+    def dispatch(self, lease, call_id):
+        with self._transaction() as db:
+            self._lease(db, lease)
+            call = db.execute("SELECT * FROM calls WHERE id=?", (call_id,)).fetchone()
+            if call is None or (call["work_id"], call["version"], call["epoch"], call["state"]) != (lease.task_id, lease.version, lease.epoch, "reserved"):
+                raise StateError("dispatch requires this lease's reserved call")
+            payload = json.loads(call["request"])
+            self._reservation_request(db, lease, call_id, call["action"], payload)
+            permission = self._permit(db, lease, call["action"], payload)
+            db.execute("UPDATE calls SET state='dispatched',permission=? WHERE id=?", (_wire(permission), call_id))
+            self._event(db, "dispatched", lease.task_id, {"call_id": call_id, "permission": permission})
+            return payload
+
+    def receive(self, call_id, response):
+        wire = _wire(response)
+
+########## _exact (anthropic.py:96-102) vs _fields (contracts.py:100-106)
+=== runner/anthropic.py:96-102 ===
+def _exact(value, name, required, optional=()):
+    if type(value) is not dict:
+        raise ValueError(f"{name} must be an object")
+    keys = set(value)
+    if not set(required) <= keys or keys - set(required) - set(optional):
+        raise ValueError(f"{name} requires exactly {sorted(required)} plus optional {sorted(optional)}")
+    return value
+=== runner/contracts.py:100-106 ===
+def _fields(value, name, required, optional=()):
+    if type(value) is not dict:
+        raise ContractError(f"{name} must be an object")
+    keys = set(value)
+    if not set(required) <= keys or keys - set(required) - set(optional):
+        raise ContractError(f"{name} requires exactly {sorted(required)} plus optional {sorted(optional)}")
+    return value
+
+########## anthropic.py:31-34 vs contracts.py:19-22
+=== runner/anthropic.py:28,36 ===
+
+from . import contracts
+
+API_VERSION = "2023-06-01"
+ENDPOINT = "/v1/messages"
+SCRIPT_FORMAT = "fake-model-script-v1"
+HEADER_PREFIX = "pheroos-orchestration "
+HEADER = re.compile(r"^pheroos-orchestration task=(\S+) version=(\d+) step=(\d+)$")
+UNSUPPORTED = frozenset({"stream", "thinking", "metadata", "output_config", "service_tier",
+=== runner/contracts.py:16,24 ===
+SPEC_FORMAT = "orchestration-workflow-v2"
+LEGACY_SPEC_FORMAT = "orchestration-workflow-v1"
+SPEC_FORMATS = (LEGACY_SPEC_FORMAT, SPEC_FORMAT)
+OUTCOME_FORMAT = "orchestration-outcome-v1"
+TEMPLATE_VERSION = "orchestration-context-v1"
+MODEL_TOOL_REF = "model.anthropic-messages"
+HOST_AGENT = "host"
+PROVIDERS = ("fake", "anthropic")
+TASK_KINDS = ("model", "host")
+
+########## inspection.py:8-11 vs runtime.py:28-31
+=== runner/inspection.py:6,13 ===
+
+from dataclasses import asdict
+from hashlib import sha256
+import json
+import os
+from pathlib import Path
+import sqlite3
+
+=== runner/runtime.py:26,33 ===
+"""
+
+from hashlib import sha256
+import json
+import os
+from pathlib import Path
+
+from pheroos_interaction.records import BudgetExceeded, LeaseLost, StateError

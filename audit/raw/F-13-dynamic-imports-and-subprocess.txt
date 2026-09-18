@@ -1,0 +1,9 @@
+=== Dynamic / runtime import sites (AST scanning cannot see these; must be checked by hand) ===
+tests/interaction/test_layout.py:4:from importlib import import_module
+tests/interaction/test_layout.py:26:        monkeypatch.setattr(import_module(name), '__path__', [str(root)])
+tests/interaction/test_layout.py:88:    package = import_module(PACKAGES[1])
+--- end ---
+
+=== subprocess/exec of external tools (undeclared external binaries) ===
+tests/interaction/test_inspection_cli.py:67:    result = subprocess.run([sys.executable, '-c', script, str(EXAMPLE / 'request.json'),
+--- end ---

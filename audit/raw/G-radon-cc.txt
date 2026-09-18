@@ -1,0 +1,73 @@
+runner/worker.py
+    F 108:0 run_worker - F (43)
+    F 61:0 waiting_rule - C (20)
+    F 18:0 _plan - C (13)
+runner/audit.py
+    F 205:0 replay_run - F (68)
+    M 54:4 ReplayLedger.__init__ - C (11)
+    M 163:4 ReplayLedger._effective_reads - C (11)
+runner/provider.py
+    F 19:0 _freeze - C (11)
+    M 58:4 ProviderDriver.evaluate - C (11)
+runner/tools.py
+    F 306:0 _row_problems - C (16)
+    F 271:0 _expected_totals - C (11)
+runner/session.py
+    M 58:4 Session.create - D (22)
+    M 205:4 Session._reserve - C (15)
+    M 274:4 Session.receive - C (15)
+    M 385:4 Session._publish_received - C (13)
+    M 433:4 Session.snapshot - C (12)
+runner/colony.py
+    F 106:0 run_colony - F (64)
+    F 65:0 _plan - D (24)
+runner/runtime.py
+    M 690:4 Runtime._outcome - E (31)
+    M 195:4 Runtime._conversation - C (17)
+    M 412:4 Runtime._infer - C (17)
+    M 353:4 Runtime.step - C (14)
+    M 313:4 Runtime._state - C (13)
+    M 555:4 Runtime.evaluate_rule - C (13)
+    M 119:4 Runtime._select_work - C (11)
+runner/platform.py
+    M 223:4 PlatformMixin._decompose - E (35)
+    M 392:4 PlatformMixin.commit - D (23)
+    M 50:4 PlatformMixin.create - C (20)
+runner/inspection.py
+    F 275:0 _verify_execution - F (46)
+    F 341:0 replay_inspection - D (28)
+    F 132:0 _receipt - C (19)
+    F 99:0 _source - C (16)
+    F 255:0 _snapshot_readonly - C (13)
+    F 76:0 _config - C (12)
+    F 157:0 _result - C (11)
+runner/orchestration.py
+    M 233:4 OrchestrationMixin._reservation_request - D (23)
+    M 572:4 OrchestrationMixin.admit_children - D (23)
+    M 300:4 OrchestrationMixin._admit_tool - C (20)
+    M 504:4 OrchestrationMixin._verify_derivation - C (20)
+    M 277:4 OrchestrationMixin._admit_model - C (17)
+    M 638:4 OrchestrationMixin._child_declaration - C (13)
+    M 455:4 OrchestrationMixin.publish_derived - C (12)
+runner/anthropic.py
+    F 122:0 _blocks - C (13)
+    F 331:0 _base_url - C (12)
+runner/contracts.py
+    F 507:0 workflow_spec - F (56)
+    F 111:0 validate_schema - E (40)
+    F 176:0 conforms - D (30)
+    F 328:0 _policy - D (25)
+    F 406:0 task_spec - D (23)
+    F 614:0 parse_proposal - D (21)
+    F 50:0 finite_json - C (12)
+runner/evidence.py
+    M 242:4 CoordinationSession.source_update - C (14)
+    M 107:4 CoordinationSession._inspection_declaration - C (12)
+runner/policies.py
+    F 68:0 pick_response - C (13)
+src/pheroos_interaction/leases.py
+    F 14:0 lease_ttl - C (12)
+src/pheroos_interaction/commitment.py
+    F 176:0 cross_inhibition - C (20)
+src/pheroos_interaction/sequential.py
+    F 493:0 certify_joint_corners - C (12)

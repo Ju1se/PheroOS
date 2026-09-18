@@ -1,0 +1,156 @@
+### COMMAND: symilar -d 4 --ignore-comments --ignore-docstrings --ignore-imports --ignore-signatures
+### CWD: /private/tmp/claude-501/-Users-scottxie-Desktop-multi-agent/f160b040-86a8-4874-aa4e-754fd36459d1/scratchpad/b1-dup-copy
+
+
+20 similar lines in 2 files
+==runner/colony.py:[266:286]
+==runner/worker.py:[198:218]
+           except Exception as exc:
+               state = _call_status(session, call_id) if call_id is not None else None
+               if state == "dispatched":
+                   status = "unknown"
+               elif state == "response_rejected":
+                   status = "response_rejected"
+                   try:
+                       session.abstain(lease, reason="response_rejected")
+                   except (StateError, BudgetExceeded):
+                       pass
+               elif isinstance(exc, LeaseLost):
+                   status = "lost"
+               elif isinstance(exc, BudgetExceeded):
+                   status = "budget_exhausted"
+               else:
+                   status = phase + "_error"
+               _release(session, lease)
+               outcomes.append({"work": work_id, "status": status, "call_id": call_id,
+                                "call_state": state, "reason": type(exc).__name__})
+       return outcomes
+
+18 similar lines in 2 files
+==runner/colony.py:[158:176]
+==runner/worker.py:[138:156]
+           if lease is None:
+               outcomes.append({"work": work_id, "status": "unavailable"})
+               continue
+           call_id = None
+           phase = "plan"
+           try:
+               plan = _plan(planner(_freeze(item)))
+               records = session.work_calls(lease)
+               unresolved = next((row for row in records if row["state"] == "dispatched"), None)
+               if unresolved:
+                   call_id = unresolved["id"]
+                   _release(session, lease)
+                   outcomes.append({"work": work_id, "status": "unknown", "call_id": call_id})
+                   continue
+               if any(row["state"] == "reserved" for row in records):
+                   _release(session, lease)
+                   outcomes.append({"work": work_id, "status": "reservation_abandoned"})
+                   continue
+
+17 similar lines in 2 files
+==src/pheroos_interaction/inspection.py:[123:140]
+==src/pheroos_interaction/sequential.py:[127:144]
+       by_count = ((negative[0], min(negative[1:])), (positive[0], min(positive[1:])))
+       minimum = _risk(query_cost, min(negative), min(positive))
+       count_minima = (_risk(query_cost, by_count[0][0], by_count[1][0]),
+           min(_risk(query_cost, by_count[0][0], by_count[1][1]),
+               _risk(query_cost, by_count[0][1], by_count[1][0])),
+           _risk(query_cost, by_count[0][1], by_count[1][1]))
+       count = next(k for k in (0, 1, 2) if _feasible(count_minima[k], minimum))
+       for first_index, first_action in enumerate(ACTIONS):
+           remaining = count - int(first_action != 'abstain')
+           if remaining not in (0, 1) or not _feasible(
+                   _risk(query_cost, negative[first_index], by_count[1][remaining]), minimum):
+               continue
+           for second_index, second_action in enumerate(ACTIONS):
+               if int(second_action != 'abstain') != remaining:
+                   continue
+               selected = _risk(query_cost, negative[first_index], positive[second_index])
+               if _feasible(selected, minimum):
+
+15 similar lines in 2 files
+==runner/colony.py:[142:157]
+==runner/worker.py:[122:137]
+       if max_items is not None:
+           _integer(max_items, "max_items")
+       limit = len(session.ready_work(agent)) if max_items is None else max_items
+       outcomes, visited = [], set()
+       while len(visited) < limit:
+           ready = [row for row in session.ready_work(agent) if row["id"] not in visited]
+           if not ready:
+               break
+           work_id = policy(_freeze(ready))
+           if work_id is None:
+               break
+           if type(work_id) is not str or work_id not in {row["id"] for row in ready}:
+               raise ValueError("policy selected work outside the enumerated set")
+           visited.add(work_id)
+           item = next(row for row in ready if row["id"] == work_id)
+
+13 similar lines in 2 files
+==runner/anthropic.py:[54:76]
+==runner/inspection.py:[33:55]
+       result = {}
+       for key, value in pairs:
+           if key in result:
+               raise ValueError("duplicate JSON field")
+           result[key] = value
+       return result
+
+
+   def _parse(raw):
+       return json.loads(raw, object_pairs_hook=_unique,
+                         parse_constant=lambda value: (_ for _ in ()).throw(ValueError("nonfinite JSON")))
+
+
+   def _read(path, limit):
+       with Path(path).open("rb") as stream:
+           raw = stream.read(limit + 1)
+       if len(raw) > limit:
+           raise ValueError("input exceeds byte bound")
+       return raw
+
+
+   def _load(path, limit=65536):
+
+5 similar lines in 2 files
+==runner/anthropic.py:[68:76]
+==runner/runtime.py:[765:773]
+       with Path(path).open("rb") as stream:
+           raw = stream.read(limit + 1)
+       if len(raw) > limit:
+           raise ValueError("input exceeds byte bound")
+       return raw
+
+
+   def _load(path, limit=1 << 20):
+
+5 similar lines in 2 files
+==runner/driver.py:[37:45]
+==runner/provider.py:[90:98]
+                       "adapter_elapsed_ns": monotonic_ns() - started}
+           self.session.receive(call_id, response)
+           return response
+
+       def replay(self, call_id):
+           """Return a settled receipt without transport, charging or authority."""
+           record = self.session.call(call_id)
+           if record["state"] != "received":
+
+5 similar lines in 2 files
+==src/pheroos_interaction/commitment.py:[26:34]
+==src/pheroos_interaction/inspection.py:[16:27]
+       if type(value) not in (int, float) or not isfinite(value):
+           raise ValueError('finite ' + label + ' required')
+       return value
+
+
+   def _nonnegative(value, label):
+       if _number(value, label) < 0:
+           raise ValueError('nonnegative ' + label + ' required')
+
+
+   def _text(value, label):
+TOTAL lines=7593 duplicates=98 percent=1.29
+

@@ -1,0 +1,103 @@
+########## NAME-FAMILY CENSUS across runner/ and src/pheroos_interaction/
+### COMMAND: grep -rn '^def _\(unique\|parse\|read\|load\|number\|nonnegative\|integer\|string\|duration\|loss\|wire\|freeze\)' runner src/pheroos_interaction
+runner/anthropic.py:54:def _unique(pairs):
+runner/anthropic.py:63:def _parse(raw):
+runner/anthropic.py:68:def _read(path, limit):
+runner/anthropic.py:76:def _string(value, name, maximum=None):
+runner/contracts.py:88:def _number(value, name):
+runner/inspection.py:25:def _wire(value):
+runner/inspection.py:33:def _unique(pairs):
+runner/inspection.py:42:def _parse(raw):
+runner/inspection.py:47:def _read(path, limit):
+runner/inspection.py:55:def _load(path, limit=65536):
+runner/platform.py:21:def _loss(value, name):
+runner/platform.py:37:def _unique(values, name):
+runner/policies.py:11:def _nonnegative(value, name, *, positive=False):
+runner/provider.py:19:def _freeze(value):
+runner/runtime.py:765:def _read(path, limit=1 << 20):
+runner/runtime.py:773:def _load(path, limit=1 << 20):
+runner/runtime.py:778:def _unique(pairs):
+runner/session.py:15:def _wire(value):
+runner/session.py:19:def _integer(value, name, minimum=0):
+runner/session.py:31:def _duration(value):
+runner/tools.py:51:def _unique(pairs):
+runner/tools.py:60:def _parse(raw):
+src/pheroos_interaction/commitment.py:26:def _number(value, label):
+src/pheroos_interaction/commitment.py:32:def _nonnegative(value, label):
+src/pheroos_interaction/inspection.py:16:def _number(value, label):
+src/pheroos_interaction/inspection.py:22:def _nonnegative(value, label):
+
+### ALL module-level private helper defs, grouped by name (duplicate names only):
+### COMMAND: grep -rn '^def _' runner src/pheroos_interaction | awk -F'def ' '{print $2}' | awk -F'(' '{print $1}' | sort | uniq -c | sort -rn | awk '$1>1'
+   5 _unique
+   4 _text
+   3 _read
+   3 _parse
+   3 _number
+   3 _nonnegative
+   3 _digest
+   2 _wire
+   2 _unit
+   2 _source
+   2 _save
+   2 _plan
+   2 _load
+   2 _count
+   2 _copy
+
+### Locations of each repeated name:
+--- _copy ---
+runner/tools.py:43:def _copy(value):
+runner/driver.py:9:def _copy(value):
+--- _count ---
+runner/contracts.py:81:def _count(value, name, minimum=0, maximum=None):
+src/pheroos_interaction/commitment.py:50:def _count(value, label, minimum=0, maximum=None):
+--- _digest ---
+runner/audit.py:39:def _digest(value):
+runner/orchestration.py:44:def _digest(value):
+runner/inspection.py:29:def _digest(value):
+--- _load ---
+runner/runtime.py:773:def _load(path, limit=1 << 20):
+runner/inspection.py:55:def _load(path, limit=65536):
+--- _nonnegative ---
+runner/policies.py:11:def _nonnegative(value, name, *, positive=False):
+src/pheroos_interaction/inspection.py:22:def _nonnegative(value, label):
+src/pheroos_interaction/commitment.py:32:def _nonnegative(value, label):
+--- _number ---
+runner/contracts.py:88:def _number(value, name):
+src/pheroos_interaction/inspection.py:16:def _number(value, label):
+src/pheroos_interaction/commitment.py:26:def _number(value, label):
+--- _parse ---
+runner/tools.py:60:def _parse(raw):
+runner/inspection.py:42:def _parse(raw):
+runner/anthropic.py:63:def _parse(raw):
+--- _plan ---
+runner/worker.py:18:def _plan(value):
+runner/colony.py:65:def _plan(value):
+--- _read ---
+runner/inspection.py:47:def _read(path, limit):
+runner/runtime.py:765:def _read(path, limit=1 << 20):
+runner/anthropic.py:68:def _read(path, limit):
+--- _save ---
+runner/inspection.py:59:def _save(path, value):
+runner/runtime.py:787:def _save(path, value):
+--- _source ---
+runner/inspection.py:99:def _source(value, config):
+src/pheroos_interaction/sequential.py:192:def _source(node):
+--- _text ---
+runner/tools.py:37:def _text(value, label, maximum):
+runner/platform.py:31:def _text(value, maximum=4096):
+runner/contracts.py:69:def _text(value, name, maximum):
+src/pheroos_interaction/inspection.py:27:def _text(value, label):
+--- _unique ---
+runner/tools.py:51:def _unique(pairs):
+runner/inspection.py:33:def _unique(pairs):
+runner/runtime.py:778:def _unique(pairs):
+runner/anthropic.py:54:def _unique(pairs):
+runner/platform.py:37:def _unique(values, name):
+--- _unit ---
+src/pheroos_interaction/commitment.py:44:def _unit(value, label):
+src/pheroos_interaction/sequential.py:39:def _unit(value, label):
+--- _wire ---
+runner/session.py:15:def _wire(value):
+runner/inspection.py:25:def _wire(value):

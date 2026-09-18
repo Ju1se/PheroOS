@@ -1,0 +1,150 @@
+=== ALL import statements with line numbers (runner/ and src/) ===
+runner/cli.py:2:import argparse
+runner/cli.py:3:import json
+runner/cli.py:4:from pathlib import Path
+runner/cli.py:5:import sys
+runner/cli.py:34:        from .inspection import run_inspection, replay_inspection
+runner/cli.py:40:        from .audit import replay_run
+runner/cli.py:44:    from .runtime import resume_run, start_run
+runner/anthropic.py:9:from the one the provider answered.
+runner/anthropic.py:19:from __future__ import annotations
+runner/anthropic.py:21:import json
+runner/anthropic.py:22:import math
+runner/anthropic.py:23:from pathlib import Path
+runner/anthropic.py:24:import re
+runner/anthropic.py:25:import urllib.error
+runner/anthropic.py:26:import urllib.parse
+runner/anthropic.py:27:import urllib.request
+runner/anthropic.py:29:from . import contracts
+runner/audit.py:16:from hashlib import sha256
+runner/audit.py:17:import json
+runner/audit.py:18:from pathlib import Path
+runner/audit.py:19:import sqlite3
+runner/audit.py:21:from . import contracts
+runner/audit.py:22:from .contracts import ContractError
+runner/audit.py:23:from .identity import source_identity
+runner/audit.py:24:from .orchestration import MODEL_KEY, VALIDATOR_VERSION, call_identity
+runner/audit.py:25:from .runtime import RESULT_FORMAT, Runtime, _binding
+runner/audit.py:26:from .session import _wire
+runner/audit.py:27:from .tools import build_registry
+runner/colony.py:32:from __future__ import annotations
+runner/colony.py:34:from hashlib import sha256
+runner/colony.py:36:from pheroos_interaction.records import BudgetExceeded, LeaseLost, StateError
+runner/colony.py:37:from pheroos_interaction.sequential import SequentialPlan, apply_sequential, tree_digest
+runner/colony.py:38:from .provider import _freeze
+runner/colony.py:39:from .session import _duration, _integer, _wire
+runner/colony.py:40:from .worker import _call_status, _release
+runner/colony.py:73:    from .platform import _loss
+runner/contracts.py:11:from hashlib import sha256
+runner/contracts.py:12:import json
+runner/contracts.py:13:import math
+runner/contracts.py:14:import re
+runner/contracts.py:258:    from who happens to be idle or online.
+runner/driver.py:3:from __future__ import annotations
+runner/driver.py:5:import json
+runner/driver.py:6:from time import monotonic_ns
+runner/evidence.py:7:from hashlib import sha256
+runner/evidence.py:8:import json
+runner/evidence.py:10:from .session import Session, _id, _integer, _wire
+runner/evidence.py:11:from pheroos_interaction.records import BudgetExceeded, LeaseLost, StateError
+runner/identity.py:2:from hashlib import sha256
+runner/identity.py:3:from pathlib import Path
+runner/identity.py:8:    import pheroos_interaction
+runner/identity.py:9:    from pheroos_interaction import runner
+runner/inspection.py:7:from dataclasses import asdict
+runner/inspection.py:8:from hashlib import sha256
+runner/inspection.py:9:import json
+runner/inspection.py:10:import os
+runner/inspection.py:11:from pathlib import Path
+runner/inspection.py:12:import sqlite3
+runner/inspection.py:14:from pheroos_interaction.inspection import ModelAssumptions, Losses, plan_inspection, apply_plan
+runner/inspection.py:15:from pheroos_interaction.records import StateError
+runner/inspection.py:16:from .driver import SessionDriver
+runner/inspection.py:17:from .evidence import CoordinationSession, _control_operation_count
+runner/inspection.py:18:from .identity import source_identity
+runner/platform.py:8:from __future__ import annotations
+runner/platform.py:10:from hashlib import sha256
+runner/platform.py:11:import json
+runner/platform.py:12:import math
+runner/platform.py:13:import os
+runner/platform.py:14:from pathlib import Path
+runner/platform.py:15:import tempfile
+runner/platform.py:17:from .session import Session, _duration, _id, _integer, _wire
+runner/platform.py:18:from pheroos_interaction.records import BudgetExceeded, Lease, LeaseLost, StateError
+runner/orchestration.py:17:from hashlib import sha256
+runner/orchestration.py:18:import json
+runner/orchestration.py:20:from pheroos_interaction.records import BudgetExceeded, Lease, StateError
+runner/orchestration.py:21:from . import contracts
+runner/orchestration.py:22:from .contracts import ContractError
+runner/orchestration.py:23:from .identity import source_identity
+runner/orchestration.py:24:from .platform import PlatformMixin, _text
+runner/orchestration.py:25:from .session import Session, _duration, _id, _integer, _wire
+runner/orchestration.py:461:        from settled receipts of its dependencies). Nothing is fabricated: the
+runner/provider.py:8:from __future__ import annotations
+runner/provider.py:10:import json
+runner/provider.py:11:import math
+runner/provider.py:12:import os
+runner/provider.py:13:from time import monotonic_ns
+runner/provider.py:15:from pheroos_interaction.records import StateError
+runner/provider.py:16:from .session import _id, _integer
+runner/policies.py:7:from fractions import Fraction
+runner/policies.py:8:import math
+runner/runtime_policies.py:25:from hashlib import sha256
+runner/runtime_policies.py:27:from pheroos_interaction import commitment, leases
+runner/runtime_policies.py:28:from . import policies
+runner/runtime_policies.py:29:from .contracts import ContractError
+runner/runtime_policies.py:30:from .session import _wire
+runner/runtime.py:28:from hashlib import sha256
+runner/runtime.py:29:import json
+runner/runtime.py:30:import os
+runner/runtime.py:31:from pathlib import Path
+runner/runtime.py:33:from pheroos_interaction.records import BudgetExceeded, LeaseLost, StateError
+runner/runtime.py:34:from . import anthropic, contracts
+runner/runtime.py:35:from .contracts import ContractError
+runner/runtime.py:36:from .identity import source_identity
+runner/runtime.py:37:from .provider import _freeze
+runner/runtime.py:38:from .orchestration import MODEL_KEY, TOOL_KEY, OrchestrationSession, call_identity
+runner/runtime.py:39:from .runtime_policies import RuntimePolicies
+runner/runtime.py:40:from .session import _integer, _wire
+runner/runtime.py:41:from .tools import ToolError, ToolRegistry, build_registry
+runner/runtime.py:42:from .worker import _release
+runner/session.py:3:from contextlib import contextmanager
+runner/session.py:4:from dataclasses import asdict
+runner/session.py:5:from hashlib import sha256
+runner/session.py:6:import json
+runner/session.py:7:import math
+runner/session.py:8:from pathlib import Path
+runner/session.py:9:import sqlite3
+runner/session.py:10:import time
+runner/session.py:12:from pheroos_interaction.records import BudgetExceeded, Lease, LeaseLost, StateError
+runner/tools.py:14:from __future__ import annotations
+runner/tools.py:16:from hashlib import sha256
+runner/tools.py:17:from pathlib import Path
+runner/tools.py:18:import json
+runner/tools.py:19:import os
+runner/tools.py:20:import stat
+runner/tools.py:22:from . import contracts
+runner/worker.py:7:from __future__ import annotations
+runner/worker.py:9:from hashlib import sha256
+runner/worker.py:10:import json
+runner/worker.py:12:from pheroos_interaction.commitment import optimal_stopping_rule
+runner/worker.py:13:from pheroos_interaction.records import BudgetExceeded, LeaseLost, StateError
+runner/worker.py:14:from .provider import _freeze
+runner/worker.py:15:from .session import _duration, _integer, _wire
+runner/worker.py:28:    from .platform import _loss
+src/pheroos_interaction/inspection.py:7:from dataclasses import dataclass
+src/pheroos_interaction/inspection.py:8:from math import fsum, isclose, isfinite
+src/pheroos_interaction/commitment.py:15:from dataclasses import dataclass
+src/pheroos_interaction/commitment.py:16:from hashlib import sha256
+src/pheroos_interaction/commitment.py:17:from math import fsum, isfinite
+src/pheroos_interaction/commitment.py:261:    from the declared discrete distribution).
+src/pheroos_interaction/records.py:6:from dataclasses import dataclass
+src/pheroos_interaction/leases.py:9:from bisect import bisect_right
+src/pheroos_interaction/leases.py:11:from .inspection import _nonnegative, _number
+src/pheroos_interaction/sequential.py:18:from dataclasses import dataclass, replace
+src/pheroos_interaction/sequential.py:19:from fractions import Fraction
+src/pheroos_interaction/sequential.py:20:from hashlib import sha256
+src/pheroos_interaction/sequential.py:21:from itertools import product
+src/pheroos_interaction/sequential.py:22:from json import dumps
+src/pheroos_interaction/sequential.py:23:from math import comb, fsum, nextafter
+src/pheroos_interaction/sequential.py:25:from .inspection import (ACTIONS, TIE_TOLERANCE, Losses, ModelAssumptions, _feasible,

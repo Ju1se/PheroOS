@@ -1,0 +1,51 @@
+########## response_rejected handling — the 'run_worker parity' claim
+### COMMAND: grep -n 'response_rejected' runner/colony.py runner/worker.py
+runner/worker.py:173:                elif any(row["state"] == "response_rejected" for row in records):
+runner/worker.py:174:                    session.abstain(lease, reason="response_rejected")
+runner/worker.py:175:                    outcomes.append({"work": work_id, "status": "response_rejected"})
+runner/worker.py:203:            elif state == "response_rejected":
+runner/worker.py:204:                status = "response_rejected"
+runner/worker.py:206:                    session.abstain(lease, reason="response_rejected")
+runner/colony.py:210:                        if "response_rejected" in states.values():
+runner/colony.py:212:                            reason = "response_rejected"
+runner/colony.py:271:            elif state == "response_rejected":
+runner/colony.py:272:                status = "response_rejected"
+runner/colony.py:274:                    session.abstain(lease, reason="response_rejected")
+
+=== worker.py:157-175 (normal-path response_rejected) ===
+     1	            if plan.get("purchase") is False:
+     2	                session.abstain(lease, reason="plan_no_purchase")
+     3	                outcomes.append({"work": work_id, "status": "abstain", "call_id": None})
+     4	                continue
+     5	            phase = "commit"
+     6	            candidates = session.candidates(work_id, agent=agent)
+     7	            if not candidates:
+     8	                received = [row for row in records if row["state"] == "received"]
+     9	                if received:
+    10	                    matching = [row for row in received
+    11	                                if row["request"].get("tool_ref") == plan["tool_ref"]
+    12	                                and _wire(row["request"].get("arguments")) == _wire(plan["arguments"])]
+    13	                    if not matching:
+    14	                        raise StateError("existing receipt does not match this read plan; another read is refused")
+    15	                    call_id = matching[-1]["id"]
+    16	                    response = matching[-1]["response"]
+    17	                elif any(row["state"] == "response_rejected" for row in records):
+    18	                    session.abstain(lease, reason="response_rejected")
+    19	                    outcomes.append({"work": work_id, "status": "response_rejected"})
+
+=== colony.py:186,200 (normal-path response_rejected) ===
+     1	                    phase = "plan"
+     2	                    raise ValueError("candidates exist; a purchase-False plan must declare abstain_loss to commit them")
+     3	            if not candidates:
+     4	                tree_sha = tree_digest(plan["plan"])
+     5	                received = [row for row in records if row["state"] == "received"]
+     6	                states = {row["id"]: row["state"] for row in records}
+     7	                reused, observed, bought, reason = set(), [], 0, None
+     8	                while True:
+     9	                    step, value = apply_sequential(plan["plan"], observed)
+    10	                    if step == "stop":
+    11	                        break
+    12	                    phase = "commit"
+    13	                    read = plan["reads"][value]
+    14	                    arguments = {**read["arguments"], "tree_sha256": tree_sha, "depth": value}
+    15	                    matching = [row for row in received

@@ -1,0 +1,19 @@
+=== shim / adapter / compat / legacy / deprecated / backward vocabulary ===
+runner/provider.py:4
+runner/runtime_policies.py:2
+runner/worker.py:2
+runner/audit.py:1
+runner/colony.py:1
+runner/tools.py:1
+runner/session.py:1
+runner/inspection.py:5
+runner/platform.py:1
+runner/runtime.py:4
+runner/driver.py:1
+runner/contracts.py:15
+runner/cli.py:2
+runner/anthropic.py:2
+runner/policies.py:1
+runner/evidence.py:3
+src/pheroos_interaction/commitment.py:1
+src/pheroos_interaction/sequential.py:1

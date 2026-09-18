@@ -1,0 +1,43 @@
+### grep -rn 'suppress(' runner src/pheroos_interaction tests/interaction --include='*.py'
+(no matches)
+
+### grep -rnE 'except[[:space:]]*:' runner src/pheroos_interaction tests/interaction --include='*.py'
+(no matches)
+
+### grep -rn 'import logging|logging\.|getLogger' runner src/pheroos_interaction --include='*.py'
+(no matches - NO stdlib logging anywhere in production code)
+
+### grep -rn 'print(' runner src/pheroos_interaction --include='*.py'
+runner/cli.py:37:        print(json.dumps(report, ensure_ascii=False, allow_nan=False))
+runner/cli.py:42:        print(json.dumps(report, ensure_ascii=False, allow_nan=False))
+runner/cli.py:48:    print(json.dumps(report, ensure_ascii=False, allow_nan=False))
+
+### grep -rn timeout runner src/pheroos_interaction --include='*.py'
+runner/session.py:43:        db = sqlite3.connect(self.path, timeout=10, isolation_level=None)
+runner/anthropic.py:390:    def __init__(self, *, api_key, base_url="https://api.anthropic.com", timeout=60.0, opener=None):
+runner/anthropic.py:393:        if type(timeout) not in (int, float) or not math.isfinite(timeout) or timeout <= 0:
+runner/anthropic.py:394:            raise ValueError("timeout must be a positive finite number")
+runner/anthropic.py:399:        self.timeout = timeout
+runner/anthropic.py:414:            response = self.opener(message, timeout=self.timeout)
+
+### grep -rn network surface
+runner/anthropic.py:25:import urllib.error
+runner/anthropic.py:26:import urllib.parse
+runner/anthropic.py:27:import urllib.request
+runner/anthropic.py:323:    director = urllib.request.OpenerDirector()
+runner/anthropic.py:324:    for handler in (urllib.request.HTTPHandler(), urllib.request.HTTPSHandler(),
+runner/anthropic.py:325:                    urllib.request.HTTPDefaultErrorHandler(), urllib.request.HTTPErrorProcessor(),
+runner/anthropic.py:326:                    urllib.request.UnknownHandler()):
+runner/anthropic.py:334:    parts = urllib.parse.urlsplit(value)
+runner/anthropic.py:396:            raise ValueError("opener must be a urlopen-compatible callable")
+runner/anthropic.py:409:        message = urllib.request.Request(
+runner/anthropic.py:415:        except urllib.error.HTTPError as error:
+
+### grep -rnE '\.get\([^)]*\)[[:space:]]+or[[:space:]]+' (defensive or-defaults)
+runner/runtime_policies.py:232:        declared = spec.get("policies") or {}
+runner/audit.py:240:        binding = json.loads(call["request"]).get("binding") or {}
+runner/audit.py:403:        binding = json.loads(call["request"]).get("binding") or {}
+runner/runtime.py:55:    return request.get("binding") or {}
+runner/runtime.py:820:        url = base_url or os.environ.get("ANTHROPIC_BASE_URL") or "https://api.anthropic.com"
+runner/contracts.py:557:    declared = policies_spec(value.get("policies") or {})
+runner/contracts.py:559:    if (declared.get("allocation") or {}).get("kind") in ("threshold", "response"):

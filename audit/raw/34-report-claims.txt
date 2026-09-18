@@ -1,0 +1,22 @@
+--- outcome.metrics.policies, verbatim ---
+{
+  "runtime_policies": {
+    "allocation": "response",
+    "lease": "fixed"
+  },
+  "platform_capabilities": {
+    "commitment": {
+      "name": "min_loss",
+      "active_decisions": 0
+    }
+  }
+}
+
+--- metric keys present ---
+['accounting_violations', 'artifacts', 'blocked_dependencies', 'consumed_receipts', 'decisions', 'known_tokens', 'late_reconciliations', 'max_sweeps', 'model_calls', 'outstanding_reservations', 'policies', 'proposal_rejections', 'sweeps', 'tool_calls', 'unknown_calls', 'unknown_tokens']
+
+--- outcome status/reason ---
+status: success
+  task t1   status=published  reason=None
+  task t2   status=published  reason=None
+  task t3   status=published  reason=None

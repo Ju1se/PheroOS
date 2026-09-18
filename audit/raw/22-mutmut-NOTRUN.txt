@@ -1,0 +1,8 @@
+§C.1 MUTATION TESTING — NOT RUN
+command: cd /tmp/audit-c1 && /tmp/audit-c2-venv/bin/mutmut run  (setup.cfg source_paths=runner/runtime_policies.py)
+mutmut version: 3.x
+result: generated 233 mutants for runner/runtime_policies.py, then the 'Running stats' phase
+        did not complete under non-interactive output capture. 'mutmut results' reports every
+        mutant as 'not checked' — ZERO mutants were executed.
+        Therefore NO surviving-mutant percentage exists and none is estimated.
+        §C.2 controlled stub mutation was executed instead and is reported in 21-stub-mutation.txt.

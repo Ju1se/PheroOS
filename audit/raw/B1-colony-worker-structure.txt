@@ -1,0 +1,16 @@
+### colony.py vs worker.py — full structural comparison
+### COMMAND: diff -u <(sed -n '100,290p' runner/colony.py) <(sed -n '80,225p' runner/worker.py)
+
+=== def lines in runner/colony.py ===
+45:def _query_depths(node):
+51:def _leaf(node, outcomes):
+59:def _call_id(work_id, version, tree_sha, depth, attempt=0):
+65:def _plan(value):
+106:def run_colony(session, agent, *, driver, planner, verify, policy, rule=None, lease_seconds=60,
+
+=== def lines in runner/worker.py ===
+18:def _plan(value):
+41:def _release(session, lease):
+54:def _call_status(session, call_id):
+61:def waiting_rule(session, work_id, *, abstain_loss, latency_cost, deadline, arrival_prob,
+108:def run_worker(session, agent, *, driver, planner, verify, policy, renew_seconds=60, max_items=None):

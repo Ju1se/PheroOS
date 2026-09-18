@@ -1,0 +1,38 @@
+### retry / attempt budget enforcement
+### grep -rn 'max_calls|call_cap|BudgetExceeded' runner/platform.py runner/orchestration.py
+runner/platform.py:91:                    calls = b.get("calls", run_limits["max_calls"])
+runner/platform.py:93:                    if calls > run_limits["max_calls"] or tokens > run_limits["token_cap"]:
+runner/platform.py:119:                raise BudgetExceeded("platform operation budget exhausted")
+runner/platform.py:139:            raise BudgetExceeded("work budget exhausted")
+runner/platform.py:235:            raise BudgetExceeded("child, depth or work capacity exceeded")
+runner/platform.py:263:            raise BudgetExceeded("children exceed parent remaining budget")
+runner/platform.py:279:                raise BudgetExceeded("inspection index capacity exceeded")
+runner/platform.py:355:                raise BudgetExceeded("candidate capacity exceeded")
+runner/orchestration.py:67:            token_cap=limits["token_cap"], max_calls=limits["max_calls"],
+runner/orchestration.py:259:            raise BudgetExceeded("task model step limit exhausted")
+runner/orchestration.py:326:            raise BudgetExceeded("task tool call limit exhausted")
+runner/orchestration.py:428:                raise BudgetExceeded("task rejection limit exhausted")
+runner/orchestration.py:601:                raise BudgetExceeded("children exceed the task's declared decomposition bound")
+runner/orchestration.py:611:                raise BudgetExceeded("children would consume the parent's join reserve of model steps")
+runner/orchestration.py:620:                raise BudgetExceeded("children would consume the parent's join reserve")
+
+### the attempt loop (runtime.py:343-349)
+    def _attempt(self, history, work_id, version, kind, step):
+        run_id = self.spec["run_id"]
+        states = {call["id"]: call["state"] for call in history}
+        attempt = 0
+        while states.get(call_identity(run_id, work_id, version, kind, step, attempt)) == "abandoned":
+            attempt += 1
+        return attempt, call_identity(run_id, work_id, version, kind, step, attempt)
+
+### explicit no-retry design statements
+runner/provider.py:1:"""Opt-in transport adapter; dispatch failures remain unknown and are never retried.
+runner/session.py:377:        rerunning verification. Unknown dispatches are never retried or released.
+runner/colony.py:11:another read. An unknown dispatch stays unknown and is never retried; a
+runner/inspection.py:181:    """Freeze first, optionally read once, retain uncertain dispatch without retry.
+runner/anthropic.py:14:unknown and is never retried; the frozen conversation is checked for shape only,
+runner/anthropic.py:51:    """A send failed at or after dispatch: the call stays unknown and is never retried."""
+runner/anthropic.py:384:    no exception message. There is no retry, no redirect following and no proxy: a
+runner/runtime.py:12:configured without retries. State is reconciled from durable receipts and recorded
+runner/runtime.py:712:                # expired yet; it is never retried and never silently relabelled.
+runner/runtime.py:725:            return contracts.outcome("blocked_unknown", "a dispatched call is unresolved and is never retried",

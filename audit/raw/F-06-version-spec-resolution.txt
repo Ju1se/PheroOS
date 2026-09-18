@@ -1,0 +1,18 @@
+=== pytest : declared spec '>=8' ===
+  total releases on PyPI      : 192
+  releases satisfying >=8    : 26
+  lowest satisfying           : 8.0.0
+  highest satisfying (resolves): 9.1.1
+  declared-latest major gap   : floor major 8 -> resolved 9.1.1
+  yanked releases in range    : ['8.1.0']
+  upper bound in spec         : NONE (unbounded)
+
+=== setuptools : declared spec '>=84' ===
+  total releases on PyPI      : 625
+  releases satisfying >=84    : 1
+  lowest satisfying           : 84.0.0
+  highest satisfying (resolves): 84.0.0
+  declared-latest major gap   : floor major 84 -> resolved 84.0.0
+  yanked releases in range    : none
+  upper bound in spec         : NONE (unbounded)
+

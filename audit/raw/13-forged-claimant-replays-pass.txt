@@ -1,0 +1,6 @@
+as recorded            : {'t1': 'cheap', 't2': 'cheap', 't3': 'cheap'}
+replay as recorded     : PASS
+after forgery          : {'t1': 'expensive', 't2': 'expensive', 't3': 'expensive'}
+replay after forgery   : FAIL | failures: ['binding_rebuild:orch:d9e840c16892d61c6c0cc0e48865ab7aaf9b2552ce68cbbb762bd8c9953e870f: rebuilt binding differs from the recorded binding', 'binding_rebuild:orch:03d84e10317eceacaf636c8f5d135b29bf08465db00cab25659b233e87b9cb36: rebuilt binding differs from the recorded binding', 'binding_rebuild:orch:561fddcf4f38ddb99cf7fba07aa87fe09b824f8b93e2a1a01201618c44fd25fb: rebuilt binding differs from the recorded binding']
+
+VERDICT: an allocation the declared policy cannot produce replays FAIL

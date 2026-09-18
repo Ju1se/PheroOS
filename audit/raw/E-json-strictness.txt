@@ -1,0 +1,12 @@
+runner/anthropic.py  json.loads=1  strict-hook-sites=1
+runner/audit.py  json.loads=22  strict-hook-sites=0
+runner/driver.py  json.loads=1  strict-hook-sites=0
+runner/evidence.py  json.loads=14  strict-hook-sites=0
+runner/inspection.py  json.loads=15  strict-hook-sites=1
+runner/orchestration.py  json.loads=23  strict-hook-sites=0
+runner/platform.py  json.loads=17  strict-hook-sites=0
+runner/provider.py  json.loads=1  strict-hook-sites=0
+runner/runtime.py  json.loads=5  strict-hook-sites=1
+runner/session.py  json.loads=18  strict-hook-sites=0
+runner/tools.py  json.loads=2  strict-hook-sites=1
+runner/worker.py  json.loads=1  strict-hook-sites=0

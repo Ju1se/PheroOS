@@ -1,0 +1,3 @@
+runner/anthropic.py:35:HEADER = re.compile(r"^pheroos-orchestration task=(\S+) version=(\d+) step=(\d+)$")
+runner/contracts.py:35:NAME = re.compile(r"^[a-z][a-z0-9_.-]{0,63}$")
+runner/contracts.py:581:CHILD_NAME = re.compile(r"^[a-z0-9][a-z0-9_-]{0,31}$")

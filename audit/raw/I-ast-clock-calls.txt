@@ -1,0 +1,11 @@
+CLOCK_CALL	runner/colony.py:261	run_colony	session.mark_no_entry(work_id, session.clock() + wait_hold_seconds, "commitment wait")
+CLOCK_CALL	runner/platform.py:96	PlatformMixin::create	(row["id"], session.clock(), calls, tokens, calls, tokens))
+CLOCK_CALL	runner/platform.py:169	PlatformMixin::_available	return not (mark and held and held[0] > self.clock())
+CLOCK_CALL	runner/platform.py:180	PlatformMixin::ready_work	now = self.clock()
+CLOCK_CALL	runner/platform.py:286	PlatformMixin::_decompose	(child["id"], self.clock(), lease.task_id, meta["depth"]+1, c, t, c, t))
+CLOCK_CALL	runner/platform.py:313	PlatformMixin::renew	expires = max(row["expires"], self.clock()+lease_seconds)
+CLOCK_CALL	runner/platform.py:418	PlatformMixin::commit	"at": self.clock()})
+CLOCK_CALL	runner/session.py:128	Session::_lease	or row["expires"] <= self.clock()):
+CLOCK_CALL	runner/session.py:141	Session::_recover	for row in db.execute("SELECT * FROM work WHERE status='leased' AND expires<=?", (self.clock(),)).fetchall():
+CLOCK_CALL	runner/session.py:173	Session::_claim_ready	(agent, lease.epoch, self.clock() + lease_seconds, run["generation"], row["id"]))
+CLOCK_CALL	runner/worker.py:103	waiting_rule	elapsed = 0 if not stamps else int(max(0., session.clock() - min(stamps)) // tick_seconds)

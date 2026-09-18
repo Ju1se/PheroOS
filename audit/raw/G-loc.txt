@@ -1,0 +1,344 @@
+=== raw line counts (wc -l) runner/*.py ===
+    6390 total
+     889 runner/runtime.py
+     726 runner/orchestration.py
+     674 runner/contracts.py
+     485 runner/anthropic.py
+     468 runner/platform.py
+     445 runner/session.py
+     440 runner/tools.py
+     431 runner/audit.py
+     389 runner/inspection.py
+     316 runner/evidence.py
+     289 runner/runtime_policies.py
+     286 runner/colony.py
+     218 runner/worker.py
+     112 runner/policies.py
+     100 runner/provider.py
+      53 runner/cli.py
+      47 runner/driver.py
+      21 runner/identity.py
+       1 runner/__init__.py
+
+=== raw line counts (wc -l) src/pheroos_interaction/*.py ===
+    1203 total
+     577 src/pheroos_interaction/sequential.py
+     349 src/pheroos_interaction/commitment.py
+     179 src/pheroos_interaction/inspection.py
+      69 src/pheroos_interaction/leases.py
+      27 src/pheroos_interaction/records.py
+       2 src/pheroos_interaction/__init__.py
+
+=== radon raw (LOC/LLOC/SLOC/comments/blank) ===
+runner/worker.py
+    LOC: 218
+    LLOC: 168
+    SLOC: 168
+    Comments: 3
+    Single comments: 3
+    Multi: 30
+    Blank: 17
+    - Comment Stats
+        (C % L): 1%
+        (C % S): 2%
+        (C + M % L): 15%
+runner/audit.py
+    LOC: 431
+    LLOC: 291
+    SLOC: 340
+    Comments: 15
+    Single comments: 18
+    Multi: 30
+    Blank: 43
+    - Comment Stats
+        (C % L): 3%
+        (C % S): 4%
+        (C + M % L): 10%
+runner/provider.py
+    LOC: 100
+    LLOC: 71
+    SLOC: 70
+    Comments: 2
+    Single comments: 4
+    Multi: 14
+    Blank: 12
+    - Comment Stats
+        (C % L): 2%
+        (C % S): 3%
+        (C + M % L): 16%
+runner/runtime_policies.py
+    LOC: 289
+    LLOC: 132
+    SLOC: 121
+    Comments: 4
+    Single comments: 9
+    Multi: 85
+    Blank: 74
+    - Comment Stats
+        (C % L): 1%
+        (C % S): 3%
+        (C + M % L): 31%
+runner/tools.py
+    LOC: 440
+    LLOC: 309
+    SLOC: 313
+    Comments: 1
+    Single comments: 8
+    Multi: 40
+    Blank: 79
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 9%
+runner/session.py
+    LOC: 445
+    LLOC: 360
+    SLOC: 380
+    Comments: 0
+    Single comments: 11
+    Multi: 6
+    Blank: 48
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 1%
+runner/colony.py
+    LOC: 286
+    LLOC: 216
+    SLOC: 212
+    Comments: 2
+    Single comments: 3
+    Multi: 53
+    Blank: 18
+    - Comment Stats
+        (C % L): 1%
+        (C % S): 1%
+        (C + M % L): 19%
+runner/__init__.py
+    LOC: 1
+    LLOC: 1
+    SLOC: 0
+    Comments: 0
+    Single comments: 1
+    Multi: 0
+    Blank: 0
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+runner/runtime.py
+    LOC: 889
+    LLOC: 619
+    SLOC: 664
+    Comments: 44
+    Single comments: 50
+    Multi: 92
+    Blank: 83
+    - Comment Stats
+        (C % L): 5%
+        (C % S): 7%
+        (C + M % L): 15%
+runner/platform.py
+    LOC: 468
+    LLOC: 392
+    SLOC: 397
+    Comments: 12
+    Single comments: 21
+    Multi: 9
+    Blank: 41
+    - Comment Stats
+        (C % L): 3%
+        (C % S): 3%
+        (C + M % L): 4%
+runner/inspection.py
+    LOC: 389
+    LLOC: 295
+    SLOC: 330
+    Comments: 5
+    Single comments: 6
+    Multi: 8
+    Blank: 45
+    - Comment Stats
+        (C % L): 1%
+        (C % S): 2%
+        (C + M % L): 3%
+runner/orchestration.py
+    LOC: 726
+    LLOC: 499
+    SLOC: 555
+    Comments: 13
+    Single comments: 23
+    Multi: 76
+    Blank: 72
+    - Comment Stats
+        (C % L): 2%
+        (C % S): 2%
+        (C + M % L): 12%
+runner/cli.py
+    LOC: 53
+    LLOC: 45
+    SLOC: 48
+    Comments: 0
+    Single comments: 1
+    Multi: 0
+    Blank: 4
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+runner/anthropic.py
+    LOC: 485
+    LLOC: 352
+    SLOC: 350
+    Comments: 3
+    Single comments: 6
+    Multi: 54
+    Blank: 75
+    - Comment Stats
+        (C % L): 1%
+        (C % S): 1%
+        (C + M % L): 12%
+runner/contracts.py
+    LOC: 674
+    LLOC: 490
+    SLOC: 508
+    Comments: 21
+    Single comments: 29
+    Multi: 53
+    Blank: 84
+    - Comment Stats
+        (C % L): 3%
+        (C % S): 4%
+        (C + M % L): 11%
+runner/driver.py
+    LOC: 47
+    LLOC: 30
+    SLOC: 29
+    Comments: 0
+    Single comments: 2
+    Multi: 6
+    Blank: 10
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 13%
+runner/identity.py
+    LOC: 21
+    LLOC: 18
+    SLOC: 16
+    Comments: 0
+    Single comments: 2
+    Multi: 0
+    Blank: 3
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+runner/evidence.py
+    LOC: 316
+    LLOC: 152
+    SLOC: 277
+    Comments: 7
+    Single comments: 11
+    Multi: 4
+    Blank: 24
+    - Comment Stats
+        (C % L): 2%
+        (C % S): 3%
+        (C + M % L): 3%
+runner/policies.py
+    LOC: 112
+    LLOC: 59
+    SLOC: 59
+    Comments: 0
+    Single comments: 2
+    Multi: 32
+    Blank: 19
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 29%
+src/pheroos_interaction/leases.py
+    LOC: 69
+    LLOC: 31
+    SLOC: 29
+    Comments: 1
+    Single comments: 0
+    Multi: 33
+    Blank: 7
+    - Comment Stats
+        (C % L): 1%
+        (C % S): 3%
+        (C + M % L): 49%
+src/pheroos_interaction/records.py
+    LOC: 27
+    LLOC: 20
+    SLOC: 14
+    Comments: 0
+    Single comments: 0
+    Multi: 4
+    Blank: 9
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 15%
+src/pheroos_interaction/commitment.py
+    LOC: 349
+    LLOC: 245
+    SLOC: 218
+    Comments: 2
+    Single comments: 4
+    Multi: 73
+    Blank: 54
+    - Comment Stats
+        (C % L): 1%
+        (C % S): 1%
+        (C + M % L): 21%
+src/pheroos_interaction/__init__.py
+    LOC: 2
+    LLOC: 2
+    SLOC: 1
+    Comments: 0
+    Single comments: 1
+    Multi: 0
+    Blank: 0
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+src/pheroos_interaction/inspection.py
+    LOC: 179
+    LLOC: 153
+    SLOC: 130
+    Comments: 4
+    Single comments: 5
+    Multi: 14
+    Blank: 30
+    - Comment Stats
+        (C % L): 2%
+        (C % S): 3%
+        (C + M % L): 10%
+src/pheroos_interaction/sequential.py
+    LOC: 577
+    LLOC: 425
+    SLOC: 388
+    Comments: 7
+    Single comments: 15
+    Multi: 68
+    Blank: 106
+    - Comment Stats
+        (C % L): 1%
+        (C % S): 2%
+        (C + M % L): 13%
+** Total **
+    LOC: 7593
+    LLOC: 5375
+    SLOC: 5617
+    Comments: 146
+    Single comments: 235
+    Multi: 784
+    Blank: 957
+    - Comment Stats
+        (C % L): 2%
+        (C % S): 3%
+        (C + M % L): 12%

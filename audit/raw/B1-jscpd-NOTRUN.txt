@@ -1,0 +1,6 @@
+### ATTEMPT 3: bypass ~/.npmrc entirely via --userconfig /dev/null
+Exit prior to config file resolving
+cause
+double-loading config "/dev/null" as "global", previously loaded as "user"
+### bin dir:
+ls: /private/tmp/claude-501/-Users-scottxie-Desktop-multi-agent/f160b040-86a8-4874-aa4e-754fd36459d1/scratchpad/jscpd-iso/node_modules/.bin/: No such file or directory

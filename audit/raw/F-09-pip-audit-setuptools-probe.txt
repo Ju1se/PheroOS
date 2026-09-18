@@ -1,0 +1,24 @@
+### Probe: is setuptools silently skipped by pip-audit? (pinned input)
+--- CMD: pip-audit --format json -r su-pinned.txt ---
+No known vulnerabilities found
+{"dependencies": [], "fixes": []}
+
+--- CMD: same but columns + --strict ---
+No known vulnerabilities found
+exit=0
+
+--- control: a package with KNOWN vulns, to prove the pipeline reports findings at all ---
+WARNING:cachecontrol.controller:Cache entry deserialization failed, entry ignored
+Found 10 known vulnerabilities in 1 package
+Name   Version ID              Fix Versions
+------ ------- --------------- ------------
+jinja2 3.1.2   PYSEC-2026-1473 3.1.3
+jinja2 3.1.2   PYSEC-2026-1474 3.1.4
+jinja2 3.1.2   PYSEC-2026-1475 3.1.5
+jinja2 3.1.2   PYSEC-2026-1472 3.1.5
+jinja2 3.1.2   PYSEC-2026-1471 3.1.6
+jinja2 3.1.2   PYSEC-2026-1473 3.1.3
+jinja2 3.1.2   PYSEC-2026-1471 3.1.6
+jinja2 3.1.2   PYSEC-2026-1474 3.1.4
+jinja2 3.1.2   PYSEC-2026-1475 3.1.5
+jinja2 3.1.2   PYSEC-2026-1472 3.1.5

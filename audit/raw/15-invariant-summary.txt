@@ -1,0 +1,35 @@
+§L INVARIANT RESULTS — run by the lead auditor, not delegated (addendum §E/§F)
+
+L-1  VIOLATED (1)  runner/contracts.py:402-403 eligible_agents() dispatches on key
+                   presence, not declared format. [executed] audit/raw/11-*: a v1 spec
+                   writes canonicalized rows into orchestration_tasks_v2.
+L-2  VIOLATED (1)  runner/contracts.py:403 - inlined default, not version-gated.
+                   Shape: list(task["agents"]) if "agents" in task else [task["agent"]]
+L-3  VIOLATED (2)  (a) ReplayLedger selects the reader by TABLE NAME (runner/audit.py:62-73),
+                   not by the recorded spec format in orchestration_v1.spec.
+                   (b) Table-name versions are inconsistent: tasks are _v2 while
+                   artifacts/accounting/decisions/orchestration remain _v1.
+L-4  VIOLATED (1)  runner/runtime.py:117 ledger_index = len(snapshot()["calls"]) is a LIVE
+                   ledger read feeding the response draw; the draw is never persisted.
+                   [executed] audit/raw/12-*: token "draw" absent from every ledger table.
+L-5  HOLDS         runner/runtime_policies.py:244-258 separates runtime_policies from
+                   platform_capabilities; runner/runtime.py:653 sources active_decisions
+                   from len(snapshot["platform"]["decisions"]) - ledger-derived.
+L-6  HOLDS         [measured] 0 AST sites read the actor from a model-supplied binding.
+                   runner/audit.py:190-192 recovers it from permission owner or claim event.
+L-7  HOLDS         runner/runtime_policies.py:268-276 host takes pick_fifo, no price.
+                   runner/platform.py:424 refuses publication at/above abstention loss.
+L-8  HOLDS         [measured] 0 econ sites in orchestration runtime modules. The 8 hits are
+                   in src/pheroos_interaction/commitment.py + runner/worker.py, where
+                   latency_cost is the COMMITMENT parameter, a different quantity.
+L-9  HOLDS         [measured] 0 mechanism imports and 0 concrete policy instantiations in
+                   runner/runtime.py (AST, not string search).
+L-10 HOLDS         [measured] 0 experiment/test-mode branches in any audited module.
+L-11 VIOLATED (2)  (a) response draw generated but not persisted (see L-4).
+                   (b) runner/session.py:39 clock defaults to time.time and feeds lease
+                   expiry at session.py:128,141,173, which gates ready_work -> allocation.
+L-12 see §K        (epistemic overclaims, held by the lead auditor)
+
+DECISIVE EXECUTED RESULT (audit/raw/14-complete-forgery.txt):
+  A fully-consistent forged allocation - expensive claiming all three tasks under the
+  response arm, which that policy cannot produce - replays PASS with zero failures.

@@ -1,0 +1,6 @@
+94	ARG005	[ ] unused-lambda-argument
+40	ARG001	[ ] unused-function-argument
+ 2	ARG002	[ ] unused-method-argument
+ 1	F401  	[*] unused-import
+Found 137 errors.
+[*] 1 fixable with the `--fix` option.

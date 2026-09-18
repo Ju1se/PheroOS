@@ -1,0 +1,54 @@
+########## CoordinationSession.dispatch overrides Session.dispatch by copy, not super()
+### COMMAND: grep -n 'super()' runner/evidence.py
+41:        session = super().create(path, run_id, **session_options)
+87:        super()._event(db, kind, work, payload)
+200:        work = super()._lease(db, lease)
+205:        super()._publication_access(db, work, agent)
+
+### does the override call _reservation_request? (parent does)
+runner/session.py:186:    def _reservation_request(self, db, lease, call_id, action, payload):
+runner/session.py:222:        self._reservation_request(db, lease, call_id, action, payload)
+runner/session.py:268:            self._reservation_request(db, lease, call_id, call["action"], payload)
+
+=== Session._reservation_request (session.py:183-200) ===
+    def _reservation_capacity(self, db, lease, prompt_tokens, max_new_tokens):
+        """Optional work-level admission, inside the durable reservation transaction."""
+
+    def _reservation_request(self, db, lease, call_id, action, payload):
+        """Optional request-level admission (declared capabilities), inside the same transaction."""
+
+    def _prompt_contract(self, db, call):
+        """The prompt-usage contract a call was reserved under; the base ledger records exact_v1."""
+        return "exact_v1"
+
+    def _prompt_settles(self, contract, call, prompt):
+        if contract != "exact_v1":
+            raise StateError("unknown prompt token contract")
+        return prompt == call["prompt"]
+
+    def _settled(self, db, call_id, call, response, state):
+        """Hook inside the settlement transaction, so a receipt and its record commit together."""
+
+
+### normalized diff of the two dispatch bodies (formatting collapsed):
+### COMMAND: diff <(sed -n '261,273p' runner/session.py | tr -s ' 
+' ' ') <(sed -n '284,316p' runner/evidence.py | grep -v '^ *#' | tr -s ' 
+' ' ')
+3,8c3,10
+< "], call["version"], call["epoch"], call["state"]) != (lease.task_id, lease.version, lease.epoch, "r
+< eserved"): raise StateError("dispatch requires this lease's reserved call") payload = json.loads(cal
+< l["request"]) self._reservation_request(db, lease, call_id, call["action"], payload) permission = se
+< lf._permit(db, lease, call["action"], payload) db.execute("UPDATE calls SET state='dispatched',permi
+< ssion=? WHERE id=?", (_wire(permission), call_id)) self._event(db, "dispatched", lease.task_id, {"ca
+< ll_id": call_id, "permission": permission}) return payload 
+\ No newline at end of file
+---
+> "], call["version"], call["epoch"], call["state"]) != ( lease.task_id, lease.version, lease.epoch, "
+> reserved", ): raise StateError("dispatch requires this lease's reserved call") payload = json.loads(
+> call["request"]) item = self._inspection(db, lease.task_id) if ( item is not None and call["action"]
+>  == "tool.evaluate" and ( payload.get("tool_ref") != item["tool_ref"] or _wire(payload.get("argument
+> s")) != item["arguments"] ) ): raise StateError("inspection tool/arguments differ from the declarati
+> on") permission = self._permit(db, lease, call["action"], payload) db.execute( "UPDATE calls SET sta
+> te='dispatched',permission=? WHERE id=?", (_wire(permission), call_id), ) self._event( db, "dispatch
+> ed", lease.task_id, {"call_id": call_id, "permission": permission} ) return payload 
+\ No newline at end of file

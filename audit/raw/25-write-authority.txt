@@ -1,0 +1,20 @@
+durable table                  modules that WRITE it
+artifacts                      session.py
+calls                          evidence.py, session.py  <-- multiple writers
+coordination_inspections_v1    evidence.py
+coordination_sources_v1        evidence.py
+coordination_v1                evidence.py
+events                         evidence.py, session.py  <-- multiple writers
+orchestration_accounting_v1    orchestration.py
+orchestration_artifacts_v1     orchestration.py
+orchestration_decisions_v1     orchestration.py
+orchestration_tasks_v2         orchestration.py
+orchestration_v1               orchestration.py
+platform_candidates_v1         platform.py
+platform_decisions_v1          platform.py
+platform_v1                    platform.py
+platform_work_v1               platform.py
+run                            platform.py, session.py  <-- multiple writers
+work                           evidence.py, platform.py, session.py  <-- multiple writers
+
+tables with more than one writing module: 4 of 17

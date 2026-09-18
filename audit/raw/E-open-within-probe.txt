@@ -1,0 +1,16 @@
+== _open_within behaviour ==
+  OPENED  'ok.txt'                                 -> b'inside\n'
+  REFUSED 'link.txt'                               -> OSError: [Errno 62] Too many levels of symbolic links: 'link.txt'
+  OPENED  '../outside/secret.txt'                  -> b'TOP-SECRET-ESCAPED\n'
+  OPENED  'sub/../../outside/secret.txt'           -> b'TOP-SECRET-ESCAPED\n'
+  REFUSED '/etc/hosts'                             -> FileNotFoundError: [Errno 2] No such file or directory: ''
+  OPENED  'sub/./../ok.txt'                        -> b'inside\n'
+
+== contracts.fixture_spec path gate ==
+  ACCEPTED 'ok.txt'
+  REFUSED  '../outside/secret.txt'                  -> ContractError: fixture path must be a plain relative POSIX path
+  REFUSED  'sub/../../outside/secret.txt'           -> ContractError: fixture path must be a plain relative POSIX path
+  REFUSED  '/etc/hosts'                             -> ContractError: fixture path must be a plain relative POSIX path
+  REFUSED  'a/./b'                                  -> ContractError: fixture path must be a plain relative POSIX path
+  REFUSED  'a//b'                                   -> ContractError: fixture path must be a plain relative POSIX path
+  ACCEPTED 'link.txt'

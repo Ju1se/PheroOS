@@ -1,0 +1,32 @@
+### CMD: pip-audit --format json -r dev-requirements.txt (resolved versions actually audited)
+{
+    "dependencies": [
+        {
+            "name": "pytest",
+            "version": "9.1.1",
+            "vulns": []
+        },
+        {
+            "name": "pluggy",
+            "version": "1.6.0",
+            "vulns": []
+        },
+        {
+            "name": "iniconfig",
+            "version": "2.3.0",
+            "vulns": []
+        },
+        {
+            "name": "pygments",
+            "version": "2.21.0",
+            "vulns": []
+        }
+    ],
+    "fixes": []
+}
+
+### CMD: pip-audit --format json -r build-requirements.txt
+{
+    "dependencies": [],
+    "fixes": []
+}

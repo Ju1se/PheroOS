@@ -1,0 +1,145 @@
+### H CHURN — PER-FILE HISTORY, TRACKED SCOPE
+$ git log --format='%h %ad %s' --date=short -- runner src/pheroos_interaction tests/interaction
+e664d2e 2026-09-16 Add colony control layer: four-layer multi-agent system for PheroOS
+eb21ca8 2026-09-15 Support receipt recovery, scoped artifact reads and control limits
+4111b67 2026-09-15 Reduce PheroOS to the local inspection core
+c17b376 2026-09-14 Normalize retained module whitespace
+eedddc0 2026-09-14 Replace legacy protocol tree with focused interaction lab
+
+=== ALL 5 SCOPE COMMITS, FULL MESSAGES ===
+--------- $ git log -1 --format='%B' eedddc0   (2026-09-14 21:32) ---------
+Replace legacy protocol tree with focused interaction lab
+
+Keep pure interaction records, visibility, policy and ports in src; move bounded execution and accounting to runner, and synthetic fixtures, evaluation and exact-input replay to experiments/current. Remove the retired protocol, governance and release surfaces.
+
+Document installation, execution boundaries and externally preserved evidence. Validate wheel and editable installs with 63 offline tests and 192 retained responses, including native v2 replay. Preserve historical data and the shared cost ledger without new provider calls.
+
+--------- $ git log -1 --format='%B' c17b376   (2026-09-14 21:34) ---------
+Normalize retained module whitespace
+
+--------- $ git log -1 --format='%B' 4111b67   (2026-09-15 10:44) ---------
+Reduce PheroOS to the local inspection core
+
+--------- $ git log -1 --format='%B' eb21ca8   (2026-09-15 17:21) ---------
+Support receipt recovery, scoped artifact reads and control limits
+
+--------- $ git log -1 --format='%B' e664d2e   (2026-09-16 21:15) ---------
+Add colony control layer: four-layer multi-agent system for PheroOS
+
+Implement the authorized colony control layer composing four insect-inspired
+mechanisms (L0–L3) over PlatformSession:
+
+L0 – Sequential inspection tree (sequential.py): Finite-horizon Bayesian tree in
+  joint-probability coordinates. Equivalent to plan_inspection at K=1, with
+  Bernstein certificates over declared parameter boxes. Verified bit-exact
+  against colony_kernel reference implementation on 6,000+ configs.
+
+L1 – Commitment rules (commitment.py): Cross-inhibition ODE (Seeley/Pais) as
+  a deterministic zero-byte ledger filter, plus optimal stopping with recall
+  from declared loss distributions. Both integrated into PlatformMixin.commit.
+
+L2 – Response allocation (policies.py): Response threshold heuristic using
+  backlog drain time as stimulus. Deterministic step equals pick_threshold;
+  Hill response variant for declared, replayable draws.
+
+L3 – Lease evaporation (leases.py): TTL minimization of (1-F(τ))·C_dup + τ·p_fail·c_t
+  over positive support, with two-semantics documentation and zero-TTL guard.
+
+Runner integration (colony.py): Bounded sweep composing all layers over a session.
+  Tree walk with receipt reuse and recovery, abandoned-reservation handling,
+  read-count vs call-cap checks, candidates-before-purchase logic.
+
+Contract and documentation:
+  - AGENTS.md: New authorized-layer section (English), 115 lines added
+  - README.md: Four-layer table, colony worker spec (English), 206 lines added
+  - 157 new tests (47 sequential, 41 commitment, 17 leases, 52 colony)
+  - Full suite: 509 passed
+
+Verified equivalence with colony_kernel-10.py across all ported functions:
+  plan_tree (1500 random K=0..3, all tie cases)
+  risk_polynomial/bernstein_bounds/certify_worst_case (260 cases K=1..3)
+  certify_joint_corners (122 per-depth trees)
+  garbling_matrix (320 degradations)
+  sigma_star/deadlock_fraction/integrate_commitment (design-doc cases + 100 random)
+  cross_inhibition (200+ candidate sets, same decisions)
+  commit_value (48 state grid)
+  lease_ttl (50+ samples)
+  pick_response (exact rationals at extreme magnitudes)
+
+Co-Authored-By: Claude Haiku 4.5 <noreply@anthropic.com>
+
+
+=== PER-FILE ADD COMMIT + ALL TOUCHES ===
+$ for f in $(git ls-files runner src/pheroos_interaction tests/interaction); do git log --diff-filter=A ... ; git log ... ; done
+runner/__init__.py                                   ADDED:eedddc0 2026-09-14  TOUCHED:4111b67/2026-09-15 eedddc0/2026-09-14 
+runner/cli.py                                        ADDED:eedddc0 2026-09-14  TOUCHED:4111b67/2026-09-15 eedddc0/2026-09-14 
+runner/colony.py                                     ADDED:e664d2e 2026-09-16  TOUCHED:e664d2e/2026-09-16 
+runner/driver.py                                     ADDED:eedddc0 2026-09-14  TOUCHED:4111b67/2026-09-15 eedddc0/2026-09-14 
+runner/evidence.py                                   ADDED:eedddc0 2026-09-14  TOUCHED:eb21ca8/2026-09-15 4111b67/2026-09-15 eedddc0/2026-09-14 
+runner/identity.py                                   ADDED:4111b67 2026-09-15  TOUCHED:4111b67/2026-09-15 
+runner/inspection.py                                 ADDED:4111b67 2026-09-15  TOUCHED:eb21ca8/2026-09-15 4111b67/2026-09-15 
+runner/platform.py                                   ADDED:e664d2e 2026-09-16  TOUCHED:e664d2e/2026-09-16 
+runner/policies.py                                   ADDED:e664d2e 2026-09-16  TOUCHED:e664d2e/2026-09-16 
+runner/provider.py                                   ADDED:e664d2e 2026-09-16  TOUCHED:e664d2e/2026-09-16 
+runner/session.py                                    ADDED:eedddc0 2026-09-14  TOUCHED:e664d2e/2026-09-16 eb21ca8/2026-09-15 4111b67/2026-09-15 eedddc0/2026-09-14 
+runner/worker.py                                     ADDED:e664d2e 2026-09-16  TOUCHED:e664d2e/2026-09-16 
+src/pheroos_interaction/__init__.py                  ADDED:eedddc0 2026-09-14  TOUCHED:4111b67/2026-09-15 eedddc0/2026-09-14 
+src/pheroos_interaction/commitment.py                ADDED:e664d2e 2026-09-16  TOUCHED:e664d2e/2026-09-16 
+src/pheroos_interaction/inspection.py                ADDED:4111b67 2026-09-15  TOUCHED:4111b67/2026-09-15 
+src/pheroos_interaction/leases.py                    ADDED:e664d2e 2026-09-16  TOUCHED:e664d2e/2026-09-16 
+src/pheroos_interaction/records.py                   ADDED:eedddc0 2026-09-14  TOUCHED:eedddc0/2026-09-14 
+src/pheroos_interaction/sequential.py                ADDED:e664d2e 2026-09-16  TOUCHED:e664d2e/2026-09-16 
+tests/interaction/conftest.py                        ADDED:eedddc0 2026-09-14  TOUCHED:4111b67/2026-09-15 eedddc0/2026-09-14 
+tests/interaction/test_artifact_access.py            ADDED:eb21ca8 2026-09-15  TOUCHED:eb21ca8/2026-09-15 
+tests/interaction/test_colony.py                     ADDED:e664d2e 2026-09-16  TOUCHED:e664d2e/2026-09-16 
+tests/interaction/test_commitment.py                 ADDED:e664d2e 2026-09-16  TOUCHED:e664d2e/2026-09-16 
+tests/interaction/test_control_limits.py             ADDED:eb21ca8 2026-09-15  TOUCHED:eb21ca8/2026-09-15 
+tests/interaction/test_execution.py                  ADDED:eedddc0 2026-09-14  TOUCHED:4111b67/2026-09-15 eedddc0/2026-09-14 
+tests/interaction/test_inspection.py                 ADDED:4111b67 2026-09-15  TOUCHED:4111b67/2026-09-15 
+tests/interaction/test_inspection_cli.py             ADDED:4111b67 2026-09-15  TOUCHED:4111b67/2026-09-15 
+tests/interaction/test_inspection_runner.py          ADDED:4111b67 2026-09-15  TOUCHED:eb21ca8/2026-09-15 4111b67/2026-09-15 
+tests/interaction/test_layout.py                     ADDED:eedddc0 2026-09-14  TOUCHED:e664d2e/2026-09-16 4111b67/2026-09-15 eedddc0/2026-09-14 
+tests/interaction/test_leases.py                     ADDED:e664d2e 2026-09-16  TOUCHED:e664d2e/2026-09-16 
+tests/interaction/test_platform_atomicity.py         ADDED:e664d2e 2026-09-16  TOUCHED:e664d2e/2026-09-16 
+tests/interaction/test_platform_conformance.py       ADDED:e664d2e 2026-09-16  TOUCHED:e664d2e/2026-09-16 
+tests/interaction/test_platform_policies.py          ADDED:e664d2e 2026-09-16  TOUCHED:e664d2e/2026-09-16 
+tests/interaction/test_provider_worker.py            ADDED:e664d2e 2026-09-16  TOUCHED:e664d2e/2026-09-16 
+tests/interaction/test_received_publication.py       ADDED:eb21ca8 2026-09-15  TOUCHED:eb21ca8/2026-09-15 
+tests/interaction/test_sequential.py                 ADDED:e664d2e 2026-09-16  TOUCHED:e664d2e/2026-09-16 
+
+=== COMMIT-TOUCH COUNT, plain and --follow (identical: git detected no renames) ===
+4 4 runner/session.py
+3 3 tests/interaction/test_layout.py
+3 3 runner/evidence.py
+2 2 tests/interaction/test_inspection_runner.py
+2 2 tests/interaction/test_execution.py
+2 2 tests/interaction/conftest.py
+2 2 src/pheroos_interaction/__init__.py
+2 2 runner/inspection.py
+2 2 runner/driver.py
+2 2 runner/cli.py
+2 2 runner/__init__.py
+1 1 tests/interaction/test_sequential.py
+1 1 tests/interaction/test_received_publication.py
+1 1 tests/interaction/test_provider_worker.py
+1 1 tests/interaction/test_platform_policies.py
+1 1 tests/interaction/test_platform_conformance.py
+1 1 tests/interaction/test_platform_atomicity.py
+1 1 tests/interaction/test_leases.py
+1 1 tests/interaction/test_inspection_cli.py
+1 1 tests/interaction/test_inspection.py
+1 1 tests/interaction/test_control_limits.py
+1 1 tests/interaction/test_commitment.py
+1 1 tests/interaction/test_colony.py
+1 1 tests/interaction/test_artifact_access.py
+1 1 src/pheroos_interaction/sequential.py
+1 1 src/pheroos_interaction/records.py
+1 1 src/pheroos_interaction/leases.py
+1 1 src/pheroos_interaction/inspection.py
+1 1 src/pheroos_interaction/commitment.py
+1 1 runner/worker.py
+1 1 runner/provider.py
+1 1 runner/policies.py
+1 1 runner/platform.py
+1 1 runner/identity.py
+1 1 runner/colony.py

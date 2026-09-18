@@ -1,0 +1,64 @@
+########## sequential.py imports from inspection.py
+18:from dataclasses import dataclass, replace
+19:from fractions import Fraction
+20:from hashlib import sha256
+21:from itertools import product
+22:from json import dumps
+23:from math import comb, fsum, nextafter
+25:from .inspection import (ACTIONS, TIE_TOLERANCE, Losses, ModelAssumptions, _feasible,
+
+### _shared_map definition + callers
+src/pheroos_interaction/inspection.py:115:def _shared_map(branches, query_cost):
+src/pheroos_interaction/inspection.py:163:    query_risk, delta = _shared_map(_branch_costs(assumptions, losses), query_cost)
+src/pheroos_interaction/sequential.py:122:def shared_map(negative, positive, query_cost):
+src/pheroos_interaction/sequential.py:123:    """inspection._shared_map over two leaf term triples: one global tie budget.
+src/pheroos_interaction/sequential.py:232:            query_risk, (act_neg, act_pos) = shared_map(kids[0].terms, kids[1].terms, cost)
+
+########## second src duplicate: inspection.py:75-79 vs sequential.py:520-524
+### COMMAND: diff <(sed -n '75,79p' src/pheroos_interaction/inspection.py) <(sed -n '520,524p' src/pheroos_interaction/sequential.py)
+5c5
+<     stop_action: str
+---
+>     horizon: int
+>>> DIFFERS
+=== src inspection.py:70,90 ===
+            _nonnegative(getattr(self, field), field + ' loss')
+
+
+@dataclass(frozen=True)
+class InspectionPlan:
+    assumptions: ModelAssumptions
+    losses: Losses
+    query_cost: float
+    epsilon: float
+    stop_action: str
+    stop_risk: float
+    query_risk: float | None
+    query_delta: tuple[tuple[bool | None, str], ...] | None
+    purchase: bool
+    reason: str
+    risk_term_count: int
+    tie_tolerance: float = TIE_TOLERANCE
+    risk_basis: str = 'expected loss within the declared family; neither posterior probability nor verification of actual dependencies'
+
+
+def _feasible(candidate, minimum):
+=== src sequential.py:515,532 ===
+    return {'worst_case': _float_up(best), 'exact': best, 'at': arg}
+
+
+@dataclass(frozen=True)
+class SequentialPlan:
+    assumptions: ModelAssumptions
+    losses: Losses
+    query_cost: float
+    epsilon: float
+    horizon: int
+    tree: Node
+    stop_action: str
+    stop_risk: float
+    query_risk: float | None
+    purchase: bool
+    reason: str
+    certificate: dict | None
+    tie_tolerance: float = TIE_TOLERANCE

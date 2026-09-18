@@ -1,0 +1,10 @@
+claimed; expires stored = 1010.0 (clock()+lease_seconds -> session.py:173)
+t=1000 check_current      : OK
+t=1009.9 check_current    : OK
+t=1010.0 check_current    : LeaseLost (expired, cancelled, revoked or superseded work lease)  <-- session.py:128 gate
+after recover, status     = ready   <-- session.py:141 gate
+
+default-clock session: clock is time.time -> True
+expires = 1789707509.703964 = wall clock + 0.5
+immediately               : OK
+after 0.6s real time      : LeaseLost  <-- expiry driven by WALL CLOCK, no seam used

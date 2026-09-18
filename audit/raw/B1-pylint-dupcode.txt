@@ -1,0 +1,116 @@
+### COMMAND: pylint --disable=all --enable=duplicate-code --min-similarity-lines=5 runner src/pheroos_interaction
+### CWD: /private/tmp/claude-501/-Users-scottxie-Desktop-multi-agent/f160b040-86a8-4874-aa4e-754fd36459d1/scratchpad/b1-dup-copy (isolated copy)
+
+************* Module pheroos_interaction.sequential
+src/pheroos_interaction/sequential.py:1:0: R0801: Similar lines in 2 files
+==runner.colony:[266:286]
+==runner.worker:[198:218]
+        except Exception as exc:
+            state = _call_status(session, call_id) if call_id is not None else None
+            if state == "dispatched":
+                status = "unknown"
+            elif state == "response_rejected":
+                status = "response_rejected"
+                try:
+                    session.abstain(lease, reason="response_rejected")
+                except (StateError, BudgetExceeded):
+                    pass
+            elif isinstance(exc, LeaseLost):
+                status = "lost"
+            elif isinstance(exc, BudgetExceeded):
+                status = "budget_exhausted"
+            else:
+                status = phase + "_error"
+            _release(session, lease)
+            outcomes.append({"work": work_id, "status": status, "call_id": call_id,
+                             "call_state": state, "reason": type(exc).__name__})
+    return outcomes (duplicate-code)
+src/pheroos_interaction/sequential.py:1:0: R0801: Similar lines in 2 files
+==runner.colony:[158:176]
+==runner.worker:[138:156]
+        if lease is None:
+            outcomes.append({"work": work_id, "status": "unavailable"})
+            continue
+        call_id = None
+        phase = "plan"
+        try:
+            plan = _plan(planner(_freeze(item)))
+            records = session.work_calls(lease)
+            unresolved = next((row for row in records if row["state"] == "dispatched"), None)
+            if unresolved:
+                call_id = unresolved["id"]
+                _release(session, lease)
+                outcomes.append({"work": work_id, "status": "unknown", "call_id": call_id})
+                continue
+            if any(row["state"] == "reserved" for row in records):
+                _release(session, lease)
+                outcomes.append({"work": work_id, "status": "reservation_abandoned"})
+                continue (duplicate-code)
+src/pheroos_interaction/sequential.py:1:0: R0801: Similar lines in 2 files
+==pheroos_interaction.inspection:[123:140]
+==pheroos_interaction.sequential:[127:144]
+    by_count = ((negative[0], min(negative[1:])), (positive[0], min(positive[1:])))
+    minimum = _risk(query_cost, min(negative), min(positive))
+    count_minima = (_risk(query_cost, by_count[0][0], by_count[1][0]),
+        min(_risk(query_cost, by_count[0][0], by_count[1][1]),
+            _risk(query_cost, by_count[0][1], by_count[1][0])),
+        _risk(query_cost, by_count[0][1], by_count[1][1]))
+    count = next(k for k in (0, 1, 2) if _feasible(count_minima[k], minimum))
+    for first_index, first_action in enumerate(ACTIONS):
+        remaining = count - int(first_action != 'abstain')
+        if remaining not in (0, 1) or not _feasible(
+                _risk(query_cost, negative[first_index], by_count[1][remaining]), minimum):
+            continue
+        for second_index, second_action in enumerate(ACTIONS):
+            if int(second_action != 'abstain') != remaining:
+                continue
+            selected = _risk(query_cost, negative[first_index], positive[second_index])
+            if _feasible(selected, minimum): (duplicate-code)
+src/pheroos_interaction/sequential.py:1:0: R0801: Similar lines in 2 files
+==runner.colony:[142:157]
+==runner.worker:[122:137]
+    if max_items is not None:
+        _integer(max_items, "max_items")
+    limit = len(session.ready_work(agent)) if max_items is None else max_items
+    outcomes, visited = [], set()
+    while len(visited) < limit:
+        ready = [row for row in session.ready_work(agent) if row["id"] not in visited]
+        if not ready:
+            break
+        work_id = policy(_freeze(ready))
+        if work_id is None:
+            break
+        if type(work_id) is not str or work_id not in {row["id"] for row in ready}:
+            raise ValueError("policy selected work outside the enumerated set")
+        visited.add(work_id)
+        item = next(row for row in ready if row["id"] == work_id) (duplicate-code)
+src/pheroos_interaction/sequential.py:1:0: R0801: Similar lines in 2 files
+==runner.anthropic:[54:76]
+==runner.inspection:[33:55]
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError("duplicate JSON field")
+        result[key] = value
+    return result
+
+
+def _parse(raw):
+    return json.loads(raw, object_pairs_hook=_unique,
+                      parse_constant=lambda value: (_ for _ in ()).throw(ValueError("nonfinite JSON")))
+
+
+def _read(path, limit):
+    with Path(path).open("rb") as stream:
+        raw = stream.read(limit + 1)
+    if len(raw) > limit:
+        raise ValueError("input exceeds byte bound")
+    return raw
+
+
+def _load(path, limit=65536): (duplicate-code)
+
+------------------------------------------------------------------
+Your code has been rated at 9.99/10 (previous run: 9.97/10, +0.02)
+
+### EXIT: 8

@@ -1,0 +1,37 @@
+runner/audit.py:3:Replay opens the ledger read-only, rebuilds every frozen model request from the
+runner/audit.py:45:    database = sqlite3.connect(Path(path).resolve().as_uri() + "?mode=ro", uri=True)
+runner/audit.py:235:    registry = build_registry(spec, Path(spec_dir) if spec_dir else Path(path).parent)
+runner/tools.py:74:    directory = os.open(root, os.O_RDONLY | os.O_DIRECTORY)
+runner/tools.py:77:            nested = os.open(part, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW, dir_fd=directory)
+runner/tools.py:80:        return os.open(parts[-1], os.O_RDONLY | os.O_NOFOLLOW, dir_fd=directory)
+runner/tools.py:108:            self.root = Path(root)
+runner/tools.py:137:            raise ToolError(f"fixture {name!r} cannot be opened: {error.strerror}") from error
+runner/tools.py:424:    limits belong to the runtime, and no fixture file is opened here. Registration
+runner/session.py:94:        with Path(path).open("xb"):
+runner/platform.py:75:        target = Path(path)
+runner/platform.py:77:            session = super().create(Path(tmp)/"session.sqlite", run_id, **options)
+runner/platform.py:99:            parent_fd = os.open(target.parent, os.O_RDONLY)
+runner/platform.py:231:            raise StateError("decompose requires no open reservation or unresolved dispatch")
+runner/runtime.py:766:    with Path(path).open("rb") as stream:
+runner/runtime.py:788:    with Path(path).open("xb") as stream:
+runner/runtime.py:792:    handle = os.open(Path(path).parent, os.O_RDONLY)
+runner/runtime.py:843:    workflow_path, output_dir = Path(workflow_path), Path(output_dir)
+runner/runtime.py:863:    Resume re-opens the same ledger: budgets are not reset, an unresolved dispatch
+runner/runtime.py:867:    output_dir = Path(output_dir)
+runner/runtime.py:882:    registry = build_registry(spec, Path(frozen["spec_dir"]))
+runner/anthropic.py:69:    with Path(path).open("rb") as stream:
+runner/anthropic.py:328:    return director.open
+runner/anthropic.py:390:    def __init__(self, *, api_key, base_url="https://api.anthropic.com", timeout=60.0, opener=None):
+runner/anthropic.py:395:        if opener is not None and not callable(opener):
+runner/anthropic.py:396:            raise ValueError("opener must be a urlopen-compatible callable")
+runner/anthropic.py:400:        self.opener = _opener() if opener is None else opener
+runner/anthropic.py:414:            response = self.opener(message, timeout=self.timeout)
+runner/identity.py:14:            base = Path(directory)
+runner/identity.py:17:                value = sha256(path.read_bytes()).hexdigest()
+runner/orchestration.py:486:                raise StateError("work still has an open reservation or unresolved dispatch")
+runner/inspection.py:48:    with Path(path).open("rb") as stream:
+runner/inspection.py:60:    with Path(path).open("xb") as stream:
+runner/inspection.py:64:    directory = os.open(Path(path).parent, os.O_RDONLY)
+runner/inspection.py:187:    source_dir, output_dir = Path(source_dir), Path(output_dir)
+runner/inspection.py:257:    db = sqlite3.connect(Path(path).resolve().as_uri() + "?mode=ro", uri=True)
+runner/inspection.py:343:    run_dir = Path(run_dir)

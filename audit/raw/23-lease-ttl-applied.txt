@@ -1,0 +1,2 @@
+cell-a-fifo-fixed.json         declared TTL=60.0    work rows: [{'id': 't1', 'status': 'done', 'expires': None}, {'id': 't2', 'status': 'done', 'expires': None}, {'id': 't3', 'status': 'done', 'expires': None}]
+cell-c-fifo-evaporation.json   declared TTL=120.0   work rows: [{'id': 't1', 'status': 'done', 'expires': None}, {'id': 't2', 'status': 'done', 'expires': None}, {'id': 't3', 'status': 'done', 'expires': None}]

@@ -1,0 +1,90 @@
+FETCHONE_UNORDERED	runner/evidence.py:76	CoordinationSession::_check_control_capacity	SELECT limits FROM coordination_v1 WHERE id=1
+FETCHONE_UNORDERED	runner/evidence.py:122	CoordinationSession::_inspection_declaration	SELECT * FROM work WHERE id=?
+FETCHONE_UNORDERED	runner/evidence.py:123	CoordinationSession::_inspection_declaration	SELECT * FROM coordination_sources_v1 WHERE id=?
+FETCHONE_UNORDERED	runner/evidence.py:169	CoordinationSession::_inspection	SELECT * FROM coordination_inspections_v1 WHERE work_id=?
+FETCHONE_UNORDERED	runner/evidence.py:177	CoordinationSession::_access	SELECT * FROM coordination_sources_v1 WHERE id=?
+FETCHALL_ORDERED	runner/evidence.py:214	CoordinationSession::_visible_artifacts	SELECT a.ref,a.work_id,a.version,a.value,i.key,i.readers AS inspection_readers,s.readers AS source_readers FROM artifacts a JOIN work w ON w.id=a.work_id JOIN coordinatio
+FETCHONE_UNORDERED	runner/evidence.py:249	CoordinationSession::source_update	SELECT * FROM coordination_sources_v1 WHERE id=?
+FETCHALL_UNORDERED	runner/evidence.py:261	CoordinationSession::source_update	SELECT i.*,w.status,w.owner FROM coordination_inspections_v1 i JOIN work w ON w.id=i.work_id WHERE i.source_id=?
+FETCHONE_UNORDERED	runner/evidence.py:273	CoordinationSession::source_update	SELECT 1 FROM calls WHERE work_id=? AND state='dispatched'
+FETCHONE_UNORDERED	runner/evidence.py:289	CoordinationSession::dispatch	SELECT * FROM calls WHERE id=?
+FETCHONE_UNORDERED	runner/orchestration.py:96	OrchestrationMixin::_orchestration	SELECT * FROM orchestration_v1 WHERE id=1
+FETCHONE_UNORDERED	runner/orchestration.py:103	OrchestrationMixin::_task_row	SELECT * FROM orchestration_tasks_v2 WHERE work_id=?
+FETCHONE_ORDERED	runner/orchestration.py:135	OrchestrationMixin::_effective_reads	SELECT step FROM orchestration_decisions_v1 WHERE work_id=? AND decision='decompose' ORDER BY seq LIMIT 1
+FETCHALL_ORDERED	runner/orchestration.py:141	OrchestrationMixin::_effective_reads	SELECT work_id FROM orchestration_tasks_v2 WHERE parent=? ORDER BY rowid
+FETCHONE_UNORDERED	runner/orchestration.py:152	OrchestrationMixin::_artifact_rows	SELECT a.*, o.kind AS artifact_kind FROM artifacts a LEFT JOIN orchestration_artifacts_v1 o ON o.ref=a.ref WHERE a.work_id=?
+FETCHONE_UNORDERED	runner/orchestration.py:157	OrchestrationMixin::_artifact_rows	SELECT version FROM work WHERE id=?
+FETCHONE_UNORDERED	runner/orchestration.py:174	OrchestrationMixin::work_calls_of	SELECT version FROM work WHERE id=?
+FETCHALL_ORDERED	runner/orchestration.py:179	OrchestrationMixin::work_calls_of	SELECT * FROM calls WHERE work_id=? AND version=? ORDER BY rowid
+FETCHONE_UNORDERED	runner/orchestration.py:194	OrchestrationMixin::reserve_tool_call	SELECT * FROM calls WHERE id=?
+FETCHONE_UNORDERED	runner/orchestration.py:210	OrchestrationMixin::abstain_task	SELECT * FROM calls WHERE id=?
+FETCHALL_ORDERED	runner/orchestration.py:260	OrchestrationMixin::_reservation_request	SELECT * FROM calls WHERE work_id=? AND version=? ORDER BY rowid
+FETCHONE_UNORDERED	runner/orchestration.py:307	OrchestrationMixin::_admit_tool	SELECT * FROM calls WHERE id=?
+FETCHONE_UNORDERED	runner/orchestration.py:331	OrchestrationMixin::_prompt_contract	SELECT contract FROM orchestration_accounting_v1 WHERE call_id=?
+FETCHONE_UNORDERED	runner/orchestration.py:362	OrchestrationMixin::_settled	SELECT 1 FROM orchestration_accounting_v1 WHERE call_id=?
+FETCHONE_UNORDERED	runner/orchestration.py:383	OrchestrationMixin::record_accounting_violation	SELECT * FROM calls WHERE id=?
+FETCHONE_UNORDERED	runner/orchestration.py:386	OrchestrationMixin::record_accounting_violation	SELECT violation FROM orchestration_accounting_v1 WHERE call_id=?
+FETCHONE_UNORDERED	runner/orchestration.py:420	OrchestrationMixin::record_rejection	SELECT * FROM calls WHERE id=?
+FETCHALL_ORDERED	runner/orchestration.py:434	OrchestrationMixin::_decisions	SELECT * FROM orchestration_decisions_v1 WHERE work_id=? AND version=? ORDER BY seq
+FETCHONE_UNORDERED	runner/orchestration.py:448	OrchestrationMixin::_derived_lease	SELECT * FROM work WHERE id=?
+FETCHONE_UNORDERED	runner/orchestration.py:479	OrchestrationMixin::publish_derived	SELECT * FROM artifacts WHERE work_id=?
+FETCHONE_UNORDERED	runner/orchestration.py:484	OrchestrationMixin::publish_derived	SELECT 1 FROM calls WHERE work_id=? AND state IN ('reserved','dispatched')
+FETCHONE_UNORDERED	runner/orchestration.py:505	OrchestrationMixin::_verify_derivation	SELECT * FROM calls WHERE id=?
+FETCHONE_UNORDERED	runner/orchestration.py:529	OrchestrationMixin::_verify_derivation	SELECT * FROM calls WHERE id=?
+FETCHONE_UNORDERED	runner/orchestration.py:565	OrchestrationMixin::_publish_received	SELECT work_id FROM calls WHERE id=?
+FETCHONE_UNORDERED	runner/orchestration.py:590	OrchestrationMixin::admit_children	SELECT * FROM calls WHERE id=?
+FETCHONE_AGG	runner/orchestration.py:598	OrchestrationMixin::admit_children	SELECT COUNT(*) FROM orchestration_tasks_v2 WHERE parent=?
+FETCHALL_UNORDERED	runner/orchestration.py:606	OrchestrationMixin::admit_children	SELECT request FROM calls WHERE work_id=? AND version=? AND state IN ('received','dispatched','response_rejected')
+FETCHALL_ORDERED	runner/orchestration.py:693	OrchestrationMixin::blocked_work	SELECT * FROM work ORDER BY rowid
+FETCHONE_UNORDERED	runner/orchestration.py:697	OrchestrationMixin::blocked_work	SELECT * FROM work WHERE id=?
+FETCHONE_UNORDERED	runner/orchestration.py:700	OrchestrationMixin::blocked_work	SELECT 1 FROM artifacts WHERE work_id=?
+FETCHALL_UNORDERED	runner/platform.py:89	PlatformMixin::create	SELECT id FROM work
+FETCHONE_UNORDERED	runner/platform.py:108	PlatformMixin::_platform_limits	SELECT limits FROM platform_v1 WHERE id=1
+FETCHONE_UNORDERED	runner/platform.py:123	PlatformMixin::_budget_row	SELECT * FROM platform_work_v1 WHERE work_id=?
+FETCHALL_UNORDERED	runner/platform.py:129	PlatformMixin::_spent	SELECT state,reserved,actual FROM calls WHERE work_id=?
+FETCHONE_UNORDERED	runner/platform.py:134	PlatformMixin::_reservation_capacity	SELECT 1 FROM calls WHERE work_id=? AND state='dispatched'
+FETCHONE_UNORDERED	runner/platform.py:144	PlatformMixin::_work	SELECT * FROM work WHERE id=?
+FETCHONE_UNORDERED	runner/platform.py:163	PlatformMixin::_available	SELECT 1 FROM calls WHERE work_id=? AND state='dispatched'
+FETCHONE_UNORDERED	runner/platform.py:165	PlatformMixin::_available	SELECT 1 FROM artifacts WHERE work_id=?
+FETCHONE_UNORDERED	runner/platform.py:168	PlatformMixin::_available	SELECT until FROM platform_no_entry_v1 WHERE work_id=?
+FETCHALL_ORDERED	runner/platform.py:182	PlatformMixin::ready_work	SELECT * FROM work ORDER BY rowid
+FETCHALL_ORDERED	runner/platform.py:194	PlatformMixin::_claim_ready	SELECT * FROM work WHERE status='ready' ORDER BY rowid
+FETCHONE_UNORDERED	runner/platform.py:200	PlatformMixin::_claim_received_ready	SELECT * FROM work WHERE id=? AND status='ready'
+FETCHALL_ORDERED	runner/platform.py:211	PlatformMixin::work_calls	SELECT * FROM calls WHERE work_id=? AND version=? ORDER BY rowid
+FETCHONE_UNORDERED	runner/platform.py:230	PlatformMixin::_decompose	SELECT 1 FROM calls WHERE work_id=? AND state IN ('reserved','dispatched')
+FETCHONE_AGG	runner/platform.py:232	PlatformMixin::_decompose	SELECT COUNT(*) FROM platform_work_v1 WHERE parent=?
+FETCHONE_AGG	runner/platform.py:233	PlatformMixin::_decompose	SELECT COUNT(*) FROM work
+FETCHONE_UNORDERED	runner/platform.py:276	PlatformMixin::_decompose	SELECT limits FROM coordination_v1 WHERE id=1
+FETCHONE_AGG	runner/platform.py:277	PlatformMixin::_decompose	SELECT COUNT(*) FROM coordination_inspections_v1
+FETCHONE_UNORDERED	runner/platform.py:303	PlatformMixin::release	SELECT 1 FROM calls WHERE work_id=? AND state='dispatched'
+FETCHONE_UNORDERED	runner/platform.py:328	PlatformMixin::mark_no_entry	SELECT until,reason FROM platform_no_entry_v1 WHERE work_id=?
+FETCHONE_UNORDERED	runner/platform.py:340	PlatformMixin::propose	SELECT * FROM calls WHERE id=?
+FETCHONE_UNORDERED	runner/platform.py:348	PlatformMixin::propose	SELECT * FROM platform_candidates_v1 WHERE call_id=?
+FETCHONE_AGG	runner/platform.py:353	PlatformMixin::propose	SELECT COUNT(*) FROM platform_candidates_v1 WHERE work_id=?
+FETCHONE_UNORDERED	runner/platform.py:359	PlatformMixin::propose	SELECT * FROM platform_candidates_v1 WHERE call_id=?
+FETCHONE_UNORDERED	runner/platform.py:371	PlatformMixin::_decision	SELECT * FROM platform_decisions_v1 WHERE work_id=?
+FETCHONE_UNORDERED	runner/platform.py:376	PlatformMixin::_abstain	SELECT 1 FROM calls WHERE work_id=? AND state='dispatched'
+FETCHONE_UNORDERED	runner/platform.py:382	PlatformMixin::_abstain	SELECT 1 FROM work WHERE status!='done'
+FETCHONE_UNORDERED	runner/platform.py:437	PlatformMixin::commit	SELECT * FROM work WHERE id=?
+FETCHONE_UNORDERED	runner/platform.py:451	PlatformMixin::_publish	SELECT 1 FROM calls WHERE work_id=? AND state='dispatched'
+FETCHONE_UNORDERED	runner/session.py:118	Session::_run	SELECT * FROM run
+FETCHONE_UNORDERED	runner/session.py:124	Session::_lease	SELECT * FROM work WHERE id=?
+FETCHALL_UNORDERED	runner/session.py:133	Session::_abandon	SELECT id,reserved FROM calls WHERE work_id=? AND state='reserved'
+FETCHALL_UNORDERED	runner/session.py:141	Session::_recover	SELECT * FROM work WHERE status='leased' AND expires<=?
+FETCHONE_UNORDERED	runner/session.py:143	Session::_recover	SELECT 1 FROM calls WHERE work_id=? AND state='dispatched'
+FETCHALL_ORDERED	runner/session.py:165	Session::_claim_ready	SELECT * FROM work WHERE status='ready' ORDER BY rowid
+FETCHONE_UNORDERED	runner/session.py:169	Session::_claim_ready	SELECT 1 FROM artifacts WHERE work_id=?
+FETCHONE_UNORDERED	runner/session.py:223	Session::_reserve	SELECT * FROM calls WHERE id=?
+FETCHALL_UNORDERED	runner/session.py:230	Session::_reserve	SELECT state,reserved,actual FROM calls
+FETCHONE_UNORDERED	runner/session.py:264	Session::dispatch	SELECT * FROM calls WHERE id=?
+FETCHONE_UNORDERED	runner/session.py:282	Session::receive	SELECT * FROM calls WHERE id=?
+FETCHONE_UNORDERED	runner/session.py:309	Session::receive	SELECT 1 FROM calls WHERE work_id=? AND state='dispatched'
+FETCHONE_UNORDERED	runner/session.py:318	Session::call	SELECT * FROM calls WHERE id=?
+FETCHONE_UNORDERED	runner/session.py:331	Session::_publish	SELECT * FROM calls WHERE id=?
+FETCHONE_UNORDERED	runner/session.py:354	Session::_record_artifact	SELECT 1 FROM work WHERE status!='done'
+FETCHONE_UNORDERED	runner/session.py:387	Session::_publish_received	SELECT * FROM calls WHERE id=?
+FETCHONE_UNORDERED	runner/session.py:391	Session::_publish_received	SELECT * FROM work WHERE id=?
+FETCHONE_UNORDERED	runner/session.py:395	Session::_publish_received	SELECT * FROM artifacts WHERE work_id=?
+FETCHONE_UNORDERED	runner/session.py:402	Session::_publish_received	SELECT 1 FROM calls WHERE work_id=? AND state='dispatched'
+FETCHONE_UNORDERED	runner/session.py:405	Session::_publish_received	SELECT * FROM work WHERE id=?
+FETCHALL_UNORDERED	runner/session.py:421	Session::_stop	SELECT id FROM work WHERE status!='done'

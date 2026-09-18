@@ -1,0 +1,88 @@
+### H CHURN — REVERT / RE-FIX CLASSIFICATION
+N (re-fix window) = 14 days. NOTE: entire scope history spans 2026-09-14 21:32 -> 2026-09-16 21:15 = 2d0h, so N is not the binding constraint.
+
+$ git log --all --format='%h %ad %s' --date=short --grep='^Revert' -i   ->  0 results
+count: 0
+
+$ git log --all --format='%h %s' --grep='This reverts commit'   ->  0 results
+count: 0
+
+$ git log --all --format='%h %ad %s' --date=short --grep=fix --grep=correct --grep=regress --grep=revert --grep=bug -i
+eedddc0 2026-09-14 Replace legacy protocol tree with focused interaction lab
+0bdf729 2026-09-11 Merge pull request #32 from Ju1se/codex/e3-estimand-and-collection
+b4845e5 2026-09-11 Fix E3 paired estimands and preserve collection receipts
+69062be 2026-09-11 Merge pull request #31 from Ju1se/codex/fix-audited-contracts
+09b68dd 2026-09-11 Refresh coverage source lock after replay checker fix
+15c7a6e 2026-09-03 fix(ci): refresh merged coverage scope lock
+bf38808 2026-09-03 test: close post-cleanup shard regressions
+02961e6 2026-07-29 docs(research): record v2 fixture inventory checkpoint
+a932478 2026-07-26 Merge pull request #28 from Ju1se/codex/ci-shard-timeout-hardening
+a85f054 2026-07-26 fix(ci): isolate heavyweight validation shards
+cb106a8 2026-07-25 fix(ci): bind TCK probe to candidate package
+a0b7d4a 2026-07-18 Fix cross-version ABI and TCK performance
+3925ce0 2026-06-09 Fix visual test server command for CI
+
+=== DO ANY OF THOSE TOUCH A CURRENTLY-TRACKED SCOPE FILE? ===
+b4845e5 -> [NONE]
+09b68dd -> [NONE]
+15c7a6e -> [NONE]
+bf38808 -> [NONE]
+a85f054 -> [NONE]
+cb106a8 -> [NONE]
+a0b7d4a -> [NONE]
+3925ce0 -> [NONE]
+eedddc0 -> [runner/__init__.py runner/cli.py runner/driver.py runner/evidence.py runner/session.py src/pheroos_interaction/__init__.py src/pheroos_interaction/records.py tests/interaction/conftest.py tests/interaction/test_accounting.py tests/interaction/test_execution.py tests/interaction/test_host.py tests/interaction/test_layout.py tests/interaction/test_replay.py tests/interaction/test_visibility.py ]
+
+=== PATCH-EQUIVALENT REVERSAL TEST: files ADDED by eedddc0 then DELETED by 4111b67 ===
+$ git show --diff-filter=D --name-only --format='' 4111b67 -- runner src/pheroos_interaction tests/interaction
+runner/accounting.py
+runner/adapters.py
+runner/host.py
+src/pheroos_interaction/policy.py
+src/pheroos_interaction/ports.py
+src/pheroos_interaction/visibility.py
+tests/interaction/test_accounting.py
+tests/interaction/test_host.py
+tests/interaction/test_replay.py
+tests/interaction/test_visibility.py
+
+$ git rev-parse eedddc0:<f>  vs  git rev-parse 4111b67^:<f>   (blob identity)
+runner/accounting.py                         ADD 2026-09-14 21:32 DEL 2026-09-15 10:44  CHANGED between add and delete (a=7ef750bc1faf683cb297d9732c3ffa9c22358770 b=e1f782f6de5767b3e19cf8de18fb41da4dea685b)
+runner/adapters.py                           ADD 2026-09-14 21:32 DEL 2026-09-15 10:44  IDENTICAL blob -> pure add/delete
+runner/host.py                               ADD 2026-09-14 21:32 DEL 2026-09-15 10:44  IDENTICAL blob -> pure add/delete
+src/pheroos_interaction/policy.py            ADD 2026-09-14 21:32 DEL 2026-09-15 10:44  IDENTICAL blob -> pure add/delete
+src/pheroos_interaction/ports.py             ADD 2026-09-14 21:32 DEL 2026-09-15 10:44  IDENTICAL blob -> pure add/delete
+src/pheroos_interaction/visibility.py        ADD 2026-09-14 21:32 DEL 2026-09-15 10:44  IDENTICAL blob -> pure add/delete
+tests/interaction/test_accounting.py         ADD 2026-09-14 21:32 DEL 2026-09-15 10:44  IDENTICAL blob -> pure add/delete
+tests/interaction/test_host.py               ADD 2026-09-14 21:32 DEL 2026-09-15 10:44  IDENTICAL blob -> pure add/delete
+tests/interaction/test_replay.py             ADD 2026-09-14 21:32 DEL 2026-09-15 10:44  IDENTICAL blob -> pure add/delete
+tests/interaction/test_visibility.py         ADD 2026-09-14 21:32 DEL 2026-09-15 10:44  IDENTICAL blob -> pure add/delete
+
+=== RENAME/COPY DETECTION ON 4111b67 (were deletions relocations?) ===
+$ git diff --name-status -M -C --find-copies-harder 4111b67^ 4111b67 -- runner src/pheroos_interaction tests/interaction
+M	runner/__init__.py
+D	runner/accounting.py
+D	runner/adapters.py
+M	runner/cli.py
+M	runner/driver.py
+M	runner/evidence.py
+D	runner/host.py
+A	runner/identity.py
+A	runner/inspection.py
+M	runner/session.py
+M	src/pheroos_interaction/__init__.py
+A	src/pheroos_interaction/inspection.py
+D	src/pheroos_interaction/policy.py
+D	src/pheroos_interaction/ports.py
+D	src/pheroos_interaction/visibility.py
+M	tests/interaction/conftest.py
+D	tests/interaction/test_accounting.py
+M	tests/interaction/test_execution.py
+D	tests/interaction/test_host.py
+A	tests/interaction/test_inspection.py
+A	tests/interaction/test_inspection_cli.py
+A	tests/interaction/test_inspection_runner.py
+M	tests/interaction/test_layout.py
+D	tests/interaction/test_replay.py
+D	tests/interaction/test_visibility.py
+(no R/C status letters => git similarity detection found NO rename; A entries are rewrites, not moves)

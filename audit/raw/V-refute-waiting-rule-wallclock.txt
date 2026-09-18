@@ -1,0 +1,22 @@
+seed sweep at clock=1000 -> wait | stamps in ledger: [1000.0]
+frozen ledger sha256: 702926bcd7c458f492f2f9a5c376567b8e9f8cea7dd6041c5bc1922764f20667
+
+Same frozen ledger bytes, ONLY the injected clock varies:
+  clock()=1000.0   min(stamps)=1000.0  elapsed_tick=0    -> decision=wait
+  clock()=1060.0   min(stamps)=1000.0  elapsed_tick=1    -> decision=wait
+  clock()=1180.0   min(stamps)=1000.0  elapsed_tick=3    -> decision=publish
+  clock()=10000.0  min(stamps)=1000.0  elapsed_tick=150  -> decision=publish
+
+default clock check: PlatformSession(path).clock is time.time -> True
+
+--- VERIFIER NOTE ---
+Behaviour reproduces exactly as claimed. But it is the DOCUMENTED contract:
+docs/orchestration-architecture.md:379-382 gives the formula verbatim
+  "Its tick is `floor((now - first recorded wait) / tick_seconds)`, read from the
+   clock stamps that `platform.waited` decisions now carry, so a tight polling
+   loop advances no decision clock at all."
+worker.py:68-70 gives the identical formula, naming `now` separately from the stamp.
+tests/interaction/test_orchestration_recovery.py:710 docstring:
+  "With real elapsed time the programme reaches its deadline and then publishes."
+Claim's sub-assertion "every test of this function injects a fake Clock" is FALSE:
+lines 653,660,668,675,682,749 use platform_work(tmp_path) -> clock defaults to time.time.

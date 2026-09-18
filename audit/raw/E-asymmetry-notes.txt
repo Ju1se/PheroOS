@@ -1,0 +1,65 @@
+SECTION E - ARCHITECTURAL SECURITY ASYMMETRIES (locator pairs)
+Produced by targeted reading + pylint W0613 + executed probe. See other E-*.txt for tool output.
+
+A1 replay vs live artifact authorization
+   live    runner/orchestration.py:219-223  readable_artifacts -> self._work(db, work_id, agent)
+                                            -> runner/platform.py:141-154 _work -> _publication_access(db,row,agent)
+                                               + run enabled/status check + superseded/revoked check
+   replay  runner/audit.py:155-161          readable_artifacts(self, work_id, agent, before_step) -- 'agent' never referenced
+   measured runner/audit.py:155:42 W0613 Unused argument 'agent'
+   consumer runner/audit.py:196-200 _as_of computes `claimant` from authority records then passes it here
+
+A2 path confinement: gate and enforcement live in different modules
+   enforce runner/tools.py:71-82  _open_within  -- O_NOFOLLOW per component, NO '..' rejection
+   gate    runner/contracts.py:475            -- rejects '/', '\', '', '..', '.'
+   executed E-open-within-probe.txt: _open_within(root,'../outside/secret.txt') OPENED (escaped root)
+                                     _open_within(root,'link.txt') REFUSED ELOOP (symlink gate works)
+
+A3 O_NOFOLLOW applied to every component except the root handle
+   runner/tools.py:74  os.open(root, O_RDONLY|O_DIRECTORY)            <- no O_NOFOLLOW
+   runner/tools.py:77  os.open(part, ...|O_DIRECTORY|O_NOFOLLOW, dir_fd=)
+   runner/tools.py:80  os.open(parts[-1], ...|O_NOFOLLOW, dir_fd=)
+
+A4 regular-file check on one reader only
+   has     runner/tools.py:139  stat.S_ISREG(os.fstat(descriptor).st_mode)
+   lacks   runner/anthropic.py:68-73 _read
+   lacks   runner/runtime.py:765-770 _read
+   lacks   runner/inspection.py:47-52 _read
+   measured E-open-within-probe / grep: S_ISREG appears exactly once in scope
+
+A5 tool_use name validation: request side strict, response side loose
+   request  runner/anthropic.py:141  _tool_name(block["name"], ...)  -> contracts.NAME ^[a-z][a-z0-9_.-]{0,63}$
+   response runner/anthropic.py:261  _string(block["name"], ..., MAX_IDENTIFIER_BYTES)  -> any str <=256B
+   contained by runner/contracts.py:653-659 (name in tools else ContractError)
+            and runner/orchestration.py:_admit_tool "tool is outside the task declaration"
+
+A6 transport body bound on one transport only
+   bounded   runner/anthropic.py:361,368  _decode: read(MAX_BODY_BYTES+1); len>MAX_BODY_BYTES -> TransportError
+   unbounded runner/anthropic.py:471-485  FakeTransport.__call__ returns finite_json(script response), no byte bound
+   partial containment: runner/anthropic.py:452-454 load_script bounds the FILE to MAX_BODY_BYTES
+
+A7 error-detail truncation: message capped, type not
+   runner/anthropic.py:353  f": {reported['type']}: {reported['message'][:MAX_DETAIL]}"
+                            'message' sliced to 512; 'type' interpolated whole (body cap 1 MiB)
+
+A8 error-text truncation present on two handlers, absent on the third
+   runner/runtime.py:516  record_rejection(..., reason[:1024])
+   runner/runtime.py:547  {"ok": False, "error": str(exc)[:512]}
+   runner/runtime.py:405/407/408  str(exc) with NO bound -> task 'reason'
+   runner/contracts.py:673 outcome reason bounded by MAX_REASON=1024
+   runner/contracts.py:674 "tasks": finite_json(tasks)  -- no text bound on per-task reason
+
+A9 read-only sqlite opener hardening on one sibling only
+   runner/audit.py:44-53        mode=ro URI + PRAGMA query_only=ON
+   runner/inspection.py:256-259 mode=ro URI, no PRAGMA query_only
+
+A10 strict JSON parsing discipline absent in the module that reads the untrusted artefact
+   strict _parse: runner/tools.py:60-68, runner/anthropic.py:63-65,
+                  runner/runtime.py:775-777, runner/inspection.py:42-44
+   runner/audit.py: 22 json.loads( sites, 0 object_pairs_hook sites (E-json-strictness.txt)
+   audit.py:45 read_only(path) is the externally supplied ledger file
+
+A11 bounded-schema discipline: strings and arrays must declare a bound, integers need not
+   runner/contracts.py:145      maxItems required (no default -> ContractError)
+   runner/contracts.py:155-158  maxLength or enum required
+   runner/contracts.py:163-168  integer/number: minimum/maximum both optional

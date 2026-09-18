@@ -1,0 +1,15 @@
+=== build-dependency interpreter compatibility: does setuptools 84.0.0 support the declared floor? ===
+  setuptools latest        : 84.0.0
+  setuptools requires_python: >=3.10
+  project requires-python   : >=3.12 (pyproject.toml:9)
+  pytest latest            : 9.1.1  requires_python: >=3.10
+
+=== summary of the five §F questions, per declared dependency ===
+DEP            SPEC       Q1_EXISTS Q2_NAME                  Q3_RESOLVES                  Q4_LOCKED
+Q5_VULNS                                                                                  
+pytest         >=8        YES(200)  exact/pytest-dev         YES->9.1.1 (major jump)      NO LOCKFILE
+clean (pytest+3 transitive)                                                                            
+setuptools     >=84       YES(200)  exact/pypa               YES->84.0.0 (only 1)         NO LOCKFILE
+NOT RUN (pip-audit audited 0 pkgs)                                                                            
+(runtime)      [] none    n/a       n/a                      n/a                          n/a
+n/a                                                                                       

@@ -1,0 +1,69 @@
+########## src/ inspection.py vs sequential.py — 17-line risk block
+### COMMAND: diff <(sed -n '124,140p' src/pheroos_interaction/inspection.py) <(sed -n '128,144p' src/pheroos_interaction/sequential.py)
+>>> BYTE-IDENTICAL
+
+=== src/pheroos_interaction/inspection.py:118-145 ===
+    The two branches have additive loss. Count layers K=0,1,2 establish the
+    smallest feasible number of non-abstaining actions. Greedy feasibility then
+    selects each action without enumerating the nine possible complete maps.
+    """
+    negative, positive = branches
+    # For each outcome: cheapest action with zero or one non-abstaining action.
+    by_count = ((negative[0], min(negative[1:])), (positive[0], min(positive[1:])))
+    minimum = _risk(query_cost, min(negative), min(positive))
+    count_minima = (_risk(query_cost, by_count[0][0], by_count[1][0]),
+        min(_risk(query_cost, by_count[0][0], by_count[1][1]),
+            _risk(query_cost, by_count[0][1], by_count[1][0])),
+        _risk(query_cost, by_count[0][1], by_count[1][1]))
+    count = next(k for k in (0, 1, 2) if _feasible(count_minima[k], minimum))
+    for first_index, first_action in enumerate(ACTIONS):
+        remaining = count - int(first_action != 'abstain')
+        if remaining not in (0, 1) or not _feasible(
+                _risk(query_cost, negative[first_index], by_count[1][remaining]), minimum):
+            continue
+        for second_index, second_action in enumerate(ACTIONS):
+            if int(second_action != 'abstain') != remaining:
+                continue
+            selected = _risk(query_cost, negative[first_index], positive[second_index])
+            if _feasible(selected, minimum):
+                return selected, ((False, first_action), (True, second_action), (None, 'abstain'))
+    raise ArithmeticError('no feasible inspection map within the global tie tolerance')
+
+
+def plan_inspection(assumptions, losses, query_cost, epsilon=1e-12):
+
+=== src/pheroos_interaction/sequential.py:122,150 ===
+def shared_map(negative, positive, query_cost):
+    """inspection._shared_map over two leaf term triples: one global tie budget.
+
+    Prefers fewer non-abstaining decisions, then abstain/reject/accept by outcome.
+    Returns (query_risk, (action_on_negative, action_on_positive)).
+    """
+    by_count = ((negative[0], min(negative[1:])), (positive[0], min(positive[1:])))
+    minimum = _risk(query_cost, min(negative), min(positive))
+    count_minima = (_risk(query_cost, by_count[0][0], by_count[1][0]),
+        min(_risk(query_cost, by_count[0][0], by_count[1][1]),
+            _risk(query_cost, by_count[0][1], by_count[1][0])),
+        _risk(query_cost, by_count[0][1], by_count[1][1]))
+    count = next(k for k in (0, 1, 2) if _feasible(count_minima[k], minimum))
+    for first_index, first_action in enumerate(ACTIONS):
+        remaining = count - int(first_action != 'abstain')
+        if remaining not in (0, 1) or not _feasible(
+                _risk(query_cost, negative[first_index], by_count[1][remaining]), minimum):
+            continue
+        for second_index, second_action in enumerate(ACTIONS):
+            if int(second_action != 'abstain') != remaining:
+                continue
+            selected = _risk(query_cost, negative[first_index], positive[second_index])
+            if _feasible(selected, minimum):
+                return selected, (first_action, second_action)
+    raise ArithmeticError('no feasible inspection map within the global tie tolerance')
+
+
+@dataclass(frozen=True)
+class Node:
+
+########## _risk / _feasible definitions in both
+src/pheroos_interaction/inspection.py:11:ACTIONS = ('abstain', 'reject', 'accept')
+src/pheroos_interaction/inspection.py:90:def _feasible(candidate, minimum):
+src/pheroos_interaction/inspection.py:96:def _risk(query_cost, *contributions):

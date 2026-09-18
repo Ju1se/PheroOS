@@ -1,0 +1,29 @@
+function                            calls  defined at
+snapshot                              350  runner/audit.py:175, runner/session.py:433
+execute                               243  runner/tools.py:212, runner/tools.py:335
+run                                   173  runner/runtime.py:655
+claim                                 161  runner/session.py:152
+_wire                                  97  runner/session.py:15, runner/inspection.py:25
+call                                   77  runner/audit.py:117, runner/session.py:316
+wire                                   65  runner/contracts.py:42
+commit                                 61  runner/platform.py:392, runner/orchestration.py:545
+digest                                 55  runner/contracts.py:46
+evaluate                               48  runner/provider.py:58, runner/driver.py:26
+work                                   48  runner/audit.py:139
+reserve                                47  runner/session.py:201
+_transaction                           47  runner/session.py:42
+propose                                42  runner/platform.py:334
+decisions                              42  runner/audit.py:113, runner/orchestration.py:437
+ready_work                             41  runner/platform.py:171
+decide                                 41  src/pheroos_interaction/commitment.py:305
+create                                 39  runner/session.py:58, runner/platform.py:50
+workflow_spec                          38  runner/contracts.py:507
+receive                                38  runner/session.py:274
+build                                  37  src/pheroos_interaction/sequential.py:218
+check                                  36  runner/audit.py:211
+publish_received                       35  runner/session.py:371
+_count                                 35  runner/contracts.py:81, src/pheroos_interaction/commitment.py:50
+replay                                 35  runner/provider.py:95, runner/driver.py:42
+lease_ttl                              31  src/pheroos_interaction/leases.py:14
+_event                                 31  runner/session.py:113, runner/platform.py:110
+_run                                   28  runner/session.py:117

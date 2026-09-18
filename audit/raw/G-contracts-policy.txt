@@ -1,0 +1,88 @@
+=== contracts._policy (the policies-block validator) ===
+              "evaporation": (("stage_durations", "p_fail", "per_tick_cost", "false_expiry_cost"), ())},
+}
+UNIT_FIELDS = ("p_fail",)
+# cheaper_workers is DERIVED by the policy plane from the frozen capacity model and a
+# task's eligible set; it is not a declarable policy field and never appears in a spec.
+COUNT_FIELDS = ("exponent",)
+
+
+def _policy(slot, value):
+    """One declared policy: its kind plus exactly that kind's parameters."""
+    kinds = POLICY_SLOTS[slot]
+    if type(value) is not dict or value.get("kind") not in kinds:
+        raise ContractError(slot + " kind must be one of " + ", ".join(sorted(kinds)))
+    required, optional = kinds[value["kind"]]
+    _fields(value, slot, ("kind",) + required, optional)
+    out = {"kind": value["kind"]}
+    for name, item in value.items():
+        if name == "kind":
+            continue
+        if name == "seed":
+            out[name] = _text(item, "seed", 64)
+        elif name in COUNT_FIELDS:
+            out[name] = _count(item, name, 1 if name == "exponent" else 0, 1 << 20)
+        elif name in ("stage_durations",):
+            if type(item) is not list or not item or len(item) > 1024:
+                raise ContractError(name + " must be a bounded nonempty list")
+            out[name] = [float(_number(entry, name)) for entry in item]
+            if any(entry < 0 for entry in out[name]):
+                raise ContractError(name + " must be nonnegative")
+        else:
+            out[name] = float(_number(item, name))
+            if out[name] < 0 or (name == "service_time" and out[name] <= 0):
+                raise ContractError(name + " must be nonnegative")
+        if name in UNIT_FIELDS and not 0 <= out[name] <= 1:
+            raise ContractError(name + " must be in [0,1]")
+    if value["kind"] == "evaporation" and not any(entry > 0 for entry in out["stage_durations"]):
+        raise ContractError("stage_durations needs at least one positive lead time")
+    if value["kind"] == "fixed" and out.get("seconds", 1.) <= 0:
+        raise ContractError("a fixed lease needs a positive duration")
+    return out
+
+
+def policies_spec(value):
+    """The declared colony policy plane; an omitted slot keeps the baseline."""
+    _fields(value, "policies", (), tuple(POLICY_SLOTS))
+    return {slot: _policy(slot, value[slot]) for slot in POLICY_SLOTS if slot in value}
+
+
+def task_limits(value):
+    _fields(value, "limits", ("model_steps", "tool_calls", "rejections", "calls", "tokens"))
+    return {"model_steps": _count(value["model_steps"], "model_steps", 1, 1024),
+            "tool_calls": _count(value["tool_calls"], "tool_calls", 0, 1024),
+            "rejections": _count(value["rejections"], "rejections", 0, 1024),
+            "calls": _count(value["calls"], "calls", 1),
+            "tokens": _count(value["tokens"], "tokens", 0)}
+
+
+def decomposition_config(value):
+    _fields(value, "decomposition", ("max_children", "child_output_schema", "join_reserve"))
+    join = _fields(value["join_reserve"], "join_reserve", ("model_steps", "calls", "tokens"))
+    return {"max_children": _count(value["max_children"], "max_children", 1, 64),
+            "child_output_schema": validate_schema(value["child_output_schema"]),
+            "join_reserve": {"model_steps": _count(join["model_steps"], "join model_steps", 1, 1024),
+                             "calls": _count(join["calls"], "join calls", 1),
+                             "tokens": _count(join["tokens"], "join tokens", 0)}}
+
+
+def rule_spec(value):
+    """The host acceptance rule: which artifacts it reads and which checker binds them.
+
+    This is a verification rule, not a commitment rule. It decides whether the
+    declared finite checker passed on the exact candidate digest; no commitment
+    policy may overturn that verdict.
+    """
+    _fields(value, "rule", ("type", "candidate", "review", "checker"))
+    if value["type"] not in RULES:
+        raise ContractError("rule type must be one of " + ", ".join(RULES))
+    return {"type": value["type"], "candidate": _name(value["candidate"], "rule candidate"),
+            "review": _name(value["review"], "rule review"), "checker": _name(value["checker"], "rule checker")}
+
+
+def eligible_agents(task):
+    """The agents a task declares as legal executors, in either schema version."""
+    return list(task["agents"]) if "agents" in task else [task["agent"]]
+
+
+def task_spec(value, spec_format=SPEC_FORMAT):

@@ -1,0 +1,12 @@
+=== Tools named in project docs but NOT declared in any manifest ===
+  --- end ---
+
+=== tool.* sections present in pyproject.toml ===
+20:[tool.setuptools]
+24:[tool.setuptools.package-dir]
+28:[tool.pytest.ini_options]
+
+=== declared-but-unused check ===
+  pytest      : DECLARED (dev extra) and USED -> 26 import sites in tests/ (see F-01)
+  setuptools  : DECLARED (build-system) and USED -> build-backend = setuptools.build_meta (pyproject.toml:3)
+  runtime deps: [] declared, 0 third-party imports found -> nothing declared-but-unused, nothing used-but-undeclared

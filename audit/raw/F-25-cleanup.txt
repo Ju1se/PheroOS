@@ -1,0 +1,19 @@
+=== §F ISOLATED COPIES: created, used, deleted ===
+(all under this session's private scratchpad; no tree shared with any other agent; cp -RL used throughout)
+
+  F-pipaudit         3.3M   DELETED
+  F-fresh-checkout   528K   DELETED
+  F-stdlibonly       1.0M   DELETED
+  F-warnrun          4.4M   DELETED
+  F-py312             32M   DELETED
+  F-trackedonly      788K   DELETED
+
+  scratch data files: DELETED
+
+--- residual F-* entries in scratchpad (must be empty) ---
+(eval):1: no matches found: /private/tmp/claude-501/-Users-scottxie-Desktop-multi-agent/f160b040-86a8-4874-aa4e-754fd36459d1/scratchpad/F-*
+  none
+
+--- confirm nothing was left in /tmp itself by §F ---
+(eval):1: no matches found: /tmp/audit-F*
+  none (§F never wrote to /tmp directly; /tmp/audit-venv is the shared toolchain, not mine to delete)

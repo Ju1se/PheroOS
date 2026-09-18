@@ -1,0 +1,40 @@
+=== _offered: definition ===
+        result = call["response"][TOOL_KEY]
+        body = _wire(result)
+        if len(body.encode()) > self.tool_result_bytes:
+            return {"type": "tool_result", "tool_use_id": use_id, "is_error": True,
+                    "content": "The tool result exceeded the recorded bound and was not delivered."}
+        return {"type": "tool_result", "tool_use_id": use_id, "content": body,
+                "is_error": result.get("ok") is False}
+
+    def _offered(self, declaration):
+        names = list(declaration["tools"]) + ["submit_output", "abstain"]
+        if declaration.get("decomposition"):
+            names.append("propose_children")
+        return names
+
+    def _tool_schemas(self, declaration):
+        schemas = {name: self.registry.schema(name) for name in declaration["tools"]}
+        if declaration.get("decomposition"):
+            schemas["propose_children"] = contracts.children_schema(
+                declaration["decomposition"], declaration["tools"], declaration["decomposition"]["max_children"])
+        return schemas
+
+    def _declarations(self, declaration):
+        out = [self.registry.declaration(name) for name in declaration["tools"]]
+        out.append({"name": "submit_output", "description": "Submit the task's final structured answer.",
+                    "input_schema": declaration["output_schema"]})
+        out.append({"name": "abstain", "description": "Decline to answer, with a short reason.",
+                    "input_schema": contracts.ABSTAIN_SCHEMA})
+        if declaration.get("decomposition"):
+            out.append({"name": "propose_children",
+                        "description": "Propose narrower child tasks; the host validates and may refuse them.",
+                        "input_schema": self._tool_schemas(declaration)["propose_children"]})
+        return out
+
+    def frozen_model_request(self, declaration, work_id, version, history, decisions, inputs,
+                             remaining, step, attempt, spec_digest, claimant):
+        """Build the frozen request and its binding from durable state only.
+
+=== _offered: all references repo-wide (runner src tests docs examples) ===
+runner/runtime.py:248:    def _offered(self, declaration):

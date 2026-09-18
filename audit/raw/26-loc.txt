@@ -1,0 +1,20 @@
+=== LOC / modules in audited scope ===
+--- runner/ ---
+    6390 total
+modules: 19
+--- src/pheroos_interaction/ ---
+    1203 total
+modules: 6
+--- tests/interaction/ ---
+   10587 total
+files: 26
+
+=== largest modules ===
+     889 runner/runtime.py
+     726 runner/orchestration.py
+     674 runner/contracts.py
+     577 src/pheroos_interaction/sequential.py
+     485 runner/anthropic.py
+     468 runner/platform.py
+     445 runner/session.py
+     440 runner/tools.py

@@ -1,0 +1,9 @@
+token draw             present anywhere in the ledger: False
+token exponent         present anywhere in the ledger: True
+token ledger_index     present anywhere in the ledger: False
+token deferred         present anywhere in the ledger: False
+token defer            present anywhere in the ledger: False
+token cheaper_workers  present anywhere in the ledger: False
+token threshold        present anywhere in the ledger: False
+
+events recorded            : ['interaction.session.claimed', 'interaction.session.created', 'interaction.session.dispatched', 'interaction.session.orchestration.configured', 'interaction.session.orchestration.decision', 'interaction.session.platform.released', 'interaction.session.published', 'interaction.session.received', 'interaction.session.reserved']

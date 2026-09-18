@@ -1,0 +1,37 @@
+=== versioned identifiers (count) ===
+  15 orchestration_decisions_v1
+  11 orchestration_accounting_v1
+  10 coordination_sources_v1
+   9 orchestration_tasks_v2
+   8 platform_work_v1
+   8 platform_decisions_v1
+   8 orchestration_artifacts_v1
+   8 coordination_inspections_v1
+   7 platform_candidates_v1
+   7 orchestration_v1
+   7 coordination_v1
+   5 platform_no_entry_v1
+   5 exact_v1
+   4 platform_v1
+   3 bounded_v2
+   1 orchestration_tasks_v1
+
+=== CREATE TABLE statements ===
+runner/session.py:99:                "CREATE TABLE run (id INTEGER PRIMARY KEY CHECK(id=1), run_id TEXT, status TEXT, generation INTEGER, enabled INTEGER, agents TEXT, limits TEXT)",
+runner/session.py:100:                "CREATE TABLE work (id TEXT PRIMARY KEY, version INTEGER, declaration TEXT, status TEXT, owner TEXT, epoch INTEGER, expires REAL, generation INTEGER)",
+runner/session.py:101:                "CREATE TABLE calls (id TEXT PRIMARY KEY, work_id TEXT REFERENCES work(id), version INTEGER, epoch INTEGER, action TEXT, request TEXT, state TEXT, prompt INTEGER, maximum INTEGER, reserved INTEGER, response TEXT, actual INTEGER, permission TEXT)",
+runner/session.py:102:                "CREATE TABLE artifacts (ref TEXT PRIMARY KEY, work_id TEXT UNIQUE REFERENCES work(id), version INTEGER, publisher TEXT, value TEXT, call_id TEXT, response_digest TEXT, permission TEXT)",
+runner/session.py:103:                "CREATE TABLE events (seq INTEGER PRIMARY KEY AUTOINCREMENT, value TEXT)",
+runner/platform.py:80:                    "CREATE TABLE platform_v1 (id INTEGER PRIMARY KEY CHECK(id=1), limits TEXT)",
+runner/platform.py:81:                    "CREATE TABLE platform_work_v1 (work_id TEXT PRIMARY KEY REFERENCES work(id), created REAL, parent TEXT REFERENCES work(id), depth INTEGER, calls_cap INTEGER, tokens_cap INTEGER, original_calls INTEGER, original_tokens INTEGER)",
+runner/platform.py:82:                    "CREATE TABLE platform_candidates_v1 (call_id TEXT PRIMARY KEY REFERENCES calls(id), work_id TEXT REFERENCES work(id), version INTEGER, proposer TEXT, certified_loss REAL, artifact_digest TEXT)",
+runner/platform.py:83:                    "CREATE TABLE platform_no_entry_v1 (work_id TEXT PRIMARY KEY REFERENCES work(id), until REAL, reason TEXT)",
+runner/platform.py:84:                    "CREATE TABLE platform_decisions_v1 (work_id TEXT PRIMARY KEY REFERENCES work(id), version INTEGER, value TEXT)",
+runner/orchestration.py:74:                "CREATE TABLE orchestration_v1 (id INTEGER PRIMARY KEY CHECK(id=1), spec TEXT, spec_digest TEXT, template_version TEXT, validator TEXT)",
+runner/orchestration.py:75:                "CREATE TABLE orchestration_tasks_v2 (work_id TEXT PRIMARY KEY REFERENCES work(id), version INTEGER, kind TEXT, agents TEXT, declaration TEXT, parent TEXT, origin TEXT)",
+runner/orchestration.py:76:                "CREATE TABLE orchestration_artifacts_v1 (ref TEXT PRIMARY KEY REFERENCES artifacts(ref), work_id TEXT REFERENCES work(id), version INTEGER, kind TEXT, lineage TEXT)",
+runner/orchestration.py:77:                "CREATE TABLE orchestration_accounting_v1 (call_id TEXT PRIMARY KEY REFERENCES calls(id), contract TEXT, prompt_bound INTEGER, reported TEXT, violation TEXT)",
+runner/orchestration.py:78:                "CREATE TABLE orchestration_decisions_v1 (seq INTEGER PRIMARY KEY AUTOINCREMENT, work_id TEXT REFERENCES work(id), version INTEGER, call_id TEXT, receipt_digest TEXT, step INTEGER, decision TEXT, reason TEXT, validator TEXT)",
+runner/evidence.py:44:                "CREATE TABLE coordination_v1 (id INTEGER PRIMARY KEY CHECK(id=1), limits TEXT)",
+runner/evidence.py:45:                "CREATE TABLE coordination_sources_v1 (id TEXT PRIMARY KEY, version INTEGER, readers TEXT, fingerprint TEXT)",
+runner/evidence.py:46:                "CREATE TABLE coordination_inspections_v1 (work_id TEXT PRIMARY KEY REFERENCES work(id), key TEXT, source_id TEXT REFERENCES coordination_sources_v1(id), source_version INTEGER, tool_ref TEXT, tool_version TEXT, arguments TEXT, fingerprint TEXT, readers TEXT)",

@@ -1,0 +1,119 @@
+### H CHURN — LINE CHURN, RE-TOUCH GAPS, CHURN x COMPLEXITY INTERSECTION, COVERAGE
+
+=== LINE CHURN PER FILE EVER PRESENT IN SCOPE ===
+$ git log --numstat --format='C|%h|%ad' --date=short -- runner src/pheroos_interaction tests/interaction | (aggregate)
+file                                                    +      -  churn commits
+runner/evidence.py                                    583    267    850       3
+tests/interaction/test_colony.py                      689      0    689       1
+runner/session.py                                     540    125    665       4
+src/pheroos_interaction/sequential.py                 577      0    577       1
+src/pheroos_interaction/visibility.py                 273    273    546       2
+tests/interaction/test_platform_conformance.py        501      0    501       1
+runner/host.py                                        241    241    482       2
+runner/platform.py                                    461      0    461       1
+tests/interaction/test_execution.py                   309    124    433       2
+tests/interaction/test_inspection_runner.py           410      1    411       2
+runner/inspection.py                                  394      5    399       2
+runner/adapters.py                                    190    190    380       2
+src/pheroos_interaction/policy.py                     190    190    380       2
+runner/accounting.py                                  185    185    370       3
+tests/interaction/test_sequential.py                  361      0    361       1
+tests/interaction/test_provider_worker.py             357      0    357       1
+tests/interaction/test_commitment.py                  351      0    351       1
+src/pheroos_interaction/commitment.py                 344      0    344       1
+tests/interaction/test_platform_atomicity.py          332      0    332       1
+tests/interaction/test_received_publication.py        320      0    320       1
+runner/colony.py                                      286      0    286       1
+tests/interaction/test_replay.py                      140    140    280       2
+tests/interaction/test_control_limits.py              255      0    255       1
+tests/interaction/test_artifact_access.py             204      0    204       1
+tests/interaction/test_platform_policies.py           202      0    202       1
+tests/interaction/test_visibility.py                  100    100    200       2
+src/pheroos_interaction/inspection.py                 179      0    179       1
+tests/interaction/test_layout.py                      132     42    174       3
+tests/interaction/test_inspection.py                  171      0    171       1
+runner/worker.py                                      169      0    169       1
+tests/interaction/test_accounting.py                   80     80    160       2
+tests/interaction/test_host.py                         76     76    152       2
+runner/driver.py                                       95     48    143       2
+tests/interaction/test_leases.py                      132      0    132       1
+runner/cli.py                                          77     48    125       2
+runner/policies.py                                    112      0    112       1
+runner/provider.py                                    100      0    100       1
+tests/interaction/test_inspection_cli.py               73      0     73       1
+src/pheroos_interaction/leases.py                      69      0     69       1
+src/pheroos_interaction/records.py                     27      0     27       1
+runner/identity.py                                     21      0     21       1
+src/pheroos_interaction/ports.py                       10     10     20       2
+tests/interaction/conftest.py                          12      1     13       2
+src/pheroos_interaction/__init__.py                     3      1      4       2
+runner/__init__.py                                      2      1      3       2
+
+=== RE-TOUCH GAPS, TRACKED SCOPE FILES WITH >=2 COMMITS ===
+runner/__init__.py                               n=2  gaps: 0d13h12m   max=0d  within14d=True
+runner/cli.py                                    n=2  gaps: 0d13h12m   max=0d  within14d=True
+runner/driver.py                                 n=2  gaps: 0d13h12m   max=0d  within14d=True
+runner/evidence.py                               n=3  gaps: 0d13h12m | 0d6h37m   max=0d  within14d=True
+runner/inspection.py                             n=2  gaps: 0d6h37m   max=0d  within14d=True
+runner/session.py                                n=4  gaps: 0d13h12m | 0d6h37m | 1d3h54m   max=1d  within14d=True
+src/pheroos_interaction/__init__.py              n=2  gaps: 0d13h12m   max=0d  within14d=True
+tests/interaction/conftest.py                    n=2  gaps: 0d13h12m   max=0d  within14d=True
+tests/interaction/test_execution.py              n=2  gaps: 0d13h12m   max=0d  within14d=True
+tests/interaction/test_inspection_runner.py      n=2  gaps: 0d6h37m   max=0d  within14d=True
+tests/interaction/test_layout.py                 n=3  gaps: 0d13h12m | 1d10h31m   max=1d  within14d=True
+(24 of 35 tracked scope files have exactly 1 commit and therefore no gap)
+
+=== RADON CC, TRACKED SCOPE SOURCE ===
+$ /tmp/audit-venv/bin/radon cc -s --json $(git ls-files runner src/pheroos_interaction)
+file                                           blocks  sumCC  maxCC
+runner/platform.py                                 31    189     35
+runner/session.py                                  40    177     22
+runner/inspection.py                               18    176     46
+src/pheroos_interaction/sequential.py              44    149     12
+runner/colony.py                                    5     97     64
+runner/evidence.py                                 19     83     14
+runner/worker.py                                    5     81     43
+src/pheroos_interaction/commitment.py              20     74     20
+src/pheroos_interaction/inspection.py              14     62     10
+runner/policies.py                                  5     37     13
+runner/provider.py                                  5     37     11
+src/pheroos_interaction/leases.py                   1     12     12
+runner/cli.py                                       1     10     10
+runner/driver.py                                    5      9      3
+runner/identity.py                                  1      6      6
+src/pheroos_interaction/records.py                  4      4      1
+TOTAL TRACKED sumCC                                     1203
+
+=== RADON CC, UNTRACKED SCOPE SOURCE (no churn signal possible) ===
+$ /tmp/audit-venv/bin/radon cc -s --json runner/{anthropic,audit,contracts,orchestration,runtime,runtime_policies,tools}.py
+file                                           blocks  sumCC  maxCC
+runner/contracts.py                                32    297     56
+runner/runtime.py                                  38    250     31
+runner/orchestration.py                            43    249     23
+runner/anthropic.py                                31    170     13
+runner/tools.py                                    39    142     16
+runner/audit.py                                    18    141     68
+runner/runtime_policies.py                         33     69      7
+TOTAL UNTRACKED sumCC                                   1318
+
+=== COVERAGE: LOC TRACKED vs UNTRACKED IN SCOPE ===
+              srcFiles   srcLOC  testFiles  testLOC
+TRACKED             18     3659         17     4674
+UNTRACKED            7     3934          9     5913
+source LOC untracked share: 51.8%  (3934 of 7593)
+ALL LOC untracked share:    54.2%  (9847 of 18180)
+
+=== OFF-MAIN COMMITS TOUCHING SCOPE (not reachable from HEAD) ===
+$ git log --all --not HEAD --format='%h %ad %s' --date=short -- runner src/pheroos_interaction tests/interaction
+cf93cb5 2026-09-14 Trim trailing interface whitespace
+a2e1af3 2026-09-14 Separate interaction core, runner, and current experiments
+a51deef 2026-09-14 Verify isolated installation and exact replay; document the reduced profile
+4dadd2c 2026-09-14 Extract current visibility and local execution without core authority
+
+=== eedddc0 IS A FLATTENED SQUASH: scope tree == unmerged cf93cb5 scope tree ===
+  cf93cb5:runner vs eedddc0:runner -> SAME
+  cf93cb5:src/pheroos_interaction vs eedddc0:src/pheroos_interaction -> SAME
+  cf93cb5:tests/interaction vs eedddc0:tests/interaction -> SAME
+$ git log -1 --format='%h parents:%p' eedddc0
+eedddc0 parents:053a0d3
+(single parent => not a merge; incremental branch history is NOT in main)

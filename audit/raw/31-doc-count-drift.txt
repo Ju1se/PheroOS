@@ -1,0 +1,12 @@
+claims found in docs/orchestration-verification.md: 8
+file                                        claimed   actual  verdict
+test_orchestration_authority.py                  77       77  ok
+test_orchestration_recovery.py                   50       50  ok
+test_orchestration_workflow.py                   43       43  ok
+test_orchestration_audit.py                      43       48  DRIFTED
+test_anthropic.py                               144      144  ok
+test_tools.py                                    35       35  ok
+test_orchestration_hardening.py                  28       28  ok
+test_orchestration_colony.py                     35       39  DRIFTED
+
+drifted claims: 2 of 8

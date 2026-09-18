@@ -1,0 +1,4 @@
+CLOCK_REF	runner/session.py:39	Session::__init__	time.time	self.path, self.clock = str(path), clock or time.time
+NONDET_CALL	tests/interaction/test_leases.py:17	seeded_sample	random.Random	rng = random.Random(seed)
+NONDET_CALL	tests/interaction/test_sequential.py:61	test_horizon_one_reproduces_plan_inspection_on_seeded_random_configurations	random.Random	rng=random.Random(7)
+NONDET_CALL	tests/interaction/test_sequential.py:144	test_certificate_encloses_every_fixed_tree_and_is_exact_at_horizon_one	random.Random	rng=random.Random(11)

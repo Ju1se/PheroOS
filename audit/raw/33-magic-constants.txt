@@ -1,0 +1,31 @@
+bare numeric decision constants: 30
+  runner/anthropic.py:177  if type(value) is not list or len(value) > 64:
+  runner/anthropic.py:359  if status != 200:
+  runner/contracts.py:94  default in _names(): def _names(values, name, maximum=64):
+  runner/contracts.py:269  if type(workers) is not dict or not workers or len(workers) > 64:
+  runner/contracts.py:461  if type(config) is not dict or len(wire(config).encode()) > 2048:
+  runner/contracts.py:478  if (type(fingerprint) is not str or len(fingerprint) != 64
+  runner/contracts.py:519  if type(value["fixtures"]) is not dict or len(value["fixtures"]) > 64:
+  runner/contracts.py:125  if type(properties) is not dict or len(properties) > 64:
+  runner/contracts.py:245  if type(stops) is not list or len(stops) > 4 or any(type(s) is not str or not 0 < len(s) <= 64 for s in stops)
+  runner/contracts.py:129  if type(key) is not str or not key or len(key) > 64:
+  runner/contracts.py:151  if (type(enum) is not list or not enum or len(enum) > 64 or len(set(enum)) != len(enum)
+  runner/contracts.py:344  if type(item) is not list or not item or len(item) > 1024:
+  runner/contracts.py:152  or any(type(item) is not str or len(item) > 256 for item in enum)):
+  runner/inspection.py:55  default in _load(): def _load(path, limit=65536):
+  runner/inspection.py:72  if type(value) is not str or not value.strip() or len(value.encode()) > 128:
+  runner/inspection.py:108  if type(readers) is not list or not readers or len(readers) > 32:
+  runner/inspection.py:115  if type(fingerprint) is not str or len(fingerprint) != 64 or any(c not in "0123456789abcdef" for c in fingerpr
+  runner/inspection.py:149  if type(raw) is not str or len(raw.encode()) > 256 or sha256(raw.encode()).hexdigest() != expected["state_fing
+  runner/platform.py:31  default in _text(): def _text(value, maximum=4096):
+  runner/platform.py:309  default in renew(): def renew(self, lease, lease_seconds=60):
+  runner/provider.py:80  if type(extracted) not in (tuple, list) or len(extracted) != 3:
+  runner/runtime_policies.py:196  default in __init__(): def __init__(self, latency_cost, decision_time, quorum_frac=.45, margin=.05, seed="colony"
+  runner/session.py:26  if type(value) is not str or not value.strip() or len(value.encode()) > 128:
+  src/pheroos_interaction/commitment.py:279  if abs(fsum(probs) - 1) > 1e-12:
+  src/pheroos_interaction/inspection.py:145  default in plan_inspection(): def plan_inspection(assumptions, losses, query_cost, epsilon=1e-12):
+  src/pheroos_interaction/sequential.py:204  default in plan_tree(): def plan_tree(prior, channels, losses, query_cost, horizon, epsilon=1e-12):
+  src/pheroos_interaction/sequential.py:244  default in choose_horizon(): def choose_horizon(prior, channels, losses, query_cost, max_calls, epsilon=1e-12):
+  src/pheroos_interaction/sequential.py:436  default in certify_worst_case(): def certify_worst_case(node, prior, box, losses, query_cost, subdivisions=3):
+  src/pheroos_interaction/sequential.py:536  default in plan_sequential(): def plan_sequential(assumptions, losses, query_cost, horizon, epsilon=1e-12, certify=True)
+  src/pheroos_interaction/sequential.py:426  if len(box) != 4:

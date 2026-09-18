@@ -1,0 +1,8 @@
+validated format          : orchestration-workflow-v1
+task keys (first model)   : ['agent', 'decomposition', 'dependencies', 'id', 'instructions', 'kind', 'limits', 'output_schema', 'reads', 'tools', 'version']
+OrchestrationSession.create with a v1 spec: SUCCEEDED
+durable orchestration tables: ['orchestration_v1', 'orchestration_tasks_v2', 'orchestration_artifacts_v1', 'orchestration_accounting_v1', 'orchestration_decisions_v1']
+   row -> work_id=produce   kind=model  agents=["producer"]
+   row -> work_id=review    kind=model  agents=["reviewer"]
+   row -> work_id=finalize  kind=host   agents=["host"]
+stored spec format        : orchestration-workflow-v1

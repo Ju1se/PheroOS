@@ -1,0 +1,5 @@
+replay status     : PASS
+checks / failures : 71 / 0
+new model/tool    : 0 0
+clock/random calls during replay: NONE
+CLAIM audit.py:7 'takes no clock reading' -> HOLDS

@@ -1,0 +1,21 @@
+measure sections: 8
+verdicts: 15
+  refuted            : 4
+  severity corrected : 11
+  tag upgrades caught: 7
+  reproduced exactly : 15
+   refuted=False sev=critical  tag=measured  upg=False Churn is NOT RUN for 54.2% of the audited codebase: 16 untracked files c
+   refuted=False sev=medium    tag=inferred  upg=True  The audited scope has ~2 days of history inside a 99-day repo, so churn 
+   refuted=False sev=medium    tag=measured  upg=False [measured revert] 1485 lines added and removed within 13 hours: 10 files
+   refuted=False sev=high      tag=executed  upg=False replay_run is one 227-line function at CC 68, and its branch density hid
+   refuted=False sev=high      tag=measured  upg=False runner/contracts.py scores maintainability index 0.00 with six (not seve
+   refuted=False sev=high      tag=executed  upg=False CI depends on six input files that exist in no checkout of the repositor
+   refuted=False sev=medium    tag=executed  upg=True  Three of the four designed error boundaries discard the exception messag
+   refuted=False sev=high      tag=executed  upg=False The tracked file set does not close: the installed console script raises
+   refuted=True  sev=low       tag=inferred  upg=True  Replay's readable_artifacts ignores the `agent` argument, so offline aud
+   refuted=False sev=medium    tag=executed  upg=False No lockfile exists anywhere; CI resolves five unpinned packages from PyP
+   refuted=True  sev=low       tag=inferred  upg=True  CoordinationSession.dispatch copies Session.dispatch verbatim instead of
+   refuted=True  sev=not-a-finding tag=inferred  upg=True  waiting_rule clocks a commitment decision on the live wall clock while d
+   refuted=True  sev=not-a-finding tag=inferred  upg=True  pip-audit reports the build dependency clean while auditing zero package
+   refuted=False sev=low       tag=measured  upg=True  sequential.shared_map is a 17-line byte-identical copy of inspection._sh
+   refuted=False sev=medium    tag=measured  upg=False run_colony is a fork of run_worker: 53 lines identical or rename-only, w

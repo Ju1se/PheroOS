@@ -1,0 +1,106 @@
+=== COMMITMENTS definition context ===
+        latency, decision_time, quorum, margin, seed = self.arguments
+        return commitment.cross_inhibition_rule(commitment.CommitmentConfig(
+            abstain_loss=abstain_loss, latency_cost=latency, decision_time=decision_time,
+            quorum_frac=quorum, margin=margin, seed=seed))
+
+
+# ---------------------------------------------------------------- the plane
+
+ALLOCATIONS = {"fifo": FIFOAllocation, "threshold": ThresholdAllocation,
+               "response": ResponseThresholdAllocation}
+LEASES = {"fixed": FixedLease, "evaporation": EvaporationLease}
+COMMITMENTS = {"min_loss": MinLossCommitment, "optimal_stopping": OptimalStoppingCommitment,
+               "cross_inhibition": CrossInhibitionCommitment}
+
+
+class RuntimePolicies:
+    """Runtime allocation and lease policies, plus an available platform commitment adapter.
+
+    The runtime asks for TWO decisions, not three: which ready work to claim and how
+    long its lease runs. Commitment is a capability of the platform's own commit
+    transition that this plane can supply a rule for; the runtime never reaches for
+    it, so ``describe`` reports it apart from what actually ran.
+    """
+
+    def __init__(self, allocation=None, lease=None, commitment=None):
+        self.allocation = allocation or FIFOAllocation()
+        self.lease = lease or FixedLease()
+        self.commitment = commitment or MinLossCommitment()
+
+    @classmethod
+    def from_spec(cls, spec):
+        """Build the plane from the workflow's declared ``policies`` block, or the baseline."""
+        declared = spec.get("policies") or {}
+        slots = {}
+        for slot, registry in (("allocation", ALLOCATIONS), ("lease", LEASES)):
+            config = declared.get(slot)
+            if config is None:
+                continue
+            options = {key: value for key, value in config.items() if key != "kind"}
+            if config["kind"] in ("threshold", "response"):
+                options["capacity"] = spec["capacity"]
+            slots[slot] = registry[config["kind"]](**options)
+        return cls(**slots)
+
+    def describe(self, commitment_decisions=None):
+        """What actually ran, kept apart from what was merely available.
+
+        Reporting the commitment arm beside the allocation and lease arms would imply
+        L1 was exercised. It is not: the runtime has no entry point for it. The arms
+        that did run are also declared in the frozen spec, so they are part of the
+        run's identity. ``commitment_decisions`` is the number of arbitration
+        decisions the ledger actually recorded, which is zero while no arbitration
+        locus exists.
+        """
+        capability = {"name": self.commitment.name}
+        if commitment_decisions is not None:
+            capability["active_decisions"] = commitment_decisions
+        return {"runtime_policies": {"allocation": self.allocation.name,
+                                     "lease": self.lease.name},
+                "platform_capabilities": {"commitment": capability}}
+
+    def select_work(self, ready, context):
+        """Which ready work this agent claims now, or None to defer to cheaper capacity."""
+        chosen = self.allocation.select(ready, context)
+        if chosen is not None and chosen not in {row["id"] for row in ready}:
+            raise ContractError("the allocation policy chose work outside the ready queue")
+        return chosen
+
+    def select_host_work(self, ready):
+        """Ready order for the host finalizer.
+
+        The host is a reserved identity with no model configuration, not a worker: it
+        has no price, no cheaper alternatives and no response threshold. Inventing a
+        cost for it just to reuse the worker interface would fabricate an economic
+        parameter that does not exist, so this is a deliberate domain distinction.
+        """
+        return policies.pick_fifo(ready)
+
+    def lease_duration(self, task_kind=None, agent=None):
+        return self.lease.duration(task_kind, agent)
+
+    def commitment_rule(self, abstain_loss):
+        """The rule for ``PlatformSession.commit``: candidate arbitration only.
+
+        Defined but not reached by the runtime: orchestration gives each task one
+        agent and ``max_candidates`` of one, so no arbitration locus exists. It
+        chooses among admissible candidates and never decides whether one is correct;
+        a deterministic checker's verdict is not something it may overturn.
+        """
+        return self.commitment.rule(abstain_loss)
+
+=== COMMITMENTS references repo-wide ===
+runner/runtime_policies.py:211:COMMITMENTS = {"min_loss": MinLossCommitment, "optimal_stopping": OptimalStoppingCommitment,
+
+=== commitment_rule references ===
+runner/runtime_policies.py:281:    def commitment_rule(self, abstain_loss):
+tests/interaction/test_orchestration_colony.py:346:    assert callable(engine.policies.commitment_rule)
+tests/interaction/test_orchestration_colony.py:368:    assert plane.commitment_rule(0.20) is None
+tests/interaction/test_orchestration_colony.py:370:                            rule=plane.commitment_rule(0.20))
+tests/interaction/test_orchestration_colony.py:377:    rule = plane.commitment_rule(0.20)
+tests/interaction/test_orchestration_colony.py:386:def test_a_commitment_rule_abstains_when_every_candidate_is_worse_than_abstaining(tmp_path):
+tests/interaction/test_orchestration_colony.py:391:                            rule=plane.commitment_rule(0.20))
+tests/interaction/test_orchestration_colony.py:401:                          rule=plane.commitment_rule(1.0))
+tests/interaction/test_orchestration_colony.py:407:                             rule=plane.commitment_rule(1.0))
+docs/orchestration-architecture.md:349:refuses orchestration work outright. So the plane exposes `commitment_rule(...)`, it is

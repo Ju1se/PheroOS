@@ -1,0 +1,5 @@
+session module file: /Users/scottxie/Desktop/multi-agent/runner/session.py
+Session.__init__ source: def __init__(self, path, *, clock=None):
+        self.path, self.clock = str(path), clock or time.time
+clock is time.time -> True
+clock() type -> float value ~ 1789707308

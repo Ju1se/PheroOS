@@ -1,0 +1,28 @@
+=== admit_children callers ===
+runner/runtime.py:502:                ids = session.admit_children(lease, call["id"], proposal["children"],
+runner/orchestration.py:572:    def admit_children(self, lease, source_call_id, children, *, join_reserve=None, lease_seconds=60):
+tests/interaction/test_orchestration_authority.py:674:        session.admit_children(lease, call_id, children)
+tests/interaction/test_orchestration_authority.py:683:    unreachable through ``admit_children``; it stays covered by the platform suite.
+tests/interaction/test_orchestration_authority.py:704:        session.admit_children(lease, call_identity(RUN_ID, "totals", 1, "model", 0), [child("books")])
+tests/interaction/test_orchestration_authority.py:735:def test_admit_children_refuses_more_children_than_the_task_declares(tmp_path):
+tests/interaction/test_orchestration_authority.py:740:        session.admit_children(lease, call_id, [child(name) for name in ("a", "b", "c", "d")])
+tests/interaction/test_orchestration_authority.py:755:        session.admit_children(lease, second, [child("more")])
+tests/interaction/test_orchestration_hardening.py:91:def test_admit_children_refuses_the_step_reserve_atomically(tmp_path):
+tests/interaction/test_orchestration_hardening.py:105:        session.admit_children(lease, call_id, children)
+docs/orchestration-verification.md:172:4. **`admit_children` enforced only the run-level child bound**, not the task's own
+docs/orchestration-verification.md:345:  is unreachable through `admit_children`**, because a task's declared bound is now
+
+=== body of admit_children 572-631, lease_seconds occurrences ===
+1:    def admit_children(self, lease, source_call_id, children, *, join_reserve=None, lease_seconds=60):
+
+=== _duration validation in siblings ===
+runner/orchestration.py:469:        _duration(lease_seconds)
+runner/platform.py:310:        _duration(lease_seconds)
+runner/platform.py:314:            _duration(expires)
+runner/platform.py:322:        _duration(until)
+runner/platform.py:399:        _duration(lease_seconds)
+runner/colony.py:135:    _duration(lease_seconds)
+runner/colony.py:137:        _duration(wait_hold_seconds)
+runner/session.py:31:def _duration(value):
+runner/session.py:153:        _duration(lease_seconds)
+runner/session.py:381:        _duration(lease_seconds)

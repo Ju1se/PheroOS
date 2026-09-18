@@ -1,0 +1,9 @@
+response 1                : {"adapter_elapsed_ns": 7542, "artifact": {"value": 42}, "completion_tokens": 0, "prompt_tokens": 0, "tool_ref": "t"}
+response 2                : {"adapter_elapsed_ns": 39209, "artifact": {"value": 42}, "completion_tokens": 0, "prompt_tokens": 0, "tool_ref": "t"}
+artifacts identical       : True
+adapter_elapsed_ns 1 vs 2 : 7542 39209
+receipt_digest run 1      : 680d7bbf24acb3c0a4e4e7c212e0ac183228f60b9b808b081b507bf92d3719fe
+receipt_digest run 2      : d5b76119f42e4108f3fb915b51c721646547f73a27597e93b72e4e9dc7de8f4e
+DIGESTS EQUAL             : False
+
+digest(response w/o adapter_elapsed_ns) equal: True

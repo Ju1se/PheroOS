@@ -1,0 +1,10 @@
+== _detail: is provider-controlled text bounded? ==
+  body bytes in        : 205038
+  _detail() chars out  : 200516
+  MAX_DETAIL           : 512
+  message contribution : 512 (expect <= MAX_DETAIL)
+  type contribution    : 200000 chars, UNTRUNCATED
+
+== FakeTransport: byte bound on a script-supplied response? ==
+  MAX_BODY_BYTES       : 1048576
+  returned text chars  : 3000000  -> returned WITHOUT a transport byte bound

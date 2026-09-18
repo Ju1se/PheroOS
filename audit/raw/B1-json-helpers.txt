@@ -1,0 +1,81 @@
+########## SET A: JSON helpers — runner/anthropic.py vs runner/inspection.py
+### COMMAND: grep -n '_unique\|def _parse\|def _read' runner/anthropic.py runner/inspection.py runner/runtime.py
+runner/anthropic.py:54:def _unique(pairs):
+runner/anthropic.py:63:def _parse(raw):
+runner/anthropic.py:68:def _read(path, limit):
+runner/inspection.py:33:def _unique(pairs):
+runner/inspection.py:42:def _parse(raw):
+runner/inspection.py:47:def _read(path, limit):
+runner/runtime.py:765:def _read(path, limit=1 << 20):
+runner/runtime.py:778:def _unique(pairs):
+
+=== runner/anthropic.py:54-76 ===
+def _unique(pairs):
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError("duplicate JSON field")
+        result[key] = value
+    return result
+
+
+def _parse(raw):
+    return json.loads(raw, object_pairs_hook=_unique,
+                      parse_constant=lambda value: (_ for _ in ()).throw(ValueError("nonfinite JSON")))
+
+
+def _read(path, limit):
+    with Path(path).open("rb") as stream:
+        raw = stream.read(limit + 1)
+    if len(raw) > limit:
+        raise ValueError("input exceeds byte bound")
+    return raw
+
+
+def _string(value, name, maximum=None):
+=== runner/inspection.py:33-55 ===
+def _unique(pairs):
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError("duplicate JSON field")
+        result[key] = value
+    return result
+
+
+def _parse(raw):
+    return json.loads(raw, object_pairs_hook=_unique,
+                      parse_constant=lambda value: (_ for _ in ()).throw(ValueError("nonfinite JSON")))
+
+
+def _read(path, limit):
+    with Path(path).open("rb") as stream:
+        raw = stream.read(limit + 1)
+    if len(raw) > limit:
+        raise ValueError("input exceeds byte bound")
+    return raw
+
+
+def _load(path, limit=65536):
+=== runner/runtime.py:760-780 ===
+# ---------------------------------------------------------------- host entry points
+
+FROZEN = "orchestration-run-v1"
+
+
+def _read(path, limit=1 << 20):
+    with Path(path).open("rb") as stream:
+        raw = stream.read(limit + 1)
+    if len(raw) > limit:
+        raise ValueError("input exceeds byte bound")
+    return raw
+
+
+def _load(path, limit=1 << 20):
+    return json.loads(_read(path, limit), object_pairs_hook=_unique,
+                      parse_constant=lambda value: (_ for _ in ()).throw(ValueError("nonfinite JSON")))
+
+
+def _unique(pairs):
+    out = {}
+    for key, value in pairs:
