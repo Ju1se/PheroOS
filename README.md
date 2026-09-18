@@ -161,9 +161,11 @@ This layer adds no LLM decomposition, message channels, or automatic paid runs, 
 
 An **L2–L3 governed runtime with an L1-compatible commitment boundary**: a thin, framework-independent runtime that lets a few declared agents cooperate through authorized artifacts, with every model
 call and every tool call admitted, reserved and settled by the same ledger. It is opt-in: the `inspect` command never creates an
-orchestration session. See [docs/orchestration-architecture.md](docs/orchestration-architecture.md) for authority, state,
+orchestration session. See [docs/history/orchestration-architecture-2026-09-17.md](docs/history/orchestration-architecture-2026-09-17.md)
+(retired, see `docs/decisions/0001`) for authority, state,
 accounting, recovery and the extension boundaries, and
-[docs/orchestration-verification.md](docs/orchestration-verification.md) for what was actually run, what was observed, the
+[docs/history/orchestration-verification-2026-09-17.md](docs/history/orchestration-verification-2026-09-17.md)
+(retired) for what was actually run, what was observed, the
 defects found during verification, and what was not tested.
 
 > Agents propose actions. The trusted runtime validates them. PheroOS admits and records execution. Model output never grants
