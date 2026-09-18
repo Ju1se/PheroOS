@@ -15,3 +15,14 @@ jobs:
         run: |
           pheroos-interaction inspect --config "$GITHUB_WORKSPACE/experiments/current/inspection-example/request.json" --source "$GITHUB_WORKSPACE/experiments/current/inspection-example/source" --output "$RUNNER_TEMP/inspection"
           pheroos-interaction inspect-replay --run "$RUNNER_TEMP/inspection"
+      - name: Credential-free orchestration examples and offline replay
+        working-directory: /tmp
+        env:
+          EXAMPLES: ${{ github.workspace }}/examples/orchestration
+        run: |
+          for name in workflow workflow-expected workflow-decomposition; do
+            script="$EXAMPLES/script${name#workflow}.json"
+            [ "$name" = workflow ] && script="$EXAMPLES/script.json"
+            pheroos-interaction orchestrate --workflow "$EXAMPLES/$name.json" --script "$script" --output "$RUNNER_TEMP/$name"
+            pheroos-interaction orchestrate-replay --run "$RUNNER_TEMP/$name"
+          done

@@ -4,6 +4,7 @@ A local binary inspection tool: it decides whether to inspect from explicitly de
 It keeps only the pure policy, source permissions, durable reservations, call caps, cancellation, never-retry for unknowns, and plan/receipt replay.
 An optional bounded platform layer can enumerate and decompose work, handle leases, propose candidates, and commit; the default inspection command still performs one-step inspection.
 The colony control layer composes a multi-step inspection tree, commitment rules, allocation thresholds, and lease TTLs into one bounded worker; the default command does not enable it.
+An opt-in agent orchestration layer runs bounded model and tool steps for a few declared agents over the same ledger, with artifact-based collaboration, crash recovery and offline audit replay; it has its own commands and is never enabled implicitly.
 
 ## Install and run
 
@@ -38,6 +39,7 @@ a durable reservation, and a passed permission check. The example reads only loc
 - `src/pheroos_interaction/commitment.py`: cross-inhibition commit rule and optimal stopping with recall.
 - `src/pheroos_interaction/leases.py`: one-dimensional loss minimization for the lease TTL.
 - `runner/colony.py`: the bounded colony worker composing L0–L3.
+- `runner/contracts.py`, `tools.py`, `anthropic.py`, `orchestration.py`, `runtime.py`, `audit.py`: the opt-in agent orchestration layer.
 
 The installation contains only `pheroos_interaction` and `pheroos_interaction.runner`.
 Old experiments, old policies, and research commands have been deleted; no real model service, credentials, or provider CLI is configured. Historical raw data stays local under
@@ -154,6 +156,77 @@ without new tuning constants; apart from declared draws everything is determinis
 enabled, WAIT writes a no-entry mark, which is a host scheduling hint. Revision 10 of the reference implementation labels the cross-inhibition ODE as analysis-only
 and uses optimal stopping with recall as the rule for a centralized ledger; here both are explicit configuration choices.
 This layer adds no LLM decomposition, message channels, or automatic paid runs, claims no statistical optimality, and is not a framework-comparison conclusion.
+
+## Agent orchestration layer
+
+An **L2–L3 governed runtime with an L1-compatible commitment boundary**: a thin, framework-independent runtime that lets a few declared agents cooperate through authorized artifacts, with every model
+call and every tool call admitted, reserved and settled by the same ledger. It is opt-in: the `inspect` command never creates an
+orchestration session. See [docs/orchestration-architecture.md](docs/orchestration-architecture.md) for authority, state,
+accounting, recovery and the extension boundaries, and
+[docs/orchestration-verification.md](docs/orchestration-verification.md) for what was actually run, what was observed, the
+defects found during verification, and what was not tested.
+
+> Agents propose actions. The trusted runtime validates them. PheroOS admits and records execution. Model output never grants
+> authority to itself.
+
+```sh
+pheroos-interaction orchestrate --workflow examples/orchestration/workflow.json \
+  --script examples/orchestration/script.json --output output/orchestration
+pheroos-interaction orchestrate-replay --run output/orchestration
+pheroos-interaction orchestrate-resume --run output/orchestration --script examples/orchestration/script.json
+```
+
+`orchestrate` freezes the workflow into a new output directory and runs it to a terminal outcome; `--max-sweeps` overrides the
+derived bound. `orchestrate-resume` continues only the unfinished work of a recorded run: budgets are not reset, an unresolved
+dispatch is never re-sent, and a settled receipt is consumed rather than repeated. `orchestrate-replay` verifies the record
+offline and exits 0 for PASS, 1 for FAIL and 2 for LIMITED. The examples need no credentials and touch no network.
+
+| Module | Responsibility and boundaries |
+| --- | --- |
+| `runner/contracts.py` | Validated records (agents, tasks, capabilities, limits, fixtures, proposals, outcomes) over a bounded finite-JSON schema subset in which every object is closed. `parse_proposal` accepts exactly one `tool_use` action; anything else is a data-validation failure, never an instruction. |
+| `runner/tools.py` | A small allowlisted registry of read-only tools: validated arguments, capability checks, bounded output, deterministic fixture reads guarded against traversal and symlink escape and verified against the declared content digest. Tools receive a resolver for the calling task's authorized artifacts, never a session. |
+| `runner/anthropic.py` | One concrete provider adapter for the Anthropic Messages API plus a deterministic fake transport that exercises the identical freeze, extract, proposal, tool and recovery paths. Unsupported modes are refused, not translated; retries and redirects are disabled; credentials are read at the transport boundary only. |
+| `runner/orchestration.py` | The ledger extension: per-task capability declarations checked at reservation and dispatch, the `bounded_v2` prompt contract, derived artifacts with lineage, durable decision records, and host-admitted decomposition. |
+| `runner/runtime_policies.py` | The colony policy plane and the runtime's only door to L1–L3: allocation (L2), lease (L3) and candidate commitment (L1), each with a baseline and a colony implementation. An adapter over the existing mechanisms, not a reimplementation; every policy is pure. |
+| `runner/runtime.py` | The bounded step loop and the host entry points. One call per sweep; state is reconciled from receipts and decisions, never from remembered state. |
+| `runner/audit.py` | Offline replay: read-only, rebuilds every frozen request, re-parses proposals, re-applies the host rules, re-checks accounting. Always zero model and tool calls and no mutation. |
+
+The agent runtime generates behaviour, the platform ledger constrains it, and the colony policy plane regulates collective
+behaviour. **The runtime actively uses L2–L3 and is architecturally compatible with L1 at real candidate-arbitration
+boundaries. L1 is available at the platform candidate-arbitration boundary but is not exercised by the current fixed-DAG
+orchestration workflows.** A workflow declares its arm in one optional `policies` block, which is part of the frozen spec and
+therefore of the run's identity, and each run records the arm it used — so a baseline and a colony run differ only in the
+policy object.
+
+Two honest limits. The L2 capacity model is declared, never inferred from run state: costs are primitive workflow-level facts and
+the policy plane derives the cheapest cost and the count of cheaper workers per task, from that task's own eligible set. With one
+eligible agent per task there is no cheaper capacity, so the shipped fixed-DAG workflows declare `fifo`; a declaration whose cost
+spread no task can use is refused at validation rather than degenerating silently. And host acceptance is a verification rule, not
+a commitment: a commitment policy chooses among admissible candidates and can never turn a checker's FAIL into a PASS. L0, the sequential inspection tree, is deliberately
+not wired into agent reasoning — see the architecture document for why.
+
+The lifecycle of one step is `admit task -> claim -> build authorized context -> freeze request -> reserve -> dispatch ->
+settle receipt -> validate proposal -> admit requested transition -> publish output or continue`. The durable logical operation
+key is `orch:sha256([run, task, version, kind, step])`, with an attempt suffix only after a known pre-dispatch abandonment; it
+survives lease changes and restarts, and a changed request for an existing key is refused. Outcomes are distinct: `success`,
+`rejected`, `abstained`, `dependency_failed`, `budget_exhausted`, `cancelled`, `blocked_unknown` and `error`; a run whose
+tasks all completed but whose acceptance rule rejected the candidate is `rejected`, not `success`, and an empty ready queue is not success, and a failed dependency neither polls forever nor fabricates an artifact.
+
+`examples/orchestration/` holds three credential-free configurations: the fixed two-agent DAG (`workflow.json`), the same shape
+with different agent names, task ids and checker (`workflow-expected.json`, showing the runtime hardcodes nothing), and the
+opt-in decomposition variant (`workflow-decomposition.json`). In each, a producer builds a candidate from a bounded local
+dataset, a reviewer reads only permitted artifacts and runs a deterministic checker bound to the exact candidate digest, and a
+host task applies the declared acceptance rule and publishes a result carrying the candidate reference, the checker evidence and
+the decision provenance.
+
+What this layer does not claim: success means the declared finite checker passed on that exact candidate digest, not that the
+answer is semantically correct; an intermediate artifact is available to an authorized reviewer without being accepted; the
+`bounded_v2` byte-to-token assumption and the prompt overhead are declared parameters, not measurements, and after a recorded
+accounting violation the token cap no longer bounds external billing; different agent identities are not independent evidence and
+a model's stated confidence is never a `certified_loss`; offline replay verifies the record, not the world, and never promises
+that fresh inference reproduces a prior answer. The Anthropic adapter is implemented and tested offline only, against local fake
+transports and a loopback fixture server: no live request was made, and the enable flag is not a spending authorization. This is
+not a comparison with LangGraph or any other framework.
 
 ## Applicability
 
