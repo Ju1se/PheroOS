@@ -1,0 +1,120 @@
+{
+ "format": "fake-model-script-v1",
+ "responses": [
+  {
+   "response": {
+    "content": [
+     {
+      "id": "toolu_d0",
+      "input": {
+       "name": "orders"
+      },
+      "name": "fixture.read",
+      "type": "tool_use"
+     }
+    ],
+    "id": "d0",
+    "model": "fake-model",
+    "role": "assistant",
+    "stop_reason": "tool_use",
+    "type": "message",
+    "usage": {
+     "input_tokens": 850,
+     "output_tokens": 40
+    }
+   },
+   "step": 0,
+   "task": "draft"
+  },
+  {
+   "response": {
+    "content": [
+     {
+      "id": "toolu_d1",
+      "input": {
+       "total_cents": 6499,
+       "totals": [
+        {
+         "category": "books",
+         "cents": 2499
+        },
+        {
+         "category": "grocery",
+         "cents": 600
+        },
+        {
+         "category": "tools",
+         "cents": 3400
+        }
+       ]
+      },
+      "name": "submit_output",
+      "type": "tool_use"
+     }
+    ],
+    "id": "d1",
+    "model": "fake-model",
+    "role": "assistant",
+    "stop_reason": "tool_use",
+    "type": "message",
+    "usage": {
+     "input_tokens": 850,
+     "output_tokens": 80
+    }
+   },
+   "step": 1,
+   "task": "draft"
+  },
+  {
+   "response": {
+    "content": [
+     {
+      "id": "toolu_a0",
+      "input": {
+       "candidate_ref": "draft"
+      },
+      "name": "checker.expected_json",
+      "type": "tool_use"
+     }
+    ],
+    "id": "a0",
+    "model": "fake-model",
+    "role": "assistant",
+    "stop_reason": "tool_use",
+    "type": "message",
+    "usage": {
+     "input_tokens": 850,
+     "output_tokens": 40
+    }
+   },
+   "step": 0,
+   "task": "audit"
+  },
+  {
+   "response": {
+    "content": [
+     {
+      "id": "toolu_a1",
+      "input": {
+       "note": "the draft matched the declared expected answer byte for byte",
+       "verdict": "accept"
+      },
+      "name": "submit_output",
+      "type": "tool_use"
+     }
+    ],
+    "id": "a1",
+    "model": "fake-model",
+    "role": "assistant",
+    "stop_reason": "tool_use",
+    "type": "message",
+    "usage": {
+     "input_tokens": 850,
+     "output_tokens": 60
+    }
+   },
+   "step": 1,
+   "task": "audit"
+  }
+ ]
+}

@@ -1,0 +1,269 @@
+{
+ "format": "fake-model-script-v1",
+ "responses": [
+  {
+   "response": {
+    "content": [
+     {
+      "id": "toolu_t0",
+      "input": {
+       "children": [
+        {
+         "dependencies": [],
+         "instructions": "Read the 'orders' fixture and submit only the books category total.",
+         "limits": {
+          "calls": 4,
+          "model_steps": 3,
+          "rejections": 1,
+          "tokens": 40000,
+          "tool_calls": 2
+         },
+         "name": "books",
+         "reads": [],
+         "tools": [
+          "fixture.read"
+         ]
+        },
+        {
+         "dependencies": [],
+         "instructions": "Read the 'orders' fixture and submit the totals for every category except books.",
+         "limits": {
+          "calls": 4,
+          "model_steps": 3,
+          "rejections": 1,
+          "tokens": 40000,
+          "tool_calls": 2
+         },
+         "name": "rest",
+         "reads": [],
+         "tools": [
+          "fixture.read"
+         ]
+        }
+       ]
+      },
+      "name": "propose_children",
+      "type": "tool_use"
+     }
+    ],
+    "id": "t0",
+    "model": "fake-model",
+    "role": "assistant",
+    "stop_reason": "tool_use",
+    "type": "message",
+    "usage": {
+     "input_tokens": 900,
+     "output_tokens": 120
+    }
+   },
+   "step": 0,
+   "task": "totals"
+  },
+  {
+   "response": {
+    "content": [
+     {
+      "id": "toolu_b0",
+      "input": {
+       "name": "orders"
+      },
+      "name": "fixture.read",
+      "type": "tool_use"
+     }
+    ],
+    "id": "b0",
+    "model": "fake-model",
+    "role": "assistant",
+    "stop_reason": "tool_use",
+    "type": "message",
+    "usage": {
+     "input_tokens": 900,
+     "output_tokens": 40
+    }
+   },
+   "step": 0,
+   "task": "totals.books"
+  },
+  {
+   "response": {
+    "content": [
+     {
+      "id": "toolu_b1",
+      "input": {
+       "total_cents": 2499,
+       "totals": [
+        {
+         "category": "books",
+         "cents": 2499
+        }
+       ]
+      },
+      "name": "submit_output",
+      "type": "tool_use"
+     }
+    ],
+    "id": "b1",
+    "model": "fake-model",
+    "role": "assistant",
+    "stop_reason": "tool_use",
+    "type": "message",
+    "usage": {
+     "input_tokens": 900,
+     "output_tokens": 60
+    }
+   },
+   "step": 1,
+   "task": "totals.books"
+  },
+  {
+   "response": {
+    "content": [
+     {
+      "id": "toolu_s0",
+      "input": {
+       "name": "orders"
+      },
+      "name": "fixture.read",
+      "type": "tool_use"
+     }
+    ],
+    "id": "s0",
+    "model": "fake-model",
+    "role": "assistant",
+    "stop_reason": "tool_use",
+    "type": "message",
+    "usage": {
+     "input_tokens": 900,
+     "output_tokens": 40
+    }
+   },
+   "step": 0,
+   "task": "totals.rest"
+  },
+  {
+   "response": {
+    "content": [
+     {
+      "id": "toolu_s1",
+      "input": {
+       "total_cents": 4000,
+       "totals": [
+        {
+         "category": "grocery",
+         "cents": 600
+        },
+        {
+         "category": "tools",
+         "cents": 3400
+        }
+       ]
+      },
+      "name": "submit_output",
+      "type": "tool_use"
+     }
+    ],
+    "id": "s1",
+    "model": "fake-model",
+    "role": "assistant",
+    "stop_reason": "tool_use",
+    "type": "message",
+    "usage": {
+     "input_tokens": 900,
+     "output_tokens": 70
+    }
+   },
+   "step": 1,
+   "task": "totals.rest"
+  },
+  {
+   "response": {
+    "content": [
+     {
+      "id": "toolu_t1",
+      "input": {
+       "total_cents": 6499,
+       "totals": [
+        {
+         "category": "books",
+         "cents": 2499
+        },
+        {
+         "category": "grocery",
+         "cents": 600
+        },
+        {
+         "category": "tools",
+         "cents": 3400
+        }
+       ]
+      },
+      "name": "submit_output",
+      "type": "tool_use"
+     }
+    ],
+    "id": "t1",
+    "model": "fake-model",
+    "role": "assistant",
+    "stop_reason": "tool_use",
+    "type": "message",
+    "usage": {
+     "input_tokens": 900,
+     "output_tokens": 90
+    }
+   },
+   "step": 1,
+   "task": "totals"
+  },
+  {
+   "response": {
+    "content": [
+     {
+      "id": "toolu_r0",
+      "input": {
+       "candidate_ref": "totals"
+      },
+      "name": "checker.category_totals",
+      "type": "tool_use"
+     }
+    ],
+    "id": "r0",
+    "model": "fake-model",
+    "role": "assistant",
+    "stop_reason": "tool_use",
+    "type": "message",
+    "usage": {
+     "input_tokens": 900,
+     "output_tokens": 40
+    }
+   },
+   "step": 0,
+   "task": "review"
+  },
+  {
+   "response": {
+    "content": [
+     {
+      "id": "toolu_r1",
+      "input": {
+       "note": "merged child totals matched the checker",
+       "verdict": "accept"
+      },
+      "name": "submit_output",
+      "type": "tool_use"
+     }
+    ],
+    "id": "r1",
+    "model": "fake-model",
+    "role": "assistant",
+    "stop_reason": "tool_use",
+    "type": "message",
+    "usage": {
+     "input_tokens": 900,
+     "output_tokens": 60
+    }
+   },
+   "step": 1,
+   "task": "review"
+  }
+ ]
+}

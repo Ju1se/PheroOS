@@ -1,0 +1,165 @@
+{
+  "agents": [
+    {
+      "capabilities": {
+        "tools": []
+      },
+      "id": "expensive",
+      "model": {
+        "max_new_tokens": 256,
+        "model": "fake-model",
+        "prompt_overhead_tokens": 400,
+        "prompt_token_bound": 8192,
+        "provider": "fake"
+      }
+    },
+    {
+      "capabilities": {
+        "tools": []
+      },
+      "id": "cheap",
+      "model": {
+        "max_new_tokens": 256,
+        "model": "fake-model",
+        "prompt_overhead_tokens": 400,
+        "prompt_token_bound": 8192,
+        "provider": "fake"
+      }
+    }
+  ],
+  "capacity": {
+    "latency_cost": 1.0,
+    "service_time": 1.0,
+    "workers": {
+      "expensive": {
+        "cost": 6.0
+      },
+      "cheap": {
+        "cost": 1.0
+      }
+    }
+  },
+  "fixtures": {},
+  "format": "orchestration-workflow-v2",
+  "limits": {
+    "artifact_bytes": 16384,
+    "context_bytes": 65536,
+    "max_calls": 32,
+    "max_children": 2,
+    "max_depth": 2,
+    "max_platform_operations": 256,
+    "max_work_items": 8,
+    "token_cap": 300000
+  },
+  "policies": {
+    "allocation": {
+      "kind": "response",
+      "exponent": 8,
+      "seed": "e4"
+    },
+    "lease": {
+      "kind": "fixed",
+      "seconds": 60
+    }
+  },
+  "run_id": "e4-shared-capacity",
+  "tasks": [
+    {
+      "agents": [
+        "expensive",
+        "cheap"
+      ],
+      "dependencies": [],
+      "id": "t1",
+      "instructions": "Submit the declared value for this task.",
+      "kind": "model",
+      "limits": {
+        "calls": 4,
+        "model_steps": 2,
+        "rejections": 1,
+        "tokens": 40000,
+        "tool_calls": 0
+      },
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "value": {
+            "minimum": 0,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "reads": [],
+      "tools": []
+    },
+    {
+      "agents": [
+        "expensive",
+        "cheap"
+      ],
+      "dependencies": [],
+      "id": "t2",
+      "instructions": "Submit the declared value for this task.",
+      "kind": "model",
+      "limits": {
+        "calls": 4,
+        "model_steps": 2,
+        "rejections": 1,
+        "tokens": 40000,
+        "tool_calls": 0
+      },
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "value": {
+            "minimum": 0,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "reads": [],
+      "tools": []
+    },
+    {
+      "agents": [
+        "expensive",
+        "cheap"
+      ],
+      "dependencies": [],
+      "id": "t3",
+      "instructions": "Submit the declared value for this task.",
+      "kind": "model",
+      "limits": {
+        "calls": 4,
+        "model_steps": 2,
+        "rejections": 1,
+        "tokens": 40000,
+        "tool_calls": 0
+      },
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "value": {
+            "minimum": 0,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "reads": [],
+      "tools": []
+    }
+  ],
+  "tools": []
+}

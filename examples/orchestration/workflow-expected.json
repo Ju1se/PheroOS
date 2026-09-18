@@ -1,0 +1,214 @@
+{
+ "agents": [
+  {
+   "capabilities": {
+    "tools": [
+     "fixture.read"
+    ]
+   },
+   "id": "author",
+   "model": {
+    "max_new_tokens": 1024,
+    "model": "fake-model",
+    "prompt_overhead_tokens": 800,
+    "prompt_token_bound": 16384,
+    "provider": "fake"
+   }
+  },
+  {
+   "capabilities": {
+    "tools": [
+     "checker.expected_json"
+    ]
+   },
+   "id": "auditor",
+   "model": {
+    "max_new_tokens": 1024,
+    "model": "fake-model",
+    "prompt_overhead_tokens": 800,
+    "prompt_token_bound": 16384,
+    "provider": "fake"
+   }
+  }
+ ],
+ "fixtures": {
+  "expected": {
+   "bytes": 135,
+   "path": "fixtures/expected.json",
+   "sha256": "51dbe5a645bf3ec08d267b4316e5d615e8454a97e89658cc8cee09705ccaecaa"
+  },
+  "orders": {
+   "bytes": 325,
+   "path": "fixtures/orders.json",
+   "sha256": "2c142b81ec43cc222861e470a29c9290a974cb75e439aeca492b32354400538c"
+  }
+ },
+ "format": "orchestration-workflow-v2",
+ "limits": {
+  "artifact_bytes": 32768,
+  "context_bytes": 131072,
+  "max_calls": 32,
+  "max_children": 2,
+  "max_depth": 2,
+  "max_platform_operations": 256,
+  "max_work_items": 16,
+  "token_cap": 200000
+ },
+ "policies": {
+  "allocation": {
+   "kind": "fifo"
+  },
+  "lease": {
+   "false_expiry_cost": 5.0,
+   "kind": "evaporation",
+   "p_fail": 0.05,
+   "per_tick_cost": 0.002,
+   "stage_durations": [
+    30.0,
+    45.0,
+    90.0,
+    120.0
+   ]
+  }
+ },
+ "run_id": "expected-json-reuse",
+ "tasks": [
+  {
+   "agent": "author",
+   "dependencies": [],
+   "id": "draft",
+   "instructions": "Read the declared fixture 'orders' with fixture.read and submit the per-category totals.",
+   "kind": "model",
+   "limits": {
+    "calls": 6,
+    "model_steps": 3,
+    "rejections": 1,
+    "tokens": 60000,
+    "tool_calls": 1
+   },
+   "output_schema": {
+    "additionalProperties": false,
+    "properties": {
+     "total_cents": {
+      "minimum": 0,
+      "type": "integer"
+     },
+     "totals": {
+      "items": {
+       "additionalProperties": false,
+       "properties": {
+        "category": {
+         "maxLength": 64,
+         "minLength": 1,
+         "type": "string"
+        },
+        "cents": {
+         "minimum": 0,
+         "type": "integer"
+        }
+       },
+       "required": [
+        "category",
+        "cents"
+       ],
+       "type": "object"
+      },
+      "maxItems": 64,
+      "minItems": 0,
+      "type": "array"
+     }
+    },
+    "required": [
+     "totals",
+     "total_cents"
+    ],
+    "type": "object"
+   },
+   "reads": [],
+   "tools": [
+    "fixture.read"
+   ]
+  },
+  {
+   "agent": "auditor",
+   "dependencies": [
+    "draft"
+   ],
+   "id": "audit",
+   "instructions": "Compare the draft with the declared expected answer using checker.expected_json, then submit a verdict.",
+   "kind": "model",
+   "limits": {
+    "calls": 6,
+    "model_steps": 3,
+    "rejections": 1,
+    "tokens": 60000,
+    "tool_calls": 1
+   },
+   "output_schema": {
+    "additionalProperties": false,
+    "properties": {
+     "note": {
+      "maxLength": 512,
+      "minLength": 1,
+      "type": "string"
+     },
+     "verdict": {
+      "enum": [
+       "accept",
+       "reject"
+      ],
+      "type": "string"
+     }
+    },
+    "required": [
+     "verdict",
+     "note"
+    ],
+    "type": "object"
+   },
+   "reads": [
+    "draft"
+   ],
+   "tools": [
+    "checker.expected_json"
+   ]
+  },
+  {
+   "agent": "host",
+   "dependencies": [
+    "draft",
+    "audit"
+   ],
+   "id": "decide",
+   "kind": "host",
+   "reads": [
+    "draft",
+    "audit"
+   ],
+   "rule": {
+    "candidate": "draft",
+    "checker": "checker.expected_json",
+    "review": "audit",
+    "type": "checker_pass"
+   }
+  }
+ ],
+ "tools": [
+  {
+   "config": {
+    "fixtures": [
+     "orders"
+    ]
+   },
+   "name": "fixture.read",
+   "version": "fixture-read-v1"
+  },
+  {
+   "config": {
+    "fixture": "expected"
+   },
+   "name": "checker.expected_json",
+   "version": "expected-json-v1"
+  }
+ ]
+}

@@ -1,0 +1,209 @@
+{
+ "agents": [
+  {
+   "capabilities": {
+    "tools": [
+     "fixture.read"
+    ]
+   },
+   "id": "producer",
+   "model": {
+    "max_new_tokens": 1024,
+    "model": "fake-model",
+    "prompt_overhead_tokens": 800,
+    "prompt_token_bound": 16384,
+    "provider": "fake"
+   }
+  },
+  {
+   "capabilities": {
+    "tools": [
+     "checker.category_totals"
+    ]
+   },
+   "id": "reviewer",
+   "model": {
+    "max_new_tokens": 1024,
+    "model": "fake-model",
+    "prompt_overhead_tokens": 800,
+    "prompt_token_bound": 16384,
+    "provider": "fake"
+   }
+  }
+ ],
+ "fixtures": {
+  "orders": {
+   "bytes": 325,
+   "path": "fixtures/orders.json",
+   "sha256": "2c142b81ec43cc222861e470a29c9290a974cb75e439aeca492b32354400538c"
+  }
+ },
+ "format": "orchestration-workflow-v2",
+ "limits": {
+  "artifact_bytes": 32768,
+  "context_bytes": 131072,
+  "max_calls": 64,
+  "max_children": 4,
+  "max_depth": 2,
+  "max_platform_operations": 512,
+  "max_work_items": 32,
+  "token_cap": 400000
+ },
+ "policies": {
+  "allocation": {
+   "kind": "fifo"
+  },
+  "lease": {
+   "false_expiry_cost": 5.0,
+   "kind": "evaporation",
+   "p_fail": 0.05,
+   "per_tick_cost": 0.002,
+   "stage_durations": [
+    30.0,
+    45.0,
+    90.0,
+    120.0
+   ]
+  }
+ },
+ "run_id": "category-totals",
+ "tasks": [
+  {
+   "agent": "producer",
+   "dependencies": [],
+   "id": "produce",
+   "instructions": "Read the declared fixture 'orders' with fixture.read, then submit the total cents per category, sorted by category ascending, and the overall total.",
+   "kind": "model",
+   "limits": {
+    "calls": 8,
+    "model_steps": 4,
+    "rejections": 2,
+    "tokens": 80000,
+    "tool_calls": 2
+   },
+   "output_schema": {
+    "additionalProperties": false,
+    "properties": {
+     "total_cents": {
+      "minimum": 0,
+      "type": "integer"
+     },
+     "totals": {
+      "items": {
+       "additionalProperties": false,
+       "properties": {
+        "category": {
+         "maxLength": 64,
+         "minLength": 1,
+         "type": "string"
+        },
+        "cents": {
+         "minimum": 0,
+         "type": "integer"
+        }
+       },
+       "required": [
+        "category",
+        "cents"
+       ],
+       "type": "object"
+      },
+      "maxItems": 64,
+      "minItems": 0,
+      "type": "array"
+     }
+    },
+    "required": [
+     "totals",
+     "total_cents"
+    ],
+    "type": "object"
+   },
+   "reads": [],
+   "tools": [
+    "fixture.read"
+   ]
+  },
+  {
+   "agent": "reviewer",
+   "dependencies": [
+    "produce"
+   ],
+   "id": "review",
+   "instructions": "Check the candidate totals from 'produce' with checker.category_totals, then submit your verdict.",
+   "kind": "model",
+   "limits": {
+    "calls": 8,
+    "model_steps": 4,
+    "rejections": 2,
+    "tokens": 80000,
+    "tool_calls": 2
+   },
+   "output_schema": {
+    "additionalProperties": false,
+    "properties": {
+     "note": {
+      "maxLength": 512,
+      "minLength": 1,
+      "type": "string"
+     },
+     "verdict": {
+      "enum": [
+       "accept",
+       "reject"
+      ],
+      "type": "string"
+     }
+    },
+    "required": [
+     "verdict",
+     "note"
+    ],
+    "type": "object"
+   },
+   "reads": [
+    "produce"
+   ],
+   "tools": [
+    "checker.category_totals"
+   ]
+  },
+  {
+   "agent": "host",
+   "dependencies": [
+    "produce",
+    "review"
+   ],
+   "id": "finalize",
+   "kind": "host",
+   "reads": [
+    "produce",
+    "review"
+   ],
+   "rule": {
+    "candidate": "produce",
+    "checker": "checker.category_totals",
+    "review": "review",
+    "type": "checker_pass"
+   }
+  }
+ ],
+ "tools": [
+  {
+   "config": {
+    "fixtures": [
+     "orders"
+    ]
+   },
+   "name": "fixture.read",
+   "version": "fixture-read-v1"
+  },
+  {
+   "config": {
+    "fixture": "orders"
+   },
+   "name": "checker.category_totals",
+   "version": "category-totals-v1"
+  }
+ ]
+}

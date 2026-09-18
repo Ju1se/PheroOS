@@ -1,0 +1,80 @@
+{
+ "format": "fake-model-script-v1",
+ "responses": [
+  {
+   "response": {
+    "content": [
+     {
+      "id": "toolu_0",
+      "input": {
+       "value": 0
+      },
+      "name": "submit_output",
+      "type": "tool_use"
+     }
+    ],
+    "id": "m0",
+    "model": "fake",
+    "role": "assistant",
+    "stop_reason": "tool_use",
+    "type": "message",
+    "usage": {
+     "input_tokens": 300,
+     "output_tokens": 20
+    }
+   },
+   "step": 0,
+   "task": "t1"
+  },
+  {
+   "response": {
+    "content": [
+     {
+      "id": "toolu_1",
+      "input": {
+       "value": 1
+      },
+      "name": "submit_output",
+      "type": "tool_use"
+     }
+    ],
+    "id": "m1",
+    "model": "fake",
+    "role": "assistant",
+    "stop_reason": "tool_use",
+    "type": "message",
+    "usage": {
+     "input_tokens": 300,
+     "output_tokens": 20
+    }
+   },
+   "step": 0,
+   "task": "t2"
+  },
+  {
+   "response": {
+    "content": [
+     {
+      "id": "toolu_2",
+      "input": {
+       "value": 2
+      },
+      "name": "submit_output",
+      "type": "tool_use"
+     }
+    ],
+    "id": "m2",
+    "model": "fake",
+    "role": "assistant",
+    "stop_reason": "tool_use",
+    "type": "message",
+    "usage": {
+     "input_tokens": 300,
+     "output_tokens": 20
+    }
+   },
+   "step": 0,
+   "task": "t3"
+  }
+ ]
+}
