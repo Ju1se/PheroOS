@@ -324,8 +324,13 @@ def optimal_stopping_rule(abstain_loss, latency_cost, deadline, arrival_prob, lo
     """Decision rule for PlatformMixin.commit from commit_value at the declared elapsed tick.
 
     r is the smallest certified loss; publish returns that call id (ties by call id
-    ascending), wait returns {'decision': 'wait'}, abstain or no candidate returns
-    None. The ledger's abstain_loss must equal the one the programme was built from.
+    ascending) only when r is strictly below the abstention loss, wait returns
+    {'decision': 'wait'}, abstain or no candidate returns None. At r == abstain_loss
+    the programme's value is the same for publishing and abstaining, and the ledger
+    publishes only on strict improvement, so the rule abstains there; the value
+    computation is unchanged. The ledger's abstain_loss must equal the one the
+    programme was built from. ``elapsed`` is the caller's declared tick: repeated
+    sweeps do not advance it, so a sweep loop must derive it from recorded state.
     """
     decide = commit_value(abstain_loss, latency_cost, deadline, arrival_prob, loss_support, loss_probs)
     _count(elapsed, 'elapsed')
@@ -339,6 +344,6 @@ def optimal_stopping_rule(abstain_loss, latency_cost, deadline, arrival_prob, lo
         best = min(rows, key=lambda row: (row['certified_loss'], row['call_id']))
         state = decide(elapsed, best['certified_loss'])['state']
         if state == 'publish':
-            return best['call_id']
+            return best['call_id'] if best['certified_loss'] < abstain_loss else None
         return {'decision': 'wait'} if state == 'wait' else None
     return rule

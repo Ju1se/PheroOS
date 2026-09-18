@@ -183,7 +183,27 @@ class Session:
     def _reservation_capacity(self, db, lease, prompt_tokens, max_new_tokens):
         """Optional work-level admission, inside the durable reservation transaction."""
 
+    def _reservation_request(self, db, lease, call_id, action, payload):
+        """Optional request-level admission (declared capabilities), inside the same transaction."""
+
+    def _prompt_contract(self, db, call):
+        """The prompt-usage contract a call was reserved under; the base ledger records exact_v1."""
+        return "exact_v1"
+
+    def _prompt_settles(self, contract, call, prompt):
+        if contract != "exact_v1":
+            raise StateError("unknown prompt token contract")
+        return prompt == call["prompt"]
+
+    def _settled(self, db, call_id, call, response, state):
+        """Hook inside the settlement transaction, so a receipt and its record commit together."""
+
     def reserve(self, lease, call_id, action, payload, *, prompt_tokens, max_new_tokens):
+        with self._transaction() as db:
+            return self._reserve(db, lease, call_id, action, payload, prompt_tokens, max_new_tokens, "exact_v1")
+
+    def _reserve(self, db, lease, call_id, action, payload, prompt_tokens, max_new_tokens, contract):
+        """Reservation body; ``contract`` names the prompt-usage rule that settlement applies."""
         _id(call_id)
         _integer(prompt_tokens, "prompt_tokens")
         _integer(max_new_tokens, "max_new_tokens")
@@ -195,26 +215,28 @@ class Session:
                 raise StateError("request task/version mismatch")
             payload[key] = value
         wire = _wire(payload)
-        with self._transaction() as db:
-            row = self._lease(db, lease)
-            limits = json.loads(self._run(db)["limits"])
-            if action not in json.loads(row["declaration"])["actions"] or len(wire.encode()) > limits["context_bytes"]:
-                raise StateError("undeclared action or request exceeds context bound")
-            prior = db.execute("SELECT * FROM calls WHERE id=?", (call_id,)).fetchone()
-            if prior:
-                if (prior["work_id"], prior["version"], prior["action"], prior["request"], prior["prompt"], prior["maximum"], prior["state"]) != (lease.task_id, lease.version, action, wire, prompt_tokens, max_new_tokens, "received"):
-                    raise StateError("call already exists or is unresolved")
-                return call_id
-            calls = db.execute("SELECT state,reserved,actual FROM calls").fetchall()
-            spent = sum(call["reserved"] if call["state"] in ("reserved", "dispatched") else call["actual"] for call in calls)
-            if len(calls) >= limits["max_calls"] or spent + prompt_tokens + max_new_tokens > limits["token_cap"]:
-                raise BudgetExceeded("session call/token budget exhausted")
-            self._reservation_capacity(db, lease, prompt_tokens, max_new_tokens)
-            db.execute("INSERT INTO calls VALUES (?,?,?,?,?,?,'reserved',?,?,?,NULL,NULL,NULL)",
-                       (call_id, lease.task_id, lease.version, lease.epoch, action, wire, prompt_tokens, max_new_tokens, prompt_tokens + max_new_tokens))
-            self._event(db, "reserved", lease.task_id, {"call_id": call_id,
-                "tokens": prompt_tokens + max_new_tokens, "prompt_tokens": prompt_tokens,
-                "max_new_tokens": max_new_tokens, "prompt_token_contract": "exact_v1"})
+        row = self._lease(db, lease)
+        limits = json.loads(self._run(db)["limits"])
+        if action not in json.loads(row["declaration"])["actions"] or len(wire.encode()) > limits["context_bytes"]:
+            raise StateError("undeclared action or request exceeds context bound")
+        self._reservation_request(db, lease, call_id, action, payload)
+        prior = db.execute("SELECT * FROM calls WHERE id=?", (call_id,)).fetchone()
+        if prior:
+            if ((prior["work_id"], prior["version"], prior["action"], prior["request"], prior["prompt"], prior["maximum"], prior["state"])
+                    != (lease.task_id, lease.version, action, wire, prompt_tokens, max_new_tokens, "received")
+                    or self._prompt_contract(db, prior) != contract):
+                raise StateError("call already exists or is unresolved")
+            return call_id
+        calls = db.execute("SELECT state,reserved,actual FROM calls").fetchall()
+        spent = sum(call["reserved"] if call["state"] in ("reserved", "dispatched") else call["actual"] for call in calls)
+        if len(calls) >= limits["max_calls"] or spent + prompt_tokens + max_new_tokens > limits["token_cap"]:
+            raise BudgetExceeded("session call/token budget exhausted")
+        self._reservation_capacity(db, lease, prompt_tokens, max_new_tokens)
+        db.execute("INSERT INTO calls VALUES (?,?,?,?,?,?,'reserved',?,?,?,NULL,NULL,NULL)",
+                   (call_id, lease.task_id, lease.version, lease.epoch, action, wire, prompt_tokens, max_new_tokens, prompt_tokens + max_new_tokens))
+        self._event(db, "reserved", lease.task_id, {"call_id": call_id,
+            "tokens": prompt_tokens + max_new_tokens, "prompt_tokens": prompt_tokens,
+            "max_new_tokens": max_new_tokens, "prompt_token_contract": contract})
         return call_id
 
     def _scope_ref(self, db, task_id):
@@ -243,6 +265,7 @@ class Session:
             if call is None or (call["work_id"], call["version"], call["epoch"], call["state"]) != (lease.task_id, lease.version, lease.epoch, "reserved"):
                 raise StateError("dispatch requires this lease's reserved call")
             payload = json.loads(call["request"])
+            self._reservation_request(db, lease, call_id, call["action"], payload)
             permission = self._permit(db, lease, call["action"], payload)
             db.execute("UPDATE calls SET state='dispatched',permission=? WHERE id=?", (_wire(permission), call_id))
             self._event(db, "dispatched", lease.task_id, {"call_id": call_id, "permission": permission})
@@ -265,7 +288,8 @@ class Session:
             if call["state"] == "response_rejected" and json.loads(call["response"])["response_digest"] == digest:
                 rejected = True
             else:
-                valid_prompt = prompt == call["prompt"]
+                contract = self._prompt_contract(db, call)
+                valid_prompt = self._prompt_settles(contract, call, prompt)
                 if call["state"] != "dispatched" or not valid_prompt or completion > call["maximum"]:
                     raise StateError("conflicting or invalid receipt")
                 rejected = len(wire.encode()) > json.loads(self._run(db)["limits"])["artifact_bytes"]
@@ -276,9 +300,10 @@ class Session:
                 else:
                     stored, state = wire, "received"
                 db.execute("UPDATE calls SET state=?,response=?,actual=? WHERE id=?", (state, stored, prompt + completion, call_id))
+                self._settled(db, call_id, call, response, state)
                 self._event(db, state, call["work_id"], {"call_id": call_id, "actual_tokens": prompt + completion,
                                                         "prompt_tokens": prompt, "completion_tokens": completion,
-                                                        "prompt_token_contract": "exact_v1",
+                                                        "prompt_token_contract": contract,
                                                         "released_tokens": call["reserved"] - prompt - completion,
                                                         "response_digest": digest})
                 if self._run(db)["status"] == "running" and not db.execute("SELECT 1 FROM calls WHERE work_id=? AND state='dispatched'", (call["work_id"],)).fetchone():
@@ -310,9 +335,13 @@ class Session:
                 or verify(lease.task_id, json.loads(wire)) is not True):
             raise StateError("artifact lacks matching settled response or independent verification")
         digest = sha256(call["response"].encode()).hexdigest()
+        return self._record_artifact(db, lease, wire, call_id, digest)
+
+    def _record_artifact(self, db, lease, wire, call_id, digest, binding=None):
+        """Publication tail shared by receipt and derived artifacts; the caller has validated."""
         payload = {"task_id": lease.task_id, "version": lease.version, "artifact": json.loads(wire),
                    "call_id": call_id, "response_digest": digest,
-                   "scope_ref": self._scope_ref(db, lease.task_id)}
+                   "scope_ref": self._scope_ref(db, lease.task_id), **(binding or {})}
         permission = self._permit(db, lease, "artifact.publish", payload)
         ref = "sha256:" + sha256(_wire(payload).encode()).hexdigest()
         db.execute("INSERT INTO artifacts VALUES (?,?,?,?,?,?,?,?)",
@@ -320,7 +349,8 @@ class Session:
         self._abandon(db, lease.task_id)
         db.execute("UPDATE work SET status='done',owner=NULL,expires=NULL WHERE id=?", (lease.task_id,))
         self._event(db, "published", lease.task_id, {"artifact_ref": ref, "call_id": call_id,
-                    "version": lease.version, "response_digest": digest, "permission": permission})
+                    "version": lease.version, "response_digest": digest, "permission": permission,
+                    **({} if binding is None else {"binding": binding})})
         if not db.execute("SELECT 1 FROM work WHERE status!='done'").fetchone():
             db.execute("UPDATE run SET status='completed'")
         return ref

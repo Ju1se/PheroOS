@@ -7,7 +7,9 @@ reopening a session uses its receipts and candidates instead of reading again.
 from __future__ import annotations
 
 from hashlib import sha256
+import json
 
+from pheroos_interaction.commitment import optimal_stopping_rule
 from pheroos_interaction.records import BudgetExceeded, LeaseLost, StateError
 from .provider import _freeze
 from .session import _duration, _integer, _wire
@@ -54,6 +56,53 @@ def _call_status(session, call_id):
         return session.call(call_id)["state"]
     except StateError:
         return None
+
+
+def waiting_rule(session, work_id, *, abstain_loss, latency_cost, deadline, arrival_prob,
+                 loss_support, loss_probs, candidate_sources, tick_seconds):
+    """Optimal stopping with recall clocked by recorded ledger time, or None for the default rule.
+
+    A commit rule sees only candidate metadata, so a sweep loop that rebuilds
+    ``optimal_stopping_rule`` at a fixed tick would wait forever, and one that
+    counted its own polls would manufacture arrivals. This adapter instead reads
+    the elapsed time the ledger recorded: the tick is
+    ``floor((now - first recorded wait) / tick_seconds)``, capped at ``deadline``,
+    where the stamps come from the work's ``platform.waited`` events. A tight
+    polling loop therefore does not advance the decision clock at all, and the
+    declared ``arrival_prob`` is a per-``tick_seconds`` assumption of the caller.
+
+    A configuration without an exact positive ``deadline``, a positive finite
+    ``tick_seconds``, or distinct ``candidate_sources`` (agents of this work whose
+    proposals may still arrive) is refused before use. When every declared source
+    has already proposed, no future candidate exists and waiting would be
+    fictitious, so ``None`` is returned: passed as ``rule`` to ``commit``,
+    ``run_worker`` or ``run_colony`` it selects the default minimum-loss rule with
+    strict improvement. Nothing here claims the arrival model is calibrated.
+    """
+    _integer(deadline, "deadline", 1)
+    _duration(tick_seconds)
+    if (type(candidate_sources) is not list or not candidate_sources
+            or any(type(source) is not str for source in candidate_sources)
+            or len(set(candidate_sources)) != len(candidate_sources)):
+        raise ValueError("waiting requires distinct declared candidate sources")
+    snapshot = session.snapshot()
+    if "platform" not in snapshot:
+        raise StateError("waiting requires a platform ledger")
+    work = next((row for row in snapshot["work"] if row["id"] == work_id), None)
+    if work is None:
+        raise StateError("unknown work")
+    if not set(candidate_sources) <= set(json.loads(work["declaration"])["agents"]):
+        raise ValueError("candidate sources must be agents declared for the work")
+    proposed = {row["proposer"] for row in snapshot["platform"]["candidates"]
+                if row["work_id"] == work_id and row["version"] == work["version"]}
+    if set(candidate_sources) <= proposed:
+        return None
+    stamps = [event["details"]["at"] for event in snapshot["events"]
+              if event["event_type"] == "interaction.session.platform.waited"
+              and event["task_id"] == work_id and type(event["details"].get("at")) in (int, float)]
+    elapsed = 0 if not stamps else int(max(0., session.clock() - min(stamps)) // tick_seconds)
+    return optimal_stopping_rule(abstain_loss, latency_cost, deadline, arrival_prob, loss_support,
+                                 loss_probs, min(elapsed, deadline))
 
 
 def run_worker(session, agent, *, driver, planner, verify, policy, renew_seconds=60, max_items=None):

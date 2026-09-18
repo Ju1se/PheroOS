@@ -217,80 +217,84 @@ class PlatformMixin:
             raise ValueError("parent must wait for its children")
         if type(children) is not list or not children:
             raise ValueError("nonempty children required")
+        with self._transaction() as db:
+            return self._decompose(db, lease, children)
+
+    def _decompose(self, db, lease, children):
+        """Transaction body of decompose; composite admissions share the caller's transaction."""
         # Detach caller-owned objects before validating or storing them.
         children = json.loads(_wire(children))
-        with self._transaction() as db:
-            parent = self._lease(db, lease)
-            meta = self._budget_row(db, lease.task_id)
-            limits = self._platform_limits(db)
-            if db.execute("SELECT 1 FROM calls WHERE work_id=? AND state IN ('reserved','dispatched')", (lease.task_id,)).fetchone():
-                raise StateError("decompose requires no open reservation or unresolved dispatch")
-            n_children = db.execute("SELECT COUNT(*) FROM platform_work_v1 WHERE parent=?", (lease.task_id,)).fetchone()[0]
-            n_work = db.execute("SELECT COUNT(*) FROM work").fetchone()[0]
-            if n_children+len(children) > limits["max_children"] or meta["depth"]+1 > limits["max_depth"] or n_work+len(children) > limits["max_work_items"]:
-                raise BudgetExceeded("child, depth or work capacity exceeded")
-            declaration = json.loads(parent["declaration"])
-            graph = {r["id"]: json.loads(r["declaration"])["dependencies"] for r in db.execute("SELECT id,declaration FROM work")}
-            calls, tokens = self._spent(db, lease.task_id)
-            give_calls = give_tokens = 0
-            ids = []
-            for child in children:
-                if type(child) is not dict or set(child) != {"id", "version", "dependencies", "agents", "actions", "budget"}:
-                    raise ValueError("child needs id/version/dependencies/agents/actions/budget")
-                key = _id(child["id"])
-                _integer(child["version"], "child version", 1)
-                if key in graph:
-                    raise ValueError("duplicate or existing child id")
-                for name in ("dependencies", "agents", "actions"):
-                    _unique(child[name], name)
-                if (not child["agents"] or not set(child["agents"]) <= set(declaration["agents"])
-                        or not child["actions"] or not set(child["actions"]) <= set(declaration["actions"])):
-                    raise ValueError("child cannot widen parent agents or actions")
-                for agent in child["agents"]:
-                    self._publication_access(db, parent, agent)
-                budget = child["budget"]
-                if type(budget) is not dict or set(budget) != {"calls", "tokens"}:
-                    raise ValueError("explicit child calls/tokens required")
-                give_calls += _integer(budget["calls"], "child calls")
-                give_tokens += _integer(budget["tokens"], "child tokens")
-                ids.append(key)
-                graph[key] = child["dependencies"]
-            if give_calls+calls > meta["calls_cap"] or give_tokens+tokens > meta["tokens_cap"]:
-                raise BudgetExceeded("children exceed parent remaining budget")
-            graph[lease.task_id] = declaration["dependencies"]+ids
-            # Topological elimination covers cycles through all existing work.
-            pending = {key: set(deps) for key, deps in graph.items()}
-            if any(deps-set(graph) for deps in pending.values()):
-                raise ValueError("missing child dependency")
-            while pending:
-                leaves = {key for key, deps in pending.items() if not deps}
-                if not leaves:
-                    raise ValueError("cyclic work dependencies")
-                pending = {key: deps-leaves for key, deps in pending.items() if key not in leaves}
-            inherited = self._inspection(db, lease.task_id) if hasattr(self, "_inspection") else None
+        parent = self._lease(db, lease)
+        meta = self._budget_row(db, lease.task_id)
+        limits = self._platform_limits(db)
+        if db.execute("SELECT 1 FROM calls WHERE work_id=? AND state IN ('reserved','dispatched')", (lease.task_id,)).fetchone():
+            raise StateError("decompose requires no open reservation or unresolved dispatch")
+        n_children = db.execute("SELECT COUNT(*) FROM platform_work_v1 WHERE parent=?", (lease.task_id,)).fetchone()[0]
+        n_work = db.execute("SELECT COUNT(*) FROM work").fetchone()[0]
+        if n_children+len(children) > limits["max_children"] or meta["depth"]+1 > limits["max_depth"] or n_work+len(children) > limits["max_work_items"]:
+            raise BudgetExceeded("child, depth or work capacity exceeded")
+        declaration = json.loads(parent["declaration"])
+        graph = {r["id"]: json.loads(r["declaration"])["dependencies"] for r in db.execute("SELECT id,declaration FROM work")}
+        calls, tokens = self._spent(db, lease.task_id)
+        give_calls = give_tokens = 0
+        ids = []
+        for child in children:
+            if type(child) is not dict or set(child) != {"id", "version", "dependencies", "agents", "actions", "budget"}:
+                raise ValueError("child needs id/version/dependencies/agents/actions/budget")
+            key = _id(child["id"])
+            _integer(child["version"], "child version", 1)
+            if key in graph:
+                raise ValueError("duplicate or existing child id")
+            for name in ("dependencies", "agents", "actions"):
+                _unique(child[name], name)
+            if (not child["agents"] or not set(child["agents"]) <= set(declaration["agents"])
+                    or not child["actions"] or not set(child["actions"]) <= set(declaration["actions"])):
+                raise ValueError("child cannot widen parent agents or actions")
+            for agent in child["agents"]:
+                self._publication_access(db, parent, agent)
+            budget = child["budget"]
+            if type(budget) is not dict or set(budget) != {"calls", "tokens"}:
+                raise ValueError("explicit child calls/tokens required")
+            give_calls += _integer(budget["calls"], "child calls")
+            give_tokens += _integer(budget["tokens"], "child tokens")
+            ids.append(key)
+            graph[key] = child["dependencies"]
+        if give_calls+calls > meta["calls_cap"] or give_tokens+tokens > meta["tokens_cap"]:
+            raise BudgetExceeded("children exceed parent remaining budget")
+        graph[lease.task_id] = declaration["dependencies"]+ids
+        # Topological elimination covers cycles through all existing work.
+        pending = {key: set(deps) for key, deps in graph.items()}
+        if any(deps-set(graph) for deps in pending.values()):
+            raise ValueError("missing child dependency")
+        while pending:
+            leaves = {key for key, deps in pending.items() if not deps}
+            if not leaves:
+                raise ValueError("cyclic work dependencies")
+            pending = {key: deps-leaves for key, deps in pending.items() if key not in leaves}
+        inherited = self._inspection(db, lease.task_id) if hasattr(self, "_inspection") else None
+        if inherited is not None:
+            cap = json.loads(db.execute("SELECT limits FROM coordination_v1 WHERE id=1").fetchone()[0])["max_index_entries"]
+            count = db.execute("SELECT COUNT(*) FROM coordination_inspections_v1").fetchone()[0]
+            if count+len(children) > cap:
+                raise BudgetExceeded("inspection index capacity exceeded")
+        for child in children:
+            item = {k: child[k] for k in ("id", "version", "dependencies", "agents", "actions")}
+            db.execute("INSERT INTO work VALUES (?,?,?,'ready',NULL,0,NULL,?)",
+                       (child["id"], child["version"], _wire(item), self._run(db)["generation"]))
+            c, t = child["budget"]["calls"], child["budget"]["tokens"]
+            db.execute("INSERT INTO platform_work_v1 VALUES (?,?,?,?,?,?,?,?)",
+                       (child["id"], self.clock(), lease.task_id, meta["depth"]+1, c, t, c, t))
             if inherited is not None:
-                cap = json.loads(db.execute("SELECT limits FROM coordination_v1 WHERE id=1").fetchone()[0])["max_index_entries"]
-                count = db.execute("SELECT COUNT(*) FROM coordination_inspections_v1").fetchone()[0]
-                if count+len(children) > cap:
-                    raise BudgetExceeded("inspection index capacity exceeded")
-            for child in children:
-                item = {k: child[k] for k in ("id", "version", "dependencies", "agents", "actions")}
-                db.execute("INSERT INTO work VALUES (?,?,?,'ready',NULL,0,NULL,?)",
-                           (child["id"], child["version"], _wire(item), self._run(db)["generation"]))
-                c, t = child["budget"]["calls"], child["budget"]["tokens"]
-                db.execute("INSERT INTO platform_work_v1 VALUES (?,?,?,?,?,?,?,?)",
-                           (child["id"], self.clock(), lease.task_id, meta["depth"]+1, c, t, c, t))
-                if inherited is not None:
-                    self._inspection_declaration(db, dict(work_id=child["id"], source_id=inherited["source_id"],
-                        source_version=inherited["source_version"], tool_ref=inherited["tool_ref"],
-                        tool_version=inherited["tool_version"], arguments=json.loads(inherited["arguments"]),
-                        state_fingerprint=inherited["fingerprint"], readers=json.loads(inherited["readers"])))
-            declaration["dependencies"] = graph[lease.task_id]
-            db.execute("UPDATE platform_work_v1 SET calls_cap=calls_cap-?,tokens_cap=tokens_cap-? WHERE work_id=?", (give_calls, give_tokens, lease.task_id))
-            db.execute("UPDATE work SET declaration=?,status='ready',owner=NULL,expires=NULL WHERE id=?", (_wire(declaration), lease.task_id))
-            self._event(db, "platform.decomposed", lease.task_id,
-                        {"children": children, "transferred": {"calls": give_calls, "tokens": give_tokens}, "epoch": lease.epoch})
-            return ids
+                self._inspection_declaration(db, dict(work_id=child["id"], source_id=inherited["source_id"],
+                    source_version=inherited["source_version"], tool_ref=inherited["tool_ref"],
+                    tool_version=inherited["tool_version"], arguments=json.loads(inherited["arguments"]),
+                    state_fingerprint=inherited["fingerprint"], readers=json.loads(inherited["readers"])))
+        declaration["dependencies"] = graph[lease.task_id]
+        db.execute("UPDATE platform_work_v1 SET calls_cap=calls_cap-?,tokens_cap=tokens_cap-? WHERE work_id=?", (give_calls, give_tokens, lease.task_id))
+        db.execute("UPDATE work SET declaration=?,status='ready',owner=NULL,expires=NULL WHERE id=?", (_wire(declaration), lease.task_id))
+        self._event(db, "platform.decomposed", lease.task_id,
+                    {"children": children, "transferred": {"calls": give_calls, "tokens": give_tokens}, "epoch": lease.epoch})
+        return ids
 
     def release(self, lease):
         with self._transaction() as db:
@@ -408,7 +412,10 @@ class PlatformMixin:
             chosen = (rows[0]["call_id"] if rows[0]["certified_loss"] < abstain_loss else None) if rule is None else rule(json.loads(_wire(rows)), abstain_loss)
             if chosen == {"decision": "wait"}:
                 self._publication_access(db, work, publisher)
-                self._event(db, "platform.waited", work_id, {"candidates": len(rows), "abstain_loss": abstain_loss})
+                # Stamp the decision so a waiting policy can read elapsed ledger time
+                # rather than a count of polls; repeated sweeps do not advance a clock.
+                self._event(db, "platform.waited", work_id, {"candidates": len(rows), "abstain_loss": abstain_loss,
+                                                             "at": self.clock()})
                 return {"decision": "wait", "candidates": len(rows)}
             candidate = next((r for r in rows if r["call_id"] == chosen), None)
             if chosen is not None and candidate is None:
