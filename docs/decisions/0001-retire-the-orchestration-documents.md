@@ -18,7 +18,7 @@ test evidence, produced **20 of the 28 stale claims found across the whole migra
 They are not merely out of date. Three findings decide this:
 
 1. **One of them certifies the absence of a defect that exists.**
-   `orchestration-architecture.md:331-333` states that rather than *"scatter
+   `docs/history/orchestration-architecture-2026-09-17.md:331-333` states that rather than *"scatter
    `task.get("agents", [task["agent"]])` through the runtime and hope, execution refuses it at the
    boundary."* `runner/contracts.py:401-403` is exactly that construct, with 11 live call sites, and it
    is the subject of audit finding F-03. A future agent checking L-2 against the documentation
@@ -26,7 +26,7 @@ They are not merely out of date. Three findings decide this:
    sentence. It is also why L-30 exists.
 2. **One of them contradicts itself.** `:55` says *"the record is always the list, so nothing
    downstream can assume a single agent"*; `:347` says *"Every task declares one agent."*
-3. **Hand-written counts that drift.** `verification.md:71` reports 964 passing tests against an actual
+3. **Hand-written counts that drift.** `docs/history/orchestration-verification-2026-09-17.md:71` reports 964 passing tests against an actual
    1016; `:77` claims 455 are new; two of its eight per-file counts have drifted. This is the root
    cause of F-24.
 

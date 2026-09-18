@@ -10,6 +10,13 @@ jobs:
           python-version: '3.14'
       - run: python -m pip install '.[dev]'
       - run: python -m pytest -q
+      - name: Knowledge-base gate
+        run: |
+          # The gate's own tests live outside [tool.pytest.ini_options] testpaths, so they are
+          # invoked explicitly; they are not interaction tests and must not inflate that count.
+          python -m pytest -q tests/test_knowledge_base.py
+          # Rule (a): the gate evaluates a clean archive of HEAD, never the working tree.
+          python tools/check_knowledge_base.py
       - name: Installed CLI and local receipt replay
         working-directory: /tmp
         run: |

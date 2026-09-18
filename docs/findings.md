@@ -44,7 +44,7 @@ eligibility*, and a single run writes rows across both generations inside one tr
 cannot tell whether `orchestration_decisions_v1` is v1 because its shape predates the v2 work, or
 because decisions are audit-only — and those imply opposite things about whether it may be extended.
 This blocks G1 directly: allocation provenance (F-02/F-04, L-11/L-13/L-14) has to be recorded
-somewhere, and `orchestration.py:407` — the sole `INSERT INTO orchestration_decisions_v1` site — is
+somewhere, and `runner/orchestration.py:407` — the sole `INSERT INTO orchestration_decisions_v1` site — is
 the obvious target. **G1 must not add a new decision type to a table whose version meaning is
 undecided.**
 

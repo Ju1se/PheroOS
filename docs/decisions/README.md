@@ -37,26 +37,39 @@ agent, which is why the summary must live here even though the data cannot.
 
 ## Assigned and planned
 
-| Number | Title | Status | Subject |
-|---|---|---|---|
-| `0001` | `retire-the-orchestration-documents` | **written** | Retiring the two orchestration docs to `docs/history/` |
-| `0002` | `orchestration-trust-boundary` | planned | Agents propose, the runtime validates, the ledger admits and records |
-| `0003` | `canonical-agent-representation` | planned | `agents[]` canonical, `agent` canonicalized at the parser boundary only (L-1, L-2) |
-| `0004` | `l1-not-active-in-orchestration` | planned | Multiple eligible executors are an allocation decision, not competing candidates (R-4) |
-| `0005` | `durable-allocation-decision` | planned | F-02/F-04 — decision recorded, implemented in G1 (L-11, L-13, L-14) |
-| `0006` | `versioned-canonical-serialization` | planned | One canonical serializer; six definitions exist today (F-16) |
-| `0007` | `workflow-declared-capacity-model` | planned | Capacity is workflow-level and primitive, derived per task eligible set (L-8) |
-| `0008` | `colony-reference-implementation-status` | planned | `runner/colony.py` unreachable by intent (R-1, R-2) |
-| `0009` | `r3a-first-read-decision` | planned | `kind: research` — loss model, EVPI, re-evaluation triggers |
-| `0010` | `fan-out-verification-method` | **written** | Standing requirements for briefs that fan verification out to sub-agents |
+| Number | Title | Status | Written by | Subject |
+|---|---|---|---|---|
+| `0001` | `retire-the-orchestration-documents` | **written** | G0.5 | Retiring the two orchestration docs to `docs/history/` |
+| `0002` | `orchestration-trust-boundary` | planned | *unassigned* | agents propose · runtime validates · ledger admits (L-6, L-7) |
+| `0003` | `canonical-agent-representation` | planned | **G2** | `agents[]` canonical, `agent` canonicalized at the parser boundary only (L-1, L-2) |
+| `0004` | `l1-not-active-in-orchestration` | planned | **G0.6** | Multiple eligible executors are an allocation decision, not competing candidates (R-4) |
+| `0005` | `durable-allocation-decision` | planned | **G1** | F-02/F-04 — decision recorded, implemented in G1 (L-11, L-13, L-14) |
+| `0006` | `versioned-canonical-serialization` | planned | *unassigned* | one canonical serializer; six definitions exist today (F-16) |
+| `0007` | `workflow-declared-capacity-model` | planned | *unassigned* | capacity workflow-level, derived per task eligible set (L-8) |
+| `0008` | `colony-reference-implementation-status` | planned | **G0.5** | `runner/colony.py` unreachable by intent (R-1, R-2) |
+| `0009` | `r3a-first-read-decision` | planned | *unassigned* | `kind: research` — loss model, EVPI, re-evaluation triggers |
+| `0010` | `fan-out-verification-method` | **written** | G0.5 | Standing requirements for briefs that fan verification out to sub-agents |
 
-Planned numbers are reserved in that order. A record written out of order takes the next free number
-and this table is corrected — the table follows the files, never the reverse.
+### A reservation is a decision already made, not work not yet done
 
-**Reserved numbers may leave a gap on disk.** `0001` and `0010` exist; `0002`–`0009` are reserved and
-unwritten. A checker asserting "no gaps" must therefore read this table: a gap is legal only when it
-corresponds to a `planned` row here. An unexplained gap still means a record was written and lost,
-which is what the rule exists to catch.
+An `UNENFORCED` invariant is **work not yet done**, so it must name the gate that will do it or it is
+not admissible. **An ADR is a decision already made and not yet written down.** The tests are not the
+same, and borrowing one for the other loses records:
+
+```text
+decision already made, not yet written   →  planned; a gate may be unassigned, but it WILL be written
+decision does not yet exist              →  backlog; holds no number
+```
+
+Every row above is a decision taken in an earlier pass. Four have no gate that will write them yet and
+say so — `*unassigned*` is a visible state, deliberately, for the same reason an unenforced invariant
+is visible. **Releasing a reserved number would assert that the decision will never be recorded**,
+which is precisely the rationale loss this gate exists to repair.
+
+**A gap in the numbering is legal if and only if README.md has a matching row with status `planned`.**
+`released` is not a value that can fill a gap: with it, "this number was never used" and "this record
+was written and lost" both pass, and the check stops distinguishing them — which is the only thing it
+was built to do.
 
 ## Provisional numbers used during planning — do not trust them
 

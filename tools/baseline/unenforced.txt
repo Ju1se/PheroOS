@@ -1,0 +1,19 @@
+# The unenforced ceiling, itemised. Count is the number of non-comment lines.
+# Raising this fails the gate outright. Lowering it is a normal commit.
+# Baseline changes are their own commit, never bundled with code.
+# Every entry names its closing gate; an entry with no gate is not admissible.
+L-1      F-03, gate G2
+L-11     F-02/F-04, gate G1
+L-12     audit §9, gate G3
+L-13     F-02, gate G1
+L-14     F-04, gate G1
+L-16     gate G4
+L-2      F-03, gate G2
+L-21     gate G4
+L-26     gate G3
+L-27     gate G3
+L-28     gate G2
+L-29     gate G2
+L-30     gate G0.5
+R-1      gate G0.5
+R-2      gate G0.5
