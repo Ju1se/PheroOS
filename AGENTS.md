@@ -39,36 +39,58 @@ sentence is about (F-01). The marker falls away when F-01 lands.
 | Question | Source | Verified by | verified-at |
 |---|---|---|---|
 | Intended architecture? | `ARCHITECTURE.md` **(PLANNED — not yet created)** | `pytest -q tests/interaction/test_orchestration_workflow.py -k "import_no_runner or import_only_the_standard_library"` | `98894c0` (partial) |
-| What must never happen? | `docs/invariants.md` **(PLANNED — not yet created)** | per-invariant, §4 | `98894c0` (partial) |
-| Why is X this way? | `docs/decisions/` **(PLANNED — not yet created)** | `NOT YET ENFORCED` — no decision record exists yet | `98894c0` (partial) |
+| What must never happen? | `docs/invariants.md` | per-invariant, §4 | `e3862f2` |
+| Why is X this way? | `docs/decisions/` | `NOT YET ENFORCED` — no checker validates ADR front-matter yet | `e3862f2` |
 | Conforming right now? | §6 commands | `python -m pytest -q` | `98894c0` (partial) |
 | Migration input for the docs above | `docs/history/agents-md-preimage-2026-09-17.md` (sha256 `24e8f701…`) | `shasum -a 256` against `audit/raw/02-manifest-before.txt` | `98894c0` (partial) |
 | What is already known to be wrong? | `audit/FINDINGS.md` (F-01…F-38) | — a report, not a check | `98894c0` (partial) |
-| Orchestration detail | `docs/orchestration-architecture.md`, `docs/orchestration-verification.md` | `NOT YET ENFORCED` — **both carry stale claims; see §7** | `98894c0` (partial) |
+| Orchestration detail | **retired** — archived at `docs/history/`, see `docs/decisions/0001-retire-the-orchestration-documents.md` | `NOT YET ENFORCED` — archival only; 20 stale claims, not a current description | `e3862f2` |
 
 ## 4. Invariant index
 
-IDs are frozen and append-only. Wording lives in `docs/invariants.md` **(PLANNED)** — never restate
-it here. Test paths are relative to `tests/interaction/`.
+IDs are frozen and append-only in both namespaces. Wording lives in `docs/invariants.md` — never
+restate it here. The **R-namespace is §2 above**; this indexes L only. Test paths are relative to
+`tests/interaction/`.
 
 ```text
-L-1   Canonical agents[] representation        → UNENFORCED (F-03)
-L-2   No hidden schema fallback                → UNENFORCED (F-03)
+L-1   Canonical agents[] representation        → UNENFORCED (F-03, G2)
+L-2   No hidden schema fallback                → UNENFORCED (F-03, G2)
 L-3   v1 audits, v2 executes                   → test_orchestration_audit.py::test_a_v1_workflow_validates_and_audits_but_the_runtime_refuses_to_execute_it
 L-4   Frozen decision inputs                   → test_orchestration_colony.py::test_the_evaporation_lease_comes_from_the_frozen_spec_not_live_history
+                                                 L-4.b DELEGATED → L-14
 L-5   Availability is not execution            → test_e4_shared_capacity.py::test_metric_families_outcome_and_cost_are_present_allocation_and_lease_are_not
 L-6   No self-certification of authority       → test_orchestration_audit.py::test_replay_detects_a_permission_and_a_claim_event_that_disagree
 L-7   Declared authority only                  → test_orchestration_colony.py::test_no_commitment_policy_can_turn_a_failing_checker_into_acceptance
 L-8   No workforce inference                   → test_orchestration_colony.py::test_the_runtime_never_invents_a_capacity_model
 L-9   No mechanism leakage into the runtime    → test_orchestration_colony.py::test_the_runtime_imports_no_colony_mechanism_directly
 L-10  Experimental identity is inert           → test_e4_shared_capacity.py::test_no_policy_layer_module_names_the_experiment_in_its_code
-L-11  Replayable decisions                     → UNENFORCED (F-02/F-04)
-L-12  Observation is not ontology              → UNENFORCED (audit §9)
-L-13  Durable authority needs durable evidence → UNENFORCED (F-02)
-L-14  Replay-relevant nondeterminism is frozen → UNENFORCED (F-04)
+L-11  Replayable decisions                     → UNENFORCED (F-02/F-04, G1)
+L-12  Observation is not ontology              → UNENFORCED (audit §9, G3)
+L-13  Durable authority needs durable evidence → UNENFORCED (F-02, G1)
+L-14  Replay-relevant nondeterminism is frozen → UNENFORCED (F-04, G1)
+L-15  Bounded control; drain survives exhaustion → test_platform_conformance.py::test_platform_operation_exhaustion_cannot_prevent_safe_release
+L-16  Atomicity of decision and consequence    → test_platform_atomicity.py::test_composite_commit_failure_rolls_back_publication_and_decision
+                                                 L-16.d UNENFORCED (G4)
+L-17  Call identity and recovery               → test_colony.py::test_call_ids_are_stable_across_reclaims_unlike_the_epoch_id
+L-18  Narrowing-only delegation                → test_orchestration_workflow.py::test_admitted_children_narrow_the_parent_tools_reads_and_limits
+L-19  Decomposition admission validated first  → test_platform_conformance.py::test_decompose_rejects_all_dependency_cycles_atomically
+L-20  Terminality and dependency satisfaction  → test_platform_conformance.py::test_rule_none_is_explicit_terminal_abstention
+L-21  Spend authority                          → test_provider_worker.py::test_provider_disabled_creates_no_call_rows
+                                                 L-21.a UNENFORCED (G4)
+L-22  The horizon-one identity                 → test_sequential.py::test_horizon_one_reproduces_every_repository_inspection_case_exactly
+L-23  Each depth binds a distinct source       → test_sequential.py::test_per_depth_channels_never_buy_a_repeated_source_declared_with_full_copy
+L-24  Bounded mechanism work                   → test_commitment.py::test_work_per_commit_is_bounded_explicitly
+L-25  Oversized body is a settled rejection    → test_provider_worker.py::test_byte_rejected_receipt_settles_usage_and_is_not_unknown
+L-26  Inter-task data flows through artifacts  → UNENFORCED (G3)
+L-27  The ledger is the sole durable store     → UNENFORCED (G3)
+L-28  Task tools within shared capability      → UNENFORCED (G2)
+L-29  exact_v1 is a live contract              → UNENFORCED (G2)
+L-30  Negative certification requires a test   → UNENFORCED (G0.5)  target: documentation
 ```
 
-Six of fourteen are unenforced. That column is the roadmap.
+**Ceiling: 15 unenforced entries** (evaluated against the working tree) — 6 inherited, 9 surfaced,
+0 deferred. The itemised register, with a closing gate for every entry, is `docs/invariants.md` §3.
+Raising the ceiling fails the gate; baseline changes are their own commit.
 
 ## 5. Working method
 
@@ -83,7 +105,7 @@ Investigate before changing:
 
 Then: smallest coherent change · one change per commit with the **why** in the body · a test that
 fails before and passes after · nothing unrelated in the diff. If a change needs a new invariant or
-reverses a decision, add the record to `docs/decisions/` **(PLANNED)** in the same change.
+reverses a decision, add the record to `docs/decisions/` in the same change.
 
 Two learned the hard way:
 
@@ -142,9 +164,9 @@ CI green does **not** mean conforming. Each entry is dated and finding-linked.
 - **`audit/FINDINGS.md` is itself untracked** — not ignored, never added. Every `F-xx` id in this file
   resolves only in a working tree that has it; from a clean clone they all dangle. Same defect as
   F-01, one level up: the record of the problem shares the problem.
-- `docs/orchestration-architecture.md` and `docs/orchestration-verification.md` contain stale
-  claims, including a reported test count of 964 against an actual 1016, and a table named
-  `orchestration_tasks_v1` that no code creates (F-23, F-24).
+- The orchestration layer has **no current prose description**. Both former documents were retired to
+  `docs/history/` carrying 20 stale claims (F-23, F-24); `ARCHITECTURE.md` has not yet been written.
+  An accepted gap — preferable to a current description that is 20 claims wrong.
 
 ## 8. Safety boundaries
 
