@@ -6,8 +6,8 @@ exempt from currency checks, subject to a digest-integrity check, and **cannot b
 adding to it would falsify the record it exists to preserve and break its digest.
 
 Numbering therefore continues here at **F-39**. Do not restart at F-01. Finding ids are protocol
-vocabulary — `AGENTS.md` §4 and §7, `docs/invariants.md` §3 and the decision records all cite them by
-number — and a second F-01 would break every existing reference.
+vocabulary — `docs/invariants.md`, `ARCHITECTURE.md` and the decision records all cite them by number
+— and a second F-01 would break every existing reference.
 
 This file is live: post-audit discoveries are appended here as they are found, and entries are
 updated as gates close them.
